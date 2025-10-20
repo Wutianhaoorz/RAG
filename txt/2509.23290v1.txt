@@ -1,0 +1,526 @@
+[3p]elsarticle
+
+@pprintTitle
+ \@oddhead\@empty
+ \@evenhead\@empty
+ \@oddfoot
+ \@evenfoot\@oddfoot
+
+\!(_1,,_n_)
+\!(g(s_1),,g(s_n_))
+_n_ \, e_1^\!
+
+[1]#1
+[1]#1
+
+[1]
+[1]#1
+
+[none]hyphenat
+
+[utf8]inputenc
+
+[1]>p#1
+[1]>m#1
+
+#1\@myfnsymbol c@#1
+\@myfnsymbol#1 #1 $$ $\#$ \@ctrerr
+[#1]#2@addto@macro\@fnotes
+ 
+ 
+ @fnote
+ 
+
+[inst1]Vinod Ramakrishnan
+[inst2]Arturo Machado Burgos
+[inst1]organization=The Grainger College of Engineering, Department of Mechanical Science and Engineering,
+ addressline=University of Illinois Urbana-Champaign,
+ postcode=Illinois, 61801,
+ city=Urbana,
+ country=USA
+ [inst2]organization=The Grainger College of Engineering, Department of Aerospace Engineering,
+ addressline=University of Illinois Urbana-Champaign,
+ postcode=Illinois, 61801,
+ city=Urbana,
+ country=USA
+[inst1]Sangwon Park
+[inst1]Kathryn H. Matlack
+[inst2]Andres Goza
+[cor1]Corresponding author
+
+Phononic materials (PMs) are periodic media that exhibit novel elastodynamic responses. While PMs have made progress in vibration-mitigation applications, recent studies have demonstrated the potential of PMs to passively and adaptively modulate flow behavior through fluid-structure interaction (FSI). For example, PMs have been shown to delay laminar-to-turbulent transition and mitigate unsteadiness in shock-boundary layer interactions. However, a systematic framework to relate the effect of specific PM behaviors to the FSI dynamics is lacking. Such a framework is essential to systematically investigate the complex and nonlinear coupled dynamics of the FSI. Further, parameters that are not typically considered in PM models become critical, such as the vibration amplitude. This article addresses this gap by proposing FSI-relevant ``behavioral'' parameters, distinct from the structural parameters of the PM, but with a clear mapping provided to them. We use high-fidelity, strongly coupled simulations to quantify the FSI between a novel configuration of laminar flow past a flat plate, equipped with a PM. Our study proposes four critical PM behavioral parameters---effective stiffness, truncation resonance frequency, a quantity representing the dynamic displacement amplitude, and unit cell mass---that influence the spectral characteristics of the vortex-shedding process inherent to the flat plate system. Results show connections between each parameter and distinct behavior in the lift coefficient in FSI. While the focus of this work is on the PM-FSI dynamics in an aerodynamic flow, we argue that identifying these behavioral parameters is key to unlocking scientific study and design with phononic materials in fluid flows more broadly.
+
+Fluid-Structure Interaction Phononic Materials Aerodynamic Flows Vortex Control
+
+Introduction
+
+Phononic materials (PMs) are periodic, architected media that leverage intricate micro- and/or meso-scale structural features to customize the elastodynamic macro-scale response~. PM architectures can exhibit versatile, atypical behaviors such as band gaps~, directional wave-propagation~, topological behavior~, auxetic behavior~, and non-reciprocity~, promoting their use in energy harvesting~, cloaking~, and morphing structures~. Recently, dynamic features of PMs, such as truncation resonances and defect modes~, have been leveraged to beneficially interact with fluid flows in various flow settings~. Existing studies have demonstrated the effectiveness of PMs in altering Tollmien–Schlichting wave boundary layer instabilities~ and shockwave/boundary-layer interactions~, leading to effects such as a change in the spatial location of laminar-to-turbulent transition and stabilization of hypersonic flow, respectively. Although these preliminary studies have shown promise for PMs to alter flow dynamics, a framework for systematically investigating and, ultimately, designing FSI with PMs remains elusive. This article progresses toward addressing this gap by proposing and justifying behavioral PM parameters that enable systematic tuning of the FSI dynamics.
+
+To motivate the challenges in building this framework for PM-FSI, we refer to insights from the FSI community. Canonical FSI systems that have received particularly extensive attention include vortex-induced vibration of flow past an elastically mounted cylinder, flow past a compliant flat plate/beam/elastica in either an unbounded or channel configuration, and transitional/turbulent wall-bounded flow past a compliant wall. (There are many others involving FSI associated with structures undergoing prescribed kinematics, which we neglect here for conciseness and because our flow system of interest involves a nominally fixed aerodynamic body). We refer the reader to references for extensive reviews of a variety of these systems. Our focus here is on summarizing key outcomes of coupling flow and structure systems, and their implications for systematically studying FSI involving PMs. 
+
+Flow-structure coupling can produce complex and possibly counterintuitive dynamics. Across a variety of FSI systems, the dynamics may be systematically varied by tuning a representative structural mass (relative to a characteristic flow mass) and structural stiffness (relative to a notion of stiffness in the flow, typically induced by the dynamic pressure) . (A common variant to this parameter set, particularly for vortex-induced vibration, is to replace the stiffness with a flow velocity relative to the structural natural frequency ). Varying these mass and stiffness (velocity) parameters triggers regime changes, including the onset of instability, as well as self-induced and sustained large-amplitude vibrations characterized by either limit cycle, quasi-periodic, or chaotic behavior, to name a few possibilities . 
+
+The onset of FSI vibrations/oscillations is often studied through a linear analysis, where the flow-structure system is linearized about a steady base state.
+Even when the coupling is linearized, coupled instability modes (not present if the compliant structure is replaced with a perfectly rigid one) can arise . Accordingly, structural designs must be assessed not by their interaction with a single mode of the linearized flow system for a rigid body; instead, the stability of the entire (linearized) FSI system after the compliant structure is incorporated must be systematically analyzed. Linear stability analysis and, more recently, resolvent analysis have been utilized for a variety of coupled FSI systems; a few representative references are . Such techniques must be adopted for the assessment and design of PMs in modulating fluid flows. Approaches along these lines have been pursued for PMs in , where the linear effect of structural motion on the flow is formally accounted for via an impedance function. also demonstrated that the structural PM model could be coupled to the impedance function, to directly connect the structural motion to the PM design. 
+
+Other dynamics are possible when nonlinear effects are fully accounted for by tuning the mass and stiffness parameters. A common behavior for the FSI system is to `lock onto' a characteristic system frequency. Traditionally, this lock-on was defined with respect to a vacuum-structural natural frequency (see, for example, reference ). However, studies demonstrated a capacity for an FSI system to vibrate at a single frequency far from the vacuum structural frequency, or even when the structure was perfectly massless . These outcomes led to broader definitions, based on whether flow-structure dynamics synchronized, possible due to a modified structural mass that incorporates added mass effects . Other representative FSI behaviors include the capacity for chaotic vibrations, even in a laminar flow setting. For example, showed that in the flow past a flapping flag, the mass is a bifurcation parameter; with increasing value at a fixed stiffness, the system can transition from no flapping to limit-cycle flapping to chaotic flapping, which the authors argued as a period-doubling effect by the appearance of additional flapping frequencies. This non-exhaustive overview illustrates the capacity for self-induced instability, regime changes including transitions from stability to limit cycle vibrations to chaotic vibrations, the selection of dominant FSI timescales by representative system frequencies, and the importance of the governing mass and stiffness (velocity) parameters in driving this behavior. These behaviors, and more broadly insights from the FSI community, are particularly important in the context of certain PM efforts, such as designing PMs with out-of-phase behavior to the flow signatures, to reduce flow instabilities. It is important, therefore, to account for possible flow phase-alignment with structural dynamics or shifts in the frequency of the coupled system altogether. Along these lines, continually expanding analysis of PM-FSI systems to account for the nonlinear coupling, either via experiments or high-fidelity nonlinear simulations, is important. Studies such as in references have provided a platform for this approach, connecting PMs designed through a linear analysis to nonlinear simulations that resolve the nonlinear FSI coupling.
+
+A corresponding set of PM-FSI parameters, analogous to a representative mass and stiffness for traditional FSI systems, does not exist. Indeed, a direct use of a characteristic mass and stiffness, nearly ubiquitous across typical FSI systems, is unlikely to capture the effect of PMs on FSI. For example, most PM systems are defined by a set of distinct (periodically repeating) mass and/or stiffness elements. Moreover, the key opportunity in incorporating PMs into fluid flows is the potential to leverage engineered structural behaviors, not possible with traditional homogeneous structures, to favorably alter a flow. As such, a collection of parameters that enables a systematic tuning of PM-centric behaviors and their effect on the flow is a missing central enabler to PM-FSI study and design. 
+
+In this vein, this article proposes FSI-relevant ``behavioral'' parameters of the PM that are distinct from its structural parameters, e.g., mass and stiffness of the PM, but with a clear one-to-one mapping provided between these parameters. We test a hypothesis that these behavioral parameters will allow a systematic parameterization of the complex FSI. The effect of these PM behavioral parameters on FSI and flow characteristics is comprehensively assessed using high-fidelity, strongly coupled FSI simulation via an immersed boundary method. The computational methodology accurately treats the viscous, nonlinear separated flow processes, employs canonical reduced-order models that convey key PM behaviors of focus, and fully accounts for the nonlinear flow-structure coupling between these systems. Simulations are performed for a configuration of flow past an angled flat plate equipped with a phononic subsurface, with the plate angle of attack set to just below that where vortex shedding arises. A suite of fully coupled simulations, systematically sweeping over the behavioral parameters, is presented. For each set of parameters, we quantify the effects of the PM on the coefficient of lift, vortex-shedding features, forcing at the PM-flow interface, and the PM response from the fully coupled FSI simulations. 
+
+Through this analysis, we argue how the behavioral parameters provide a clear pathway to systematically tune the coupled PM-aerodynamic flow system. Further, the results reveal the benefit of considering PMs for FSI over simpler, more traditional structures with fewer degrees of freedom (DOFs). Ultimately, this study aims to demonstrate the broader relevance of utilizing carefully chosen PM behavioral parameters in enabling efficient PM design for FSI settings with different flow configurations. Further, while the primary focus is on the ability to tune FSI through appropriately chosen parameters, the FSI results demonstrate the potential relevance of PMs to favorably manipulate flow over lifting bodies, for aerodynamic benefit. 
+
+The remainder of the article is organized as follows. Sec.~ briefly summarizes the FSI problem configuration. Sec.~ provides an overview of the dynamic analysis of PM models considered for this study, and proposes the four critical PM behavioral parameters relevant for engineering the FSI dynamics. Sec.~ formulates the discretized FSI framework used in simulating the dynamics of the fully coupled fluid-PM system. Sec.~ discusses key insights from various fully coupled FSI simulations, with PMs parameterized using the behavioral parameters, to demonstrate their utility in tuning FSI dynamics. Finally, Sec.~ presents a summary and the key takeaways of this article.
+
+Problem configuration and methodology
+
+[t!]
+ 
+ [scale=1]updated_problem.png
+ 
+ 
+
+This section briefly summarizes the FSI configuration considered in this study. A detailed overview of the PM model and the FSI framework that informs the numerical simulations performed in this study is subsequently included in Sec.~ and Sec.~.
+
+Our model consists of an incompressible flow ($Re=400$) past a two-dimensional flat plate of chord length $l$ inclined at $=12^$ to the oncoming freestream. These parameters correspond to a configuration where the flow is slightly separated at the trailing edge, with a small degree of unsteadiness. The resulting force signal for this configuration is characterized by a pronounced mean component with small oscillatory fluctuations, reflecting the slight unsteadiness of the flow (see Sec.~ Fig.~). This setup is very near a bifurcation with respect to the angle of attack $$: with a slight decrease in $$, the separation point moves downstream and the flow becomes completely attached and steady. By contrast, at higher values of $$ the separation point moves upstream and induces leading-edge separation and large-scale unsteady vortex shedding. We incorporate a phononic material (PM) into this $=12^$ configuration, to systematically assess what dynamics arise when a PM is incorporated into a flow with clear dynamics that are at a tipping point between amplification towards vortex shedding or pacification towards steadiness. Our aim, in particular, is to identify behavioral parameters that govern distinct features of the modulated flow behavior when the PM is present.
+
+The fluid occupies a rectangular domain $ ^2$, the plate surface is denoted by $$, and a subset $_c $ is a compliant section (CS) placed at the leading edge, extending 0.1$l$ along the suction side, a location shown to be particularly effective for modulating the flow~. The remainder $ _c$ is kinematically rigid (see Fig.~a). To focus on the interplay between the aerodynamic flow and the embedded PM, the CS is prescribed kinematically as a Gaussian function whose midpoint displacement, $(t)$, is given by the displacement response of the interface mass, $_1(t)$, of a PM integrated in the CS as a subsurface. This displacement response (and that of the entire PM diatomic chain) is informed by the flow loading on the plate, in a fully (strongly) coupled manner. To facilitate fundamental insights into the effect of the PM on the coupled dynamics, we adopt a simple, lumped mass-spring description of a discrete diatomic PM to model the PM dynamics. Consequently, the diatomic PM~ is described by a one-dimensional (1D) chain of two masses interconnected with springs (see Fig.~b for details on the PM model that informs the motion of $_c$). The Gaussian shape, dictated by $$, is applied only on $_c$; hence, outside $_c$ the plate remains rigid. 
+
+Several distinct diatomic PM configurations could be considered for the proposed study. However, we will demonstrate that only certain types of diatomic PMs are effective for FSI settings featuring aerodynamic lifting bodies~. To establish this point, we first present in Sec.~ the dynamic analysis of two different types of diatomic PMs: an ungrounded and a grounded diatomic PM. In an ungrounded diatomic PM, each mass is only elastically coupled to neighboring masses (i.e., $k_=0$ in Fig.~b, except for the final mass where $k_ = k$). In the grounded diatomic PM, in addition to the inter-mass interaction springs, an additional spring elastically couples every alternate mass to a fixed ground (Fig.~b). In the following section, we demonstrate that these structural differences lead to distinct dynamic behavior in ungrounded and grounded diatomic PMs, which have drastically different consequences for FSI with the given flow.
+
+FSI-relevant Phononic Material behaviors
+
+This section elucidates several key aspects of phononic material models in the context of FSI. Specifically it: (i) investigates the distinct dynamics found in two different types of diatomic PMs---ungrounded and grounded---and motivates the choice of a grounded diatomic PM for the FSI study; (ii) proposes four FSI-relevant PM behavioral parameters, (iii) relates the behavioral PM parameters to the inherent structural parameters, to provide a map to realize structures with desired behavioral parameters, and (iv) justifies the use of PMs over simpler mass-spring systems. Throughout this section, analysis is performed of the PM diatomic chain in a vacuum, using representative flow forcing from simulations of a fully rigid flat plate (i.e., $_c = \0\$). The utility of this parametrization will be assessed using fully coupled FSI simulations, in Sec.~.
+
+[t!]
+ 
+ [width=]UGvsG_DiPM.png
+ $, that will subsequently house the diatomic PM for FSI. (d.i) The frequency spectrum of the diatomic PM responses is plotted as vertical color bars, and (d.ii) the displacement signals of the ungrounded and grounded diatomic PMs when subject to fluid force are depicted in (c.i). Both diatomic PMs feature a primary mode-dominated response. Structural parameters - Ungrounded diatomic PM: $\m_1,m_2,k_1,k_2\=\4.296,13.12,50,50\$, Grounded diatomic PM: $\m_1,m_2,k,k_\=\0.306,0.432,7.04,21.12\$.
+ 
+
+Dispersion and Eigenmode analysis of Diatomic PMs
+
+The general equations of motion of the $n^$ unit cell of an ungrounded/grounded diatomic PM, shown in Fig.~a, can be written as:
+
+ m_1_2n-1+k_1(_2n-1-_2n)+&k_2(_2n-1-_2n-2)=0,\\ 
+ m_2_2n+k_1(_2n-_2n-1)+&k_2(_2n-_2n+1)+k__2n=0,
+
+where $\m_1,m_2,k_1,k_2,k_\$ represent the two lumped masses, the inter-mass interaction stiffnesses, and the grounding stiffness, respectively. In the ungrounded setting $k_g=0$, and for the grounded case, we take $k_1=k_2=k$ to simplify the mass-spring model, retaining four independent structural parameters. This will be beneficial for developing a one-to-one behavioral-structural parameter map later in Sec.~.
+
+For an infinitely periodic diatomic PM, Bloch analysis~ on the unit cell (Eq.~) provides the dispersion characteristics, i.e., the wavenumber-frequency relations of propagating plane waves within the PM. Therefore, substituting a plane wave ansatz of the form:
+
+ _n(,t)=[_2n-1(t),_2n(t)]^= e^i(n-2 f t),
+ 
+
+where $$ is the unit cell wave amplitude, $$, is the non-dimensional wavenumber (normalized by the spatial periodicity, $a$), and $f$ is the wave frequency, into Eq.~, and utilizing the Bloch periodicity conditions~, $=e^ i $, the diatomic PM dispersion relations are calculated as: 
+
+ = -i(2).
+ 
+
+For the ungrounded PM, $b=(k_+k_)-[1+k_-(f_0)^2][1+k_-k_(f_0)^2]$, where $f_0=2m_1$, and $k_=k_2/k_1$ and $m_=m_2/m_1$ are the stiffness and mass ratios, respectively. For the grounded PM, $b=2-[2-(f_0)^2][2+k_-m_(f_0)^2]$, where $k_=k_/k$ is the ground to inter-mass stiffness ratio. Eq.~ characterizes the commensurate number of dispersion branches as the number of internal degrees of freedom within the PM unit cell. Consequently, for the finite ungrounded and grounded diatomic PMs presented here, we have two distinct dispersion branches as illustrated in Fig.~b. The dispersion plots highlight two distinct regimes---(i) the pass bands (solid curves), where each frequency, $f$ is associated with a real wavenumber, $=_R$, allowing wave propagation through the entire diatomic PM, and (ii) the band gap (dashed curves), where each frequency, $f$, is associated with a complex wavenumber, $ =i_I$ or $+i_I$, forbidding wave propagation in the diatomic PM. That is, for these frequency ranges, the spatial behavior is evanescent, not periodic.
+
+Alternatively, for finite diatomic PMs~, only specific $-f$ pairs contribute to the PM dynamics. To calculate these wave modes (i.e., structural resonances), we combine Eq.~ for all unit cells ($n=1,2,,N$) of a finite diatomic PM to derive the matrix equation of motion: 
+
+ +=0,
+ 
+
+where $=[_1;_2;;_N]$ is the collection of vector displacement of all unit cell masses ($n_=2$: no. of unit cell masses), and $$ and $$, are the mass and stiffness matrices, respectively (see Sec.~). The eigenvalues and the spatial periodicity of eigenvectors, $_f$, obtained by solving the eigenvalue problem: 
+
+ |-4^2 f^2|_f=0,
+ 
+
+correspond to the frequency, $f$, and wavenumber, $$, of plane waves allowed to propagate in finite PMs, respectively. The $$ associated with a given $f$ can be identified by performing a spatial Fourier transform of the respective eigenvectors, $_f$. These $n_ N=2N$ structural resonances of the finite PMs typically lie on the dispersion branches of their infinite counterparts, with $N$ frequencies lying on each dispersion branch. 
+
+The x-markers in Fig.~b plot the structural resonances corresponding to finite diatomic PMs ($N=5$). Most of the eigenfrequencies of a 5-unit cell finite ungrounded diatomic PM and the grounded diatomic PM lie on the corresponding dispersion pass bands, representing a subset of accessible plane wave solutions from the infinite dispersion super-set. However, a peculiar resonance also exists within the band gap, arising from truncating the infinitely periodic diatomic PM into a finite diatomic PM and from symmetry features of the unit cell. This is commonly referred to as a truncation resonance~ and is denoted by the $.$-marker (black) in Fig.~b. Note that the grounded diatomic PM also features a second truncation resonance, $f_2.3f_$ ($6^$ mode, $$-marker) within the middle band gap; however, we primarily focus our efforts on engineering the PM behavior with respect to the low-frequency truncation resonance ($1^$ mode), as detailed in the following sections. The insets in Fig.~b show the exponentially decaying mode shape of the truncation resonances.
+
+It is worth highlighting that the utility of the truncation resonance and the surrounding phononic band gap in our study are leveraged to intake a broadband fluid forcing and respond at the prescribed truncation resonance frequency with a high energy localization at the fluid-PM interface. This is distinct from prior PM-FSI studies~ that primarily leveraged the out-of-phase motion of an ungrounded diatomic PM in an extended frequency region in the phononic band gap around the truncation resonance ($f_<f<f_$) to suppress/amplify TS wave instabilities in wall-bounded flows, that are typically characterized by a dominant single frequency.
+
+Grounded diatomic PMs enable meaningful FSI with lifting bodies
+
+We show in Fig.~c.i the load profile, $F_CS^$, from the flow over a rigid plate, over the portion of the plate $_c$ that will be made compliant with the diatomic PM model. (The superscript $R$ denotes that this is a representative force, since that forcing profile will change when the PM is introduced). After a short transient, there are two components to $F_CS^$: (1) a near-constant, nonzero lift force, $F_$, and (2) an unsteady component due to the time-periodic trailing-edge separation $F_$. We define the frequency of this oscillatory component as $f_$. This frequency will serve as a point of reference within this section and later in assessing how the PM modulates the vortex-shedding behavior from the baseline rigid case. Fig.~c.ii plots the spectrogram of $F_CS^$ illustrating its multi-frequency composition. Though we expect the fully-coupled FSI dynamics to significantly alter the fluid force ($F_^ F_$), we can draw important insights, such as the right choice of PM and the relevant PM parameters for FSI, by analyzing the response of a PM in a vacuum to this representative forcing $F_CS^$.
+
+We present the PM displacement response for the ungrounded and grounded configuration in Fig.~d. Since the focus of this study is aligning a truncation resonance relative to the underlying flow frequency, we will focus on which configuration facilitates more effective interplay between a truncation resonance and the representative flow forcing profile $F_CS^$. For the ungrounded diatomic PM, the displacement response is dominated by the pass band resonances ($f_$), especially the first mode of the structure, over the higher-order truncation resonance aligned with the vortex shedding frequency, $f_=f_$ (Fig.~d.i). Although a small signature at $f_$ is visible once the unsteady fluid force originates ($F_^$), the overall PM dynamics are dominated by the first structural resonance (Fig.~d.ii). This result is intuitive from a structural dynamics perspective: given a broadband input excitation ($F_^$), the first structural mode is preferentially excited. Furthermore, in the fully coupled FSI scenario, the presence of viscous effects could induce structural damping at the fluid-PM interface, rendering the first mode even more energetically favorable . Therefore, the ungrounded PM can only feature truncation resonances as high-order modes, which are sub-dominant in the structural response compared to the dominant first mode. As such, this configuration is not best suited to effectively interact with the aerodynamic flow considered in this study.
+
+To address this issue, we now consider a grounded diatomic PM, which has its first truncation resonance as its first structural mode. This outcome is because the grounding springs introduce a low-frequency band gap in the PM, from $f=0$ to $f=(f_)$, that consequently elevates the first pass band to start at a non-zero frequency ($(f_)$), preventing any rigid body motion . This upward shift in the first pass band allows a truncation resonance to exist as a first structural resonance within the low-frequency band gap. Thus, applying a broadband boundary excitation ($F_^$) to a grounded diatomic PM will elicit a clean, narrow-band response at the truncation resonance frequency (Fig.~d.i), where the modal response is concentrated at the point of excitation (i.e., fluid-PM interface in case of FSI) due to the localized truncation resonance mode shape (see inset in Fig.~b). Figs.~(d.i-ii) show exactly this: the grounded diatomic PM responds almost purely at the truncation resonance frequency, which is the first structural mode. A supplementary movie () of the PM vibration response is also provided for reference.
+
+One may choose alternative forms, e.g.~, of a grounded diatomic PM. To facilitate fundamental insights, we focus on a simple, single choice of canonical diatomic PM configuration. We hypothesize that the ensuing dynamics would be qualitatively similar to the results presented in this article, for aligned choices of PM behavioral parameters. However, we leave detailed investigations for a variety of PM configurations to a future study.
+
+[t!]
+ 
+ [width=]IsoCont.png
+ $ ($.$-marker). The second truncation resonance (o-marker) and pass band modes (x-marker) of the finite diatomic PMs ($N=5$) are also plotted. (b) The behavioral iso-$m_$ and iso-$$ parameter curves, plotted as a function of the non-dimensional structural parameters - $\m_,k_\$. The structural parameters of the three diatomic PMs explored in (a) are mapped to the $.$-markers at intersection points - $\_3,m_\$ (green), $\_3,m_\$ (blue), and $\_1,m_\$ (red). The $$-markers corresponding to $\_1-3,m_\$ will be relevant for discussion in Fig.~.
+ 
+
+Proposed FSI-relevant PM behavioral parameters, and their relation to $\m_1, m_2, k, k_g\
+$
+
+This section analyzes the fundamental structural behaviors relevant to the target PM-FSI problem and proposes an alternative PM parameter space in terms of relevant behavioral parameters. This PM parametrization allows for a systematic tuning of distinct static and dynamic behaviors of the FSI system. To facilitate the practical realization of these structural behaviors in computational or experimental PM models, this section also describes a sequential process to calculate the PM structural parameters for a chosen set of target PM behavioral parameters. Though these behavioral parameters are developed in the context of the aerodynamic flow considered in this study, they quantify features of the structural response, such as frequency, dynamic displacement amplitude, and interface deformation, which we argue are relevant for a number of FSI scenarios. Therefore, the behavioral parameters and the subsequent analysis of the parameter map can be adapted according to the specific requirements of distinct FSI studies.
+
+A given set of structural parameters $\m_1,m_2,k,k_\$ uniquely define the diatomic PM. However, multiple sets of $\m_1,m_2,k,k_\$ can produce the same $f_$, as shown in Fig.~a. This redundancy highlights that we cannot simply vary the structural parameters to get distinct FSI responses, since the truncation resonance frequency is expected to strongly influence the FSI. This motivates a broader need to identify alternate parameters that uniquely define the FSI-relevant structural behaviors and allow for systematic tuning of the FSI. Re-parameterizing or normalizing PM parameters in terms of frequencies is relatively common in the structural dynamics community, where parameters are traditionally normalized by frequency quantities such as the band gap edge or Bragg scattering frequency, to generalize the results~. Additionally, PM design for the majority of applications is focused on the propagating behavior along the structure. By contrast, in this FSI setting, the PM behavior that drives flow modulation is localized near the fluid-PM interface, and the remainder of the chain is only relevant in how it informs dynamics at that interface. Therefore, to our knowledge, the pursuit of a PM parameterization catered to FSI is novel.
+
+We propose four critical PM behavioral parameters that we hypothesize will significantly influence the FSI dynamics: 
+
+ The effective stiffness, $k_$, that governs the mean displacement at the fluid-structure interface where it is subject to a static load (e.g., mean displacement of the interface mass, $_$ in Fig.~d.ii, subject to the near-constant lift force, $F^_$, in the given aerodynamic flow setting);
+ The $^$ structural resonance frequency, $f_$, being engineered; e.g., the truncation resonance frequency, $f_$ ($=f_1$), chosen in this study;
+ The displacement envelope~, $$, that quantifies the time rate of increase of the displacement amplitude of the interface PM mass, when excited at the chosen structural resonance frequency (graphically represented in Fig.~a.ii);
+ The total mass of a single PM unit cell, $m_$. This parameter, in combination with $$, dictates the proximity of other PM structural resonance frequencies to the engineered $f_$ that can influence PM dynamics.
+
+The choice of these behavioral parameters was informed by our own preliminary trial-and-error FSI simulations, where we tested the effect of changing multiple PM behavioral parameters, e.g., effective stiffness, truncation mode shape, band gap width, relative position of the truncation resonance within the band gap, etc., on the fluid dynamics. Prior PM studies considered the effective structural properties~, such as effective stiffness, primarily to analyze the dynamic response of PMs around structural resonances. Drawing inspiration from these studies, and adapting to the nature of structural loading ($F^_$) expected in the given FSI scenario, here we choose the `static' effective stiffness, $k_$, as a relevant behavioral parameter. The choice of the truncation resonance frequency was based on analysis from prior PM-FSI studies~, the prospect of engineering this isolated structural resonance, $f_$, in the phononic bandgap relative to the unsteady flow frequency, $f_$, and the subsequent energy localization expected in the PM at the interface around this peculiar resonance as described earlier in Sec.~-. The displacement envelope, $$, quantitatively characterizes the envelope of displacement amplitude of a PM at a given structural resonance frequency~. This parameter, in particular, is atypical in vibration analysis, which is primarily concerned with characterizing the relative spectral amplitudes of PM masses to determine modal participation factors of the structural resonances of the PM. In addition, this quantity also indirectly captures the effect of the exponential decay rate ($_I$), i.e., the degree of localization of the truncation resonance mode shape. That said, it was found to be more useful in our trial-and-error simulations than the decay rate directly, our hypothesis for which is that it more directly governs the behavior of the interface mass and the capacity for nonlinear saturation effects when interacting with the flow, motivating its relevance to FSI. Numerical FSI results in Sec.~ will later show the crucial role of $$ in modulating multiple aspects of the flow behavior. The unit cell mass, $m_$, was chosen as the final behavioral parameter, as it dictates the absolute frequencies of the other structural resonances and their proximity to $f_$ that can influence the spectral composition of the coupled response. It also provides a more natural analog to the structural mass parameter used in a variety of extensively studies FSI systems (see references for comprehensive reviews), as it gives a proxy for effective mass not expressible through a single choice of $m_1$ or $m_2$. In addition, $m_$ has a practical relevance in determining the total mass of the PM that needs to be integrated into a lifting body for FSI.
+
+The following equations quantify the proposed PM behavioral parameters in terms of the PM structural parameters, for any general PM model with a mass-spring description:
+
+_=\^-1\_(1,1),
+
+_=2\[,]\_,
+
+=2(2)^2n_N-1 _\[-(2 _)^2][_j (^2-_j^2)])\_,
+ 
+
+_=_j=1^n_d_j,
+
+ k_ = __U^2,
+ m_ = __hl,
+ f_ = _U/l,
+ = U,
+
+where parameters $$ (Eqns.~-) and $$ (Eq.~) represent the dimensional and non-dimensional PM behavioral parameters, respectively. $U$ denotes the free stream velocity, $_$ denotes the 2D fluid density (mass/length$^2$), and, $l$ and $h$, denote the length and thickness of the flat plate. $$ and $$ (see Sec.~) denote the collated mass and stiffness matrices of the PM, $\\_$ denotes the entry in the $^$ row and column of the corresponding matrix, and $f_$ denotes the $^$ structural resonance frequency targeted for (mis)alignment with key flow content, e.g., the truncation resonance ($f_1=f_$) in the present study. From hereon, the non-dimensional forms of the PM behavioral parameters, $\k_,f_,,m_\$, and structural parameters, $\m_1,m_2,k,k_\$, are considered for PM-FSI simulations.
+
+We anticipate (and subsequently demonstrate in Sec.~) a significant impact of systematically altering the proposed PM behavioral parameters on equivalent flow characteristics, such as dominant frequencies in quantities such as lift and in the overall vortex-shedding process, making this proposed parametrization suitable for tuning the FSI behavior. Therefore, we argue that this approach of constructing behavioral parameters is foundational even when using more intricate PMs, e.g., auxetic lattices~, topological PMs~, and nonlinear lattices~, for FSI. In those settings, one may require additional behaviors that dictate structural dynamics at the flow-structure interface, or numerically computed variants to (Eqns.~-) when analytical forms are not available. However, the underlying framework proposed here remains the same.
+
+Having proposed FSI-relevant PM behavioral parameters: $\k_,f_,,m_\$, we must next quantify suitable target behavioral parameters for effective FSI. This will subsequently allow us to derive PM structural parameters using Eqns.~-, to model the PM dynamics in the fully coupled simulations. This target identification process is demonstrated in the context of the given aerodynamic flow setting. However, one can easily adapt the proposed strategy to identify target parameters for other FSI settings, such as FSI with turbulent channel flows~.
+
+We perform one-way simulations, with surface motion prescribed over the compliant section (CS), $_c$ (i.e., no PM subsurface). These motions are prescribed using $(t)=_+_(2 f_ t)$. A sweep over the static mean displacement, $_$, dynamic displacement amplitude, $_$, and surface oscillation frequency $f_$ is performed. Through these, a range of target values is identified to meaningfully impact the flow. Informed by these simulations, we take the following steps:
+
+ The target effective stiffness is calculated as: $k_=F_^/_$; i.e., the stiffness is obtained using both the target $_$ and the representative fluid load obtained from the baseline rigid configuration ($F_^$). Although the fluid loads in PM-FSI simulations ($F_$) will generally be different than the representative $F_^$, we chose $F_^$ as a proxy load to avoid a costly iterative process of running several PM-FSI simulations to convergence to the appropriate $k_$. This choice will be validated later in Sec.~ when we discuss the simulation results in detail. The $_$ is chosen from a range of mean surface displacements having a negligible impact on the surrounding aerodynamic flow in the absence of any dynamics (i.e., $_=0$) in the prescribed FSI simulations. Additionally, the choice of $k_$ can impact the customizability range, $_$, as discussed later in Sec.~. Therefore, careful consideration is given to choosing the absolute value of $_$, to ensure a broad customizable range for $$.
+ The target truncation resonance frequency, $f_$, is chosen such that a commensurate $f_$ produces significant changes in the flow dynamics, in the prescribed simulations.
+ The target displacement amplitude envelope, $$, and the target unit cell mass, $m_$, are chosen to systematically explore the behavioral customization range, $\_,m_\$, available for the $\k_,f_\$ chosen in a particular PM-FSI simulation. Furthermore, the $_$ and $f_$ values we found to be useful in the prescribed simulations inform the choice of specific target $\,m_\$ values within the respective customization ranges.
+
+Specifically, for FSI simulations performed in this study, the target PM behavioral parameters are given in Tab.~.
+
+The $f_=0.5f_,f_,2f_$ are deliberately chosen to study the effect of aligning at a lower, equal, or higher frequency with the $f_$, and to investigate any super/sub-harmonic generation effects in the flow given the $2^$ order nonlinearity of the N-S equation. The $\,m_\$ are chosen to comprehensively span the customization range available for the $\k_,f_\$ chosen in a particular FSI simulation.
+
+The parameter sweeps of the PM behavioral parameters in Tab.~ allow us to systematically study the distinct impact of different aspects of the PM behavior on the flow characteristics. Consequently, the above target behavioral parameters are correlated with 45 unique PM structural parameter sets (see Tab.~) that are integrated into the grounded diatomic PM models (Eq.~) in the fully coupled FSI simulations.
+
+Having chosen a set of target PM behaviors, this section details a sequential process to calculate the PM structural parameters, by adapting Eqns.~--, for the grounded diatomic PM. The interaction stiffness, $k$; the interface mass, $m_1$; the non-dimensional mass and grounding stiffness, $\m_,k_\$; are sequentially calculated in that order, to achieve the desired $\k_,f_,,m_\$.
+
+ First, we create a parameter grid of non-dimensional mass and grounding stiffness ratios, $:=\m_,k_\[0.1,10][0.1,10]$.
+ From Eq.~ and the stiffness matrix $$ (see Sec.~), we observe that the effective stiffness, $k_$, is only linked to the inter-mass interaction stiffness, $k$, and the grounding stiffness ratio, $k_$. Therefore, given a target $k_$, we calculate the $k$ by solving Eq.~ for each grid point in $$, and generate the augmented grid, $^*:= \m_,k_\_k$.
+ Now, given a target truncation resonance frequency, $f_$, we can calculate the interface mass, $m_1$, by adapting Eq.~ for the grounded diatomic PM:
+ 
+ f_=2m_1+k_+1-+k_+1)^2-4m_k_2m_,
+ 
+ 
+ and, solving Eq.~ at each grid point in $^*$. This generates another augmented grid, $^**:= \m_,k_\_(k,m_1)$.
+ At this stage, two target behavioral parameters, $\,m_\$, remain, that can be one-to-one mapped to each grid point in $^**$, by adapting Eq.~ and Eq.~ for the grounded diatomic PM:
+ 
+ =2(2)^4N-1 f_\[-(2 f_)^2][_j=2^2N(f^2-f_j^2)])\_(1,1),
+ 
+ 
+ 
+ m_=m_1+m_2=m_1(1+m_),
+ 
+ 
+ and, and solving Eq.~ and Eq.~ at each grid point in $^**$.
+
+For a given choice of four target behavioral parameters: $\k_,f_,,m_\$, there exists a unique grid point in $^**$ that describes the PM structural parameters: $\m_,k_\_(k,m_1)\m_1,m_2,k,k_\$. The multiple points of intersection in Fig.~b graphically represent the structural parameters calculated at the end of the above process. The dispersion curves in Fig.~a can now be traced to the highlighted intersection points ($.$-markers) in Fig.~b, giving a clear picture of the identical and unique behavioral features of these different PMs.
+
+[t!]
+ 
+ [width=]Lambda.png
+ t)$, and (a.ii) displacement response of oscillators with different structural parameters, optimized for different displacement envelopes, $_$, and same resonance frequency, $f_$. (b.i) A single unit cell of the grounded diatomic PM depicted in Fig.~a, and (b.ii) the range of displacement envelopes, $_$, available for customizing the PM behavior when changing the number of unit cells, $N$. The $$-markers from Fig.~b lie within the $_$ corresponding to PMs ($N=5$ unit cells) considered for FSI simulations in this article. Structural parameters and forcing amplitudes: single mass-spring $\m_,k_,F\=\1,1,1\$, single diatomic PM unit cell: upper bound $\m_s,k_s,_\=\0.353,5.4533,0.36\$, lower bound $\m_1,m_2,k,k_,_\=\3.7110^-9,0.739,8.65,11.418,0.17\$.
+ 
+
+Benefit of PM over simpler mass-spring systems
+
+We now discuss the benefits of the chosen PM system over both a single mass-spring system and a PM diatomic chain with a smaller number of unit cells. For a single mass-spring oscillator parametrized by mass $m$ and stiffness $k$, such as that shown in Fig.~a.i, the presence of only two independent parameters means that only two of the four above behavioral parameters could be tuned independently. For example, one can tune the natural frequency and displacement amplitude of the mass chain as follows. For a chosen natural frequency $f_s = $, the displacement amplitude can be tuned by considering the mass-spring system's response to harmonic resonant forcing, $F(2 f_t)$. The response is of the form, $=-_ tt)$, indicating an unbounded growth, and the displacement may be tuned by varying the mass $m_s$ (keeping the natural frequency $f_s$ fixed) as: 
+
+_=4 f_m_s.
+
+Fig.~a.ii plots the resonant displacement response of three mass-spring systems, $\m_s,k_s\=\m/2,k/2\$, $\m,k\,\4m,4k\$. These parameters are chosen so that the mass-spring oscillator has a fixed resonance frequency, $f_=$, but distinct $_=\2,,/4\$, respectively. Conversely, one could have tuned the spring stiffness $k_s$ to match a target $_$, and subsequently set $m_s$ to match a target natural frequency $f_s$. But then the displacement amplitude $_s$ will be fully determined by Eq.~. By contrast, the diatomic PM allows for the distinct tuning of an effective stiffness, natural frequency of the first mode (i.e., truncation resonance), the displacement amplitude, and PM mass exposed to the fluid at the interface. The subsequent results section will demonstrate that each of these parameters is relevant to the FSI.
+
+Furthermore, there is a significant benefit to finite-sized diatomic PMs with multiple unit cells over a single unit cell with the same number of free parameters. Specifically, a single diatomic PM unit cell (Fig.b.i) and a finite multi-unit cell diatomic PM (Fig.a) both offer four structural parameters, $\m_1,m_2,k,k_\$, to define the behavioral parameters, $\k_,f_,,m_\$. When choosing the structural parameters corresponding to target behavioral parameters - $\k_,f_,m_,_1-3\$ (see Tab.~), we observe a negligible effect of the PM size, $N$ on achieving the desired $\f_,m_\$. Alternatively, a nominal effect of $N$ on the PM effective stiffness is observed, with the stiffness value saturating to the targeted $k_ \ \ N3$. Finally, the effect of $N$ on the PM displacement envelope, $$, is observed to be the strongest. Fig.~b.ii plots the range of displacement envelopes, $_$, available for behavioral customizability for different $N$. As the PM size increases, the $_$ increases, allowing a broader range for tuning the displacement envelope. The upper bound, $_$, is dictated by the displacement envelope, $_$, of a single-spring mass chain with $\m_,k_\\4^2f_^2,k_\$, as this represents a limiting case that localizes all input energy at the interface, while manifesting identical static displacement at the interface as a finite PM. Alternatively, given a sufficient number of unit cells, the lower bound, $_$, can essentially be taken to 0. However, peculiarly for the single unit cell, the lower bound is a non-zero finite value, $_$, that is dictated by the structural parameters.
+
+For a single unit cell, the resonant amplitude envelope can be expressed in the explicit analytical form:
+
+ _=4 f_\m_1+m_2[1-(f_0)^2]^2\,
+ 
+
+A differential analysis of Eq.~, reveals a lower bound, $_=4 m_ f_$, as $m_10 m_2 m_, f_0$. The upper bound, $_=4 m_1 f_$, converges to the single mass-spring behavioral parameters (Eq.~) as $k_, f_1 f_0 f_1=2m_1$.
+
+Fig.~b.ii plots the $_[_,_]$, as functions of $N$. As indicated in the plot, the lower bound, $_$, asymptotes to 0 for large values of $N$ ($30$), even though the single unit cell for this structural parameter set is bounded by $_>0$. Therefore, finite-sized diatomic PMs provide a higher degree of robustness, accuracy, and customizability in engineering the desired PM behaviors. This benefit is obtained provided sufficiently many unit cells are taken, though the range of design space accessible grows negligibly after $N 5$, which is the value we use in the ensuing work.
+
+FSI Simulation Framework
+
+We describe here the numerical approach used to incorporate the PM as a subsurface within the compliant section, $_c$, of the plate. The numerical methodology leverages the high-fidelity strongly coupled immersed boundary algorithm of . This simulation tool has been validated on a variety of FSI problems, and we leave the reader to reference for full details. We focus instead here on describing how the PM dynamics are incorporated into that simulation framework, with a focus on how the PM subsurface dynamics inform the motion of the compliant section.
+
+To highlight the interplay between the diatomic phononic material and the surrounding aerodynamic flow, and avoid complex coupling between the PM subsurface and the compliant surface, we model the deformation of the compliant section as being fully determined by the PM dynamics. We parametrize the compliant section with respect to a nondimensional arc length variable, $s$, defined as $s=s_i=0$ and $s=s_f=1$ at the leading- and trailing-edge locations of $_c$, respectively. We also define the arc length of a material point on $_c$ in the deformed configuration as $$, with leading- and trailing-edge values given by $_i = s_i = 0$ and $_f$, respectively. Note that, under this nondimensionalization where $s_f = 1$, the value $_f$ also represents how much axial stretch the compliant section $_c$ has undergone: the axial stretch, $$, is $ = _f/s_f = _f$. We define the position of a material point on the compliant section in terms of the undeformed arc length, $(s,t)$. This position is modeled as having a Gaussian shape, with a peak at the axial center of $_c$ defined by the PM displacement at the interface, $ := _1$, as
+
+(s,t)
+= _(s)
++ (t)\,(s)\, g(s).
+
+ 
+In this expression, Eq.~,
+$_(s)$ is the undeformed plate surface position, $(s)$ is the unit normal to the undeformed surface at the interface mass, and $g(s) \!(-[3(2s-1)]^2/2)$ is the unit-peak Gaussian profile set to take on a value of unity at the axial center of $_c$, and zero at $s = s_i,$ $s_f$. Thus, outside $_c$ the plate remains rigid. Figure (a) provides a schematic of the compliant section motion, the arc length variables $s$ and $$, and the deformation of the interface mass $$. Fig.~(b) provides an illustration of how $$ is related to $s$, described next.
+[t!]
+ 
+ [scale=0.96]gaussian.png
+ 
+ 
+
+We construct a model to relate $$ to $s$, compatible with the definition in Eq.~, used to define the Gaussian-shaped surface motion. To facilitate this mapping, we require that (i) the compliant surface remains undeformed at its endpoints (i.e., $(s_i,t)$ and $(s_f,t)$ remain unchanged in time); (ii) the deformation is symmetric about the interface mass location (i.e., the axial center of $_c$). That is, we require a map $s $ where the surface points at the ends experience zero axial stretch, while points near the axial center experience the largest stretch. The first physical condition requires that
+$. s|_s_i = . s|_s_f = 1$. To build this intuition, consider two neighboring points (labeled $b_1$ and $b_2$ in Fig.~a). Denote the arc-length between them in the undeformed configuration by $ s_b_1b_2$, and in the deformed configuration by $ _b_1b_2$. The distance between $b_1$ and $b_2$ thus stretches by an amount $ _b_1b_2/ s_b_1b_2$, defining the stretch ratio. In the limit as $b_1 b_2$, the stretch ratio is given by the derivative $ds$, which we define as the local (point-wise) stretch. Thus, enforcing no stretch at the left endpoint $s = s_i = _i$ yields $. ds|_s_i = 1$. A similar argument applies at the right endpoint, leading to $. ds|_s_f = 1$.
+
+A function that satisfies both this derivative requirement, and the need for stretch to be maximal at the axial center, is given by 
+
+ (s)=
+ 2\![
+ 1+
+ (/2)
+ ] = f(s;),
+ 
+ where $$ is a width parameter chosen to ensure unit slope at the ends. Note that the PM motion is implicitly built into Eq.~: the stretch factor $$ is dictated by the Gaussian shape associated with the interface displacement $(t)$. The derivative conditions of $d/ds = 1$ at the endpoints provide a pathway to determine $$, via
+
+ ds(s; ) \;=\; \!(/2)\,^2\!((s-2)),
+ 
+ f'(0;)=f'(1;)= .
+ 
+
+The rightmost equation in Eq.~ may be solved for $$ at each time instance as the compliant section deforms under the motion of the PM, encoded via deformation of the interface PM mass $$. We emphasize that the axial stretch encoded in $(s)$ and the Gaussian deformation profile (Eq.~) are modeled compatibly in terms of the same degree of freedom $(t)$, ensuring geometric consistency throughout the compliant region.
+
+The coupled equations are now presented using the immersed boundary formalism of reference . All the quantities are assumed to be dimensionless with lengths normalized by the flat plate chord length $l$, velocities normalized with the freestream velocity $U$, and times by $l/U$. We denote the dimensionless flow velocity and pressure within the fluid domain as $$ and $p$, respectively, and the surface stress distribution along the plate, which enforces the no-slip condition, as $$. The dimensionless governing equations are then 
+
+ t+ =- p +Re^2+_(,t)((s( s,t),t)-) d,
+ \\
+=0, \\
+\,dt^2 + \,(t) = _(t), \\
+_(, t)(-(s( s,t),t))d=(s( s,t),t)dt . 
+
+Eq.~ describes the momentum equations for the flow, incorporating the effects of stresses from the flat plate surface to enforce the no-slip boundary condition, including the contribution from the compliant section $_c$. Eq.~ is the conservation of mass for incompressible flow. Eq.~ specifies the matrix equations of motion for the diatomic PM. Here, the loading vector
+
+ _(t)=[F_(t),\,0,\,,\,0.]^,
+ 
+ captures the fluid forces integrated along the CS in its first entry; all other entries are zero as they pertain to parts of the PM that are not influenced directly by the external flow. That is, the flow load applied to the structure is at the interface location alone, and this stimulus drives PM motion which in turn modulates the flow. The loading applied to the diatomic PM chain is computed as the integral of the normal component of the surface stress $$ along $_c$, given by
+
+ F_(t) 
+ = __c 
+ (,t)\,\,()\, d.
+ 
+
+Finally, Eq.~ enforces the no-slip boundary condition, ensuring that the velocity of the flow and the plate match at every material point along the plate, including over the compliant section $_c$. 
+
+Note that in both the immersed boundary source term in Eq.~ and in the no-slip condition in Eq.~, surface quantities are evaluated with respect to the deformed arc-length $$, with mappings to the undeformed arc length $s$ utilized as needed, from Eq.~ and its unique inverse. This approach has two benefits. (i) It allows the integral in Eq.~ to be written without a Jacobian mapping from the deformed to undeformed state. (ii) The dynamical system (Eqns.~--) is time advanced after spatial discretization, described next. The immersed surface, including the sub-portion $_c$, is represented using a set of discrete points after this discretization process. Working in terms of $$ allows for these points to be dynamically updated throughout the simulation, to maintain a uniform spacing as the compliant section deforms under its Gaussian shape. This outcome avoids points becoming either too far apart---resulting in an effectively porous surface---or becoming too closely spaced---leading to ill-conditioning issues in the time advancement process . 
+
+Eqns.~-- are discretized in space using standard central second-order finite difference stencils, and recast in a discrete vorticity-streamfunction framework as in . Conditions on the outer boundaries of the flow domain are treated using a multi-domain approach, as described in reference . The final form of the spatially discrete equations, using an overdot to denote differentiation with respect to time, is
+
+ ^\!\,
+= -\,\!(\,)
+ + ^\!\,\,
+ - ^\!^\!,
+ \\
+\, + \,
+= \,()\,\;=\;_, \\
+ = , \\
+\,\, - \, = . 
+
+Eq.~ is the spatially discrete analog of Eq.~, where discrete curl operators $$, $^$ are used to cast the governing momentum equation in terms of a discrete streamfunction, $$. This approach formally removes the pressure term from the momentum equation, and removes the continuity equation altogether, because defining the velocity $$ in terms of the streamfunction via $ = $ automatically satisfies the divergence free condition. The quantity $$ is the spatially discrete counterpart of the space-time continuous surface stress, $$ used to impose the no-slip condition. $()$ and $$ denote the discretization of the nonlinear advective and viscous Laplacian terms, respectively. The operator $^$ is the spatially discretized counterpart of the integral operator with the delta kernel from the momentum equation Eq.~.
+
+The equations governing the solid are modeled as a mass-spring system. Since this model is already space-discrete it is left unchanged from its prior form Eq.~, except that it is written in first-order form for consistency with the flow governing equations, with the surface velocity $ =$ defined as a distinct state variable. The term $$ is a weighting matrix arising through spatial discretization to ensure that the surface stresses applied to the structural equations of motion are accurate, and avoid the spurious oscillations provided by many immersed boundary methods . The load-assembly operator $$ is the spatial discretization of Eqns.~--, integrating the normal component of the surface stress along $_c$ via quadrature. 
+
+Eq.~ is the spatially discrete variant of Eq.~, where $$ contains the spatially discrete analog of the integral operator with the delta kernel. Note that, as demonstrated in , this discrete integral operator can be cast as the transpose of $^$, provided a straightforward scaling is incorporated into the discrete surface stress $$. $ $ is the kinematic counterpart operator, which is used in the semi-discrete equation for the no-slip condition and originates from the center of the velocity of the CS by distributing this velocity across a Gaussian profile and accounts for the zero velocity of the rigid body parts. Detailed constructions (with indices and sparsity) of $$ and $$ operators are provided in Sec. 
+
+Eq.~ is discretized in time with an Adams-Bashforth scheme for the nonlinear terms, a trapezoid method for the diffusive term, and an implicit treatment of the surface stress term, ensuring that the no-slip condition (Eq.~) is enforced to within machine precision at each time step, including the current one. The dynamics of the diatomic PM (Eqns.~--) are advanced in time using a second-order implicit Newmark scheme. This strongly coupled fluid-structure interaction (FSI) approach results in a nonlinear algebraic system of equations, which is solved using Newton’s method. A block-LU factorization is applied to the linearized system of equations for an efficient iterative solution process . The simulation
+parameters and domain independence results are reported in Sec. .
+
+Results of FSI Simulations
+
+[t!]
+ 
+ [width=]Rigid_vs_PM.png
+ $ (interface variable), and (a.iii) lift force, $C_l$ (flow variable) signals obtained from FSI simulations highlighted in Fig.~. (b.i-iii) The Fourier frequency spectrum of the post-transient portion ($t20$) of the respective signals. (c) Vorticity maps of the FSI domains at $t=40$, for PMs with: (i) $f_=0.5f_$, (ii) $f_=f_$, and (iii) $f_=2f_$ (CW - Clockwise, CCW - Counter Clockwise). Structural parameters: $f_=0.5f_\m_1,m_2,k,k_\=\0.866,2.086,8.02,13.794\$, $f_=f_\m_1,m_2,k,k_\=\0.315,1.577,6.1,48.617\$, and $f_=2f_\m_1,m_2,k,k_\=\0.054,0.13,8.02,13.794\$.
+ 
+
+A total of 45 unique PMs were chosen to systematically vary the FSI dynamics. To focus on the dynamic interaction, the effective stiffness is kept constant at $k_=5.4533$, to target a mean displacement of $_=0.015$. The remaining three behavioral structural parameters are varied in a parameter matrix (Tab.~), to quantify their effect on the FSI dynamics: 3 truncation resonance frequencies ($f_=0.5f_,f_,2f_$), 3 displacement envelopes ($_1-3$), and 5 unit cell masses ($m_$). Note that the displacement envelopes and unit cell masses are distinct for PMs with different truncation resonance frequencies. However, $\m_,_1-3\$ are chosen such that they are similarly spaced across the respective $\m_,_Range\$ behavioral customization range available for the chosen $\k_,f_\$ (see Sec.~ and Tab.~).
+
+For a given $f_$, the 15 intersection points of the iso-$$ and the iso-$m_$ curves in Fig.~b define the PM structural parameters. The numerical values of the PM behavioral and structural parameters used in the FSI simulations are included in the appendix (Tab.~).
+
+Representative FSI results when varying $f_
+
+We first give an overview of representative FSI simulations to understand the general dependence of the FSI on PM truncation resonance frequency, when it is either aligned or misaligned with the inherent fluid vortex frequency, $f_$. Fig.~a compares three key dynamical quantities for three representative PMs with $f_=0.5f_,f_,2f_$: the (i) surface displacement at the center of the compliant section (CS), $$; (ii) the interface force, $F_$, constituting the integral of the normal stress along the CS $_c$, of the plate; (iii) the lift force, $C_l$ obtained by integrating the vertical component of surface stress along the entire plate $$. Note that all three frequency spectra (i.e, $_(f_=0.5f_,f_,2f_)$, where $=
+,F_,C_l$) in Fig.~b are normalized by the maximum Fourier amplitude, $( _(f_=f_))$. This Fourier amplitude scaling allows us to study and compare the relative mechanical energy distribution in the three representative FSI configurations.
+
+All three PMs exhibit a similar $F_$ and $_$, but different dynamics in response to the unsteady fluid force, $F_$. The strongly similar mean displacements are a result of the same static stiffness, $k_$, for the three PMs. This outcome justifies the use of $k_$ as one behavioral parameter that drives the static system response. The slight change in mean displacement in the FSI simulations compared to the target displacement ($_$) means the mean interface force in the post-transient state, $F_=k__$, is also slightly altered from the rigid case. We show in Sec.~ that, across all simulated cases, this difference has a negligible effect on the FSI dynamics, enabling us to distinguish the specific impact of static behavior tuned by $k_$ versus dynamic FSI behavior induced by the PM.
+
+The PMs with $f_=0.5f_,f_$ in Fig.~(a,b.i) yield stronger FSI effects than for $f_=2f_$. In both the $f_=0.5f_$ and $f_=f_$ scenarios, there are significant dynamic displacements of the PM ($_$) concentrated at a frequency very near the truncation resonance frequency, $f_$. We hypothesize that the slight deviation from $f_TR$ is due to a non-linear effect arising from the fluid-PM coupling (see Sec.~ for a brief discussion). Nevertheless, the subsequent effect of PM dynamics on the flow is distinct for $f_=0.5f_$ and $f_=f_$. When the dominant temporal frequencies excited within the PM interact with the aerodynamic flow, the quadratic flow nonlinearity leads to second harmonic generation at the interface, as seen in the interface force $F_CS$ in Fig.~b.ii, with visible spectral peaks at $f=2f_$. The spectral peaks at $f=f_$ persist in both the $F_$ and $C_l$ signals, as a result of the resonant dynamics of the PM; however, the second harmonic frequencies, $f=2f_$, generated at the interface (manifested in $F_$) only persist beyond the CS and along the entire plate (manifested in $C_l$) if they lie in the vicinity of the vortex shedding frequency, $f_$. Therefore, as the flow evolves, only the second harmonic, $f=f_$, generated in the $f_=0.5f_$ case survives within the flow, whereas the second harmonic $f=2f_$ does not persist in $C_l$ for the $f_=f_$ case (Fig.~b.iii). These dynamics are consistent with the time-trace history of the $F_CS$ and $C_l$ signals for the $f_=0.5f_VS$ and $f_=f_VS$ cases in Fig.~(a.ii-iii). 
+
+Fig.~(c.i-iii) captures a snapshot of the vortex-shedding process in the simulation domain at $t=40$, for each of these PM-FSI configurations. The vorticity field for $f_=2f_$ (Fig.~c.iii) is visually similar to that of the rigid inclined flat plate (not pictured), which corroborates the relatively muted dynamics seen in the time domain plots. Alternatively, a clear vortex-shedding process is visible in the wake for PMs with $f_=0.5f_,f_$. The distinct dynamics for $F_$, $C_l$ are associated with different time scales over which the vortical features are generated. This manifests as vortices with visually different spatial behavior. A supplementary movie of the vortex-shedding process for the three FSI configurations described in Fig.~ is also provided for reference.
+
+Frequency spectrum analysis of the FSI system varying $\f_\$
+
+[t!]
+ 
+ [width=]FFT_CBars.png
+ $ (interface variable), and (iii) lift force, $C_l$ (flow variable) signals from all 45 FSI configurations explored in this article. FSI configurations featuring PMs with (a) $f_=0.5f_$, (b) $f_=f_$, and (c) $f_=2f_$. Structural parameters are given in Table~.
+ 
+
+This section presents a comprehensive analysis of the frequency spectrum, the coupling strength of fluid-PM dynamics, and nonlinear phenomena observed in the FSI simulations. Fig.~ summarizes the frequency spectrum data obtained from all 45 FSI configurations explored in this article. Each row in Fig.~(a-c) plots the frequency spectra corresponding to the 15 FSI configurations explored for a given $f_$, while each column plots the post-transient frequency spectra of the (i) PM variable (surface displacement, $$), (ii) interface variable (interface force, $F_$), and (iii) flow variable (lift force, $C_l$) for the different values of $f_$. Note that we subtract the mean quantities, i.e., $_$, $F_$, and $C_l,$, from their respective signals to filter out the low-frequency components and accurately capture the Fourier frequency spectra corresponding to the post-transient FSI dynamics. Within each figure, we have two hierarchies of columns, one showing changes due to varying $m_$ and the other showing changes due to varying the prescribed $_1-3$. The parameters studied in Fig.~ are highlighted by dashed boxes in Fig.~. In addition to the inferences drawn from Fig.~, collectively analyzing all simulation results in Fig.~ reveals more details about the emerging FSI dynamics when systematically varying the PM behavioral parameters $\f_,,m_\$.
+
+Note that all the frequency spectra at a given $f_$ in Fig.~ are normalized by the maximum Fourier amplitude at that $f_$ (i.e., each $_(f_)$, where $=,F_,C_l$, is normalized by $( _(f_)$). Consequently, the narrow-band red spectral peaks highlight the strongest fluid-PM coupling at a given $f_$. In addition to allowing us to characterize the distinct frequency spectra observed, this Fourier amplitude scaling allows us to study the relative mechanical energy distribution in the PMs and the flow in each FSI configuration.
+
+=0.5f_$
+
+Consider the PMs featuring a truncation resonance at $f_=0.5f_$, i.e., Fig.~a. For a low-displacement envelope, $_1$, the PM exhibits a broadband frequency response. A closer look at the frequency spectrum of the surface displacement reveals a relatively significant excitation of the pass band frequencies, $f_$ (green solid lines in Fig.~a.i show the first two pass band eigenfrequencies), in addition to the first eigenmode, $f_$. Consequently, $m_$ dictates the frequency spectrum at low displacement envelopes (since $k_$, $f_$, and $$ are all fixed), as the unit cell mass essentially determines the location and magnitude of the pass band frequencies. Commensurate frequencies and their second harmonics get excited in the flow at the interface, leading to a more broadband fluid dynamics at the fluid-PM interface as seen in the $F_$ spectrum in Fig.~a.ii. However, only frequencies in the vicinity of the primary harmonics excited in the PM, i.e., $f_$ and $f_$, and the global attractor, $f_$, persist in the flow as seen in the $C_l$ spectrum in Fig.~a.iii.
+
+Results also show that these pass band frequencies approach each other and decrease in magnitude as $m_$ increases ($m_ m_$), consistent with the frequency being inversely proportional to mass ($f 1/$). Another peculiar component of the frequency spectrum is the second truncation resonance, $f_$, lying within the $2^$ band gap (between the diatomic PM pass bands; c.f., Fig.~b). As the $f_$ approaches the global attractor frequency, $f_$, we see a significant peak in $$, $F_CS$, and $C_l$ at this frequency. In fact, for PMs with unit cell mass $m_$, the mechanical energy concentration at $f_$ is larger than the pass band components, $f_$, and the primary truncation resonance, $f_$, in that order, facilitating a strong bi-frequency PM response and thus flow response (at $f_,f_$) compared to an essentially multi-frequency response (at $f_,f_$) for other PMs ($m_$). This outcome suggests a few features of the PM-FSI system. First, natural frequencies nearer to the inherent flow timescale of $1/f_$ are more likely to be amplified than those further away from it (e.g., at $f = f_/2$). Second, the frequency protection of the truncation resonance, along with its capacity to isolate the structural response to the flow-surface interface mass, promotes a stronger interplay than a pass band mode. For example: at $_1$, the PM with $m_1$ has a pass band frequency $f_$ near to the truncation resonance frequency $f_2$ associated with $m_5$. However, it is the latter PM that provides the more dominant response at that frequency. This behavior suggests that designing truncation resonances to align with flow behavior could be a key imperative to effectively modulating flows with PMs.
+
+For a higher displacement envelope, $_2$, the mechanical energy in the PM and the flow concentrates significantly in the primary eigenmode, $f_$, for all unit cell masses ($m_$), although a weak broadband nature of the PM behavior persists (Fig.~a.i). In addition to the primary harmonic, significant peaks at the second harmonic, $2f_=f_$, are also visible in the $F_$, and $C_l$ signals (Fig.~a.(ii-iii)). 
+
+Further increasing the displacement envelope to $_3$ ($_$) results in a clear, narrow-band peak at the prescribed $f_$ in both the PM and the flow, with a strong second-harmonic generation in the flow. Moreover, a similar frequency spectrum for both the PM and flow response for all values of $m_$ indicates that the unit cell mass plays a negligible role in determining the FSI dynamics. That is, for higher displacement amplitudes $$, the FSI dynamics more strongly synchronize onto the aligned timescale, and the broader band behavior associated with tuning $m_$ is less impactful to the coupled dynamics.
+
+=f_$
+
+Now, consider the PMs featuring a truncation resonance aligned with the global attractor frequency of the rigid body flow, i.e., $f_=f_$ (Fig.~b). Though the PM and flow behavior are broadband at $_1$, the spectral peak at the prescribed $f_$ is relatively stronger than those at the pass band frequencies, $f_$. Note that a second truncation resonance, $f_$, does exist for these PMs; however, they play no role in the FSI dynamics. Similar to the results for $f_=0.5f_$, as the displacement envelope increases ($_1_3$), the PM exhibits a strong narrow-band response, centered at a frequency nearly equal to $f_$ for all values of $ m_$. The PM dynamics are subsequently replicated in the interface variable, $F_$, along with second harmonic generation of the excited frequencies. However, none of these second harmonics survive for long in the flow, as seen in the $C_l$ signal, which measures the lift force along the entire inclined flat plate surface, as they lie far away from $f_$. In addition, from Fig.~b, results show the fluid-PM coupling is relatively strong and narrow-band $f f_$ in the $f_=f_$ case, compared to a bi-frequency coupling at $f f_,2f_$ in the $f_=0.5f_$ case. This stronger synchrony is due to the alignment of the primary harmonic with the global rigid body flow attractor, and the smaller range of displacement envelope, $_$, available for $f_= f_$ compared with $f_ = 0.5f_$ (see Tab.~).
+
+=2f_$
+
+Finally, Fig.~c plots the spectral frequency composition of the PM dynamics for PMs with $f_=2f_$, normalized by the maximum spectral amplitude observed in the 15 FSI configurations investigated for this $f_$. The PMs exhibit a broadband response in all FSI configurations with significant excitation of both the prescribed truncation resonance and the pass band frequencies. However, though not directly apparent from Fig.~c, the PMs in all 15 FSI configurations exhibit dynamics an order to two orders of magnitude ($O(10^1-2)$) smaller when compared to PM dynamics with $f_=0.5f_$, and $f_=f_$. 
+
+Fig.~b compares the spectral compositions of the PM dynamics in one of these 15 FSI configurations of PMs with $f_=2f_$, with spectral amplitudes normalized by the maximum amplitude seen in a representative case chosen from the 15 FSI simulations of PMs with $f_=f_$. The relatively small spectral peaks of the PM with $f_=2f_$ corroborate the order of magnitude difference in dynamics between the different PMs. Specifically, the muted response in the former PM, stems from the `excitable' flow frequencies ($f f_$) lying entirely in the primary band gap for PMs with $f_=2f_$, thus, having a negligible effect on the flow, and rendering the flow behavior virtually identical to that of the rigid inclined flat plate configuration. In addition, note that all FSI configurations investigated in this article exhibit a non-zero mean displacement, $_>0$, at the interface, different from the zero displacement of the rigid inclined flat plate. However, the virtually unchanged flow dynamics for $f_=2f_$, compared with the rigid case, indicate that the PM dynamics ($_>0$) are critical to alter the flow.
+
+We encounter another interesting phenomenon in the strongly coupled FSI configurations ($_3$) in Fig.~b.i. The narrow band PM response concentrates at a frequency that is slightly lower in magnitude than the prescribed $f_$. This is more clearly visible in the inset in Fig.~b.i, where the peak frequency shifts to the left of $f_(=f_)$. Although a detailed analysis lies outside the scope of this article, we hypothesize that a non-linear phenomenon arising from the strong coupling between the aerodynamic flow and the PM at the fluid-PM interface is responsible for the frequency shift. As the PM exhibits high surface displacement and couples strongly with the oncoming flow, a fluid-added mass essentially latches onto the interface PM mass, $m_1$, altering the modal characteristics of the PM. 
+
+Summary of Static and Dynamic PM-FSI behaviors
+
+[t!]
+ 
+ [width=]qualitative_data.png
+ $, (iii) and $C_l$. Colors indicate different displacement amplitudes $$, increasing from blue (small) through red (intermediate) to green (large), and the range indicated by the bar corresponds to results across $m_, $ for that $$, $f_$ value. Reference values in the dot-dash lines are for (i) the target mean value chosen for (i) $_$, and (ii), (iii) the values - $F_^$, and $C_l,^$, for the rigid body configuration (i.e., $_c = \0\$).
+ 
+
+Our aim in this subsection is to clarify the role of static versus dynamic structural behavior in modulating the flow, to provide a distinct but compatible perspective to the analysis of the dynamic frequency content shown in the prior subsections, and to connect the various PM-FSI dynamics to changes in aerodynamic quantities of interest (mean lift).
+
+Fig.~ summarizes mean and dynamic amplitude content for the 45 different PM parameters considered. Fig.~(a.i) shows that the mean displacement $_$ is nearly equivalent for all PM cases considered. (Consistent with this observation, $F_, $ is nearly identical across all PM parameter choices). This result confirms that the effective stiffness $k_$ is responsible for establishing this static displacement. This value of displacement is slightly different from the target value determined using $F_^$ associated with the rigid configuration, reflective of the fact that under FSI coupling the mean load on the compliant surface is different from the rigid case. However, the mean displacement remains within approximately $1.5\
+
+FSI dynamics become more pronounced for $f_ 2f_$, with corresponding increases to $C_l,$, relative to the rigid case, of $1.3-4.6\
+
+FSI results justify the proposed PM behavioral parameters
+
+Overall, simulation results show a wide range of FSI dynamics, with distinct flow vortex-shedding characteristics, e.g., frequency, spatial wavelength, and intensity (vorticity) when systematically varying the truncation resonance frequency, $f_$, the displacement envelope, $$, and the unit cell mass, $m_$ of the diatomic PM. Additionally, even though the effective stiffness, $k_$, is constant across all FSI simulations, we can still draw important inferences from the FSI results in Sec.~-, and justify the choice of $k_$ as a critical PM behavioral parameter that governs the FSI dynamics. 
+
+The behavioral parameter $k_$ is critical to ensuring comparable FSI results with different PM dynamics, and sets the bounds of other behavioral parameters. In our simulations, we chose $k_$ based on prescribed surface motion simulations, such that the static displacement of the compliant section had a negligible impact on the surrounding aerodynamic flow. Note that reducing $k_$ to achieve higher mean static surface displacements outside the targeted range would initiate new types of nonlinear fluid-PM interactions, making the FSI behavior more complex. In addition, $k_$ bounds the PM dynamics. For a given $k_$, the upper limit ($_$) of the customizable PM displacement envelope range, $_$, is determined by the $_$ of a single mass-spring oscillator with a spring stiffness, $k_=k_$. Therefore, PM models with a suitable $k_$ are vital to engineering the ensuing FSI.
+
+The truncation resonance frequency, $f_$, tunes the targeted dominant (first mode) structural behavior relative to the vortex-shedding frequency. This is perhaps the most obvious behavioral parameter choice. This temporally distinct dynamic response translates to a wide variety of flow vortex-shedding characteristics. The FSI results show distinct dynamics of the coupled system as a function of truncation resonance frequency, resulting in either strong frequency signatures around the truncation resonance, at its second harmonic, or no dynamics. This is also partially due to the combined parameters of the PM, which fully dictate whether the PM response is single-, double-, or multi-frequency response to the input broadband fluid force. 
+
+The resonant displacement envelope, $$, dictates the PM response amplitude that, in turn, dictates the fluid-PM coupling strength at the interface. This coupling governs the strength of the vortex-shedding process, and whether second harmonic (and, more broadly, multi-frequency) generation appears in the FSI system. For example, the FSI results for the $f_=0.5f_$ cases show that a small displacement envelope leads to a broadband PM response with active participation of other structural resonances such as the pass band modes and the $2^$ truncation resonance in the PM dynamics. In some cases, the modal participation of these modes is higher than the engineered primary truncation resonance mode, leading to a broadband and low-intensity vortex-shedding behavior in the flow. Alternatively, for a high displacement envelope, the PM dynamics are localized at the interface and concentrated at a frequency very near to the primary truncation resonance frequency. The spectral contents of the flow in these scenarios are commensurate with the PM dynamics, with additional participation from the nonlinearly-generated $2^$ harmonics.
+
+Finally, the unit cell mass, $m_$, determines the frequency components excited in low $$ PMs, where the FSI dynamics are broader band. For example, a smaller unit cell mass causes different frequencies to be activated in the PM, interface, and flow. By contrast, the unit cell mass plays a negligible role in the FSI dynamics for high $$ PMs, where dynamics are localized near a small number of frequencies driven by the relationship between $f_$ and $f_$. In addition, $m_$ partially determines the total absolute mass of the diatomic PM, which will influence the operational considerations of the aircraft, e.g., fuel costs, wing design to integrate the PM, etc. Therefore, $m_$ also has practical justifications in the context of a given aerodynamic flow. 
+
+Conclusions
+
+This study systematically explores the fundamental FSI mechanisms responsible for changes in flow characteristics in a canonical PM-FSI setting, complementing existing studies and motivating the exploration of future FSI configurations with different PMs. We identify that grounded PM models are critical in aerodynamic FSI configurations, since lift preferentially activates the first mode of the structure, and grounded PMs enable a truncation resonance at the first structural mode. We show that representative flow forces can activate the truncation resonance in grounded PMs but not in ungrounded PMs, where the truncation resonance is a higher-order mode. We introduce the concept of PM behavioral parameters that relate specific PM behaviors, centered around a targeted truncation resonance, with specific FSI-relevant flow effects. The idea of viewing PM models through the lens of critical behavioral parameters as opposed to the traditional approach of viewing PMs based on structural parameters, or structural-driven normalizations, presents a new perspective on selecting effective PM models for a given flow configuration.
+
+The four critical PM behavioral parameters we identify are effective stiffness, truncation resonance frequency, unit cell mass, and the resonant displacement envelope. These parameters can be tuned to dictate the steady and dynamic (spectral) characteristics of the PM-FSI system. We also provide an unambiguous mapping that relates targeted behavioral parameters to a unique set of structural parameters, from which a simulation or experiment can be performed. We perform high-fidelity, fully coupled numerical FSI studies of various PM models with different target behavioral parameters, revealing distinct flow behavior. The effective stiffness determines the mean static displacement at the fluid-PM interface, which is found to have a negligible impact on the flow behavior. However, the effective stiffness also dictates the customization ranges of the displacement envelope and the unit cell mass, which has an indirect influence on the FSI. The truncation resonance frequency determines the dominant frequencies excited in the PM-FSI setting when engineered in the proximity of the inherent flow instability frequency, $f_$. For $f_<f_$, depending on other PM behaviors, we observe a single, double-, or multi-frequency FSI dynamics. Alternatively, for $f_>f_$, we observe negligible FSI dynamics, leaving the flow behavior virtually unaltered as compared to the rigid baseline case. Both the displacement envelope and unit cell mass dictate how broadband the FSI dynamics are, and therefore, these parameters emerge as important FSI parameters from this study. The displacement envelope emerges as a powerful PM control parameter that dictates how synchronized the dynamics are around the tuned relationship between the truncation resonance frequency and the inherent flow frequency. These effects drive the intensity of the vortex shedding process and lead to nonlinear frequency modulation. It further highlights a new finding of this article: absolute amplitudes of PMs have thus far not been considered in the PM literature, but our results show this is a critical parameter in the context of FSI. Finally, for parameters where the displacement amplitude is small, resulting in lower amplitude coupling (i.e., smaller dynamic amplitudes of the structural motion and lift), the unit cell mass defines the locations of the other natural frequencies, which conspire with the flow to produce the specific broadband content for that parameter set.
+
+We observe a maximum net increase in the mean lift force, $ C_l, \
+
+CRediT authorship contribution statement
+
+Vinod Ramakrishnan (VR): investigation, formal analysis, data curation, visualization, writing – original draft, review, and editing. Arturo Burgos (AB): investigation, formal analysis, data curation, writing – original draft, and editing. Sangwon Park (SP): investigation, formal analysis. Kathryn Matlack (KM): conceptualization, supervision, formal analysis, funding acquisition, writing–review, and editing. Andres Goza (AG): conceptualization, supervision, formal analysis, funding acquisition, writing–review, and editing. 
+
+Data availability
+ 
+Data will be made available on request. 
+
+Appendix
+
+0
+A
+A
+0
+A
+A
+0
+A
+A
+0
+A
+A
+
+Mass and Stiffness Matrices of the Diatomic PM 
+
+The non-dimensional mass and stiffness matrices collating the equations of motion of all $N$ unit cells of a general diatomic PM are given as:
+
+ =_hl=
+ m_1 & 0 & 0 & & 0\\
+ 0 & m_2 & 0 & & 0\\
+ 0 & 0 & m_1 & & \\
+ & & & & 0\\
+ 0 & 0 & & 0 & m_2
+ _2N2N,
+
+ =_U^2=
+ k_1 & -k_1 & 0 & & 0\\
+ -k_1 & k_1+k_2+k_ & -k_2 & & 0\\
+ 0 & -k_2 & k_1+k_2 & & \\
+ & & & & -k_2\\
+ 0 & 0 & & -k_2 & k_2+k_
+ _2N2N.
+
+Additional Interface Operators
+
+We define the load-assembly operator $$, which combines
+normal projection, restriction to $_c$, quadrature summation, and
+injection into the first PM load entry, providing the discrete counterpart of Eqns.~--. Examining the right–hand side of Eq.~, applying $$ to the spatially discrete surface–stress field $(=(_1,,_N_)$ with $_j^2$ gives
+
+(\,)_k
+\;=\;
+_k1_j=1^N_ d_j\,_j^\!_j,
+
+k=1,,2N,
+
+where
+
+d_j \;\; _m I_c_jm
+\;=\;
+
+1, & j I_c,\\
+0, & ,
+
+ j=1,,N_
+
+ and $I_c$ is the index set of body points on the compliant section $_c$.
+
+We define the kinematic operator $$ by first masking the compliant
+body points via $d_j$, then applying the Gaussian envelope $g_i()$, and finally scale by the interface rate $ = = e_1^ $, orienting the result along the local unit normal $_j$ at each body point in $_c$:
+
+(\,)_j
+\;\;
+d_j\,g_j()\,
+(_1^\!)\,
+_j,
+ j=1,,N_.
+
+ Here
+
+g_j()\;\;\!(-2),
+
+ with $s( s_j,t)$ the inverse of the stretch map $ s=\,f(s;)$,
+and $_j$ the unit normal at body point $j$.
+
+Grid Convergence
+
+We verify that the numerical parameters used in the main text are adequate by the comparisons in Table~. The grid-convergence check varies (i) Eulerian grid spacing, (ii) total domain size (via the number of multi-domain levels). For each case, the time step $ t$ is chosen so that the Courant–Friedrichs–Levy (CFL) number is $ 0.2$. The chosen Lagrangian body-point spacing to the Eulerian spacing is $ s/ x = 2$. Finally the smallest sub-domain for all cases is $[-1,2][-1,1]$. Grid~2 is the setup used for the production simulations. The last columns of the table report the percentage variations in the mean lift coefficient, $C_l,$, and in the vortex-shedding frequency relative to Grid~1 (most refined grid), thereby providing a measure of the sensitivity of both mean and unsteady quantities to the numerical parameters. 
+
+PM Structural Parameters for FSI Simulations
+
+Tab. provides the 45 distinct PM structural and behavioral parameters explored for FSI simulations in this article. Note that all PMs have an identical effective stiffness, $k_=5.4533$.
+
+1.5
+
+The PM structural parameters in Tab.~, were obtained by the optimization procedure described in Sec.~. We can draw a few observations from the above parameter sets:
+
+ The unit cell masses and the available customization range, $m_ m_$, scale with $1/f_^2$, consistent with $f1/$.
+ The displacement envelopes and the available customization range, i.e., $_1-3_$, scale with $f_$. This is also an intuitive effect as $$ is associated with units of velocity. So, given a displacement amplitude, $_$, the velocity amplitude, $2 f_$, as the velocity is a time derivative of displacement ($=dt$).
+ The mass ratio, $m_=m_2/m_1$, remains constant for a proportional $\,m_\$ in the respective ranges, across different $f_$'s, with only the absolute mass changing to produce the desirable PM behaviors for different prescribed $f_$'s. For example, $\_2,m_\: \ m_=0.866=0.217=0.0542.4$.
+ The absolute stiffnesses, $k_$, and $k$, and consequently, the grounding stiffness ratio, $k_$, both remain constant for a given $\,m_\$ across different $f_$'s. For example, $\_2,m_\: \ \k,k_\=\8.02,13.794\$.

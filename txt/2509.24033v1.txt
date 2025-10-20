@@ -1,0 +1,478 @@
+[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]geometry
+
+[title]appendix
+[T1]fontenc
+
+[english]babel
+
+[1]
+
+[english]babel
+
+ 
+ 
+ 
+
+Definition[section]
+Remark
+ 
+ 
+
+Theorem[section]
+
+[theorem]Lemma
+
+[theorem]Proposition
+Corollary[section]
+*\!
+1 
+\|
+#1#1
+\|#1\|
+
+.$
+
+In this note we propose a basic $L^2$-based approach for studying the global and local energy equalities of the incompressible 3D Navier-Stokes equations in the standard energy class on $^3 (0,T]$. Motivated by L. Onsager's principle of least dissipation of energy (1931), we give a new sufficient condition for the energy equalities in terms of the limit of a sequence of minimizers. In particular, we show that the equalities are attained if this limit is non-vanishing. We observe that the indeterminacy in the vanishing case is reminiscent of turbulence-driven energy transfer dominating other transport processes.
+ 
+
+Introduction
+ 
+Consider the incompressible 3D Navier-Stokes equations
+
+ \
+ ll
+ *0.1 in
+ _t u^ + (u^ ) u^ + p^ - u^ = 0 \, ,\\
+ u^ = 0\, ,
+ 
+ .
+
+posed over $^3 (0,T]$. The constant $ >0$ is the kinematic viscosity, and the velocity-pressure pair $(u^, p^)$ is assumed to have periodic boundary conditions with zero mean over $x ^3$. Unless otherwise stated, we will consider the Navier-Stokes equations for fixed $$, and so we set $u u^$. 
+
+\\
+ In his seminal work , J. Leray proved the existence of at least one global in-time (i.e. for all $T >0$) weak solution to in $^3$. Approximately 17 years later, E. Hopf proved a similar result over smooth bounded domains with Dirichlet boundary conditions. Both solutions were shown, in addition, to satisfy the global energy inequality:
+
+ 
+ 2 u(t) ^2 + _0^t u ^2 ds 2 u_0 ^2 \, ,
+
+for all $t 0$, where $ $ denotes the $L^2$-norm. Solutions satisfying the above energy inequality have come to be known as Leray-Hopf solutions, and have been a subject of extensive study for many decades. We refer the reader to the classical works and the more recent texts for comprehensive treatments on the subject.
+
+\\
+ The other energy inequality of interest is the local energy inequality, established first by V. Scheffer for Leray solutions:
+ 
+ 2 | u|^2 \, dx dt | u|^2 ( _t + ) \, dx dt + ( | u|^2 + 2p )(u ) \, dx dt \, ,
+
+which holds for any non-negative $C^$ scalar function $$ compactly supported on $^3 $. We can rewrite the local energy inequality in more convenient form:
+ 
+ _t ( 2 ) + (u ( 2 + p) - ( 2 ) ) - ( u)^2 \, ,
+
+where the inequality is understood to hold in the sense of distributions and the absence of boundaries . It has not been known whether Hopf solutions, obtained through a Galerkin scheme, satisfy the local energy inequality. . The inequality is well-defined, since the regularity class of weak solutions $u$ is $ L^p(0,T; L^q)$, \, $p + q = 2, \, \, 2 q 6$, and the scalar pressure field $p(x,t)$ belongs to $L^2(0,T;L^2)$. We note, excursively, that the above energy inequality plays a central role in the pioneering works of Scheffer and, later, of Caffarelli, Kohn, and Nirenberg on the partial regularity of the weak solutions to the Navier-Stokes equations -- known as suitable weak solutions. 
+
+\\
+ A particular area of inquiry related to Leray-Hopf solutions centers around the energy equalities, namely the global energy equality
+ 
+ 2 u(t) ^2 + _0^t u ^2 ds = 2 u_0 ^2 \, ,
+
+and the local energy equality
+ 
+ _t ( 2 ) + (u ( 2 + p) - ( 2 ) ) = - ( u)^2 \, .
+
+A key objective is to establish the weakest possible assumptions, or ideally a sharp regularity threshold, under which one or the other of the above two equations hold. Various sufficient conditions have been established in the literature. Earliest among them was found by J. L. Lions who proved that if weak solutions, in addition, belonged to $L^4(0,T; L^4)$, then the energy equality would hold. Shinbrot on the other hand obtained a more general result through interpolation: the global energy equality is valid for solutions $u L^p(0,T; L^q)$ with $p + q 2$ and $q 4$. It is worth noting that Shinbrot's condition is not scale invariantp + q 1$ and $q 3$, then $u$ is smooth over the interval $(0,T]$. Clearly, $p + q p + q 1$. . A weaker condition was proven by Cheskidov, Constantin, Friedlander and Shvydkoy in an $L^3$-based Besov space: if $u L^3 (0,T; B^3_3,)$, then equation holds = v _L^p + _|y| > 0 |y|^$ .. Combining this condition with the commutator estimate of Constantin, E, and Titi (originally proven for the incompressible Euler equations; that is for $ := 0$ in equations ), the global and local energy equations for Leray solutions are proved to hold in $L^3 (0,T; B^_3,)$ for $ 3$. We also refer to for other and more recent partial results in this area. As remarked in , for an appropriately chosen sequence of test functions, the global energy equality can be recovered from equation for any weak solution.
+
+\\
+ For fixed values of viscosity, J. Duchon and R. Robert successfully quantified the dissipation of energy that could occur due to potential singularities in Leray-Hopf solutions. In fact, it was proven that any weak solution $u$ to the Navier-Stokes equations satisfies the following local energy identity point-wise in $(x,t) ^3 [0,T]$ (in the sense of distributions):
+ 
+ _t ( 2 ) + (u ( 2 + p) - ( 2 ) ) = - ( u)^2 - D(u) \, ,
+
+where the distribution $D(u)(x,t)$ is given by the relation
+ 
+ D(u)(x,t) = _ 0^+ 4 _^3 _ (y) ( u (x+y,t) - u(x,t)) |u (x+y,t) - u (x,t)|^2 dy \, ,
+
+and function $$ is a non-negative, radial, smooth function with compact support and unit mass on $^3$, and $_(y) = ^3 ()$. The above limit is shown to hold regardless of the choice of mollifier _^3 |u (x+y,t) - u (x,t)|^3 dy$ vanishes leading to $D(u) = 0$.. In terms of mollified velocity $^\,n$, the limit can be re-written as
+
+$$ D(u) = _n (- ^\,n : ^\, n) \, ,$$
+which again holds in the sense of distributions^ \, n ( ^ \, n)] = _n (- ^ \, n : ^ \, n)$ in the sense of distributions, and thus we get $_n _i ( ^\,n_j \, ^\, n_ij) = 0$ in the distributional sense.. As alluded to earlier, in the case where $u$ is taken to be a Leray solution we have $D(u) 0$. In fact, one can readily verify that establishing the global and local energy equalities are equivalent for Leray solutions. If $D(u)$ vanishes identically for Leray-Hopf solutions, then this signifies that viscosity alone is the driving mechanism behind the dissipation of energy. 
+
+\\
+ While it is clear that, in principle, further regularity of weak solutions is not needed for the energy equalities to hold, it has remained an open question whether Leray-Hopf solutions do in fact satisfy either the local or global energy equalities.
+
+Onsager's principle and statement of main result 
+ 
+ We propose a different approach for studying the energy equalities, which is motivated by L. Onsager's principle of the least dissipation of energy for linear irreversible thermodynamics . Onsager argues that physical processes in a thermodynamic system not too far from its equilibrium state must satisfy a maximum principle given in terms of the rate of the internal entropy production function and a dissipation function. The associated Euler-Lagrange equations produce none other than the celebrated Onsager reciprocal relations, and as a consequence give rise to linear equations connecting the thermodynamic forces with the fluxes analogous to equations . Unlike conventional variational principles in mechanics and field theory, such as Hamilton's least action principle, where the evolution equations can be realized as extreme or stationary points of a particular energy functional, Onsager's variational principle selects admissible irreversible thermodynamic processes not too far from the equilibrium state; effectively governing the dissipative macroscopic dynamics in this regime. An outline of the principle of the least dissipation of energy is presented in Appendix .
+
+\\
+ From a mathematical standpoint, we introduce the following sequence of functionals: 
+
+ 
+ ^n(v) = _0^T 2 v(t) ^2 - J^n (t), v (t) \, dt \, ,
+
+which represents the difference between the dissipation function and the entropy production rate for an incompressible Navier-Stokes fluid. The function $J(x,t) $ expresses the dissipative fluxes acting within the fluid such as viscosity and possibly other dissipative mechanisms. See Appendix for more details. An explicit expression for $J^n(x,t)$ in terms of weak solutions of the Navier-Stokes equations is given in equation . One possible mathematical formulation of Onsager's principle is to consider the following minimization problem (for fixed $n ^+)$: 
+ 
+ ^n(v) : v \, ,
+
+where the admissible set is taken to be the enstrophy ball $ = v L^2(0,T; V) : _0^T v ^2dt 2 u_0 ^2 $ for some non-zero $u_0 L^2 (^3)$. We are now in position to state the main result of the paper
+ 
+Define $J^n(x,t)$ as in equation . Then there exists a subsequence (not relabeled) and $v_* L^2(0,T;V)$ such that $v^n_* v_*$ in $L^2(0,T;V)$. If $v_* 0$, then any Leray-Hopf solution $u L^(0,T; H) L^2(0,T; V) $ satisfies the local energy equality on $^3 [0,T)$ in the sense of distributions, hence also the global energy equality for all $t 0$.
+
+ The proof of the theorem is detailed in Sections and . First, however, we examine the basic ideas behind the proof and further contextualize our result. 
+
+Method of proof
+ 
+
+Let $u$ be a Leray-Hopf solution on $^3 [0,T]$. The mollification of $u$ admits a sequence of smooth solutions to the coarse-grained Navier-Stokes equations (see Section ):
+
+ 
+ \
+ ll
+ *0.1 in
+ _t ^ \, n + (^ \, n ) ^ \, n + ^ \, n - ^ \, n = - ^ \, n \, , \\
+ ^ \, n = 0\, ,
+ 
+ .
+
+where $^ \, n(x,t) = ()^n - ^ \, n ^ \, n$. By taking the inner product of equations $_1$ with $2 ^ \, n $ (for some scalar test function $$), integrating in space-time, and invoking the divergence free condition, we arrive at the following local energy equation:
+ 
+ -2 _0^T _^3 ^ \, n ( ^ \, n) \, \, dx dt = _0^T _^3 | ^ \, n|^2 ( _t + ) \, dx dt + &_0^T _^3 (| ^ \, n|^2 + 2^ \, n )(^ \, n ) \, dx dt \\ 
+ &-2 _0^T _^3 | ^ \, n|^2 \, dx dt \, . 
+
+Given that the mollification can be removed strongly on the RHS of equation (see, for example, ), a plausible approach to establishing the local energy equation therefore is showing that the LHS of equation , while admittedly convergent, must vanish in the limit of some subsequence. That is,
+ 
+ ^ \, n ( ^ \, n ) \, \, dx dt 0 \, ,
+
+as $n $. We can accomplish this by proving for instance the convergence $ ^ \, n 0$ in $L^2(0,T; V')$ (where $V'$ is the natural dual of $V$), since $^ \, n$ converges strongly in $L^2(0,T; V)$. 
+
+If $ = 1$ in equation , we obtain the following resolved global energy balance: 
+ 
+2 ^ \, n (T) ^2 - 2 ^ \, n (0) ^2 = - _0^T ^ \, n ^2 dt + _0^T ^ \, n , ^ \, n \, dt \, ,
+
+where $ , $ denote the inner product in $L^2$ space. So, if $^ \, n 0$ in $L^2(0,T; H)$ as $n $, one can directly prove the global energy equation from the energy balance . The $L^2$-in-time weak continuity of Leray-Hopf solutions ensures that the limit can be passed on the LHS of equation (see Remark~). 
+
+ We observe that testing equations $_1$ with a smooth divergence free vector function $(x,t)$, and using the strong convergence properties of the mollified velocity on the LHS already gives
+ 
+ _n _0^T ^ \, n , \, dt = 0 \, ,
+
+for it can be easily checked that the limit can be passed in the resulting nonlinear term holds for any $u L^2_tL^2_x$, regardless whether it is a solution to the Navier-Stokes equations or not. So, the fact that the term involving the cumulant, $- R^n$, appears on the RHS of the coarse-grained equations is an additional property of the evolution equations that can potentially be exploited beyond the limit . See . . However, since it is unknown whether the sequence $ ^ \, n $ remains uniformly bounded for instance in the natural space $L^2(0,T; V')$, condition alone cannot guarantee the weak convergence of $ ^ \, n$. 
+
+\\
+ We show that this is indeed the case if weak limit of $v^n_*$ does not identically vanish. Key in the proof is replacing, for each $n $, the sum of the two dissipative terms in the coarse-grained Navier-Stokes equations , that is $- ^ \, n + ^ \, n $, with a single term possessing improved overall convergence properties. This term is obtained from the Euler-Lagrange equations associated with problem :
+ 
+(1-2_n) v^n_*(x,t) = - ^ \, n + ^ \, n (x,t)\, ,
+
+understood to hold in the weak sense in space-time. The sequence of real numbers $_n$ represents the Lagrange multipliers that result when taking into account the constraint, i.e. the surface of the enstrophy ball. As a consequence of the system of equations , we obtain $ (1-2_n) v^n_* u$ in $L^2_t L^2_x$ as $n $, which produces the weak convergence of $ ^ \, n $ along a subsequence. 
+
+ 
+ A variational resolution of weak solutions to the Navier-Stokes was given in by using the theory of anti-self-dual Lagrangians. The evolution equations are derived not through the standard procedure (i.e. as the Euler-Lagrange equations), but rather by recognizing that the minimizer is also a zero of the Lagrangian itself. These techniques have also been recognized to be applicable to other stationary and evolutionary problems. In , a more standard variational approach was developed for deriving Leray-Hopf solutions using a minimization principle. The functional considered is a particular instance of a broader class of functionals known as Weighted Inertia Dissipation Energy (WIDE) functionals. For the problem of incompressible viscous flow, the WIDE functional becomes 
+ 
+ I^(w) = _0^ _ e^- ( 2 | _t w + (w ) w |^2 + 2 | w|^2 + 2 | (w ) w |^2 )\, dx dt \, .
+
+ The functional is the sum of the inertia and dissipation of the fluid, in addition to a stabilizing term (involving the parameter $$), which is needed to guarantee the convergence of minimizer $w^$ in the limit. By formally computing the Euler-Lagrange equations for $I^$ we obtain the incompressible Navier-Stokes equations in $w^$ at the zeroth order in the parameter $$. As $ 0$, the sequence of minimizers $w^$ is proven to converge weakly to a Leray-Hopf solution, and the higher order terms vanish in this limit. It is worth remarking that this method, which dates back to the pioneering work of De Giorgi , has a wide array of applications to nonlinear evolution equations of parabolic and hyperbolic types.. See and references therein for more details. 
+
+\\
+ By way of contrast to these approaches, we do not ask that the minimizer $v^n_*$ of functional $^n$ to solve the Navier-Stokes equations at any order. In this sense, our Euler-Lagrange equations do not represent an approximation scheme to the original equation -- a role customarily assigned to these equations in the context of finding variational solutions to the equations of motion. We, on the other hand, only approximate the dissipative terms by the variational procedure, recognizing that the limit can already be passed in the inertial term. This approximation is, in fact, all that is needed to obtain the desired energy equalities (at least in the $v_* 0$ case) since it implies that the weak limit of $ R^n$ vanishes on the entire space and not only over a dense subset, as highlighted above.
+ 
+
+ 
+Before concluding this section, we note that the variational method outlined above is applicable, more broadly, to PDEs of the form:
+ 
+ _t w + _x [ (w) ] - w = 0 \, ,
+
+on $^k_1 [0,T]$, and $w ^k_2$ and the nonlinear function $ ^k_1 k_2$, with $k_1, k_2 ^+$, satisfies $ (w), w = 0$. Now suppose the existence of a global-in-time weak solution $w$ to equations , for instance in $ C_ (0, T; H) L^2(0, T; V) $, satisfying an energy inequality similar to :
+$$ 2 w(t) ^2 + _0^t w ^2 ds 2 w(0) ^2\, , $$
+for all $t 0$. Let $^ \, n$ represent a suitable mollification of the solution $w$, then the mollified field solves the following coarse-grained equations:
+ 
+ _t ^ \, n + _x [ (^ \, n) ] - ^ \, n + _x [ (w)^ \, n ] = 0 \, ,
+
+where $ ^ \, n$ is defined analogously to $^ \, n$ in equations . Therefore, as long as $(^ \, n) (w)$ as $n $ weakly on some dense subset of the solution space and the analogous limit $w_* 0$, we can apply the variational procedure to obtain the global energy equality for the PDE:
+$$ 2 w(t) ^2 + _0^t w ^2 ds = 2 w(0) ^2\, , $$
+for all $t 0$.
+
+Variational analysis
+ 
+
+In this section, we prove the formulation of Onsager's principle of the least dissipation of energy as outlined in the Introduction (Proposition below). As such, the central object of study in this section is the following functional
+
+ 
+(v) = _0^T 2 v(t) ^2 - J(t), v (t) \, dt\, .
+
+We suppose that we are given a non-trivial sequence of fluxes $J^n: ^3 [0,T] ^3 3$ belonging to $L^2_tL^2_x$. Such a sequence will be given in terms of the mollification of weak solutions of the Navier-Stokes equations, which we consider next.
+
+Mollification
+ 
+We begin by defining the notion of weak solutions to the Navier-Stokes equations in the space-periodic setting as follows: let $H $ and $V$ be the closures of the space of periodic, smooth, divergence free, zero mean vector-valued functions in $L^2(^3)$ and $H^1(^3)$, respectively. Denote $ , $ the inner product in $L^2$ space, and $V'$ the natural dual of $V$. Then:
+
+ We say $u L^(0,T; H) L^2(0,T; V) $ is a weak solution of 
+ 
+ -_0^T u, _t \, dt + _0^T (u ) u, \, dt + _0^T u, \, dt = u_0, (0) \, , 
+
+for all divergence free test functions $ C^_c (
+ As was mentioned earlier, if, additionally, a weak solution satisfies the global energy inequality for all $t 0$ then it is called a Leray-Hopf solution.
+In this section and for the rest of the paper we will reserve the designation $u = u(x,t)$ to denote a Leray-Hopf solution on $^3 [0,T]$. 
+
+\\
+ Let $^n = ^3_n ( _n ) $ represents a family of spatial mollifiers in $^3$, where $ C^$ be a standard smooth nonnegative radial function (kernel) supported over some compact subset of $^3$. Then, on $^3 [0,T] $ the filtered or coarse-grained velocity $^ \, n = ^n * u$ satisfies
+ 
+ \
+ ll
+ *0.1 in
+ _t ^ \, n + (^ \, n ) ^ \, n+ ^ \, n - ^ \, n + ^ \, n = 0 \, , \\
+ ^ \, n = 0\, ,
+ 
+ .
+
+where the cumulant associated with the coarse-graining is defined by $^ \, n(x,t) = ()^n - ^ \, n ^ \, n$, and the scalar pressure field $^\, n(x,t)$ is smooth in the spatial variable and satisfies
+$ - ^\, n( , t) = ( ) : ()^n(, t) $
+for almost every $t (0,T]$. We will also refer to $^ \, n(x,t)$ as the Reynolds stress for reasons that will become clear in Section . 
+ 
+By double mollification in space-time, we can pass the limit on the LHS of the resolved energy equation . Let $^ \, n(x,t) = ^n *_x,t u $. The space-time mollification is defined as $^n *_x,t \, f = j^n *_t (^n *_x f)$ for $f L^1_ (^3 )$, where $j(t)$ is a another mollifier: a positive, even, smooth function with unit mass and compact support on $$; and functions $j^n$ are defined analogously to $^n$. The mollification in-time is given by
+$$ ^ \, n(t) = _0^T j^n(t-s) h(s)\, ds\, , $$
+for $h L^1_()$. Using the weak-in-time-$L^2$ continuity of the solution $u$, we obtain 
+$$ 2 u(t) - 2 u_0 ^2 = _n _0^t _t u, ^n *_x,t (^n *_x,t u) \, ds = _n ( 2 ^ \, n(t) - 2 ^ \, n_0 ^2 ) \, ,$$
+for all $t 0.$
+
+Minimization problem
+
+In this subsection our goal is to produce a solution the minimization problem . Since $ K(x,t,) 2 ^2 - J^n(x,t) : $ is strictly convex for almost every $(x,t) ^3 [0,T]$, the density function $K(x,t,)$ satisfies the standard coercivity and growth estimates, and due to the quadratic nature of the constraint; we can use the direct method of the calculus of variations over the enstrophy ball $$ to obtain 
+ 
+Fix some $n ^+$. Let 
+ 
+ ^n(v) = _0^T 2 v(t) ^2 - J^n(t), v (t) \, dt \, .
+
+Then
+
+ [1.] There exists a unique function $v^n_* $ such that $^n(v^n_*) = ^n(v) : v $. 
+ [2.] There exists a real number $ = _n$ such that the constrained Euler-Lagrange equations are satisfied:
+ 
+_0^T v_*^n (t), (t) \, dt = _0^T J^n(t), (t) \, dt + 2 _n _0^T v_*^n, (t) \,dt \, ,
+ 
+ for all divergence free $ C^ (0, T; C^_c)$.
+
+We include the proof of the above proposition in Appendix for the readers' convenience.
+
+ 
+ In general, if $_n 0 $ (implying $v^n_* $) then we have 
+ 
+(1-2_n) = _0^T v_*^n (t), (t) \, dt \, ,
+
+for some (non-trivial) test function $$ (see Remark ).
+
+ We now specify 
+ 
+ J^n(x,t) = ^\, n(x,t) - ^ \, n(x,t)\, ,
+
+for every $(x,t) ^3 [0,T]$. As a result, we obtain
+ 
+The minimizer $v^n_*$ satisfies the following Poisson equations point-wise in $x ^3$ and distributionally in $t [0,T]$:
+ 
+- (1-2_n) v^n_*(x,t) = - ^\, n(x,t) + ^ \, n(x,t) \, .
+
+The system of Poisson equations together with the boundedness of the sequence of minimizers in $L^2(0,T;V)$ will be key in passing the limit in the coarse-grained energy equations, as discussed next. 
+
+Passage to the limit
+ 
+
+The approach advanced in the previous section has furnished a sequence (of minimizers) $v^n_*$ uniformly bounded in $L^2(0,T; V) $. However, in view of the structure of the Poisson equation , we exclude the case where the weak limit, which we denote by $v_*$, vanishes. See Section for further discussion on this case.
+
+\\
+ We recall that establishing the existence of a subsequence satisfying $_n ^\, n, _L^2_t L^2_x = 0$ for all $ L^2(0,T; V)$ amounts to the energy equalities. This follows directly from the next result, which is a simple consequence of Proposition and our assumption. We include the proof for the sake of completeness. 
+
+ 
+If $J^n(x,t)$ is given by equations , then $ (1-2_n) v^n_* u $ in $ L^2(0,T; V)$, as $n $ (along a subsequence).
+
+ Proof.
+
+\\
+ Consider $ L^2(0,T; V)$ and a sequence of divergence free functions $_m C^_c (^3 [0, T))$ such that $ _m $ strongly in $L^2_tL^2_x$ (with $n > m$). Then
+
+ _0^T (1-2_n) v^n_* - u, \, dt & ( |1-2_n| v^n_*_L^2_tL^2_x + u _L^2_tL^2_x ) _m - _L^2_tL^2_x\\
+ & + _0^T (1-2_n) v^n_* - u, _m \, dt \, ,\\
+ & C _m - _L^2_tL^2_x + _0^T (1-2_n) v^n_* - u, _m \, dt \, ,
+
+where constant $C$ is independent of $n$ and $m$. The last inequality follows since $v^n_*$ belongs to $$ for every $n 1$, and $ (1 - 2_n)$ is bounded (along this subsequence). We conclude by sending $n, m $ and invoking equations and . 
+
+ 
+Following Corollary , the coarse-grained equations can be expressed as
+
+ _t ^\, n + [^\, n ^\, n] + ^\, n - (1 - 2_n) v^n_* = 0 \, ,
+
+with energy equation 
+ 
+ 2 ^\, n(T) ^2 - 2 ^\, n(0) ^2 = - (1 - 2_n) _0^T v^n_*, ^\, n \, dt \, ,
+
+for all $T>0$. We can directly prove the global energy equality using the energy balance without reference to equation , since $ (1 - 2_n) v^n_* u$ in $L^2_tL^2_x$ as $n $, and the limit can be passed on the LHS of equation (see Remark ). 
+
+ 
+We conclude by making explicit a few additional limiting properties of the Reynolds stress $^\, n$. For simplicity, we set $ = 1$. Since both $v^n_*$ and $- v^n_*$ belong to the admissible set $$, the comparison $^n(v^n_*) < ^n(- v^n_*)$ yields
+ 
+ _n _0^T ^\, n, v^n_* \, dt _0^T u, v_* \, dt \, ,
+
+along a subsequence. As a byproduct, considering the case $v_* = 0$ and invoking the Euler-Lagrange equations together with the constraint, one obtains 
+\[
+_n (1- 2_n) 0 .
+\] 
+In this case, a sharper estimate can be derived by comparing with $^, n$ for Leray solutions, yielding a definite sign for the limiting value in .
+
+4 u_0 ^2 + _0^T ^\, n, v^n_* \, dt & < _0^T v^n_*, ^\, n \, dt - 2 _0^T ^\, n ^2 dt + _0^T ^\, n, ^\, n \, dt \, , \\
+_n _0^T ^\, n, v^n_* \, dt & - 2 _0^T u ^2 dt - _0^T _^3 D(u)\, dx dt -4 u_0 ^2 \, .
+ 
+Finally, and we note this for emphasis, drawing on Corollary and Proposition , when $v_* 0$ the following convergence properties hold:
+$$ _n\, ^\, n _L^2(0,T;V') < \, , _n _0^T ^\, n, u \, dt =0 \, . $$ 
+
+Discussion
+ 
+
+A seemingly simple and innocuous criterion (i.e. $v_* 0$) for energy conservation can be understood and interpreted within the frameworks developed for the study of turbulent flows from at least two distinct, yet related, perspectives. First, the Poisson equations can be regarded as prescribing a constitutive law -- or, more precisely, a modeling assumption -- for the cumulant or the Reynolds stress $^\, n (x,t)$. From a physics point of view, this is indeed one of the primary implications of the principle of the least dissipation of energy as formulated by Onsager (see Section and Appendix ). In essence, equations suggest that the Reynolds stress may be represented as follows (up to a divergence):
+
+ 
+^\, n (x,t) = 2 (1-2_n) \, ( v^n_* )(x,t) \,.
+
+In other words, within the framework of irreversible thermodynamics outlined in Appendix , the contribution to internal entropy production of the system arises predominately from the thermodynamic fluxes associated with velocity fluctuations, namely $|| |_2|$. We note that equations are analogous to the (deviatoric) Boussinesq eddy-viscosity approximation, where the mean strain rate is replaced by a suitable approximation, and the prefactor involving the Lagrange multiplier plays the role of an effective eddy viscosity (see for a modern exposition on turbulence modeling). The limit $v^n_* 0$ in $L^2(0,T;V)$ therefore corresponds to larger and larger values of "eddy viscosity". This, in turn, causes the $L^2_tL^2_x$ norm of the Reynolds stress to grow unstable as can be seen from equations : 
+$$ | 1-2 _n| u_0 ^\, n^2 dt \, .$$
+ the extent that the Boussinesq approximation remains valid, these observations imply that the flow is being modeled in a highly turbulent regime with eddy-driven transport dominating molecular diffusion. This does not necessarily imply that energy conversation is violated, but it does point to a potential deficiency in our variational approach: the sequence $v^n_*$ does not carry enough information about the energy or the energy dissipation rate of the flow, an interpretation which we can associate with the indeterminacy observed in the case $v_* =0$. 
+
+\\
+ To illustrate this point further, we consider a similar problem which was addressed by the present author and collaborators in . In this work it was conjectured the existence of a probability measure $_e,t$ supported over the fixed-in-time energy-enstrophy surface:
+ 
+ G_e(t) = v L^_t L^2_x L^2_t H^1_x \, : \, 2 v(t) ^2 + _0^t v(s) ^2 ds = e(t) \, ,
+
+where $e(t)$ is a given positive scalar -- to be understood as the prescribed energy profile. The significance of this measure, termed the physical measure, is that it maximizes, for every $t [0,T]$, the relative entropy functional
+ 
+ (f_e,t) = - f_e,t(v) (f_e,t(v)) \, d_e,t(v) \, ,
+
+where $f_e,t(v) := (v)d _e,t(v) L^1(_e,t)$. This flexibility in determining the maximum entropy measure was used to draw connections to the Kolmogorov theory of turbulence by the way of statistical solutions to the Navier-Stokes equations, introduced by C. Foias . These are a family of spatially homogeneous time-dependent probability measures $_t$ that satisfy the Navier-Stokes equations in an averaged sense. If such solutions satisfy certain self-similarity assumptions and the averaged global energy equality holds:
+ 
+ 2 _H u ^2 d _t(u) + _H _0^t u(s) ^2 d s d _s(u) = 2 _H u ^2 d _0(u)\, ,
+
+then they display features of the Kolmogorov scaling laws such as the $-$5/3 power law for the energy spectrum. Such solutions also demonstrate a universal law of decay independent of initial conditions: the average kinetic energy scales like $t$ as $t $, where constant $c = c()$. In , however, the relation to the energy spectrum was established via the additional degree of freedom associated with the prescribed energy $e(t)$; in particular its average $e_ = _H e(t) \, d _e,t$ was prescribed in accordance Kolmogorov's $-$5/3 law when the wavenumbers lie in the inertial range. 
+
+\\
+ In the deterministic setting, a connection can be made with the principle of the least dissipation of energy by considering a variant of the energy-enstrophy surface as the admissible set to the minimization problem. To this end, define 
+ 
+_e(t) = v L^_t L^2_x L^2_t H^1_x : \, v _t^2 e(t) \, ,
+
+where $ v _t^2 = 2 v(t) ^2 + _0^t v(s) ^2 ds$ and function $e L^(0,T)$ is prescribed in advance. One can naturally include the initial condition $u_0$ into the formalism by defining the following admissible set:
+
+ ' = v _e(t) : v(x,0) = u_0, \, \, \, \, t [0,T] \, ,
+
+where the initial condition is satisfied in the sense of $L^2$-weak limits (in time). It might be also desirable to replace $u_0$ with $u_0^m$ -- some suitable approximation to the initial condition. In any case, we require that function $e(t)$ can be prescribed so that $'$ is not the empty set. 
+
+\\
+Following the proof of Proposition , we can conclude the existence of a unique minimizer $v^n,e_*(t) _e(t)$ to the functional for almost all $t$ (note that relation implies strong convergence in $L^2(0,T; H)$). It remains to show now that $_t0 v^n,e_*(t) , w = u_0 , w $ for any $w L^2(^3)$. Define the following sequence of continuous functions (in $m$): $^n, e_m(t) = v^n,e_m(t) , w $, where $v^n,e_m$ denotes a minimizing sequence for functional $^n$ belonging to $'$. Then for any $t [0,T]$ and due to the convexity of $_e(t)$, we have:
+
+ 8| ^n, e_m(t) - ^n, e_*(t) |^2 & 2 ^n,e(t) - v_*^n,e(t)2 ^2 \\
+ & C_2 e(t) \\
+ & C_2 e _ \, .
+
+Therefore, if we consider a family of functions $e_m(t)$ vanishing in the $L^$-norm, we can conclude $^n, e_m(t)$ converges to that $^n, e_*(t)$ uniformly on $[0,T]$ as $m $ and so $v^n,e_* '$. This simple example illustrates a possible interplay between the regularity -- and potentially the convergence -- of the sequence of minimizers $ v_*^n,e$ and the properties of $e(t)$. In general, prescribing this energy is expected to be closely linked to controlling the higher Fourier modes of solutions to the Navier-Stokes equations and to guaranteeing their convergence, in the inviscid limit, to solutions of the Euler equations. The first rigorous example of a version of this strategy was presented in in the deterministic setting. In the same vein, when $_n 0$ we obtain an explicit expression for the minimizer $v^n, e_*$ in terms of the prescribed energy: $_0^t 2 \, |( v^n,e_*(x,s)) |^2 \, ds = e_n(t)$. Yet, we expect that merely specifying $e_n(t)$ in terms of the initial energy profile does not produce a velocity that can adequately capture certain essential features of the dynamics at finer scales extended his original theory in response to a related challenge. While the reciprocal relations predict the average behavior of a system -- for example, the mean heat flux or mean diffusion current -- the underlying dynamics of the fluctuations that give rise to the averages were not taken into account. The extended theory introduced an explicit random Gaussian noise into the formalism, allowing for the calculation of the probability paths of a given state variable.. It may well prove beyond reach to determine an appropriate sequence of prescribed energies in space-time coordinates capable of overcoming this difficulty. An alternative way to compensate for the loss of regularity observed would be to extend Onsager's variational principle to incorporate higher-order terms. From a physics perspective, this approach is closely connected to calculating the rate(s) of entropy production in systems far from equilibrium (e.g., in flux space), an aspect of non-equilibrium thermodynamics still not well-established even if restricted to isolated systems (see , for instance, for a critical review on the subject).
+
+Principle of least dissipation of energy
+ 
+
+In this Appendix, we provide a short account of the principle of least dissipation of energy -- first introduced by L. Onsager in his seminal work in linear irreversible thermodynamics -- within the framework of classical irreversible thermodynamics. The mathematical formulation of the principle will be confined to incompressible isotropic Newtonian fluids. We refer the reader to for a general exposition on the theory.
+
+Overview of theory
+
+Throughout this section, we assume for simplicity that the fields under consideration belong to $C^( [0,T])$. A more general setting will be considered at the end of the discussion. We begin with a body $ ^3$ having smooth boundary and mass density $$. We assume that the physical processes taking place in $$ are determined by the evolution of $m$ state variables: $_1(x,t), _2(x,t), , _m(x,t)$ obeying conservation laws of the form
+
+ 
+ t = _ + (x,t) \, ,
+
+where $(x,t) = (_1(x,t), _2(x,t), , _m(x,t))$, $(x,t)$ represent body forces and/or source functions, and $(x,t)$ represent a combination of the fluxes (stresses) acting on and across $$; we drop the subscript $$ for convenience. The state variables could either be scalar or vector quantities, in which case $$ correspond to vector or tensor fields, respectively. We write $$ as the sum of its (quasi)conservative and dissipative parts:
+
+ = + \, ,
+
+where each competent of the dissipative stresses $_k(x,t)$, $k=1, 2, , m$, represents a generalized thermodynamic flux acting within $$ and is associated with a distinct irreversible process given by either a single state variable $_k$ or a subset of them. 
+
+\\
+ On the other hand, the local balance of entropy in $$ reads
+ 
+ st + _s = ^(i) \, ,
+
+where $s(x,t)$ and $^(i)(x,t)$ are the specific entropy and internal entropy production of the system, respectively, and $_s$ represents the entropy flux across the boundary of $$. 
+
+\\
+ The dependence of the entropy of the system on the state variables becomes clear once we write the function $^(i)$ in the standard form as the product of the thermodynamic fluxes and forces:
+ 
+ ^(i) = ^(i)(, ) = _k _k _k \, .
+
+Thermodynamic forces $_k(x,t)$ are typically known quantities associated with the gradients of the state variables $_k$, which may represent, for instance, velocity, concentration, chemical potential, temperature, etc; and are not forces in the mechanical sense. In this context, the second law of thermodynamics is extended to assert that $^(i)(x,t) 0$ for all $(x,t) (0,T)$. This inequality goes beyond the conventional statement of the second law in equilibrium thermodynamics, which considers only the overall increase in entropy between two equilibrium states of an (isolated) system. It is quite remarkable that the bilinear structure of the internal entropy production function, in terms of forces $_k$ and fluxes $_k$, is preserved across a wide range of physical systems outside of their equilibrium states. 
+
+\\
+ However, while thermodynamic fluxes are usually not known quantities, they cannot be assigned arbitrarily. In 1931, Onsager argued that thermodynamic processes are realized if they maximize the following functional in flux space for known values of forces $_k = _k(x,t)$:
+ 
+ [0,T] ( ^(i)(, ) - () ) \, dx dt \, ,
+
+where the dissipation function is given by the following quadratic form
+
+ () = 2 _k,n _kn _k _n \, ,
+
+and $$ is a constant positive (generalized) matrix, and can always be made symmetric. The motivation behind the above variational principle formulated by Onsager becomes evident once we (formally) carry-out the calculation of the first variation. Assume that the functional attains its maximum at $$, then the Euler-Lagrange equations give
+
+_k = _n _kn _n \, ,
+
+which implies 
+ 
+_k = _n _kn _n \, ,
+
+where $ = ^-1$ provided matrix $$ is invertible. If we identify $$ with the matrix of phenomenological coefficients, then equations together with the resulting symmetry of $$ are Onsager's reciprocal relations for linear non-equilibrium thermodynamics. Equations are examples of constitutive relations, which, are essential for closing -- and ultimately solving -- the system of evolution equations , once the initial and/or boundary conditions are specified.
+
+\\
+ In general, since both the fluxes and the forces depend on the state variables $_k$'s and their derivatives, it is natural to expect a functional relation between them. In the equilibrium state of the system, no irreversible processes take place by definition, and so $_k = _k^0 =0$ for all $k$. The linear equations above can thus be naturally interpreted as a first-order expansion of the fluxes around $_k^0$:
+$$ _k = _n ( _k _n)_|0 _n + (||) \, ,$$
+where the matrix of phenomenological coefficients is given by $ _kn = ( _k _n)_|0 $, and the evaluation corresponds to the equilibrium state. All the principal minors of the matrix are required to be non-negative to ensure consistency with the second law.
+
+*Mathematical formulation for dissipative fluids
+
+We are now in a position to derive the functional , which is specific to a Navier-Stokes fluid. Consider a dissipative isothermal fluid with velocity field $v$ that vanishes on the boundary $ $, and the fluid temperature normalized to 1. We interpret velocity gradients as thermodynamic forces, so the internal entropy production function reads
+
+ s^(i)(x,t) = : ( v) \, ,
+
+where $$ represents the (symmetric) dissipative stresses acting within the fluid, that the roles of fluxes and forces can be interchanged without affecting the final outcome. For example, see , where this reversal is employed in the context of dissipative thermal fluids. . We assume that two known or given distinct thermodynamic processes $_1$ and $_2$ contribute to entropy production. The first is conventional dissipation through viscous effects, which for an incompressible isotropic Newtonian fluid is taken to be $_1 = 2 \, ( u)$ where $$ is the constant kinematic viscosity and $u$ represents a solution a priori known. The second contribution $_2$ captures possible dissipation due to turbulent fluctuations in the velocity field $u$.
+
+\\
+ Let $$ be some appropriate admissible set for this setting (e.g. a subset of $L^2_tH^1_x$), then the principle of least dissipation of energy can be recast into the following conjugate problem 
+ 
+ _v _0^T _ ( 2 | v |^2 - : v ) dx dt\, .
+
+(note $_ | v|^2 dx = 2_ |( v)|^2 dx$ on divergence free fields vanishing at the boundary.)
+
+Proof of Proposition 
+Let $^n = ^n(v) : v $. Then, the coercivity of functional $^n$ ensures that $^n < -$. We, therefore, select a minimizing sequence $v^n_m $ (depending on the choice of $u_0$ as well) such that $^n(v^n_m) ^n$, as $m $. Again, the standard coercivity estimate gives
+
+ _0^T v^n_m(t) ^2 dt C_1 \, ,
+
+where the constant $C_1 >0$ is independent of $m$. Therefore, there exists a subsequence of $v_m^n$, which we still call $v^n_m$, and a function $v^n_* L^2(0,T; V)$ such that $v^n_m v^n_*$ in $L^2(0,T; V)$ as $m $.
+
+\\
+For the minimizing sequence $v^n_m$, we note the identity: 
+ 
+8 v^n_m - v^n_k ^2_L^2(0;T, V) &= 2^n(v^n_m) + 2^n(v^n_k) - ^n ( 2 ) \, , \\
+& 2^n(v^n_m) + 2^n(v^n_k) - ^n \, , 
+
+for all $k m$. Hence, the minimizing sequence $v^n_m$ is in fact Cauchy in $L^2(0,T; V)$, and so $v^n_m v^n_*$ in $L^2(0,T; V)$ as $m $. By the Poincare inequality, we additionally have $v^n_m v^n_*$ in $L^2(0,T; H)$ as $m $, and so the mean is also preserved. Now since $v^n_m \, \, m ^+$, by the convergence properties of $v_m^n$ we get
+ 
+ _0^T v^n_*(t) ^2 \, dt 2 \, ,
+
+and so $v^n_* $. By appealing to the convexity of the of $^n$, we conclude that $^n = ^n(v^n_*).$
+
+\\
+Let $v_*$ and $_*$ be two distinct minimizers for our problem. Then by the (strict) convexity of $ K(x,t,)$, we can conclude that $_* 2$ is also minimizer, and so $ v_* = _* $ for almost every $(x,t) ^3 [0,T]$. Therefore, $v_*$ and $_*$ differ by a (time-dependent) constant. But, since $v_*$ and $_*$ have zero mean, we conclude that $v_* = _* $ a.e. 
+
+\\
+Write the constraint on the boundary as 
+ 
+(v) = _0^T v(t) ^2 \, dt - 2=0 \, .
+
+Now define the two scalar functions
+
+ (, ) = ^n(v^n_* + + ) (, ) = (v^n_* + + )
+
+where $, C^(0,T; C^_c)$, and $$ is non-trivial. Due to the convexity of the functional and the constraint, the gradients are well-defined. The constrained Euler-Lagrange equations now follow by the standard Lagrange multiplier theorem applied to functions $$ and $$.
+
+ 
+The test function $(x,t)$ in the argument above is chosen so that the first variation of $$ with respect to it does not identically vanish, and as such the Lagrange multiplier is given by
+
+ = d ((0, 0))d ((0, 0))\, ,
+
+where $$ depends on the index $n$ and the choice of the test function $(x,t)$.
+
+Acknowledgments. The author is grateful to G-Q. Chen, J. Glimm and M. Johnson for helpful discussions and/or comments on this work.

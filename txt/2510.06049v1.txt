@@ -1,0 +1,70 @@
+Lemma
+Corollary
+[1]
+
+[2],
+ K. Shukla[2],
+ Z. Wang[2], 
+ A.~Morales[2],
+ T. Käufer[2],
+ S. Salauddin,
+ N. Walters,
+ D. Barrett,
+ K. Ahmed,
+ M.~S.~Triantafyllou,
+ G. E. Karniadakis
+
+Division of Applied Mathematics, Brown University
+Department of Mechanical and Aerospace Engineering, University of Central Florida
+Department of Mechanical Engineering, Massachusetts Institute of Technology
+
+ 
+[1]This work was supported by DARPA, Grant No.\ DARPA-APAQuS-HR00112490526.
+[2]These authors contributed equally to this work.
+
+Traditional Reynolds-averaged Navier–Stokes (RANS) closures, based on the Boussinesq eddy viscosity hypothesis and calibrated on canonical flows, often yield inaccurate predictions of both mean flow and turbulence statistics. Here, we consider flow past a circular cylinder over a range of Reynolds numbers ($3,900$–$100,000$) and Mach numbers ($0$–$0.3$), encompassing incompressible and weakly compressible regimes, with the goal of improving predictions of mean velocity and Reynolds stresses. To this end, we assemble a cross-validated dataset comprising hydrodynamic particle image velocimetry (PIV) in a towing tank, aerodynamic PIV in a wind tunnel, and high-fidelity spectral element DNS and LES. Analysis of these data reveals a universal distribution of Reynolds stresses across the parameter space, which provides the foundation for a data-driven closure. We employ physics-informed neural networks (PINNs), trained with the unclosed RANS equations, to infer the velocity field and Reynolds-stress forcing from boundary information alone. The resulting closure, embedded in a forward PINN solver, significantly improves RANS predictions of both mean flow and turbulence statistics relative to conventional models.
+
+Introduction
+
+Problem Setup
+
+Data Generation and Cross Validation
+
+Hydrodynamic Particle Image Velocimetry
+
+Aerodynamic Particle Image Velocimetry
+
+Numerical Simulation
+
+Cross Validation
+
+Physics-Informed Data Postprocessing
+
+Flow Inference
+
+Flow inference with Helmholtz and Turbulence augmented approach using boundary data for Re=3900
+
+Turbulence Closure Model
+
+Similarity of Reynolds Stress for different Reynolds Numbers
+
+Neural-Network Turbulence Closure Model
+
+Integrating the Closure Model with PINNs
+
+Summary
+
+We first built a comprehensive and cross-validated dataset for the flow past a cylinder using hydrodynamic PIV, aerodynamic PIV, and spectral-element based DNS/LES. The Reynolds number range is $Re=3\,900-100\,000$, and both incompressible and weakly compressible regimes are covered. The dataset includes mean velocity as well as the Reynolds stresses. A physics-based postprocessing method was proposed to ensure the dataset satisfies the continuity equation and the momentum equations. We found that there is a similarity in the Reynolds stresses along the Reynolds number, which provides a physical foundation for the search for a data-driven turbulence closure model. This dataset can also be used to validate the CFD code.
+
+Subsequently, we formulated a flow inference problem for both incompressible and weakly compressible flows, where we made use of the unclosed form of the RANS equation and measurements at the domain boundary to infer the entire interior flow fields and Reynolds forcing terms by PINNs. This is an under-determined problem from the perspective of classical numerical analysis, because the governing RANS equation is not closed, and no data inside the domain is available. However, PINNs could successfully infer the interior flow fields with satisfactory accuracy. We also reconstructed the flow field by leveraging boundary data of the mean flow velocities and employing a PINN, where the Reynolds stresses were decomposed using the Helmholtz decomposition and augmented with a turbulence model for wake region. These enhancements led to improved inference accuracy. 
+
+Based on the similarity of the Reynolds stresses across different Reynolds numbers, we built a neural network as the turbulence closure model, which is a local algebraic model. We trained it at two Reynolds numbers and tested it on the other four. This model showed good generalization ability. We integrated the data-driven turbulence closure model into the forward PINN solver. Two models were tested, where one is explicit and the other is implicit. Results showed that the explicit model achieves higher accuracy than the implicit model and can substantially improve the accuracy of both mean velocity and the Reynolds force vector. This suggests that instead of trying to implement classical turbulence models into PINNs, one can use the explicit data-driven form of the turbulence closure model with PINNs, where the accuracy can be guaranteed and no numerical stability issues occur.
+
+In summary and for reference, simulating the cylinder flow using existing models such as the $k-$ model resulted in a relative error (compared to the time-averaged DNS) of the order of 100\
+in Reynolds stresses.
+
+Validation of NekRS with the Entropy Viscosity Method against Existing Experimental Data
+
+Flow Inference of Incompressible RANS
+
+Helmholtz decomposition and turbulence model for flow inference

@@ -1,0 +1,357 @@
+[]jfmmod
+
+[percent]overpic
+
+[1]#1
+[1]
+T
+We
+Fr
+
+L_
+L_
+L_
+Re
+_
+_
+_L
+_
+_
+_L
+_L
+[1] #1 
+[1]
+[1]
+
+S
+__s, 
+_,
+z_
+
+#1 AF: [#1]	
+#1 YHT: [#1]	
+#1 S E: [#1]	
+#1 OB: [#1]	
+#1 RJH: [#1]	
+
+,
+ Jrgen R. Aarnes,
+ Ali Semati,
+ Am\'elie Ferran,
+ Yi Hui Tee,
+ R. Jason Hearst ,
+ Simen . Ellingsen 
+ 
+
+Department of Energy and Process Engineering, Norwegian University of Science and Technology, Trondheim, Norway.
+
+Turbulent flows close beneath a free water surface are of central importance in the Earth system, yet remain relatively little studied with many open questions. We study the degree of correlation between surface motion and sub-surface velocities, comparing data from direct numerical simulation to a new experimental setup where the free-surface motion and sub-surface velocity field are measured simultaneously in a jet-stirred tank. A previous study showed a close correlation between the time series of mean-square surface divergence and the surface features (Babiker \& al., 2023 J.~Fluid Mech. 964, R2); we find that the normalised cross-correlation between mean-square horizontal divergence at vertical position $z$ ($(z)=_xu+_yv$, with $z$ the vertical coordinate and $u,v$ the velocity in horizontal directions $x,y$, respectively) and relative surface area covered by persistent surface features (`dimples' and `scars') decreases slowly with depth but remains significant even two integral scales beneath the surface. 
+Although turbulent Reynolds numbers differ by an order of magnitude between simulation and experiment, the same scaling and behaviour is found for all quantities we consider when scaled by the integral scale.
+Our results demonstrate that although surface-to-bulk correlations may appear weak when covariance between surface and velocity quantities is made point-to-point for the full surface, conditional quantities guided by visible surface features can yield significant information about the largest, most energetic flow events even beyond the blockage layer.
+
+|
+
+Introduction
+
+Near-surface turbulent flow controls air-water exchange of gas and heat and affects the motion and mixing of biomaterials and pollutants. The surface of, e.g., a flowing river, displays a myriad of recognisable free-surface features conventionally referred to as `dimples', `scars' and `boils' [A few other terms have also been used in the past, to the same effect, see e.g.][]banerjee1994 which are relatively easy to discern with computer vision and carry information about the turbulence below. Recent studies have indicated that key sub-surface flow properties can be inferred from observations of these surface features . The attractive prospects of such inferences include, e.g., that carbon evasion rates can be estimated from videos of the free surface of a river, improving global estimates of carbon emissions from rivers which are known to have huge uncertainties due to lack of measurements . On the other hand some laboratory studies have found only weak overall correlation between surface motion and sub-surface velocity field quantities which might at first seem paradoxical.
+
+Our aim in this paper is to better understand the how and to what extent deformations of a free surface are correlated with the sub-surface velocity field. 
+We consider here the air-water interface atop turbulent water flow in the absence of mean current in either phase. The viscosity and density of the air has negligible effect in this case, and the interface may be considered a free surface, described in theory and simulation as having constant pressure and no shear stress.
+The turbulence on the water side is weak enough to deform the surface relatively gently, yet strong enough to leave imprints on the free surface which are clearly visible by eye, `gravity-dominated turbulence' according to the famous taxonomy of , characterised by high Weber numbers and small Froude numbers, as defined below. 
+
+It has long been recognised that the deformations of the free surface over turbulence hold information about what lies below. A qualitative intuition for near-surface structures near strong upwelling regions has emerged gradually over a long time from observations, experiments and theory [e.g.,][]banerjee1994,longuet-higgins96, rashidi1997, brocchini2001a,aarnes2025.
+Progress has been made towards quantifying bottom topography from free-surface spectral properties and surface imprints , yet much remains to be known before it is possible to extract quantitative information like gas and heat flux and sub-surface mixing rate from, say, automatic surface-feature recognition by computer vision. Machine learning approaches are still in their relative infancy but have shown success in reconstructing sub-surface velocity fields based on surface information only .
+
+Analysing data from direct numerical simulation (DNS) of free-surface turbulence with a computer vision method for automatic detection of dimples, \ found that the instantaneous number of dimples on the free surface in the computational domain is closely correlated with the mean-square of the surface divergence, $_s$. When linearising with respect to the small surface excursions, the latter is defined by $_s(x, y, t) = [_x u_x + _y u_y]_z=0 $, where $x$ and $y$ are horizontal coordinates, $z$ is the vertical coordinate pointed upward, with mean surface elevation at $z=0$. Here $_i$ is the partial derivative in the $i$-th direction, where the subscript $i = 1,2,3 ~~ x,y,z$ denotes the directions, and the subscript `s' is used to refer to the surface (as opposed to horizontal divergence, defined shortly). 
+The expression supposes the surface is nearly flat, $||1$ where $(x,y,t)$ is the instantaneous surface elevation, and orthogonal to the $z$ axis, sufficiently well satisfied for all our present purposes. We shall make use of the corresponding quantity which we refer to as the horizontal divergence, 
+
+ 
+ (x,y,z,t) = _x u_x + _y u_y = -_z u_z,
+
+pertaining to horizontal planes beneath the surface. Our lab measurements are made a little way below the interface, making it necessary to employ $$, which signifies the local rate of change in vertical velocity through the horizontal plane at depth $z$, indicative of upwelling ($>0$) or downwelling ($<0$) motions, turbulent rushes of fluid towards or away from the surface respectively.
+
+DNS provides the perfect test bed for linking surface and sub-surface flow, in the sense that the fully resolved flow field and free surface are available in the entire flow domain. Yet, due to computational cost, DNS simulations are limited in domain size, time durations and Reynolds numbers \( = UL/\), where \(U\) is a characteristic velocity scale of the flow, \(L\) is a characteristic length scale, and \(\) is the kinematic viscosity.
+Experiments, in contrast, can access far higher levels of turbulent kinetic energy and gather high-resolution velocity and surface measurements as well as long-time statistics.
+
+No experimental studies that we are aware of have attempted to identify surface features and correlate them directly to the time- and space-resolved sub-surface velocity field, as we do in the present study. 
+In our experiments, we take measurements of the sub-surface flow and the surface elevation in a 2-D plane simultaneously. This allows us to directly couple the observed features on the surface with the flow underneath at higher Reynolds numbers than are available for DNS. 
+The turbulent flow in our experiments was generated in a jet-stirred tank which is an iteration of the concept pioneered by .
+We use a method recently developed by \ [see also ][]aliAbstract, where a horizontal slice of the flow close to the surface is measured using Particle Image Velocimetry (PIV), while the surface itself is measured using two-dimensional profilometry. 
+
+It is necessary to supplement direct numerical simulation studies with experiments because it is not a foregone conclusion that the correlations between surface features and velocity field observed in DNS remain strong for much higher Reynolds numbers. 
+It is well known that low-Reynolds number phenomena can differ from those at high-Reynolds numbers [see, e.g., ][]antonia2017. In large, this is believed to be related to a reduction in the dependence of the turbulence on the boundary conditions as $$ increases. For instance, there is a $$ dependence of the dissipation scaling of the cascade and the decay exponent of turbulence also appears to have a $$ dependence . In boundary layers, the well-known hairpin structures are also known to be less coherent as the wall Reynolds number increases 
+. Surface-to-bulk statistics in DNS data were found by to collapse well with the right scaling, yet this conclusion cannot be extrapolated to far higher turbulence levels without careful enquiry.
+In fact, existing experiments at higher $$ found that there is relatively little correlation between the free surface and the sub-surface turbulence in apparent contrast to the lower-Re DNS findings of .
+
+In this paper, we extend previous analysis of dimples, scars, and horizontal divergence to experimental data obtained in our laboratory, allowing us to compare the two. Next, we investigate the extent to which the strong correlation between surface features and horizontal divergence extends downwards into the flow, finding considerable covariance even at depths beyond the blocking layer thickness, with excellent agreement between simulation and experiment despite lying in disparate Reynolds number regimes, when the integral scale is used for scaling. The study reaffirms the conclusion that observations of surface features could be a promising avenue for remote sensing of sub-surface turbulence and the cross-surface transfer of mass and heat it controls. It also illustrates that although global point-by-point covariance between surface and bulk quantities may be small because the majority of the surface bears no visible mark of the sub-surface turbulence, surface features reveal flow information deep beneath the surface. 
+
+The paper is structured as follows. Section concerns our flow data; the experiment is presented in Section , while the DNS data, which has been published previously, is briefly summarised in section . Both data sets are then characterised in terms of turbulent quantities in section so that they can be compared to each other as well as to studies by other authors. In Section , the identification procedures that provide data sets of dimples and scars---previously employed for DNS in and ---are reviewed and adapted for experimental data. Section presents the results of correlation analysis between surface features and horizontal divergence. The velocity field measured in the plane closest to the surface is considered in Section , while the covariances with deeper planes are studied and compared in Section . Conclusions are drawn in Section .
+
+Experimental and numerical flow data: acquisition and characterization
+
+Experimental data
+ 
+
+We conducted the measurements in a turbulence tank at the Norwegian University of Science and Technology. 
+Similar tank set-ups have been widely used in the past [e.g.][]variano2008,asher2012,carter2016, ruth2024, Jamin2024, using submerged jets to create approximately isotropic and homogeneous turbulence without mean flow without the need for an oscillating grid, which has been the other frequent design for similar experiments (e.g., ; an overview is found in ). High and adjustable turbulence levels can be readily created. We choose pump power such that distinct surface deformations and visible surface imprints are present while ensuring turbulent scales remain small compared to tank dimensions. This is what is referred to as `gravity-dominated turbulence' .
+
+The tank is made entirely of glass with dimensions of 1100~mm $$ 448~mm $$ 500~mm. The tank is based on the designs of and , where turbulence is generated by two planes of randomly actuated jets placed on both sides of the tank. Each plane of jets consists of 16 submersible bilge pumps (Sparelys Norway, 12V) with a maximum pump capacity of 47~litres/min. The pumps are arranged in a $44$ array configuration as shown in Figure~, with a spacing of 107.5~mm from each other. The nozzles of the bottom-row pumps are centred $38.5$~mm above the bottom glass wall. Each pump draws water radially from one side and discharges it axially through a cylindrical nozzle with an inner diameter of 15~mm. In other words, the pump draws fluid from and returns it to the same control volume, maintaining mass conservation. This zero-net-mass-flux behaviour allows each pump to function as a synthetic jet, injecting momentum into the flow to induce turbulence (see also the review by on other approaches in generating zero-mean-flow homogeneous isotropic turbulence).
+
+Each bilge pump is connected to an individual solid-state relay, enabling independent on/off control. These relays are triggered by digital signals from an NI sbRIO9636 controller board programmed in LabVIEW. The controller executes a pre-programmed sequence of time-stamped commands based on the ``sunbathing" algorithm introduced by . This algorithm controls the firing pattern of the synthetic jets by independently turning each pump on or off for durations randomly sampled from Gaussian distributions with defined means and variances for the on- and off-times. This decoupled actuation prevents synchronized firing across the array and maintains a steady statistical fraction of active jets, promoting approximately homogeneous, isotropic turbulence with minimal mean flow in the central region of the tank. In order to match the simulation set-up in , we used only the two bottom rows of pumps on both sides (sixteen in total) to generate turbulence in this setup. The mean on-duration was $3$\,s, with a standard deviation of $1$~s. This corresponds to a source fraction of $ = 0.25$, representing the average proportion of active jets across the full array. While a pump is active, its power level is controlled by adjusting the amplitude of the signal, which regulates the effective voltage supplied to the pump, and thus controls the jet velocity. In this study, we investigate two pump power settings, where all active pumps operated at either $25\
+
+We measured the sub-surface flow field via Particle Image Velocimetry (PIV), using a 25-megapixel LaVision Imager CX2-25MP camera. The flow is illuminated with a double-pulsed Nd:YAG laser (Litron Nano L 200-15 PIV) at a wavelength of $532$\,nm and seeded with $40\,$ spherical polystyrene particles, using LaVision DaVis software version 11.0 to record the images. 
+First, we considered a vertical PIV plane aligned with the jet stream direction to characterize the turbulence decay in the tank. This imaging plane extends from the air-water interface down to the mid-height of the forcing region, covering a total area of $200300$\,mm.
+For the simultaneous measurements of surface topology and flow velocity, we investigated several horizontal planes parallel to the undisturbed water surface at depths $z = [10, 25, 50, 100]~$.
+Each horizontal plane had a field of view spanning approximately $250 250$\,mm.
+We computed the velocity fields using the LaVision multi-pass cross-correlation algorithm. For the vertical plane, the initial interrogation window size was $64 64$\,pixels, and the final pass used 32 $$ 32 pixels, resulting in a spatial resolution of $1.34 1.34$\,mm. For the surface-parallel planes, the interrogation window size was fixed at $3232$ pixels, resulting in a spatial resolution of $2.24 2.24$\,mm. In all cases, a 50\
+
+We employ Fourier Transform Profilometry (FTP) to measure the moving free surface, as introduced for this purpose by . The FTP technique consists of projecting a fringe pattern onto the water surface and capturing the pattern deformations by means of a downward-pointing camera installed above the tank (see experimental setup in Figure~a). A change in water height induces a phase shift in the projected pattern, allowing us to obtain the 3D surface topology. So that FTP can be used simultaneously with PIV, the method had to be modified to solve the following challenge: the water surface must be opaque to the projected light while translucent to the PIV laser sheet. We achieve colour-dependent opacity by adding a fluorescent dye to the water, fluorescein disodium salt hydrate (uranine) at $12$\,ppm. The incoming light from the projector is tuned near fluorescein's excitation peak by using a $20$\,nm band-pass filter centered at $490$\,nm.
+To capture the fluorescein emission peak while avoiding specular reflections, we equipped the profilometry camera, another LaVision Imager CX2-25MP, with a 510~nm long-pass filter.
+Fluorescein is also transparent to the 532~nm laser light, allowing sub-surface flow vizualisation.
+However, since its emission peak, at 520~nm, lies close to the laser wavelength, we installed an ultra-narrow band-pass filter ($4$\,nm) on the PIV camera to prevent contamination from dye emission in the flow images. 
+Methods based on refraction or reflection have been used successfully in the past for simultaneous velocity and flow measurements in channel flow ; The profilometry technique has the distinct advantage over these methods that it is not limited to low surface slopes; indeed with our highest turbulence levels surface deformations were too abrupt for Schlieren-based techniques to be applicable, at least without significant modification. 
+More details on the technique for simultaneous PIV/FTP measurements will be presented in a separate paper .
+
+Both surface and velocity fields were measured simultaneously at a sampling frequency of $15$\,Hz, with 20 one-minute ensembles per case, leading to 18~000 realisations per test case. We introduced a short time delay of approximately $3$\,ms between the two acquisitions to prevent laser light saturation in the profilometry images.
+
+DNS data
+
+We use the same DNS dataset as \ for comparison with the experimental data, generously provided by Prof.\ Lian Shen and his group at the University of Minnesota; we refer to that paper and references therein for the full technical details of the simulation and only iterate the essentials here. The simulations are based on box turbulence interacting with a free surface . The flow is artificially agitated in the centre of the domain by random linear forcing [see][]rosalesLinearForcingNumerical2005. This forcing is damped as the upper and lower boundaries of the box are approached, with the region close to the surface experiencing no forcing, the turbulence then naturally advects due to diffusion . Figure~ shows a schematic of the simulation domain. The simulation dimensions are \(L_x, L_y, L_z = 2, 2, 5\), with only data from the top $/2$ (the forcing-free region) in use in the analysis. The simulations were run for two nominal Reynolds numbers, \( = (2500, 1000)\), where \( = /\), with characteristic velocity scale \(\), characteristic length scale \(\) and kinematic viscosity \(\), three Weber numbers \( = (10, 20, )\), where \( = ^2 /\), with density \(\) and surface tension \(\) (\( = \) representing no surface tension), all with the same Froude number (\( = / = 0.1\) with gravity \(g\)). 
+For \(Re = 2500\), the mesh size is \(256 256 660\), while for \(Re = 1000\) it is \(128 128 348\), where the mesh in the vertical direction is refined as the surface is approached and undulates to always adhere to the surface.
+These parameters are only used to set the simulations in motion. Of more interest are the turbulent parameters presented in the next section.
+
+Characterization of the turbulent flows
+
+To compare the experimental flow with the simulations, we need to analyse the turbulent properties of both flows in terms of appropriate nondimensional quantities.
+
+Pertinent quantities for the DNS flow cases are given in Table~.
+Here \( = 2 u'/\) is the turbulent Reynolds number, where \(\) is the integral scale and \(u'\) is the `representative velocity' [][Section 3.1]tennekes1972, here we use \(u'^2 = 13\). An overbar denotes average taken in the horizontal direction(s) (the $x,y$-plane for horizontal-plane PIV, the $x$ direction for vertical-planes), and $$ denotes average in time. 
+We define the `integral time scale' as $T_ =2 L_/u'$. \( = u' / \) is the Reynolds number based on the Taylor microscale \( = u' \), where \(\) is the dissipation, computed using \( = 2 s_ij\), where \(s_ij = (_i u_j +_j u_i)/2\) and the subscript $j$ can also denotes the directions $(x,y,z)$.
+With the dissipation, the Kolmogorov length scale \(L_K = (^3/)^1/4\) can also be computed. To find the integral scale, the relation
+
+ = 130 
+ 
+
+was used [][p.~68, 273]tennekes1972. We also include the turbulent Froude and Weber numbers defined, respectively, as
+
+ = ; ~~ = .
+
+The quantity $$ is the so-called viscous layer thickness, the approximate thickness of a boundary layer close to the surface wherein tangential stresses tend rapidly to zero due to the dynamic free-surface boundary condition. Following we use the relation 
+
+ = 2 ^-1/2 = 1 0.258.
+
+The latter relation comes from combining Eq.~ and the definition of $$.
+
+A deeper layer results from the kinematic boundary condition blocking fluid from penetrating the surface and forcing all motion to be horizontal there; the resulting layer, called the blockage layer, is the region wherein the flow becomes significantly anisotropic because the kinematic free-surface boundary condition suppresses vertical motion. The blockage layer has a thickness on the order of the integral length scale \( = ()\) and is the layer within which the free surface affects the overall turbulence statistics underneath [e.g.][]Jamin2024,aarnes2025. The boundary layer structure is sketched schematically in Figure~.
+
+In order to represent the bulk flow, turbulent properties and non-dimensional groups are calculated at a depth of \(z=-/3\) from the surface, which is just below the edge of the blockage layer for all DNS cases, minimising the effect of the surface while still being well away from the numerical forcing region. When referring to the DNS datasets, the depth \(z\) is denoted from the surface directly above the point of interest at that time, such that \(z = 0\) is at the surface, instead of at the mean surface level (see for more details).
+
+The turbulent flow in the two experimental cases was characterised by taking planar PIV measurements in a vertical $x, z$ plane, and evaluating the pertinent quantities at a depth where the influence of the surface is minimal. This was chosen to be around $z==-105$\,mm from the surface in both experimental flow cases. 
+Figure~ shows profiles of mean and root-mean-square (RMS) turbulent velocities as functions of depth. Some anisotropy is seen below around $z=-200$\,mm, caused by the proximity of the flow pumps at that depth, while approximately isotropic flow is observed between $z=-100$\,mm and $z=-200$\,mm. Above this level, surface blocking starts to affect the flow, with a marked decrease in vertical fluctuations, while the horizontal fluctuations remain relatively constant.
+The depth chosen of $z=-105$\,mm for the characterisation is thus representative of bulk flow slightly outside the blockage layer in both cases.
+
+For the following characterisation of the experimental flows one should note that our requirements for isotropy and homogeneity are considerably lower than for a study like that of , where the nature of the turbulence itself is the focus. 
+There is no reason why minor deviation from homogeneity and isotropy should affect the flow-to-surface coupling mechanism, 
+and a small mean flow will merely advect persistent structures and features slowly, which affects our results negligibly. Our facility is somewhat smaller than some previous experiments ; the moderate size of the laboratory makes it ideal for the performance of our feature detection method.
+
+We use a Reynolds decomposition of the velocity such that \(U_i = + u_i\), where \(U_i\) is the measured velocity, \(\) is the mean velocity in time, and \(u_i\) is the fluctuating component of the velocity. We let \(u_i'\) denote the root-mean-square over a single depth and in time: $u_x^(z) = ^1/2$ and so on. We also denote the representative velocity in the experiments as \(u' = 1/3(2u_x'+u_z')\), all measured at the reference depth $$.
+
+We quantify deviations from zero-mean-flow homogeneous and isotropic turbulent (HIT) using three different metrics defined as
+
+ = ^2 + ^2, \\
+ = 2 + , \\
+ = )^2 + (_z )^2 + .
+
+The values are calculated locally, then averaged horizontally at \(z=\), and are tabulated in Table~. In perfectly homogeneous isotropic zero-mean turbulence, all these quantities would be zero, and values well below unity are desired.
+
+Both MFF and MSRF have similar values as to at comparable Reynolds numbers $$, whereas NRS is considerably higher, indicating the potential for significant production of turbulent kinetic energy (TKE) in the bulk flow. 
+The production of TKE,
+
+ = - x_j,
+
+\(i,j = x, z\), in the region below the surface was evaluated and is substantial throughout the sub-surface region with the ratio of production to dissipation being \( / 0.7-0.9\) (depending on the case) at \(z=\), meaning the turbulence cannot be regarded as passively decaying HIT.
+We believe the reason to be the proximity of jets facing each other relative to the distance between neighbouring jets, $M=107.5$\,mm. The distance from the pumps' nozzles to the centre was $D=418.5$\,mm, such that the ratio $D/M = 3.9$ is lower than the desired value of $6$ to ensure approximate HIT by randomly actuated synthetic jet arrays . It is commonly desired in jet-stirred tanks to have negligible turbulence production in the region of interest , motivated by the desire to test established models and relations for turbulent flows that assume strictly decaying turbulence; for our purposes, we do not consider the persisting production to be an issue, as the focus is the interaction of structures with the surface, not whether these structures are HIT, but must bear in mind that results and intuition valid for HIT do not always apply in our bulk flow. 
+
+Different methods must be employed to estimate turbulent flow parameters compared to those used for the DNS data. We calculate the integral scale based on the autocorrelation of the velocity fluctuations in space,
+
+ _ij (r) = ) u_i( + r _j)u_i'^2,
+
+where \(_j\) is the unit vector in the \(j\)-th direction.
+The autocorrelation \(_11\) is taken at each snapshot by averaging over $x$ at depth \(z=-105~\) and then averaged in time (over all snapshots). An exponential of the form \(a e^-bx\) is then fitted to the average autocorrelation, whereupon the integral scale is estimated as \(a/b\) (following, e.g. ).
+
+The other turbulent properties can be calculated given an estimate of the viscous dissipation $$, a somewhat subtle point since our flow is not strictly HIT. After comparing several approaches detailed in Appendix~, we employ a fit to the energy spectrum of the turbulent fluctuations, such that the inertial range of the turbulence follows the power law $E_xx (k) = C_K ^2/3 k^-5/3$ where $C_K 0.5$. Figure~ shows the energy spectra for both forcing cases, with a dashed line representing the $-5/3$ power-law decay.
+
+The remaining turbulent properties are presented in Table~. 
+Note that care should be taken when comparing these values to other similar studies [e.g.,][]carter2016, ruth2024, variano2008, herlina2008 due to the production of turbulent kinetic energy in the flow described herein.
+
+Detection and classification of relevant surface structures
+
+The computer vision method for detection of dimples and scars from surface elevation data developed and described in detail in and demonstrated using DNS, was now applied to experimental data. Drawing on the observation that dimples and scars vary relatively little in size and width, respectively, the method makes use of a 2-D wavelet transform to highlight areas of the surface with indentations that correspond to these. Larger surface structures were thus filtered out, and by requiring detected features have a minimum size, the vast majority of false positive detections are removed.
+
+Compared to the implementation in and there are two key differences. First, rather than count the number of surface features in view, we calculate the relative surface area covered by detected features, a dimensionless quantity that is more easily compared between simulation and experiment and which is less sensitive to the choice of threshold parameters. For scars in particular, the number is not a well defined quantity since elongated features which stem from one and the same sub-surface vortex may be defined as one or several scars depending on user-defined thresholds. The area, however, is far less sensitive to this. 
+
+Secondly, rather than distinguishing carefully between scars and dimples we count their relative area together. We discuss more carefully in Section~ and Appendix~ how, for our parameters and field of view, adding the contributions from two types of persistent features gives a measure which correlates at least as well with sub-surface horizontal divergence as dimples alone, and the combined quantity has several distinct practical advantages, especially when applied to the more challenging experimental data where a more sophisticated detection method would be required for confident distinction. For instance, a closely adjacent dimple and scar can often appear as one and the same feature, while disjoint detections of what are in fact scars can be sufficiently circular in shape to be mistaken for dimples. Neither of these affect results when no distinction is necessary. We emphasise, as discussed in Appendix~, that due to the different motion of dimples and scars, a sufficiently large interrogation area is necessary for the combined quantity to be successful, which is satisfied in our case.
+
+A characteristic of dimples and scars is that they persist for a relatively long time compared to turbulent timescales, the former more so than the latter. For the DNS data, the high time resolution makes it straightforward to track features in time and filter away features which disappear quickly. The threshold for dimples is set at $10$ recorded frames in the simulation (\( 0.12-0.18\ T_\)), and scars a minimum of $5$ frames (\( 0.06-0.09\ T_\)). Any structure with a shorter lifetime is considered neither.
+
+Feature tracking is more challenging for the experimental data because the time resolution is lower. While this might have been accomplished with a more sophisticated method, we find that it is sufficient for our purposes to remove the lifetime criterion altogether. Setting instead the wavelet threshold somewhat lower and requiring detected features to have a minimum area, most fast fluctuations were filtered out because their imprints are comparatively weak, with the result that many scars appear as two or more disjointed areas or weaker features might flicker in and out of view, both of which have a limited effect on the relative area. In the inevitable compromise between false positives and false negatives, we found it preferable for the noisier experimental data that some of the weaker structures were not detected. As our results in Section~ show, the accuracy is high enough to obtain excellent correlation between surface features and sub-surface flow.
+
+The minimum area for a feature to be counted as a dimple or scar was set at $10$ data points in simulations (corresponding to a circle of radius \( 0.12-0.19 \) depending on the DNS case), while in the experiments it is set to a minimum of $15$ data points (a corresponding radius of \( 0.15 \)).
+
+Two example snapshots showing feature detection applied to experimental data are depicted in Figure~, at representative instances with few and many features present, respectively. The left panel displays the measured instantaneous surface elevation at an arbitrarily chosen time, and the right panel displays the identified structures. 
+
+Results
+
+In this section, we present the results of identifying surface structures and their relationships with sub-surface flow. 
+
+ showed using DNS data how the variation in time of \(\) when averaged over a set horizontal area (the computational domain) is closely correlated to the time-varying number of detected dimples in the same domain on the surface, indicating that one could be predicted from measurement of the other. 
+In , we perform the next steps in such an analysis by considering both dimples and scars, using the covered area of the structures instead of the number. We then show how there is a correlation in time between detected features and mean-square (MS) horizontal divergence even if we move away from the surface to horizontal planes increasingly far beneath it in . 
+
+Covariance of horizontal divergence and surface features
+
+In their analysis, \ correlated the surface divergence to the number of detected dimples within their simulation domain.
+In the present study, we use the fraction of the surface area covered by dimples and scars put together. This time-varying quantity correlates approximately equally well (oftentimes better) with surface divergence and has distinct advantages over counting the structures: it eschews the need to distinguish between dimples and scars which can be challenging when one of each appear close together (see ), it is a dimensionless quantity which is comparable between DNS and experimental data, and it is less sensitive to detection ambiguities such as whether two detected scars are in fact parts of the same one. In Appendices~ and , we explore the effect of using the number of structures compared to the relative area, and that our field of view is of the appropriate size so that the combined scar-dimple metric is successful.
+
+To compare statistics across different data sets, the respective domain sizes must be the same in the most relevant sense, i.e., measuring approximately the same number of integral scales along and across in all cases.
+Since the experiments have the largest integral scale-to-domain ratio, we use a truncated section of the simulation domain to match the size in terms of the number of integral scales. 
+We limit our ``interrogation window" of the DNS data to approximately \(4.9 \ 4.9 \), which is around a quarter of the horizontal plane in all simulation cases. The surface in the experimental datasets is around \(3 \ 3.4 \) in Case A and \(4.5 \ 5.1 \) in Case B. Details on the effects of limiting the interrogation window for the DNS data can be found in Appendix . We find that our field of view/interrogation window is sufficiently large and that results in this Section are not highly sensitive to its exact size.
+
+The experiments measured velocity fields not at the surface but a little way below, and for comparability we also consider DNS velocity fields at a finite depth rather than at the surface. We choose to compare depth equal to the same number of Taylor lengthscales $$, about four times the viscous layer thickness, \(\); see Eq.~, based on the statistical scaling found in (when studying depth dependence we use $$ since the large structures penetrate throughout the blockage layer).
+Figure~a shows a time series of the relative area covered by dimples and scars $(t)$ alongside the time series of $(t)$ ($z=0$) for the simulated case with $ = 2500$ and $ = $. Time is normalised by the integral timescale $T_ = 2/u'$. 
+Figure~b shows the same time series $(t)$, this time alongside a time series of $(t, z_c)$ where the comparison depth is $z_c -1.7 -6.6$; finally, in Figure~c we have $(t)$ with $(t, z_c)$, also corresponding to $z_c -1.7 $, for one of the experimental ensembles.
+
+Figure~a illustrates the close correlation between the instantaneous values of relative surface area covered by detected features and mean-square surface divergence, virtually identical to what was found for the number of dimples by .
+The normalized cross-correlation is about $0.9$---see Eq.~ and Figure~ below. (The precise values of $(t)$ are not significant since they depend on thresholds in the detection process, but the normalised cross correlation is insensitive to this.)
+At depth $z=-1.7~$ the correlation is not equally close. This must be expected since deeper fluid layers are penetrated also by structures from beneath which do not extend close to the surface.
+
+Moreover, far from all surface-attached vortices reach this deep . Nevertheless, peaks in the prevalence of surface structures clearly correspond to peaks in horizontal divergence also at this level, with a cross-correlation value of about \(0.7\).
+
+Strikingly, a very similar picture is seen in figure c, where the same two quantities are compared for the experimental data of Case A. It is to our knowledge the first time a direct, instantaneous correlation has been made between surface features and sub-surface velocities in an experimental setting. The Reynolds number is far higher so the relative influence of large intermittent events and smaller-scale structures which affect horizontal divergence can be expected to be different. Moreover, as discussed in the Introduction, intuition from non-deformable boundary layers would suggest a greater difference, demonstrating how a free surface affects the flow fundamentally differently. The high peaks in the time series are associated with large upwelling events that trigger the formation of scars and dimples---these have no equivalent at a rigid interface. 
+
+Figure~ provides further, and more general, evidence that the area of turbulent surface imprints can be used as a proxy for sub- and cross-surface processes governed by turbulent motions, holding promise for the use of surface imaging for remote sensing purposes also in natural flows where turbulence levels and Reynolds numbers far exceed what is available in simulation . 
+
+Depth-dependence of surface-to-bulk correlations
+
+Although the horizontal divergence field $_s(x,y,t)$ at the surface differs greatly from the horizontal divergence $(x,y,z_c,t)$ when compared point to point, the time series of $(t)$ and $(t,z_c)$ have clear similarities once averaged over the plane.
+To quantify this observation we calculate the normalized correlation between \((t)\) and \((t,z)\) at various depths, defined as
+
+ (z) = ) ( - ) )^2 )^2 .
+
+To answer a main question of this study, we finally consider how the strong correlation between surface-feature area $(t)$ and MS-surface divergence $(t,z)$, falls off when moving away from the surface. The statistical investigation of indicated that even the strongest vertical `bathtub' vortices attached to dimples in the DNS simulation reached considerably less than an integral scale into the deep when measured straight downwards. The horizontal vortices giving rise to scars were always found to lie near $z=-$, far from the bottom of the blockage layer. Indeed, the blockage layer is normally understood to be the lower limit of where the turbulence is significantly altered by the presence of the free surface. One might expect from this that the close temporal covariance of surface features and sub-surface velocity properties like the horizontal divergence would be very weak outside of the blockage layer. Such, however, is not the case.
+
+We plot $(z)$ from the surface down to $z=-2.5~$ in Figure~. The cross correlations in all cases show approximately linear decrease with slightly different slope, with cross correlations remaining well over $0.5$ down throughout the blockage layer, $z-$. The graphs pertaining to different simulation cases all show similar slopes with the exception of Case 1 which has the highest Reynolds number and no surface tension. This is difficult to explain on physical grounds since there is no obvious trend. The likeliest explanation is that, for Case 1, which is the most violent and intermittent of the DNS cases, the DNS time series was not long enough for the statistics to be fully converged---it contains only $5$-$6$ of the largest upwelling events which correlate the surface to deep waters. Excluding some of these events from the time series changes the slope significantly, indicating that a longer time series would be needed before the slope of the autocorrelation graph in Fig.~ can be trusted for Case 1. However, the general linear trend seems well established, as is the presence of considerable correlation down to two integral lengths' depth.
+
+We finally consider the correlation between $(t)$ and \((t,z)\) at various depths,
+
+ 
+ (z) = ) ( - ) )^2 )^2 ,
+
+where both time series are calculated at the same point in time and then averaged (i.e., no time lag assumed). This is a formal measure of the similarity between the blue and orange graphs shown for one particular depth in Figure~, computed for all available depths down to $2.5$ integral scales.
+
+Figure~ contains some of the key conclusions in the present study. Here, $$ is plotted as a function of depth for all DNS and experimental cases.
+At the surface itself, $$ is $ 0.85$ for all DNS cases. Lines represent the DNS cases and blue circles and orange squares represent the experimental cases A and B, respectively. One and the same absolute depth in the two experimental cases translate to a different number of $$ for the different flow conditions.
+
+As expected, similarly to Figure~, the correlation values in Figure~ are highest close to the surface and thence steadily decrease. Even well beneath the bottom edge of the blockage layer, at $z -2$, $$ is in the range $0.2$ - $0.5$ for all cases, a significant degree of correlation. In light of previous studies considering statistical covariance of surface and sub-surface quantities , this result is striking. Equally surprising might be the observation that the correlation appears to fall off linearly within this range for all cases, even though the statistical properties investigated by decay as a much more rapid function. There the authors studied how the velocity field behaved directly beneath surface features; what is clear from Fig.~ is that surges in horizontal divergence and increased abundance of surface features coincide in time, but not in horizontal space. 
+
+Therefore, if the aggregated horizontal divergence is of interest, measurements as far as $ z= -\, $ (approximately the extent of the blockage layer) give a correlation with the structures on the surface of $0.5 0.7$. That the correlation values remain significant even as deep as this can be ascribed to the key role of intermittency: as Figure~ clearly shows, the abundance of surface features inside a horizontal area of the size we consider is dominated by large intermittent upwelling events causing both $(t)$ and $(z,t)$ to surge. These events can be large enough to cause coherent motion throughout the blockage layer and beyond. In contrast, surface imprints of eddies which are significantly smaller than an integral scale are frequently too weak to be detected, and live for a shorter time before diffusing.
+
+Another takeaway from Figure~ is the agreement between numerical DNS data and experimental data when scaled by the integral lengthscale, even though the turbulent Reynolds numbers are several times larger (see Table~).
+
+The cross correlations in the experimental cases lie somewhat below those for DNS, which is natural due to the greater difficulty of detecting surface structures. Shallower imprints can be detected in DNS data than what is possible from the experimental profilometry data, something that is especially true of the low-turbulence case B. The shallowest red square in Figure~ appears as something of an outlier. 
+We attribute this to the difficulty of detecting the smallest surface features in this case; a number of such features are present in the velocity field at the shallowest depth, but their concomitant surface indentations are not picked up amidst measurement noise. 
+(The profilometry measurements for the shallowest PIV plane also has higher noise level due to higher concentrations of tracer particles necessary.)
+The surface traces of larger events reaching half an integral scale down and beyond are, however, observed.
+
+As in Figure~, the slope of the near-linear curves in Figure~ may not be fully converged due to the limited time series available for DNS---especially the case for the most violent and intermittent DNS case $Re=2500, We=$---yet the qualitative observations made are nevertheless clear. 
+
+Conclusions
+
+We have performed experiments with simultaneous measurements of the surface elevation and the sub-surface velocity field in a jet-stirred turbulence tank. The surface was measured using a profilometry method, while the flow was measured using PIV. We have implemented a previously developed, simple computer vision method that utilises 2-D wavelet transformations to detect structures on the surface, namely dimples and scars, imprints associated with gravity-dominated free-surface turbulence flows. Dimples are small circular imprints of vertical vortices that have attached themselves to the surface, whereas scars are sharp, curved, elongated indentations left by horizontal vortices close beneath the surface (see ).
+We demonstrate the method successfully for experimental data, allowing us to correlate surface features to sub-surface velocity fields for the first time to our knowledge.
+
+Throughout the study, we compare experimental measurements with a set of Direct Numerical Simulation (DNS) data of approximately homogeneous, isotropic turbulence impinging on a free surface. Although experimental Reynolds numbers are an order of magnitude higher than those in DNS, all the physical insights we report concerning the coupling between surface imprints and bulk flow hold for both and behave qualitatively very similarly. 
+
+It was found by \ from DNS data that there was a high degree of correlation between the development in time of the mean-square surface divergence and the abundance of dimples observed on the surface. We have extended this analysis to consider instead the horizontal divergence $(z,t)=_x u + _y v$ in planes at different depths, allowing us to directly compare simulation and experiments (where velocity measurements were done a small distance underneath the surface), and to study how the close correlation between surface features and sub-surface horizontal divergence depends on depth.
+
+We find that an appropriate measure of surface feature prevalence is the relative portion of the free surface area covered by dimples and scars combined, $(t)$. A strong correlation---normalised cross-correlation (NCC) of up to $0.85$---is found between $(t)$ and $(z,t)$ at the shallowest measurement level, approximately $1.7$ Taylor lengthscales sub surface. This demonstrates that the relative area of dimples and scars, which can be estimated solely based on the surface elevation, can be used as ``proxy" for the changes in the horizontal divergence, a quantity closely related to gas transfer and which would otherwise require velocity field measurements, which are difficult in a field setting. As indicated in the numerical study of , we now confirm experimentally that optical observation of the free surface holds promise for remote sensing purposes.
+
+By studying the NCC between \((t)\) and \((t,z)\) at increasing depth $|z|$, we were able to study numerically as well as experimentally how the correlation decayed away from the surface. 
+We find in all cases that the NCC falls off approximately linearly as a function of depth, and remains significant, at the level of $0.4$ and above, down to a depth of two turbulent integral scales, significantly deeper than the thickness of the `blockage layer' in which the turbulent statistics are altered by the presence of the surface [see e.g.][]nagaosa1999, calmet2003. The very deep range of correlations can be attributed to the large, intermittent upwelling events which involve structures considerably greater than the bulk integral scale, and which cause surges in both horizontal divergence and free-surface imprints. Dimples and scars themselves are much smaller, on the order of \( 0.26 \); however, many of these imprints can be seen on the surface around a single large upwelling.
+
+Despite very disparate Reynolds numbers, NCC as a function of depth in simulations and experiments show excellent agreement as a function of depth measured in units of the integral scale. This demonstrates fundamental differences between free-surface turbulence and other types of boundary layers. It also implies that the relatively weak correlations between surface elevation and sub-surface velocity field quantities directly beneath found in previous studies , should not be interpreted as a weak coupling between the two in general. Singling out the areas of the surface where the turbulence leaves clear imprints and accounting for the fact that the interplay is non-local in space and (to a lesser degree) time, surface shape can provide significant information about the large, energy-carrying turbulent eddies surprisingly far beneath.
+
+[Acknowledgements]
+DNS data was generously shared with us by Prof.\ Lian Shen and Dr.\ Anqing Xuan at the University of Minnesota. We benefited from discussions and input from Daniel Kjellevold and Prof.\ Ingelin Steinsland.
+
+[Funding]
+The research was co-funded by the Research Council of Norway (iMOD, grant 325114) and the European Union (ERC CoG, WaTurSheD, grant 101045299; ERC StG, GLITR, grant 101041000; MSCA-PF, InMyWaves, grant 101107440).
+Views and opinions expressed are however those of the authors only and do not necessarily reflect those of the European Union or the European Research Council. Neither the European Union nor the granting authority can be held responsible for them.
+
+[Declaration of interests]The authors report no conflict of interest.
+
+[Author contributions]A.S., A.F., Y.H.T. developed the experimental methods, set up and performed the experiments. R.J.H. supervised the experiments. O.M.B. analysed the data and performed the tracking and statistical calculations with some assistance from J.R.A. S..E. supervised this work. O.M.B., A.F., J.R.A. and Y.H.T. wrote the manuscript with edits and contributions from all authors.
+
+Estimating the viscous dissipation
+
+An estimate of viscous dissipation \(\) of turbulent kinetic energy (TKE) was required for experimental flow characterisation. 
+The PIV measurements do not resolve the smallest, Kolmogorov, scales of the turbulence [as is typical of such experiments; see e.g.][]poelma2006, lavoie07, so direct calculations of the measured shear stress will not give reliable results. 
+
+With homogeneous isotropic turbulence (HIT), we can use the scaling argument
+
+ _s = C_ L_,
+ 
+
+where \(C_\) is a constant commonly set to \(0.5\) , which leads to Equation~.
+
+As discussed in Sec.\ our experiments do not fully satisfy the criteria for HIT, so it was deemed prudent to also consider other physics-based approaches. We draw on the longitudinal and transverse structure functions, respectively
+
+ 
+ D^2_(r,z)=& + r _x) - u_x() )^2 \\
+ D^2_(r,z)=& + r _z) - u_x() )^2 
+ 
+
+which we calculate in the vertical PIV plane 
+
+described in Sections~ and .
+
+Following , at sufficiently high Reynolds numbers the turbulence is locally homogeneous and isotropic leading to the scaling laws in the inertial range 
+\(D_^2 =C_2 ( r)^2/3\) and the transverse \(D_^2 = 43 C_2 ( r)^2/3\) directions, where \(C_2 2\) is a constant. The longitudinal structure function \(D_^2\) is related to the energy spectrum such that the latter also exhibits a power law of the form \(E_xx (k) = C_K ^2/3 k^-5/3\), with \(C_K = C_2 0.5\) where $$ is the gamma function.
+
+The dissipation \(\) can then be estimated for each experimental case by fitting a line to the inertial range of either the energy spectrum shown in Fig.\ or the longitudinal and transverse structure functions, shown in Fig.\ . The values are presented in Table~, where \(_sf,\) is the dissipation estimate based on a fit to the longitudinal structure function, \(_sf,\) is based on a fit to the transverse structure function and $_E_k$ is based on a fit to the energy spectrum.
+
+From the energy spectrum, it is also possible to estimate the dissipation spectrum, where a new estimate for the dissipation can be calculated as 
+
+ _D = _0^ 2 ^2 E() d,
+ 
+
+\(_D\) is then the estimate based on the integral of the dissipation spectrum, also tabulated in Table~.
+Since the highest wave-numbers in the energy and dissipation spectra depend on the PIV resolution, we use a fit in the dissipation region to integrate up to the wave-number corresponding to the Kolmogorov scale (the precise choice of integration limit had very little effect in our case). Finally, we also include the scaling argument \(_s\) for completeness in Table~.
+
+The various methods give a range of estimates of dissipation due to the different assumptions they are based on, as well as differences in the calculations and averaging procedures. We see, for example, that \(_D\) seems to be much larger than the other values, indicating overestimation, while \(_sf,\) is lower than the others in both cases. We use the estimate based on \(_E_K\), this value falls in the middle, mitigating over- and underestimation errors.
+
+Number and cumulative area of detected structures
+
+In Sections~, we use the relative area covered by detected structures when correlating surface structures to the horizontal divergence. In contrast, \ used the number of detected dimples for the same purpose. Here, we present the effect of using relative area instead of the number of structures, and changing between dimples, scars, or both. We will use the DNS data with \( = 2500,\ = \), and compare directly to . We use the whole DNS domain, as that gives a clearer time series for the dimples (see appendix ).
+
+Figure\ a is a version of Figure 3a from \ and shows the time development of the number of detected dimples in the calculation domain \(N_d(t)\) (blue, jagged curve) alongside the MS surface divergence $(z)$ (orange curve). As discussed in , the correlation is very close between the two, with a marked time lag between them: dimples arrive a little after the upwelling event that creates a surface divergence peak and then persist for some time after. 
+
+Comparing this to the same visulatisation but now using the relative area covered by both dimples and scars as surface metric, shown in Fig.\ b, there are striking similarities as well as differences. Perhaps the most obvious observation is that the graphs follow each other at least as closely---in fact, the correlation is even higher, and there is now no observable lag between the two. 
+
+More understanding is gleamed by considering the relative contribution to the relative area from dimples \(_d(t)\). This contribution does display the same lag as in the panel above, Fig.\ a (indeed the two graphs are very similar but for an overall scaling). A story emerges: scars appear at the same time as an upwelling boil appears, yet as the upwelling boil they encircle expands, they become too shallow to detect before the upwelling event is over. Dimples, in contrast, are delayed and contribute only a small fraction of the area most of the time, yet their ability to linger after the upwelling event is over counteracts the early disappearance of scars. 
+
+In conclusion, Fig.\ shows that, at least in this example case, using the combined area of dimples and scars is not only an easier, but also a better proxy of surface divergence than the dimple count. The same observation holds for all our DNS data sets, not only at the surface but also in correlation with $(z)$ at depths underneath the surface. 
+
+The sharp spikes seen in the dimple-area graph, which appear directly beneath surges in total area, are near-circular scars misattributed as dimples of large area. This false-positive error could be removed fairly easily with a more thoughtful sorting criterion than simply the eccentricity [as proposed by][]babiker2023, aarnes2025, yet we leave them in to show the advantage of not needing to distinguish between the types.
+
+Interrogation window effects on correlations
+
+In our study, the detection and counting of surface features as well as averaging of horizontal divergence was performed in an interrogation window, the size of which was adjusted so that data from DNS and experiments could be fairly compared. Clearly, an interrogation window of appropriate size is necessary: A window that is too small will capture only parts of large upwelling events and potentially miss spatially nonlocal correlations. A window much bigger than ours, large enough to contain several independent upwelling boils at the same time, would lose the ability to ascribe a local surge in surface features with its concomitant upwelling event. We will therefore briefly demonstrate that our interrogation window size is appropriate for our purposes.
+
+Figure~ investigates the effect of changing interrogation window size by showing the highest values of the normalised cross-correlation between the time series of mean-square surface divergence \(^2(t)\) and time series of detected structures on the surface for different interrogation window sizes for Case 1. The latter are either time series of the number of detected dimples, \(N_d,w(t)\) (as used by ), the area covered by scars, \(S_s,w(t)\), or the total area of structures (dimples and scars), \(S_w(t)\), within the interrogation window. While the number of dimples is straightforward to identify, area is a better measure for scars, since small parameter changes in the scar detection may result in splitting up scars into multiple or combining several scars into one.
+Every data point is computed using sliding window averaging, with a step size of $0.05$ times the horizontal domain length. The peak value of the correlation between the time series is used in the averaging.
+
+The results show two clear trends: The correlation between \(^2(t)\) and \(N_d,w(t)\) is strongly dependent on the size of the interrogation window; the correlation between \(^2(t)\) and the area fraction covered by scars \(_s,w(t)\) is all but independent of the size of the interrogation window. The latter has a high correlation ($> 0.88$) even for the smallest interrogation window tested, which spans only 5\
+
+The graphs accord well with the `cartoon' narrative presented in : surges in surface divergence are associated with upwelling events which has a core---signified by a 'boil'---with high positive values of $_s$ and an area with corresponding downwelling surrounding the boil. Scars, as detailed in , are positioned in between the boil and the downwelling region outside. Dimples appear around the edge of the upwelling boil a little after it appears, and then persist for some time while being advected with the surrounding flow. According to this picture, for a strong time correlation to be observed between mean-square surface divergence and a type of surface feature, the dimple or scar and (at least parts of) the up- or downwelling region they are associated with must both appear inside the interrogation window (although not necessarily simultaneously, as for dimples). For scars, this is nearly always the case, even for small windows, because they lie in between the areas where $$ is enhanced. Dimples, on the other hand, can drift some distance away from where they originated, and a high level of correlation requires a window significantly larger than the size of large upwelling boils. 
+
+The overall conclusions of this Appendix and Appendix is that the best correlation between surface observation and surface divergence is found when the interrogation window is sufficiently large, and the sum of the surface areas of dimples and scars together is used as the proxy. We also show that our window size is appropriate according to this, as indicated by the close correlations we have observed. A detailed investigation into spatially local dependences as well as temporal will be considered in a future publication.

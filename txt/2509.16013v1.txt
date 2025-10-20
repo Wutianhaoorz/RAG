@@ -1,0 +1,345 @@
+[pdflatex,sn-mathphys-num]sn-jnl
+
+[title]appendix
+
+Theorem
+[theorem]Proposition
+
+Example
+Remark
+
+Definition
+
+[Article Title]Assessment of the Gradient Jump Penalisation in Large-Eddy Simulations of Turbulence
+
+*[1] 
+
+[2] 
+
+[3] 
+
+[1,2] 
+
+*[1], , , 
+
+[2], , , 
+
+[3], , , 
+
+ 550$. 
+In the TGV case, the application of GJP results in decreased fluctuations at only high wavenumbers compared to simulations without GJP. The periodic hill flow simulations indicate the applicability of GJP in wall-resolved LES (WRLES) involving curved geometries, though it tends to dissipate some of the finer details in the solution. 
+Finally, in the analysis of the canonical turbulent channel flow cases, GJP leads a higher resolved turbulent kinetic energy than simulations without GJP and direct numerical simulations. GJP's mechanism is identified as providing enhanced dissipation at high wavenumbers but accompanied with insufficient dissipation at low wavenumbers, leading to a pronounced spectral cut-off. Non-physical oscillations on element interfaces are reflected as spikes in the power spectral density. By evaluating the sharpness of the strongest spike, GJP is shown to smoothen the spectra, however without completely removing the gradient jumps at low computational resolution.
+
+Introduction
+
+The spectral element method (SEM) has been extensively used to perform high-fidelity simulations of turbulent flows, mainly motivated by two factors. One is its excellence in parallel computing since most operations are performed within a single reference element; while the other one is the higher accuracy under the same degree of freedom compared with some low-order numerical schemes due to its high-order nature. Although SEM based on the continuous Galerkin (CG) method has already proven to be an invaluable tool for well-resolved direct numerical simulation (DNS), using it on coarser grids typical for large eddy simulation (LES) is known to cause more-or-less well-documented difficulties, for example in~ and~. In particular, the solution usually develops high-frequency oscillations (``wiggles'') inside the elements close to the element interfaces and significant discontinuities in its gradient across neighbouring elements, see~. These issues are particularly relevant for LES since the resolution is generally ``poor" for a smooth solution and there lacks a mechanism providing sufficient dissipation by CG-SEM itself. In addition, most subgrid-scale (SGS) models employ the velocity-gradient tensor in some way. Thus, for LES using SGS models, gradient jumps directly propagate into model predictions. In an effort to alleviate such issues, during the past decades, several approaches have been proposed to mitigate the wiggles, such as directly utilizing the high-pass-filtered field~, applying hierarchical viscosity in the modal space, which is known as spectral vanishing viscosity (SVV)~, and gradient jump penalisation (GJP)~.
+
+Some studies have already investigated GJP in implicit LES (iLES) in detail, with the aim of improving comparably well-resolved simulations. For example, the dispersion-diffusion behaviour of GJP on eigen-solutions was analysed in detail and instantaneous snapshots were compared with SVV in~; and the integrated results of GJP were analysed and compared to solution jump penalisation in~ to a Taylor--Green vortex flow. However, to our knowledge, the literature did not contain any study on their interactions with SGS models and their performance at a typical LES resolution which requires active SGS models instead of only relying on numerical schemes for sufficient dissipation. In addition, those studies had flow simulations at relatively low polynomial orders, e.g. $P=3$ in~ and $P=3,5$ in~, where the solution was constructed on a smoother polynomial basis with potentially larger numerical dissipation.
+
+The purpose of this work is to study the effect of the GJP on a coarse resolution, i.e., typical wall-resolved LES (WRLES) resolution, when coupled with active SGS models under a higher polynomial order. We implement GJP in the SEM solver Neko~ for hexahedral elements and investigate the influence of the penalty term on the Taylor--Green vortex flow at $Re=1600$ with isotropic meshes, turbulent flows over a periodic hill at $Re = 10595$ and $37000$ with curved meshes both visually and statistically, and further the canonical case of a turbulent channel flow at $Re_ = 550$ in terms of visualisations, statistics and spectra.
+
+The remainder of this article is organised as follows. Section introduces the governing equations, the subgrid-scale (SGS) models adopted in this study and the details of GJP. This is followed by the LES of a Taylor--Green vortex (TGV) flow at $Re=1600$ performed with and without GJP in Section to demonstrate the effect of wiggle-dissipation in ideal isotropic meshes. Section applies GJP in the WRLES of periodic hill flow at $Re = 10595$ and $37000$. This is followed by the impact of GJP in a WRLES of fully developed turbulent channel flow at $Re_550$ in Section . Finally, some conclusive marks and future works are provided in Section .
+
+Methodology
+
+ 
+Governing equations
+ 
+ The governing equations for incompressible flows in Cartesian coordinates are
+ 
+ t + u_j x_j 
+ &=& - x_i + x_j, \;(i=1,2,3) \\
+ x_i &=& 0, 
+ 
+ where $u_i$ and $p$ are the velocity and pressure fields resolved by the computational grid points. $_ij$ is the stress tensor combining the viscous and subgrid-scale (SGS) stresses from unresolved eddies. The SGS stresses are modelled by the eddy viscosity ansatz, which relates the unresolved turbulent activities to the resolved flow motions by an eddy viscosity model, leading to
+ 
+ _ij = 2( + _ sgs) S_ij \ , 
+ 
+ with the strain-rate tensor
+ 
+ S_ij := 2( x_j + x_i) \ .
+ 
+ $$ is the kinematic viscosity which is constant in this work; while $_ sgs$ is the eddy viscosity which is a field evolving with time and space. In this model, the turbulent kinetic energy (TKE) is transported from resolved to unresolved vortices by diffusing the momentum in the same mechanism as the molecular viscosity does. The modeling of $_ sgs$ is further discussed in Section .
+ 
+ 
+Subgrid-scale models
+ 
+ In the CG-SEM community, there is a tendency to avoid the use of explicit SGS models and leave the absent dissipation to numerical schemes such as high-pass filtering in~ and SVV in~ and~. However, in some simulations motivated by atmospheric flow studies such as~, using explicit SGS models in CG-SEM is still unavoidable since one usually approaches such high Reynolds numbers that those aforementioned numerical techniques are not capable to compensate for the lack of the dissipation from flow physics, which can also be demonstrated by the wiggly fields in~ and also the spiky statistics of the case using high-order filtering as a forcing term in~. Thus, we consider in this work two algebraic eddy-viscosity models: Sigma model and Vreman model.
+
+ 
+ The Smagorinsky model was proposed in 1963~ and has the following formulation,
+ 
+ _ sgs &=& (C_S )^2 \ , \\
+ &=& (2S_ijS_ij)^1/2\ .
+ 
+ Here we set the constant $C_S$ to $1.7$ as originally proposed by Lilly for homogeneous isotropic turbulence.
+ 
+ 
+ The Sigma model proposed by Nicoud and Ducros ~ is based on the singular values $_1, _2, _3$ ($_1 _2 _3 0$) of the velocity gradient tensor $g_ij := u_i / x_j$.
+ 
+ _ sgs &=& (C_ )^2 _, \\
+ _ &=& _1 ^ 2.
+ 
+ 
+ Here, the single model constant $C_$ is set to $1.35$ as proposed in~ as a reference value. 
+ 
+ 
+ 
+ 
+ Vreman model was proposed by~. The formulation of Vreman model is directly based on the velocity gradient tensor $g_ij$.
+ 
+ _ sgs &=& C_ Vreman ^2 g_ijg_ij, \\
+ B_ &=& _11_22 - _12^2 + _11_33 - _13^2 + _22_33 - _23^2, \\
+ _ij &=& g_mi g_mj.
+ 
+
+ Also in this case, since the focus of this contribution is on reproducibility, the model constant $C_ Vreman$ is set to the reference value of $0.07$ as recommended initially for the case of homogeneous isotropic turbulence .
+
+ 
+ All three SGS models aforementioned require a length scale, which is typically related to the filter width, which is based on the grid space if no explicit filter is employed. In the SEM community, the right choice of this $$ has been the cause of a number of discussions, since the field is rendered by piecewise smooth polynomials, the implicitness of the grid filter and the non-equidistant distribution of collocation points. However, one could still related $$ with either the local evaluation related to quadrature points such as the estimation in~ or an element-wise evaluation related to the element size and the polynomial order, such as the estimation based on average element volume shared by each node in~ or based on the maximum node spacing in~. Since in this work we mainly focused on the effect of GJP coupled with active SGS models instead of a perfect LES, we would adopt those choices for $$ without further discussion of which one gives a better dissipation property.
+ 
+ 
+Gradient jump penalisation
+ 
+
+ From the formulation shown in Section and , both SGS models rely on an accurate estimation of the velocity gradient tensor, which would be jeopardised from the natural discontinuous gradient of CG and the non-physical oscillations appearing at element interfaces observed in several previous pioneer studies such as~ and~. In this work, we apply GJP introduced by~ which was originally proposed to regularise non-physical oscillations in iLES. In~, the formulation of GJP is introduced in detail, which we summarise here. For a 1D advection problem of scalar $T$ in tensor notation
+ 
+ t + u x 
+ = 0,
+ 
+ where $u$ is the advection velocity, the weak formulation with the spectral element discretisation within an element $_e$ from an entire domain $$ is
+ 
+ __e _i t dx
+ +__e _i u x dx
+ = 0,
+ 
+ where $_i$ is the polynomial of $i$-th order. The GJP is implemented by adding one more right-hand side (RHS) term to Equation~() resulting in
+ 
+ __e _i t dx
+ +__e _i u x dx = - |u n| h__e^2 G(T) n,
+ 
+ where $$ is a parameter which is optimised in~ to be $ = 0.8(P+1)^-4$ with $P$ to be the polynomial order, $n$ is the face normal which in this 1D case to be either $-1$ or $1$, $h__e$ is the element size, and
+ 
+ := _ _e ds.
+ 
+ There is one more term which needs more elaboration, i.e. the gradient jump term over an element interface $F$
+ 
+ G(T)|_F := T |_ ^1_e F n_1
+ + T |_ ^2_e F n_2,
+ 
+ where the sub/superscript $1$ and $2$ refers the quantity belonging to the elements on either side of $F$.
+
+ For the 3D advection-diffusion problem, the RHS of Equation~() would become 
+ 
+ - |u_m n_m| h__e^2 G(T) _t_1, i _t_2, j n,
+ 
+ where $|u_m n_m|$ stands for the absolute volumetric flux, and $_t_1, i, _t_2, j$ are the $i$-th and $j$-th order polynomials tangential to the facet included in the integral and $_n, k$ is the $k$-th order polynomial normal to the facet. The final term $ n$ could be evaluated separately by a derivative in the computational domain and its mapping into the physical domain illustrated as follows. For the convenience in the later illustrations, let us name the physical space of an element to be $(x,y,z)$ and the mapped computational space which is symbolised as $(r,s,t)$ ranged between $[-1,1]$. Then $ n$ on the facet whose normal is mapped into $r$ could be decomposed by the chain rule into
+ 
+ . n|_n r = . |_=1 ( x + y + z).
+ 
+ The first part could be evaluated by the polynomial property and independent of mesh; while the second part is from the mesh. Similar evaluation could be made for the facet whose normal is mapped to $s$ or $t$ by replacing $r$ in Equation ().
+ 
+ In this work, elements are hexahedral instead of tetrahedral as was adopted in~, which makes it not straightforward to evaluate the mesh size $h__e$ as the $4$ vertices on the same facet might not lie in in the same plane. Here we give the GLL-point-associated definition as follows:
+ 
+ we associate $h__e$ with each certain GLL-point pair that are the counterparts of each other on two opposite facets (here we denote the facets as $S_1$ and $S_2$), as illustrated in Figure ;
+ $h__e_P_1,P_2$, which is associated with the GLL-point $P_1$ on facet $S_1$ and its counterpart point $P_2$ on facet $S_2$ is defined by the following steps and illustrated in Figure ,:
+ 
+ define $$ as the vector pointing from $P_1$ to $P_2$;
+ name the normal vector of $S_1$ on $P_1$ as $_1$ and the normal vector of $S_2$ on $P_2$ as $_2$.
+ $h__e_P_1,P_2$ associated with $P_1$ and $P_2$ is defined as the average value of the projected length of $$ on $_1$ and $_2$ respectively,
+ 
+ h__e_P_1,P_2 := 2( _2_2 + _1_1).
+ 
+ 
+ 
+
+ 
+
+ Applying the weak form procedure as illustrated in Equation () to Equation () for a 3D senario, one could write out the GJP term for momentum equations as an additional forcing term on the right hand side of the weak form equation similar to Equation () but changing scalar $T$ to velocity components $u_i$
+ 
+ - |u_m n_m| h__e^2 G(u_i) _t_1 _t_2 n.
+ 
+ Noticing that there is a parameter $$ controlling the magnitude of the penalty term, from the parameter study in~, a scaling law is proposed
+ 
+ &=& a(P+1)^-4 \; for \; P>1, \\
+ a &=& 0.8.
+ 
+ In the following part of this work, we will show the Taylor--Green vortex case and the periodic-hill flow case without GJP ($a=0.0$) and with GJP with $a=0.8$, and vary the value of $a$ from $0.0$ up to $1.2$ for the channel flow case, covering no penalisation case, under-penalised cases and over-penalised cases to look the effects of the penalty term on LES using explicit SGS models in detail.
+
+Taylor--Green vortex
+
+To start with isotropic meshes, an LES of Taylor--Green vortex (TGV) at $Re = 1600$ is conducted on a uniform mesh $7 7 7$ elements with polynomial order $P=9$ to have the similar resolution as the coarse grid in if modulated by average GLL-spacing. The TGV case uses a periodic domain $[-L, L]^3$ with the initial condition
+ 
+ U(t=0) &=& V_0 (L)(L)(L),\\
+ V(t=0) &=& -V_0(L)(L)(L),\\
+ W(t=0) &=& 0.
+ 
+ The time of the simulation is scaled by $t_c = L/V_0$ and we use the classical Smagorinsky model with the filter width $$ defined as the averaged approach $ = (V__e/(P+1)^3)^1/3$ where $V__e$ is the element volume, given the flow finally decays into isotropic homogeneous turbulence. We run two simulations without GJP (noted as "$a=0.0$") and with GJP where $a=0.8$ and plot the volume-averaged kinetic energy and enstrophy in Figure . As one can see, the kinetic energy goes through a decaying process while the enstrophy peaks at $t/t_c 9$. This process corresponds to the well known physics in a TGV flow: starting from an unstable laminar initial condition, experiencing a transition from laminar to turbulent and proceeding towards a turbulent flow with an isotropic decay.
+ 
+ 
+
+ From Figure , small discrepancies of two cases are observed at $t/t_c 7.5$, $11$ and $17$. To see it in detail, Figure shows the velocity magnitude field at $t/t_c = 17$ when the flow is much later than the transitional stage. Though one can still see the elements interfaces through the field due to the lack of $C^1$ continuity, the non-physical oscillations on element interfaces in Figure are dissipated to a large degree by applying GJP in Figure . 
+ 
+
+ In order to quantitatively assess how the flow is smoothened, we analyse the 1D spectrum of the kinetic energy by averaging over the spectrum on 3 Cartesian directions at time instant $t/t_c = 11$ and $17$ in Figure . In general we can see the case with GJP has the same energy with the one without GJP at low wavenumbers. Besides, since the spectrum is computed by performing discrete Fourier transform on $x,y$ and $z$ direction and then averaging over three directions, so wiggles are expected to be reflected in the spectrum in some way. Given the knowledge that the Fourier transform of a pulsating signal are spikes in the frequency domain located at the pulsating frequency and its harmonics, one should expect the wiggles to be reflected as spikes in the wavenumber space. In Figure , those critical wavenumber are marked out by grey dash lines with the lowest to be $7$ corresponding to $7$ elements in each direction. Noting that the flow also shows large amplitude waves at low wavenumbers, we cannot see such spikes for low wavenumber such as $k=7$, $14$, $21$, etc. While for high wavenumbers starting from the $6$th harmonics where the flow dynamics does not contain high energy, the wiggles prevail and show spikes on harmonics of the element spacing, see the $a=0.0$ curve in Figure where GJP is not activated. By applying GJP, we can see for both time instants that spike starts to show up from the higher $8$th harmonics which is of even lower energy. Moreover, the spikes are smoother than the $a=0.0$ case with lower peak and valley values.
+ 
+
+ To summarize, GJP smoothen the wiggles in the TGV flow in a way such that the energy associated with high wavenumbers are generally lowered, while the energy associated with stronger low wavenumbers are preserved. Therefore, the overall energy, as shown in Fig.\ is not affected by GJP. 
+
+Periodic-hill flow
+
+In order to investigate the effect of GJP on a WRLES, we first perform the simulation of the flow over periodic hills, which belongs to the class of well established benchmark cases. It is characterised by curved surfaces leading to flow separation behind the first hill, a recirculation zone and re-attachment of the flow in front of the second hill. Further details and data for comparison at bulk Reynolds numbers from 5,600 to 37000 can be found within the ERCOFTAC Best Practice Guidelines and a accompanying publication . Here, simulations are conducted with the Sigma and Vreman model with and without GJP for Reynolds numbers of $10595$ and $37000$.
+ 
+
+Case setup
+
+The geometry and definitions of the periodic hill case are shown in Figure . The domain length is $L_x = 9.0h$, the height is given with $L_y=3.036h$ and the span extension is equal to $L_z=4.5h$ where $h$ defines the height of the hills. On the lower and the upper wall, i.e., the blue surfaces in Figure , no-slip boundary conditions are applied. For the remaining surfaces periodic boundary conditions are set, whereas a mass flux based forcing is applied in the streamwise $x$-direction to keep the Reynolds number $Re_b$ constant. Here, the Reynolds number is defined by the bulk velocity $U_b$ at the top of the hill, the kinematic viscosity of the fluid and the height $h$: $Re_b= h$.
+
+ 
+
+ 
+
+For both of the Reynolds numbers an individual mesh is considered accordingly. Thus, a mesh of 22×16×19 elements and a polynomial order of 8 is chosen for the $Re_b=10595$ case. The corresponding resolution in terms of $ x^+_ wall$, $ y ^+_ wall $ and $ ^+$ is shown in Figure indicating a very good resolution in terms of LES requirements beside the upwind section of the second crest. 
+
+For the $Re_b=37000$ case, a mesh resolution of 512×256×256 grid points as applied in was considered as a reference. Thus, basing on a polynomial order of 7, a resolution of 64×32×32 elements is used in this case, as shown in Figure . The resolution in terms of $ x^+_ wall$, $ y ^+_ wall $ and $ ^+$ is shown in Figure . The $ y ^+_ wall $ values obtained for the first GLL point of the wall range from 0.25 on top of the first crest to 2.8 on the leeward bottom of the first hill up to 4.6 upwind of the second crest. Obviously, these values do not match the ideal requirements of a wall-resolved LES where everywhere $y^+ 1$ for the closest point is required. However, this somewhat under-resolved setting is considered to be an adequate scenario to test GJP.
+
+ 
+
+Within the investigations a time integration of 3rd order is applied. The flow prediction is advanced in time such that the turbulence is fully developed. Starting from this point, averaging in time is performed until stationary statistics are achieved. The LES filter width for both of the sub-grid scale models is based on the pointwise distance between the GLL-points. Gradient jump penalisation is applied with $a=0.8$ for all the cases. Table provides an overview of the various test cases.
+
+ 
+ 
+
+Instantaneous flow fields
+
+In Figures and instantaneous fully turbulent flow fields (at arbitrary time) in the center plane of the domain are shown for $Re_b=10595$, for both SGS models, with and without GJP. The flow enters the domain from the left side and separates from the first crest. Large vortical structures, at relatively higher velocities from the upper part of the domain interact with the flow field at lower velocities close to the lower wall, i.e., in between the valley between the two crests. 
+Here, comparing the individual cases at $Re_b=10595$ in Figure , the wiggles observed for both SGS models in Figure and are clearly less pronounced when applying GJP, as in Figure and . The wiggles are most clearly seen in the separated region (blue colour).
+
+ 
+
+ For the higher $Re_b=37000$, Figure demonstrates that the GJP does not change the physics significantly when proceeding to a higher $Re_b$. At the same time, the wiggles are reduced as for the lower Reynolds number, but not completely suppressed either. Note that the wiggles are more difficult to see due to the higher mesh density.
+ 
+ Figure shows a detailed view of the separation zone, showcasing the mentioned effect of the application of the GJP on the dissipation of the wiggles. In particular, the details of the solution appears to be smoother inside the elements when applying GJP, especially for the Vreman model. It could be related to a loss of physical information or the advected structures from the wiggles do not exist in GJP cases. This phenomenon will be further discussed in Section on WRLES of the turbulent channel flow. 
+ 
+
+ 
+ 
+ 
+Turbulent Kinetic Energy
+
+ The following Figures and show the distribution of the turbulent kinetic energy scaled by $U^2_b$. In all cases where GJP is not applied ($a=0$), there is some non-physical pattern caused by wiggles visible that aligns with the orientation of the elements of the computational mesh. This is reflected as local peaks of TKE since the wiggles produce additional local fluctuations. With GJP in operation ($a=0.8)$, as expected, these wiggles are damped with most of the effect in combination with the Vreman model as seen in Figure . Note however that the wiggles have not completely disappeared, but their amplitude is significantly reduced, which will demonstrated via the following Figure in detail.
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ Figure shows line profiles at $y/h=1$ extracted from Figures and , corresponding to the crest-to-crest region where pronounced oscillations are observed. While the application of GJP introduces damping across all cases, the effect varies with both the SGS model and Reynolds number. For the Sigma model at $Re_b=10595$, the TKE profile with GJP ($a=0.8$) closely follows the case without GJP ($a=0$), apart from a reduction in TKE at the oscillatory locations. At $Re_b=37000$, the Sigma model with GJP exhibits a consistently lower TKE in the upstream portion of the line compared to the case without GJP, while also reducing the wiggle amplitude. In contrast, the Vreman model demonstrates a more similar behaviour for both Reynolds numbers: GJP tends to preserve or even increase the TKE at the oscillatory locations while enhancing TKE within the elements, resulting in a smoother distribution.
+ 
+ 
+ 
+
+ 
+ 
+
+To summarise the results obtained for the periodic-hill case we can clearly see a beneficial effect of GJP, in reducing the wiggles around element boundaries, and at the same time reducing the fluctuation level inside elements as well. However, for relatively coarse LES, the wiggles in the turbulent kinetic energy do not fully disappear. In addition, there is a noticeable effect on the general fluctuation level. Therefore, we analyse in more detail the effect of GJP on a canonical turbulent case, in an effort to identify the characteristics of the damping introduced by GJP.
+
+ 
+
+Fully developed turbulent channel flow
+
+In this section, we study canonical turbulent channel flow, with particular emphasis on the impact of GJP on the spectral energy distribution. 
+
+ 
+Case setup
+
+ While GJP improves the smoothness of the WRLES of periodic hill flows, the insight of GJP's effect on a spectral space still remains unknown. For this purpose, we further vary the amplitude of the GJP and consider a canonical fully developed channel flow at $Re_ 550$, by setting the bulk Reynolds number to $Re_b=10000$. The size of the computational domain is $L_x L_y L_z = 8 2 3$ to capture the largest flow scales as was adopted in~. The information of the meshes is shown in Table . The spatial resolution of LES is rather coarse in the horizontal $x$ and $z$ directions while keeps the same as the DNS case in the wall normal $y$ direction, thus being in the realm of a WRLES. The resolution is modulated by the averaging Gauss--Lobatto--Legendre (GLL) spacing $_x := L_x/N_x/P$, $_z := L_z/N_z/P$ and $_y, wall := L_y, wall/P$, where $N_x, N_z$ are number of elements in $x,y,z$ directions, $P$ is the polynomial order, and $L_y, wall$ is the height of the element adjacent to the wall. To show how well the flow resolved, all length quantities are scaled in inner units by the length scale $_ := d y|_ wall$, where $$ is the kinematic viscosity and $d y|_ wall$ is the mean $x-$velocity gradient at the wall obtained from DNS a priori. Thus, $_x^+ = _x / _$, and likewise for $_y, wall^+$ and $_z^+$. The filter width $$ used to evaluate the eddy viscosity is estimated in an averaged way: for all GLL-points within the same element, they share a same $ = (V__e/(P+1)^3)^1/3$. The purpose is mainly to avoid artifacts on the eddy viscosity from the variation of $$ in the two homogeneous directions.
+ 
+ 
+ 
+Instantaneous fields
+
+ In order to have a direct visual demonstration of the effect of GJP, we start with the instantaneous velocity magnitude field at a near wall height $y^+15$, as shown in Figure . Although the data obtained from the Sigma and Vreman models result in visually different fields when comparing the panels and , both models suffer from non-physical oscillations appearing at the element interfaces, with sizes close to the finest resolved scale. We also notice that even adopting an averaged approach to estimate the filter size $$, the wiggles do not vanish, which means they are not solely the results of the artifacts of the non-uniform $$ distribution. Since in our CG-SEM formulation, the communication across elements merely aims to ensure the $C^0$ continuity of the field, the non-physical oscillations are included in the evolution of the turbulent flow due to the lack of a dissipation mechanism. By applying GJP with the proposed parameter $a=0.8$, the mesh-dependent wiggles are visually damped significantly, see the comparison of Figure with and Figure with . Particularly, for the Vreman model, the flow field using GJP is rather visually smooth which could be attributed to the strong dissipation from the SGS model itself. However, for the Sigma model, the wiggles are not fully dissipated by GJP using the proposed parameter $a=0.8$.
+ 
+ 
+ 
+Reynolds stresses
+
+ To investigate the influence of the SGS models and the GJP to the flow statistics, Reynolds stress components $<uv>^+$ and $<uu>^+$ are plotted against $y^+$ in Figure and , respectively. The former reflects the intensity of turbulent transport of momentum in the wall normal direction while the latter reflects the intensity of spatial fluctuation. Note that the plus unit scaling is based on $_$ and $u_$ obtained from the respective LES. From Figure , both SGS models gives weaker vertical turbulent momentum transport comparing with DNS and the no-model LES case, which could be mainly attributed to the SGS motions being modelled as an additional viscous term and the corresponding fluctuating transport thus being reduced. The GJP does not affect the vertical turbulent momentum transport. 
+
+ 
+
+ On the other hand, for $<uu>^+$, the discrepancy due to GJP is more obvious, see Figure . In the near wall region, see Figure and , all results obtained on the LES grid have stronger fluctuations compared with DNS. In addition, all explicit SGS models give a stronger inner peak than the no-model LES at $y^+ 10-20$, which is not expected. By applying GJP, the fluctuation amplitudes get even stronger. However, in the region farther away from the wall, $<uu>^+$ from all LES collapse onto the same magnitude. This could be attributed to the smoothness of the flow close to the center of the channel, which gives weaker strain rate and thus gradient jump across the element interfaces. Therefore the SGS models and the GJP does not play a big role; however the discrepancy to the DNS is still noteworthy.
+ 
+ 
+ 
+ 
+ 
+ 
+Power spectral density
+ 
+ The above Reynolds stress profiles show no wiggles because the flow is well resolved to a DNS level in the wall-normal direction for all LES cases; the averaging performed over the homogeneous wall-parallel directions will smoothen any oscillations in those directions. In order to show the wiggles quantitatively, we present the premultiplied power spectral density (PSD) in the spanwise direction $E_uu(k_z, y^+) k_z /u_^2$ in Figure . As commonly done, we show the spectra as a function of wavelength $_z^+$ instead of wavenumber $k_z^+$. 
+ 
+
+ Panel shows the well-known so-called inner peak at $_z^+ 100-200$ and $y^+ 15$. In panels to , the inner peak contains more power for all LES cases. This result is consistent with the stronger peak of $<uu>^+$ in Figure . 
+ 
+ Apart from the general magnitude, one should also expect to see the evidence for the wiggles from the pre-multiplied PSD, recalling the Fourier transform of a pulsating signal with a constant frequency is a spike corresponding to its frequency, and other spikes corresponding to the harmonics as shown in Figure . The observed wiggles in the flow field are presented in the same way in the pre-multiplied PSD as the spikes in Figure at $_z^+180, 90, 45, ...$ with a decreasing trend in magnitude with lower wavelengths $_z^+$. Note that panel uses a different colorbar compared to the rest, showing the strongest spike having much higher amplitude than the neighbouring wavelengths. 
+ In panels , , and , the spikes in the pre-multiplied PSD are not fully dissipated by GJP and the quantitative differences are hard to tell by a contour plot. Therefore, the PSD $E_uu(k_z, y^+)/u_^2$ is plotted in Figure as profiles at $y^+ 15$. As one can see from the LES results with SGS models ($a=0.0$), the high wavenumbers are dampened as expected but for the most energetic part $k_z 7-40$, the SGS models increase the energy if comparing with no-model LES solution. For both no-model LES and LES with SGS model (but no GJP cases), the energy on the finest scale exceeds the one from DNS, which is not expected since the solution from LES should reflect the filtered flow field. By applying GJP with increasing magnitude, the high-wavenumber motions are damped more and to a level lower than DNS. However, for low-wavenumber motions, the GJP cases show increased energy. Effectively, GJP and SGS models affect the flow in the same way in a simulation using CG-SEM: dissipate more energy at small scales but raise the energy at large scales.
+ 
+ 
+
+ Apart from the spikes appearing at the element spacing and its higher harmonics, another key concern is the sharpness of the strongest spike in the PSD, or quantitatively speaking, the negative second derivative of the PSD $\-(k_z, y^+) k_z ^2 /u_^2\|_k_z = k_z, spike$. By using SGS models, the spike is much smoother if comparing $a=0.0$ with "no-model LES" in Figure . By further applying a proper GJP, the sharpness of the strongest spike decreases significantly. For the Sigma model, it at most reduces the negative second derivative of the PSD from $0.2$ to around $0.125$ for $a=0.4, 0.6$ and $0.8$ with $a=0.4$ to be the optimal; while for the Vreman model, the negative second derivative of the PSD is decreased from above $0.6$ to around $0.3$ by choosing $a=0.6$. But one should also notice that even the best choise for $a$ does not reduce the sharpness of the peak to the low levels given by the reference DNS.
+ 
+ 
+From the above consideration in channel flow, we can conclude that LES in SEM, performed at typical LES resolutions, gives noticeable spectral peaks, in particular spanwise directions, corresponding to the element boundaries. These are not sufficiently damped by simply employing an SGS model. GJP clearly help in reducing the sharpness of these spurious spectral peaks, however, given the present formulation cannot reduce them completely. It is important to observe that GJP is not affecting the overall energy distribution, making it an effective way to reduce the spurious oscillations.
+
+Conclusions and Outlook
+
+ This work discusses the possibility to extend the previous application of the gradient jump penalisation (GJP) from the iLES framework into the wall-resolved LES (WRLES) regime. We proceed by analysing three representative cases: the Taylor--Green vortex (TGV) flow, the periodic hill flow and canonical turbulent channel flow. The first case involves transition to turbulence and illustrates the smoothing effect of GJP in a typical three-dimensional flow with usual LES resolution when combined with an active SGS model. 
+ The latter two cases are fully developed turbulent flows simulated in the WRLES regime, where the Sigma and Vreman model are adopted as the active SGS models.
+ 
+ In the TGV case, the GJP is coupled with the classical Smagorinsky model. An obvious smoothening effect of GJP is observed on wiggles appearing close to the element interfaces. Via an analysis of the power spectra, the smoothening mechanism is revealed to be damping the energy on small scales, thus making the wiggles less prominent. For the integral quantities such as kinetic energy and enstrophy, the GJP preserve them to a large extent.
+
+ For the periodic hill flow case, GJP smoothens the apparent wiggles visible in the instantaneous flow fields significantly. This localised dissipative effect on non-physical oscillations is particularly evident in the TKE contours but behaves differently with different SGS models. With the Sigma model, the effect is primarily associated with a reduction of TKE in the wiggle regions, whereas with the Vreman model, it is linked to an increase of TKE within the element interior. Moreover, from the instantaneous fields, the adoption of GJP leads to a slight loss of flow detail, related to the elimination of the small scales close to the elemental interfaces.
+ 
+ Given this observation, we further analyse a canonical fully developed turbulent channel flow case with GJP of different amplitudes. In the well-resolved wall-normal direction, the smooth Reynolds shear stress is not changed by GJP, which means the GJP does not affect the relevant momentum transport in the well-resolved direction. However, the Reynolds normal stress $ uu^+$ is significantly increased by applying GJP, implying that the GJP does not only dissipate the wiggles locally but also influences the velocity field globally in an undesirable way. To investigate the smoothing mechanism of the GJP in more detail, the power spectral density (PSD) is computed and analysed. From the PSD in terms of $_z^+$ and $y^+$ of the WRLES of the turbulent channel flow, spikes corresponding to the spanwise element spacing and its higher harmonics are observed. The spike corresponding to the spanwise element interval contains the strongest power, and the harmonics decays quickly by applying an active SGS model, and the decay is even steeper by applying stronger GJP. The sharpness of the first spike, quantified by the second derivative over spanwise wavenumber $k_z$ of the PSD, is significanly alleviated by applying active SGS model and a GJP with a proper intensity, which is found different from the optimal one in~. For the other wavenumbers not showing a spike, a stronger GJP provides more dissipation for high wavenumbers but insufficient dissipation for low wavenumbers. 
+
+ These conclusions suggest that GJP is indeed an effective way to reduce wiggles in SEM appearing across element interfaces. In particular together with an active SGS model, necessary at typical LES resolutions, GJP provides additional targetted damping of spurious oscillations. However, the present formulation does not provide sufficient damping to remove the element-to-element oscillations completely, as evidenced in particular by the spectral decomposition in homogeneous directions. In addition, the effects of the SGS model are affected in such as way that the spectral energy at lower wavenumbers is generally increased (i.e., the dissipation due to the SGS model is reduced). Therefore, for successful LES using an SEM-type discretisation, additional measures need to be taken. One potential approach would be to consider explicitly filtered LES using a filter with filter width related to the largest spacing in each element. In this way, the smaller scales close to the element boundaries are likely to be suppressed, and the solution is restrained to the scales that may be resolved everywhere. This approach is however not considered in the present work, and will be explored in future research.
+
+ Further work may also include a dynamic model for the GJP coefficient according to how well the turbulence is resolved. Another improvement could be made on an additional dissipation mechanism on low wavenumbers. Further investigation on GJP under wall-modelled LES (WMLES) is also necessary where typically the resolution of turbulence is even lower. Cases such as atmospheric turbulence could be relevant flow cases to study .
+
+SD acknowledges financial support by the Swedish e-Science Research Centre (SeRC) as part of the M3 programme.
+This work was partially funded by the European
+Union. This work has received funding from the European High
+Performance Computing Joint Undertaking (JU) and Sweden, Germany,
+Spain, Greece and Denmark under grant agreement No 101093393. The post-processing in this work is based on PySEMTools~. The computations were enabled by resources provided by the National Academic Infrastructure for Supercomputing in Sweden (NAISS), partially funded by the Swedish Research Council through grant agreement no. 2022-06725

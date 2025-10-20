@@ -1,0 +1,669 @@
+[10pt,twocolumn]article
+
+[T1]fontenc
+[utf8]inputenc
+[margin=2.0cm]geometry
+0.65cm
+
+[hidelinks]hyperref
+ 
+
+ 
+
+ 
+
+ 
+
+Supplementary References
+
+^rans
+[1]
+[1][#1]
+
+*arg\,min
+
+, Hao-Chen Wang, Zhuo-Lin Zhao, Heng Xiao
+
+ 
+
+[
+ 
+ Towards a unified turbulence model through multi-objective learning
+ 
+
+ 
+ 
+ Zhuo-Ran Liu,\;
+ Hao-Chen Wang,\;
+ Zhuo-Lin Zhao,\;
+ Heng Xiao
+ 
+ 
+
+ 
+ 
+ Stuttgart Center for Simulation Science, University of Stuttgart, Stuttgart 70569, Germany\\
+ Institute of Aerospace Thermodynamics, University of Stuttgart, Stuttgart 70569, Germany\\[4pt]
+ Corresponding author: 
+ 
+ 
+
+ 
+ 0.9
+ 
+ Turbulence is a central challenge in classical physics and a critical barrier to accurate flow prediction in climate, aerospace, and energy systems. Despite the widespread reliance on Reynolds-averaged Navier--Stokes (RANS) solvers in industrial simulations, existing turbulence models lack the generalizability to handle diverse regimes, such as separation, secondary flows, and free-shear flows, without manual tuning or switching. We propose a unified data-driven turbulence modeling framework based on multi-objective learning. The goal is to achieve Pareto-optimal performance across heterogeneous flow datasets, each representing distinct mechanisms and quantities of interest. The resulting unified foundation model employs a parallel tensor basis neural network with automatic balancing and internal branching to adapt across flow regimes without explicit switching. The parallel architecture enables explicit regularization to promote model parsimony, while the tensor-basis formulation preserves physical symmetries. Trained on five representative flows, the model is evaluated on 27 test cases spanning attached, separated, and secondary flows, as well as two realistic three-dimensional flows of industrial relevance. It improves or matches the performance of the baseline $k$--$$ model in all cases. For specific applications, we show that specialist models trained on tailored datasets can further improve accuracy in challenging configurations, such as three-dimensional diffuser flows common in gas turbine aerodynamics, which exhibit simultaneous separation and secondary flows. These results demonstrate that a generalized, deployable turbulence model unifying multiple flow mechanisms within a single architecture is achievable. This work marks significant progress toward unified turbulence modeling for scientific and industrial applications.
+ 
+ 
+ 
+ 
+]
+
+Significance
+
+Turbulence remains one of the last grand challenges of classical physics, yet accurate modeling is crucial for applications that shape our society, from weather and climate to aircraft and power plants. Decades of efforts have yet to produce a turbulence model that can accurately and robustly predict turbulent flows across the diverse flow regimes found in nature and industry. We present a machine-learning framework that learns a single, unified turbulence model by balancing multiple competing objectives in different flow mechanics and quantities of interest. The resulting model captures diverse flow mechanisms without manual tuning and improves accuracy in both trained and unseen flows, including the realistic three-dimensional flows. Our results mark a step toward a generalized, data-driven turbulence model that is predictive and deployable for real-world applications.
+
+Introduction
+
+Turbulence is among the last unresolved problems of classical physics~. Its presence is ubiquitous in natural and engineered flows from sub-meter to planetary scales. Accurate prediction of turbulent flows has far-reaching impacts on modern society, ranging from reducing uncertainties in climate projections and improving fidelity in extreme weather events~ to designing safer and more efficient mission-critical systems such as aircraft engines and power plants~. The chaotic and multi-scale nature of turbulence~ is responsible for critical physics in these systems, such as momentum and heat transport in planetary boundaries and flow through engine turbines and pollutant transport in rivers and oceans. Despite the importance of turbulent transport in such processes, our current modeling of such effects in state-of-the-art simulations is still crude. For example, in weather forecast models, the vertical turbulent mixing is still represented as one-dimensional parameterization schemes known as the planetary boundary layer scheme~. In industrial computational fluid dynamics, Reynolds-averaged Navier--Stokes (RANS) solvers are still the workhorse tool for routine simulations~, where the ``averaged effects'' of the turbulent fluctuations are represented with turbulence models~. This is because these applications require either long-time integration or many simulations for design optimization or uncertainty quantification. It becomes prohibitively expensive to fully resolve all the turbulence scales (as in Direct Numerical Simulations) or even to partially resolve them (as in Large Eddy Simulations)~. Despite the growth of computational resources, flow solvers based on pure modeling or parameterization of the turbulence (referred to as ``turbulence modeling'' collectively hereafter) will remain as backbone in many fields in the years to come. Therefore, the theoretical foundation and practical development of turbulence will continue to have societal and scientific importance. 
+
+Pursuit of a Universal Constitutive Relation
+
+More than half a century ago, Lumley~ proposed the existence of a turbulent constitutive relation that maps the mean velocities $$ to the Reynolds stresses \(\). From a philosophical perspective, a constitutive relation is determined phenomenologically from data, constrained by mathematical invariance and symmetry, and thus transferable to similar types of flows in other geometries. Mathematically, they can be expressed as 
+\(
+() = \( + )\, ,
+\)
+where the Reynolds stress \(\) at point \(\) depends on the mean velocity~\(\) in its vicinity \(\). The relation shall be independent of initial or boundary conditions of the Reynolds stress \(\) and thus can be expected to hold in regions far removed from solid boundaries, such as free-shear layers and outer portions of boundary layer flows. Through analysis of experimental data, Lumley established that such a constitutive relation exists for homogeneous shear flows and homogeneous strain, both of which behave analogously to viscoelastic fluids with an increasing relaxation timescale~. 
+Despite the conceptual depth, this insight had a limited impact on the subsequent development of turbulence modeling. While numerous models have been developed since then, none have achieved the generality envisioned by Lumley. 
+This is partly because simplicity is as important as accuracy in industrial flow simulations, which constrains the search for constitutive relations, if any, to local ones. That is, the vicinity $$ shall contain only the immediate neighbors of point $$. Today, simple, empirically tuned models such as Spalart--Allmaras (SA) and~\(k\)--\(\) SST models remain dominant in industrial practice~.
+The current models combine transport equations for turbulent scales with a linear constitutive relation to estimate the Reynolds stress. In the past decades, numerous linear, quadratic~, and even cubic models~ have been proposed in the literature. Theoretical analysis indicates that the most general eddy-viscosity model requires 10 tensor bases to form a quintic model~. Since the coefficients of these bases are unknown, the tensor basis neural network is designed to learn them while preserving the generic frame invariance~. So in principle, given enough data (mean velocity field and corresponding Reynolds stress field, referred to as direct data in the context of learning turbulence model), it is possible to verify the existence of a universal turbulent constitutive relation. And if such a relation does exist, the neural network representation of such a relation can be learned. However, so far this venue has been rarely explored. A major difficulty is the lack of comprehensive data, particularly direct data that can be used to learn the model (i.e., Reynolds stresses).
+
+Universality Versus Unification
+
+The past few decades of experience in industrial turbulence simulations strongly indicate that a universal turbulence model that is simple and local probably does not exist. Turbulence in general is intrinsically a nonlocal, non-equilibrium phenomenon, and the averaging process in obtaining the mean flow equations loses information~. However, it is a near-consensus in the turbulence modeling community that a monolithic model that seamlessly adapts to a variety of flow mechanisms and geometries (e.g., attached boundary layers, massive separation, and secondary flows) without manual zoning, switching, or blending is highly desirable~. In this work, we refer to a model that unifies multiple flow mechanisms as a unified model. A unified model that accommodates many flow mechanics, similar to a foundation model in artificial intelligence, is highly desirable. It could address industrial applications such as aircraft aerodynamics or turbine engines, where multiple mechanisms coexist without clear spatial distinctions and interact with each other. Developing such a unified foundation model is the main thrust of this work. However, even a unified model to a limited degree, referred to as specialist model here, e.g., one that can treat attached boundary layers, separated and secondary flows simultaneously, would be valuable too~.
+
+Learning a Unified Model: Successes and Challenges
+ 
+If a simple, universal turbulent constitutive relation does not exist, then how can one expect to find a unified model for multiple flows defined above? 
+The key lies in training with a diverse dataset featuring multiple flow mechanisms. 
+A number of strategies have been pursued with varying degree of successes.
+Multi-case training with symbolic model representation yields models that perform well across several wall-bounded flows, which are among the first attempts towards a unified model.~.
+The strategy of ``unification through aggregation" relies on expert models tailored to individual flow mechanisms, with a classifier assigning models to each spatial location during prediction~.
+Yet another strategy toward a unified model is offering users a generalized model to tune for each flow, referred to as generalized \(k\)--\(\) model~. 
+Similar efforts towards a generalizable closure have also emerged in wall-modeled large eddy simulations, where additive learning captures different flow mechanisms~, and a building-block strategy leverages simple flows to construct unified closures~. 
+However, to this day, a unified RANS turbulence model that can seamlessly handle coexisting, vastly different flow mechanics in a single flow (e.g., flows with massive separation and swirling simultaneously) does not yet exist. 
+The difficulty lies in the fact that different flow regimes impose conflicting requirements on the model: adjustments that improve one regime can degrade another. Derivative-free multi-objective optimization methods~ are generally inefficient, which limits the scalability of model training. And symbolic models, while interpretable, are often too restrictive to reconcile such conflicts. 
+As summarized in the NASA Langley Turbulence Modeling Workshop summary~, after a decade of intense research, the community has yet to produce a data-driven turbulence model that exceeds current models in terms of predictability, generality, and robustness.
+
+Unification Through Multi-objective Learning
+
+In this work we pursue a strategy of ``unification through balancing and branching". By exploiting the expressive power of neural networks, which scales exponentially with depth, we represent a nonlinear eddy-viscosity model (a local turbulence model in its most general form) using a parallel tensor basis neural network~, which ensures Galilean and frame invariance. This flexibility offered by neural networks allows a single model to adapt implicitly to local flow mechanisms without explicit switching or manual intervention. 
+We use a multi-objective learning method to train such a model by seeking Pareto-optimal trade-offs among objectives such as velocity, skin friction, lift and drag from a number of representative flows (five flow mechanisms are selected in this study). This leads to a unified foundation model that can handle a wide range of flows, which is then integrated to the Reynolds-averaged Navier--Stokes equations solver OpenFOAM as in our previous works~. 
+
+We compiled a comprehensive list of benchmark flows in the literature, including both the classical datasets~ and our own recent data specifically designed for machine learning of turbulence models~, totaling 32 cases with five identified as training set and 27 as testing set. For each case, we carefully identified the appropriate quantities of interest for training and evaluation, which requires the understanding of the underlying physics and the unique challenges of each flow. This breadth and rigor provide the foundation for developing a unified turbulence model and establish a benchmark for future studies. Unlike weather forecasting, which relies on a single physical system with abundant data~, or genomics, where massive datasets are available~, turbulence involves diverse flow mechanisms and limited accessible data. Our dataset is therefore a critical step toward bridging this gap and enabling substantial progress in turbulence modeling powered by machine learning.
+
+However, learning turbulence models from large datasets poses three main challenges: achieving a flexible yet robust model representation, learning from sparse and indirect observations, and balancing multiple objectives across diverse flows. 
+For the first challenge, although the tensor basis neural network can represent the general eddy-viscosity model by using a single network to predict coefficients for all tensor bases, regardless of their degree of nonlinearity, such unconstrained forms often compromise stability and generalizability. 
+To address this, we incorporate structure into the model representation through physics-informed regularization~, which keeps the model close to the baseline~ and favors linear terms over nonlinear ones. This is achieved with a parallel tensor basis neural network architecture that separates linear and nonlinear components, allowing more flexible control of excessive nonlinearity.
+The second challenge arises because most experimental datasets provide only indirect measurements~, such as velocities, lift, or drag, rather than full-field Reynolds stresses, which serve as the direct training data for turbulence models~. Since learning from such indirect observations usually requires a differentiable or adjoint-enabled RANS solver~, often unavailable in practice, we employ an regularized ensemble Kalman method~. This method updates network weights by correlating model predictions with observation mismatches, thereby avoiding explicit gradient calculation. 
+The third challenge involves balancing multiple objectives, as standard machine learning approaches typically optimize a single aggregated loss, making it difficult to manage trade-offs across flows and target quantities. We address this with a gradient-based multi-objective learning strategy~ that seeks a Pareto-optimal solution across all objectives. A solution is Pareto-optimal if no objective can be improved without degrading at least one other. The method computes a weighted average of gradients, identifies the most conflicting directions, and reconciles them by blending with an analytically determined ratio found via line search. This process is repeated until conflicts are resolved or a fixed number of iterations is reached, minimizing interference among objectives. Through this iterative conflict resolution, the resulting model generalizes robustly across diverse flows and quantities. Although formulated in terms of explicit gradients, the approach naturally extends to updates obtained from the regularized ensemble Kalman method.
+
+Therefore, our framework delivers robust, generalizable predictions across diverse flow phenomena without the need for manual zoning or handcrafted blending, while scaling efficiently to multiple competing objectives. By combining neural network expressiveness, indirect data learning, physics-informed regularization, and gradient-based multi-objective optimization, this framework moves toward turbulence models that are accurate, generalized, and practical for large-scale engineering applications. The learned model in this study is more comprehensive than those presented in the literature so far~.
+More importantly, the proposed methodology is scalable to a large number of flows and target quantities of interest up to 40 objectives~, offering the potential of being extended to unify all the benchmark flow mechanics and to handle truly realistic industrial flows.
+
+Results: Unified Foundation Model
+
+We developed a unified turbulence modeling framework that is trained once and generalizes well across a broad range of flows, including attached boundary layers, separated, secondary, and free-shear flows. Based on this framework, we construct a unified foundation model that integrates multiple diverse flow mechanisms into a single formulation. Unlike most existing data-driven models, which are trained for narrow flow categories and tend to degrade outside their training regimes~, our model performs well on the training flows and improves predictions for unseen flows exhibiting similar flow mechanisms. This directly addresses long-standing challenges emphasized in recent reviews and community discussions~, particularly the need for general turbulence models that deliver consistent, broadly applicable improvements while remaining robust and free from manual zoning. Such requirements were central to the NASA 2022 ``Collaborative Testing Challenge”~. Our unified model makes substantial progress toward this goal, delivering robust and accurate predictions across multiple flow regimes.
+
+Model Training and Evaluation Setup
+
+The unified foundation turbulence model is trained on five flows representing distinct mechanisms: a plane channel for attached boundary layers, a periodic hill and an S809 airfoil at high angle of attack for internal/external separated flows, a square duct for secondary flows, and a round jet for free-shear flows. Each case provides sparse, indirect, and heterogeneous observations tailored to its nature: sparse velocity measurements for the plane channel, periodic hill, square duct, and round jet; and drag, lift coefficients for the S809 airfoil. Once trained, the model’s generalization is tested on 27 unseen cases without manual zoning or parameter tuning, as shown in Fig.~ and Table~. Refer to SI Appendix for details.
+
+[t]
+ 
+ 6pt 
+ 1.2
+ 
+ p0.175 
+ p0.2 
+ p0.15 
+ p0.2 
+ >p0.06
+ >p0.06
+ 
+
+ Categories & Flows & & Observations & & \\
+ 0pt0pt
+
+ 
+ *[-2ex]
+ & Zero pressure gradient flat plate 
+ & & Velocities
+ & & 1 \\
+ &
+ Plane channel 
+ & Reynolds number & Velocities
+ & 1 & 2 \\
+ &
+ S809 airfoil (attached)
+ & Angle of attack & Lift, drag
+ & & 2 \\ 
+
+ 
+ *Separated Flows
+ & Curved step
+ & & Velocities
+ & & 1 \\
+ & Bump 
+ & Height & Wall friction
+ & & 5 \\
+ & Periodic hill
+ & Slope steepness & Velocities
+ & 1 & 3 \\
+ & S809 airfoil (separated)
+ & Angle of attack & Lift, drag
+ & 1 & 4 \\ 
+
+ 
+ *Secondary Flows
+ & Square duct
+ & Reynolds number & Velocities
+ & 1 & 3 \\
+ & Rectangular duct
+ & Aspect ratio & Velocities
+ & & 4 \\ 
+
+ 
+ *Free-shear Flows
+ & Round jet
+ & & Velocities
+ & 1 \\ 
+
+ 
+ *Realistic 3D Flows
+ & Generic car
+ & & Velocities, drag
+ & & 1 \\
+ & 3D diffuser
+ & & Velocities, wall friction
+ & & 1 \\ 
+ 
+ r!Totals & 5 & 27 \\
+ 0pt0pt
+
+ 
+ 
+ , plane channel~, S809 airfoil~, curved step~, bump~, periodic hill~, square duct~, rectangular duct~, round jet~, generic car~, and 3D diffuser~.
+ 
+
+Evaluation of the Unified Turbulence Model
+
+The unified foundation model performs well across all training cases and generalizes effectively to unseen cases, including both those within the training flow categories and realistic 3D configurations. Its performance is evaluated on diverse test cases spanning attached boundary layers, separated flows, secondary flows, free-shear flows, and realistic 3D flows. 
+The model's performance across training flow categories is shown in Fig.~. It is evaluated using the normalized misfit~$ = - e_e_ - e_$, where $e_$ is the misfit of the unified foundation model relative to the ground truth, $e_$ is the misfit of the baseline model, and $e_$ is the misfit of a single-case trained model, which defines the upper performance limit.
+A value of~$ < 1$ indicates improved performance over baseline, while~$ > 1$ indicates degradation. 
+
+Overall, the unified foundation model generalizes well, achieving lower misfits than the baseline in most cases and comparable performance otherwise.
+For attached boundary layers, such as the zero pressure gradient flat plate, the model matches the baseline model in regimes where linear eddy-viscosity models are already reliable, recovering the law of the wall and maintaining accuracy across geometries and Reynolds numbers.
+In free-shear flows, represented here by a round jet, the model provides more accurate predictions of centerline velocity decay.
+For secondary flows in ducts with different Reynolds numbers and aspect ratios, the model better captures in-plane flows, maintaining accuracy under both geometric and Reynolds number extrapolation. 
+For separated flows, the model substantially improves predictions of massive separation, such as periodic hills with varying slope steepness and S809 airfoil at high angles of attack. For flows over bumps and curved step, where separation is incipient, the model performs comparably to the baseline $k$--$$ model. 
+For realistic 3D flows, the generic car case shows improved separation predictions, while the 3D diffuser recovers ground truth skin friction coefficients along the bottom-wall midsection. However, improvements for realistic 3D flows remain limited, as the drag of the generic car is still inaccurate and the separation location in the diffuser is also not correctly predicted. Detailed performance of unified foundation model on six representative cases is illustrated in Fig.~.
+
+[!htb]
+ 
+ [width=17.8cm]figs/foundation-result-detail-v17.pdf
+ =2600$ shows accurate recovery of corner vortices. For realistic 3D flows, the generic car yields improved separation predictions, while the 3D diffuser matches ground-truth skin-friction coefficients along the bottom-wall midsection.
+
+The unified foundation model demonstrates improved generalization across diverse flow regimes, achieving better, or at least comparable, accuracy to the baseline model in all test cases. Detailed case setups, training and evaluation results are provided in the SI Appendix.
+
+Interpretation for Model Unification
+
+The unified foundation model combines two complementary strategies for flow mechanism unification: automatic balancing of overlapping input features and internal branching for case-specific features across multiple flows. In overlapping regions, where identical features occur in different flows, the model resolves conflicts through multi-objective learning. In case-specific regions, it learns distinct mappings for each flow, acting as a piecewise function with internal branching. Together, these mechanisms enable the model to generalize across flows governed by distinct yet interacting flow mechanisms.
+
+The model's input feature analysis reveals that different flows exhibit overlapping features while also maintaining distinct case-specific structures. We project the four frame-invariant input features into two dimensions using t-SNE~ for visualization. Fig.~A presents the results for two representative flows: periodic hill and square duct. The plot shows overlapping regions, as well as distinct regions specific to each case. This demonstrates that the unified foundation model captures common structures shared across flows while preserving case-specific characteristics.
+
+[t!]
+ 
+ [width=17.8cm]figs/interpretation-v10.pdf
+ 
+ 
+
+Balancing in Overlapping Regions
+
+Overlapping regions in the feature space serve as critical zones where the model must resolve conflicts among cases to enable joint learning of interacting mechanisms. Because identical features in these regions can correspond to different outputs across cases, deterministic models alone cannot eliminate the resulting discrepancies. Multi-objective learning addresses this by adjusting the contribution of each case during training, promoting balanced optimization and compelling the model to reconcile conflicting objectives. As shown in Fig.~B, the single-case trained models often map overlapping features to significantly different outputs, creating distinct regions in the output space and limiting generalization. The unified foundation model resolves these conflicts by maintaining a balanced representation, achieving an intermediate and more generalizable state.
+This balancing not only enhances generalization but also preserves the ability to capture genuine interactions where multiple mechanisms coexist.
+
+Branching in Case-Specific Regions
+
+In non-overlapping regions of the feature space, the network learns case-specific mappings, and effectively behaves like a piecewise function. To study this behavior, we extract case-specific features and pass them through the unified foundation model. For each neuron, we compute its activation rate, defined as the fraction of inputs producing a positive output. For rectified linear units (ReLU)~, this is equivalent to the proportion of non-zero outputs. The analysis is performed separately for the periodic hill and square duct.
+
+The activation patterns of the sub-network for the quadratic coefficient $g_2$ are shown in Fig.~C. Dark neurons and connections represent pathways activated in both the periodic hill and square duct cases, highlighting their similarities. In the periodic hill, most first-layer neurons are active, with one additional neuron uniquely activated (blue), but the second layer channels information almost entirely through a single pathway. In contrast, in the square duct, second-layer activations are more widely distributed, with several unique pathways remaining active (green). These distinct connection patterns demonstrate how the model reconfigures its internal branching to adapt to the statistical and structural characteristics of each flow.
+
+Results: Specialist Model
+
+The specialist model improves prediction accuracy for target flows by unifying related flow mechanisms exclusively --- whole-device unification. Unlike the unified foundation model trained for broad coverage, it optimizes performance within a tailored set of flows that contain the target mechanisms. Although this specialization cannot guarantee accuracy on other benchmark flows, it achieves high fidelity where it matters most, reflecting industrial practice in developing narrowly focused yet robust predictive tools.
+
+Model Training and Evaluation Setup
+
+The specialist model targets flows dominated by separation and secondary flow. Training uses three benchmark cases: the periodic hill for separated flows, and square and rectangular ducts for secondary flows. This combination allows the model to learn both secondary and separated flow mechanisms.
+The obtained model is evaluated on flows within the training regimes, including periodic hills with slope scaling factors~$$ ranging from 0.8 to 1.5, square ducts with Reynolds numbers from~1100 to 2600, and rectangular ducts with aspect ratios from~5 to 10. It is also tested on an asymmetric 3D diffuser flow that involves interactions between the training flow mechanisms.
+The 3D diffuser is a challenging validation case featuring incompressible, asymmetric internal flow with strong adverse pressure gradients and significant Reynolds-stress anisotropy. The resulting three-dimensional separation closely mirrors practical diffuser behavior, making it an ideal benchmark for evaluating separation and secondary flow prediction capabilities. 
+
+Evaluation of the Specialist Model
+
+The specialist model generalizes well across flows within the training categories and also shows significant improvement in the realistic 3D diffuser case. It substantially reduces the baseline’s over-prediction of separation in periodic hills and successfully recovers in-plane flows in both square and rectangular ducts, which baseline models fail to reproduce. Moreover, the specialist model captures diffuser separation more accurately, correcting the baseline \(k\)--\(\) model’s sidewall separation and aligning it with the ground truth, where separation occurs along the upper wall in expansion region.
+
+*Generalization Within Training Categories
+Evaluation across varying geometric and flow parameters demonstrates robust performance within the training flow categories. Rectangular ducts with aspect ratios 5 to 10, square ducts with Reynolds numbers 1100 to 2600, maintain substantial improvements comparable to the training cases, and periodic hills with slope steepness variations sustain strong generalizability with modest sensitivity to slope changes. Refer to SI Appendix for details.
+
+*Generalization to Realistic 3D Flow
+In the 3D diffuser, where secondary flows interacts with separation, the specialist model suppresses spurious sidewall separation and correctly predicts the primary upper-wall separation observed in the ground truth. Cross-sectional analyses show that the specialist model accurately captures the growth and reattachment of the separated region, while the baseline model misplaces both the location and extent of separation. Refer to SI Appendix for details.
+The specialist model's success on this realistic configuration demonstrates strong generalization beyond the training manifold and highlights its ability to capture interacting flow mechanisms in practical flows.
+
+[t!]
+ 
+ [width=17.8cm]figs/specialist-model-diffuser-v7.pdf
+ 
+ 
+
+Discussion
+
+An accurate, predictive turbulence model that performs reliably across a wide range of flow mechanisms, often simultaneously present in industrial flows, has long been a central goal in industrial computational fluid dynamics. In this work, we demonstrate that multi-objective learning enables the training of a unified foundation model on a heterogeneous dataset consisting of four canonical flow categories (e.g., attached and separated boundary layers, secondary flows, free-shear flows) and various target quantities (e.g., velocities, drag, lift). With the strategy of ``unification through balancing and branching", this unified foundation model achieves Pareto-optimal performance across a broad range of test cases, including previously unseen and realistic scenarios involving multiple interacting flow mechanisms. Learning from canonical flows provides interpretability, ease of verification, and a scalable route to generalization. In contrast to training directly on application-specific flows, which are often inaccessible or lack clear mechanism labeling, our approach provides a structured path to unification by expanding coverage with canonical flows through multi-objective learning, balancing trade-offs in parallel while avoiding catastrophic forgetting~.
+
+While the unified foundation model yields consistent improvements over the baseline $k$--$$ model, not all test cases show dramatic gains. This is expected, as many engineering flows involve additional complexities beyond the training flows and limited objective set. Nevertheless, the framework proves highly effective in application-specific scenarios where a small number of flow mechanisms dominate. We demonstrated this through two specialist models: one for three-dimensional diffuser flow, where adverse pressure-gradient-induced separation interacts with secondary motions, and the other for external vehicle aerodynamics, trained on flows with separations of varying severity. Refer to SI Appendix for details. These examples show that selecting and combining representative canonical flows enables efficient training of specialist models with strong generalization within their respective domains.
+
+The long-term goal is to develop a unified turbulence model that performs robustly across an entire device, rather than in isolated regions. For instance, while a three-dimensional diffuser represents a single component in a gas turbine, a full engine comprises many more interacting components with distinct flow characteristics. Switching among specialist models within a single simulation would be cumbersome and potentially unstable. Ideally, a single model should adapt seamlessly across the system. Achieving this will require scaling the current framework to accommodate a significantly larger set of objectives. Recent advances in multi-objective learning suggest that neural networks can balance up to 40 objectives~, making full-device unification technically feasible for configurations such as entire gas turbines or aircraft frames.
+
+To achieve more consistent improvements across diverse flows and quantities, several technical enhancements are necessary. First, gradient accuracy for each objective must be improved. While our ensemble-based method is robust and broadly applicable, adjoint-based or fully differentiable solvers~ could provide more precise gradients, enabling more sophisticated architectures and fine-tuning strategies. Additionally, feature augmentation could better utilize the network’s representational capacity by increasing the input space dimensionality, helping to reduce objective conflicts through internal branching. However, the averaging process that maps turbulent fluctuations to mean fields inherently causes information loss, meaning some mechanisms may remain indistinguishable in the input space. In such cases, effective balancing, supported by accurate gradients, remains essential. The presented framework, with its physics-informed architecture and gradient-aware training, provides a promising foundation for further advances in unified turbulence modeling.
+
+Methods
+
+General Eddy-Viscosity Model and Its Representation
+
+For constant-density, incompressible turbulent flows, the mean flow is governed by the Reynolds-averaged Navier--Stokes (RANS) equations:
+
+ & = 0, \\
+ t + - ^2 + P & = ,
+
+where $$ is the mean velocity, $P$ is the mean pressure normalized by constant density, and $$ is the Reynolds stress tensor capturing the effect of velocity fluctuations. Since these fluctuations are not resolved in RANS, the Reynolds stress $$ requires modeling.
+The Reynolds stress $$ can be decomposed into a deviatoric part and a isotropic part:
+\[
+ = 2k\, + 3k,
+\]
+where $k$ is the turbulent kinetic energy, $$ is the normalized anisotropy tensor and $$ the identity tensor.
+
+In the general eddy-viscosity framework~, the normalized anisotropy $$ is expressed as:
+
+ = _i=1^10 g^(i)(_1, , _5)\,^(i),
+
+where $^(i)$ and $_j$ denote the tensor bases and scalar invariants derived from the mean velocity $$, and $g^(i)$ are the coefficient functions to be learned. 
+For 2D incompressible turbulence, only the first two invariants and tensor bases are required~.
+
+To represent this model, we introduce a parallel tensor basis neural network. This frame-invariant formulation separates the output into dominant linear and corrective high-order components, extending the original tensor basis neural network~. Our model uses the first two invariants $_1$ and $_2$ along with two additional flow features: the viscosity ratio and turbulence Reynolds number~, as inputs, and employs the first two tensor bases $^(1)$ and $^(2)$ to construct Reynolds stress $$.
+Two parallel sub-networks predict the coefficients of the linear and quadratic terms independently, allowing them to be regularized separately. Refer to SI Appendix for details.
+This structure not only preserves low-order physics but also improves robustness and interpretability by providing flexible control over nonlinearity, while introducing higher-order corrections only when necessary.
+
+Regularized Ensemble Learning from Indirect Observations
+
+We extend the ensemble Kalman method (EnKF) with a regularization term to train turbulence models from sparse, indirect observation data in a stable and robust manner. The learning objective is to minimize the loss function~$$~:
+\[
+ =
+\|^i+1_j - ^i_j\|_^-1^2 
++ \|_j - [^i+1_j]\|_^-1^2
++ \|[^i+1_j]\|_^-1^2,
+\]
+where $$ denotes the model parameters, $$ is the observation data, $$ is the observation operator mapping the model state to the observation space, and $$ represents the regularization. The matrices $$, $$, and $$ are the covariance matrices of the state, observation errors, and regularization constraint, respectively, and define the weighted norms.
+The first two terms in loss $$ constitute the standard EnKF objective, enforcing proximity to the prior estimate and agreement with observation data. The last term introduces regularization, defined as:
+
+ =
+[ (g^(1) + 0.09)^2, \; (g^(2) - 0)^2 ],
+
+which penalizes deviations from the baseline linear eddy-viscosity model~ with coefficients $g^(1) = -0.09$ and $g^(2) = 0$. Refer to SI Appendix for details.
+This anchoring prevents divergence while still allowing nonlinear data-driven refinements, yielding stable and generalizable turbulence models.
+
+Multi-Objective Learning for Unified Turbulence Model
+
+We aim to build a unified turbulence model that performs reliably across diverse flows. To this end, we adopt a multi-objective learning method in which each target quantity defines a loss $_i()$, where~$$ denotes the trainable model parameters. Optimizing these objectives independently or by naive averaging often biases the model toward some flows while degrading others. 
+
+Training with multiple flows is therefore cast as finding a Pareto-optimal solution, where no objective can be improved without worsening another~. By the Karush--Kuhn--Tucker conditions~, Pareto optimality requires a non-negative weight vector $$, with $_i=1^N _i = 1$, such that the weighted sum of gradients vanishes. This stationary condition can be expressed in practice by solving
+
+_i=1^N _i _ _i() = 
+\;\;\;\;\;\;
+_ \| _i=1^N _i _ _i() \|^2.
+
+The weights $$ are computed using the Frank--Wolfe algorithm~. At each step, the algorithm identifies the objective whose gradient conflicts most strongly with the current weighted direction and blends it into the combination with an analytically determined ratio from a line search. To ensure meaningful weighting across heterogeneous objectives, we first scale all losses to the same level. The gradients are then normalized by the product of their corresponding loss value and their $L^2$ norm. After this normalization, the effective gradient magnitude depends only on the loss value: objectives with smaller losses produce larger normalized gradients, which in turn receive smaller weights. This ensures that objectives already well-optimized contribute less to the combined update.
+Through this iterative reconciliation, the resulting descent direction improves all objectives jointly, or in some cases slightly worsens a few while still achieving an overall balanced improvement. 
+
+Combined with the ensemble learning method, the model parameters $$ update formula becomes:
+\[
+ + _i=1^N _i \, _i,
+\]
+where $ _i$ is the per-objective update provided by the regularized ensemble Kalman method~. This coupling enables indirect data learning without requirement of adjoint solver and prevents dominance by any single flow type, yielding balanced improvements across multiple flows.
+Refer to SI Appendix for details.
+
+Supplementary Material
+
+Turbulence is ubiquitous in natural and engineered flows, from weather and climate to mission-critical systems such as aircraft engines and power plants. Its chaotic, multiscale nature governs essential processes such as momentum, heat, and pollutant transport. Because resolving all scales is computationally infeasible, most practical predictions rely on turbulence closures within Reynolds-averaged Navier--Stokes (RANS) solvers~ or parameterization schemes in weather forecasting~. Despite their central role, such closures remain crude, making turbulence modeling both scientifically and societally important. 
+
+More than fifty years ago, Lumley proposed a universal constitutive relation linking mean velocity to Reynolds stresses~. While this hypothesis was verified in simple homogeneous flows, it had little influence on practical modeling, where robustness and simplicity led to the dominance of empirical eddy-viscosity models such as Spalart--Allmaras and \(k\)--\(\) SST models~. Decades of experience suggest that a simple, local universal model does not exist~. However, in engineering devices where boundary layers, separation, and secondary flows coexist and interact, a unified turbulence model, capable of handling multiple mechanisms seamlessly, without manual zoning or tuning, remains highly desirable but elusive~. 
+
+Eddy-viscosity closures form the foundation of recent efforts to build a unified turbulence model that captures multiple coexisting flow mechanisms without manual switching. This choice is natural because eddy-viscosity models are local, robust, and computationally efficient, making them reliable for industrial solvers and a strong basis for data-driven extensions~. Conventional eddy-viscosity models combine transport equations for turbulent scales with a linear constitutive relation to estimate the Reynolds stress. This framework can be generalized to nonlinear forms, offering greater flexibility than the standard Boussinesq assumption~. The general eddy-viscosity model~ has been realized through tensor basis neural networks~, symbolic formulations~, and random forests~. Other studies have instead focused on improving the turbulence transport equations, for example by introducing data-driven multiplicative correction fields~. 
+Beyond eddy-viscosity models, nonlocal approaches offer an alternative. These include Reynolds stress transport models~ and data-driven nonlocal constitutive relations~, which could capture additional physical effects such as non-equilibrium anisotropy. However, nonlocal models face major challenges: they are computationally expensive, less robust, and difficult in boundary condition treatment. Machine learning has also been used to refine specific terms in Reynolds stress transport models, such as the pressure--strain correlation~, but the models themselves remain fragile. Considering these trade-offs, the tensor basis neural network formulation of the general eddy-viscosity model provides the most balanced compromise between accuracy, flexibility, and computational efficiency.
+
+Within the eddy-viscosity framework, several strategies have been explored to achieve unification. Symbolic models trained with multi-objective optimization on diverse datasets have shown promising generalization across wall-bounded flows~. However, their restrictive functional forms and reliance on derivative-free optimization method (i.e., non-dominated sorting genetic algorithm II) limit scalability of the model training, particularly when balancing many competing objectives required for unification. Aggregation-based approaches, such as mixture-of-experts or classifier-driven model selection~, allow expert models for different mechanisms to be combined into a composite framework. However, they require multiple model evaluations and can struggle when the flow involves strong interactions between mechanisms.
+A different strategy employs adjoint-based field inversion and machine learning to learn multiplicative correction fields~. These methods have proven effective when applied to flows dominated by similar mechanisms~. Yet, when extended to unify flows with fundamentally different mechanisms, it faces challenges such as non-convergent training and limited generalizability~. Finally, the generalized $k$--$$ model offers a pragmatic compromise by introducing tunable closure terms that allow systematic adjustments for different flow conditions~. This makes it attractive for practical use in the commercial solver Fluent, but its performance still relies heavily on manual tuning and thus falls short of true unification.
+Despite these advances, no turbulence model has yet achieved the goal of a unified framework that captures diverse coexisting mechanisms without manual tuning~. Achieving this remains a central open challenge in turbulence modeling.
+
+Methodology
+
+Our objective is to develop a unified, data-driven turbulence modeling framework that satisfies the following requirements:
+[label=(*), leftmargin=*, align=left]
+ The Reynolds stress representation will be frame-invariant and sufficiently flexible to represent diverse flow mechanisms.
+ The model will be learned from sparse, indirect observations, and should prefer low-order representation to enhance robustness.
+ The model will unify multiple flow mechanisms within a single framework efficiently, eliminating manual intervention.
+
+General eddy-viscosity model and its representation via parallel tensor basis neural network
+
+For constant-density, incompressible turbulent flows, the mean flow is governed by the Reynolds-averaged Navier--Stokes (RANS) equations:
+
+ & = 0, \\
+ t + - ^2 + P & = ,
+
+where $$ is the mean velocity, $P$ is the mean pressure normalized by constant density, and $$ is the Reynolds stress tensor capturing the effect of velocity fluctuations. Since these fluctuations are not resolved in RANS, the Reynolds stress $$ requires modeling.
+It can be decomposed into a deviatoric part and an isotropic part as:
+
+ = + 3k,
+
+where $k$ is the turbulence kinetic energy, and $$ is the second-order identity tensor.
+According to the general eddy-viscosity formulation~, the normalized Reynolds stress anisotropy, $ = /(2k)$, can be represented as a linear combination of ten tensor bases $^(i)$ with coefficient functions $g^(i)$:
+
+ = _i=1^10 g^(i)(_1, , _5)\,^(i),
+
+where the tensor bases $^(i)$ and scalar invariants $_i$ are derived from the normalized mean strain rate $$ and rotation rate $$:
+
+ = _s , = _s .
+
+Here, the mean strain rate $$ and rotation rate $$ are defined as $ = 2[ + ()^]$ and $ = 2[ - ()^]$, respectively. The turbulence time scale $_s$ can be estimated using either the turbulent kinetic energy $k$ and dissipation rate $$, or the specific dissipation rate~$$, as $_s = k/ = 1/(C_ )$. The first two scalar invariants and tensor bases are given by:
+
+_1 = \^2\, _2 = \^2\ \\
+^(1) = , 
+^(2) = - ,
+
+where $\\$ denotes the matrix trace. Full definitions of all ten tensor bases and five scalar invariants are available in the literature~. This formulation ensures frame invariance and provides the most general eddy-viscosity closure. For two-dimensional turbulent flows, the complete representation of Reynolds stress requires only the first two scalar invariants and tensor bases.
+
+The tensor basis neural network (TBNN)~ was proposed to represent the general eddy-viscosity model and learns the unknown coefficients \( g^(i) \) directly from data. Specifically, TBNN constructs a neural network-based mapping,~$: \_i\_i=1^5 \g_j\_j=1^10$, ensuring model flexibility while maintaining frame invariance. Typically, neural network input features are scaled to~$[-1, 1]$ to enhance training convergence. However, conventional min-max normalization, defined as $ = ( - _)/(_ - _)$, can cause feature clustering near singular points and poor generalizability as it utilizes global quantities, i.e., $_$ and $_$. Therefore, in contrast to the commonly used global normalization, we used a local time-scale normalization~:
+
+ = | | + 1/_s, = | | + 1/_s,
+
+from which new scalar invariants are subsequently derived, improving generalization.
+
+In this work, we extend the tensor basis neural network to achieve more flexible control of model nonlinearity. The resulting architecture, called the parallel tensor basis neural network, is shown in Fig.~. Unlike the original tensor basis neural network, which predicts all coefficients with a single network, the parallel tensor basis neural network uses multiple separated sub-networks to predict the coefficient functions $g^(i)$. 
+We construct a quadratic eddy-viscosity model that depends on the first two scalar invariants, $_1$ and $_2$, along with two commonly used flow features: the viscosity ratio $q_3 = 100 + _t$ and the turbulent Reynolds number $q_4 = \!(d50, 2)$~. These four quantities, denoted $\q_i\_i=1^4$, form the model input. The first two tensor bases, $^(1)$ and $^(2)$, are then combined with the predicted coefficients to construct the normalized Reynolds stress anisotropy tensor $$. The sub-networks independently predict the coefficient of the linear term, $g^(1)$, and the coefficient of the quadratic term, $g^(2)$. 
+Although both sub-networks share the same input features $\q_i\_i=1^4$, their independent structures allow tailored regularization for each component. This parallel design explicitly captures hierarchical interactions by first emphasizing linear contributions and then introducing nonlinear corrections. As a result, the parallel TBNN enhances the interpretability, robustness, and accuracy of turbulence modeling.
+
+Regularized ensemble learning from sparse, indirect observations for robustness
+
+To achieve stable and efficient training, we adopt a regularized ensemble Kalman filter (REnKF) method, inspired by~. Turbulence model learning is formulated as a Bayesian inverse problem: given sparse, indirect observations $$ and a baseline model as the prior, the goal is to infer the posterior distribution of the turbulence model, parameterized by neural network weights $$:
+
+ ( ) () \, ( ),
+
+where $()$ is the prior baseline model and $( )$ the likelihood function. 
+Under Gaussian and linear assumptions, the maximum a posteriori estimate reduces to the optimization problem:
+
+_() = \| ^i+1 - ^i \|_^-1^2 
++ \| - [^i+1] \|_^-1^2,
+
+where $$ is the observation operator that maps the model from state space to the observation space, and matrices $$ and $$ are the covariance matrices of the prior model and the observation errors, respectively. For any vector $$, the weighted norm is defined as
+
+\|\|_^-1^2 = ^ ^-1 ,
+
+with analogous definitions for $\|\|_^-1$ and $\|\|_^-1$. This problem can be solved iteratively using the ensemble Kalman filter (EnKF). However, repeated iterations tend to push the solution far from the baseline, effectively reducing the update to maximum likelihood estimation, which often leads to overfitting and poor generalizability.
+
+To mitigate this issue, we introduce a regularization term that penalizes deviations from the baseline linear eddy-viscosity model, following the same principle of field inversion and machine learning~. The resulting regularized loss function is
+
+_() = \| ^i+1 - ^i \|_^-1^2 
++ \| - [^i+1] \|_^-1^2 
++ \|[^i+1]\|_^-1^2,
+
+where the matrices $$ denotes the covariance matrix of the regularization constraints. 
+The regularization operator $$ penalizes deviations of the model coefficients from their baseline values, $g^(1) = -0.09$ and $g^(2) = 0$:
+ 
+ = [_1, _2 ] 
+= [ (g^(1) + 0.09)^2, \; (g^(2) - 0)^2 ].
+
+Minimizing this cost function $_$ leads to the following update scheme, which can be expressed in two stages: a pre-correction step that accounts for the regularization term, followed by the standard ensemble Kalman update:
+
+_j^i &= _j^i - '[_j^i]^ ^-1 [_j^i], \\
+_j^i+1 &= _j^i + (_j - [_j^i]), \\
+ &= ^ (^ + )^-1.
+
+The detailed implementation procedure is provided in our earlier work~. Overall, this regularized ensemble Kalman filter framework mitigates instabilities in nonlinear eddy-viscosity models and yields turbulence closures that are both robust and generalizable.
+
+Multi-objective learning for unified turbulence model
+
+A unified turbulence model should maintain robust performance across diverse flows without manual intervention. To achieve this objective, we propose training a unified turbulence model with heterogeneous data (e.g., sparse velocities and force) from a wide range of flows (e.g., attached and separated flows) within a single optimization process. This approach can be formulated as a multi-objective learning strategy and each objective corresponds to minimize the loss $_j$ in terms of a quantity of interest from a particular flow, totaling $N$ combination:
+
+_ [_1 (), \, _2 (), \, ..., \, _N ()]^,
+
+where $$ represents the parameters of neural network-based turbulence model.
+However, this approach can potentially involve conflicting objectives during optimization. 
+
+Pareto optimality refers to a solution in multi-objective learning where no objective can be improved without negatively impacting another. In the context of a unified turbulence model, it means identifying a model with parameter $$ such that further optimizing loss $_j$ for one objective would inevitably worsen performance on others. This ensures a balanced trade-off across objectives, improving the overall performance in multiple flow scenarios.
+When handling multi-objective learning problem, the weighted summation of losses is a common approach, which converts multiple objectives into a single objective by weighting each objective with specified coefficients. However, this approach has inherent limitations. It often requires costly grid searches to determine appropriate weights for multiple objectives or relies on heuristics~. More critically, it lacks a clear definition of global optimality in the multi-objective setting, making it difficult to effectively balance conflicting objectives, leading to suboptimal performance across objectives. 
+In contrast, the multi-objective optimization problem can be solved with the multi-gradient descent algorithm with dynamically adjusted weights~:
+
+ - _j=1^N _j _ _j (),
+ 
+
+where $$ is the optimization step size (learning rate) and $_j$ denotes weight corresponding to objective~$j$. 
+Pareto optimality can be formulated as Pareto stationarity by leveraging the Karush--Kuhn--Tucker (KKT) conditions~. Specifically, a solution \(\) is Pareto stationary if there exists a weight vector~\( = [_1, _2, , _N]^\)~, where each element \(_j\) is non-negative and sum to one, i.e., \(_j 0\) and~\(_j=1^N _j = 1\), such that the weighted sum of objective gradients~\( _j=1^N _j _ _j() \) results in the zero vector. This implies that if the parameter \(\) is Pareto stationary, there must exist gradients with opposing signs (unless all objective gradients $_ _j()$ are zero). The objective is thus to find such a weight vector \(\). 
+
+The Karush--Kuhn--Tucker conditions provide a way to identify a Pareto stationary parameter $$ by solving an auxiliary optimization problem for the weight vector $$. This involves minimizing the norm of the weighted sum of objective gradients, $_j=1^N _j _ _j()$. A zero norm indicates that the KKT conditions are satisfied, meaning $$ lies at a Pareto stationary point where objectives are in conflict. Conversely, a nonzero norm suggests cooperative optimization, where gradients align to improve all objectives simultaneously. In this case, the optimal weights $^$ yield a descent direction $_j=1^N _j^ _ _j()$. 
+To ensure meaningful weighting across heterogeneous objectives, all losses are first scaled to a comparable level. Each gradient is then normalized by the product of its loss value and its $L^2$ norm. After this normalization, the effective gradient magnitude depends only on the loss value: objectives with smaller losses yield larger normalized gradients, which receive smaller weights. This ensures that objectives already well optimized contribute less to the combined update, while underperforming objectives are emphasized. 
+For simplicity, let $_j$ denote the gradient of objective $_ _j()$, and let $$ denote their weighted sum $_j=1^N _j _j$. The Frank--Wolfe algorithm~ then optimizes $$ by identifying the objective gradient $_J$ that is most misaligned with $$, indicating conflict between objective $J$ and the aggregated objective. The algorithm increases the weight $_J$ accordingly, while preserving the normalization constraint on $$, thereby balancing the competing objectives.
+
+As an example, we illustrate the Frank--Wolfe algorithm in the scenario of a two objectives in Fig.~. 
+The algorithm starts by initializing equal weight for each objective \( = [0.5, 0.5]^\) and compute the gradient $ = 2 (_1 + _2)$. In the second step, the algorithm identifies the most conflicting gradient as \(_2\) and resolve the conflict by updating the gradient as~\( = (1 - ) + _2\), where the $$ is derived from the simple line search. The algorithm will repeat step 2 until it finds a non-conflicting gradient~\(\) or the search algorithm reaches the maximum step. Unlike derivative-free optimization methods (e.g., non-dominated sorting genetic algorithm), this gradient-based approach is highly efficient at managing up to 40 tasks~, making it ideal for developing a unified turbulence model.
+
+To integrate the multi-objective learning into the regularized ensemble learning framework, we derive a multi-objective update formula for model parameters $$ and it has the following form:
+
+ + _j=1^N _j _j, \; _j = _j (_j - _j[])
+
+where $_j$ is the Kalman gain matrix for objective $i$, and $_j$ represents the corresponding observation operator. The weight vector~$$ is derived from the aforementioned Frank--Wolfe algorithm. The details are provided in Algorithm~.
+
+[!htb]
+
+[1]
+ 
+ Compute individual objective $j$'s update by REnKF:
+ 
+ _j = _j (_j - _j[]),
+ 
+ Normalize each update:
+ 
+ _j^ = _j_j \|_j\|
+ 
+ Initialize task weights: $ (1/N, , 1/N)$
+ 
+ Compute weighted mean gradient: 
+ 
+ ^ = _j=1^N _j _j^
+ 
+ Identify the most conflicting task:
+ 
+ J = _j _j^^ ^
+ 
+ Compute step size $$ via line search:
+ 
+ = _ [0, 1] \| (1 - ) ^ + _J^ \|^2
+ 
+ Update task weights:
+ 
+ (1 - ) + _J
+ 
+ $ or maximum steps reached
+ Update parameters:
+ 
+ + ( _j=1^N _j _j )
+ 
+ 
+ Final parameters $$
+
+Case setup
+
+We present the training and test cases used to evaluate three turbulence models: the unified foundation model, the specialist model for separated flows, and the specialist model for secondary flows with separation. We summarize the setup of all cases together with the corresponding observation data in Fig.~.
+
+Unified foundation model
+
+The unified foundation model is trained on five representative flows and evaluated across two groups: flows within the training categories and realistic 3D flows. The five training flow configurations are: attached boundary layers (plane channel flow); separated flows (flow over periodic hill and S809 airfoil flow with high angle of attack); secondary flows (flow through square duct); and free-shear flows (round jet flow). An overview of each training and test case is shown in Fig.~. For each case, Fig.~ depicts the set of training cases used in the multi-objective learning framework. 
+The following paragraphs elaborate on the training and test cases introduced in Fig.~.
+
+Plane channel flow at a moderate Reynolds number \( = 3300\) exhibits distinct viscous, buffer, and logarithmic regions near the wall. The computational domain is periodic in the streamwise direction, with no-slip walls at the top and bottom. The mean velocity profile follows the classical law of the wall, and matching it serves as a fundamental validation step for turbulence models. Four streamwise velocity values are sampled along the wall-normal direction, covering the viscous sub-layer to the logarithmic region, and are used as indirect observations.
+
+Flow over the S809 airfoil at high angles of attack ($ > 10^$) is dominated by massive flow separation, making it challenging for traditional turbulence models, which often overestimate the lift force beyond stall~. At $ = 210^6$ based on chord length and inflow velocity, the suction side experiences a strong adverse pressure gradient, causing early separation. The case at $ = 14^$ is selected for training, using experimentally measured lift and drag coefficients as observations.
+
+Flow over periodic hill is a benchmark for internal separated flows, characterized by turbulence in the presence of periodic smooth hills that induce flow separation and reattachment. The setup operates at $_h_p = 10595$, defined using the bulk velocity and hill height $h_p$, with slope scaling factor $=1.0$. The domain applies streamwise-periodic boundary conditions, no-slip walls, and a specified bulk velocity. Velocities from DNS data are extracted at four cross-sections ($x/h_p = 1.0, 3.0, 5.0, 7.0$), yielding 66 velocity components as observations.
+
+Square duct flow introduces secondary flows due to turbulence-induced anisotropy in a non-circular cross-section. The domain assumes fully developed flow with periodic streamwise boundaries and no-slip walls. To reduce computational cost, one-quarter of the cross-section is simulated, with symmetry applied to two sides. Capturing both axial velocity and secondary cross-sectional flows is essential for assessing a model's ability to represent anisotropy. Training observations include mean velocities in three directions at four cross-sections, totaling 193 velocity components. The training case is conducted at a Reynolds number of \( = 3500\).
+
+Round jet evolves from a potential core into a turbulent shear layer before mixing with the ambient fluid. The total pressure is imposed at the jet inlet, pressure-outlet conditions are applied at the outlet, velocity is specified for the freestream inflow, and no-slip conditions are applied on the walls. Model validation requires reproducing the centerline velocity decay. Accordingly, 25 streamwise velocities along the centerline are used as training observations.
+
+We evaluate the unified foundation model on 27 turbulent flows, divided into two groups: flows within the training categories and realistic three-dimensional flows (Table.~). 
+
+ 
+The attached boundary layer category contains five test cases: a flat plate, channel flows at two Reynolds numbers, and airfoils at two low angles of attack. The flat plate case employs uniform inflow and no-slip boundary conditions at the wall, with periodicity applied in the spanwise direction. Two velocity values are sampled along the wall-normal direction to capture near-wall behavior, and the case represents the canonical development of a turbulent boundary layer, where viscous effects dominate close to the wall and gradually transition to turbulent momentum transport farther away. 
+The channel flows at two different Reynolds numbers ($ = 7890$, $ = 8 10^7$) use the same boundary conditions and sampling strategy as the training case, with Reynolds number as the only varying parameter. Four streamwise velocity values are sampled along the wall-normal direction, allowing systematic examination of Reynolds-number effects while retaining the classical structure of viscous, buffer, and logarithmic layers. 
+The attached airfoil test cases at $ = 1^$ and $5^$ follow the same setup as the training cases, differing only in angle of attack. Lift and drag coefficients are calculated over the entire airfoil surface. These low angles maintain attached flow without massive separation, ensuring them remain representative of attached boundary layers. 
+
+ 
+The separated flow category contains four types of test cases: curved step, bump, airfoils at four high angles of attack, and periodic hills at three slope scaling factors. 
+The curved step case uses uniform inflow with a no-slip wall and outflow boundary conditions downstream, with velocity samples collected in the recirculation zone to measure bubble length and reattachment. 
+The bump cases of different heights are simulated with periodic boundary conditions in the streamwise direction and no-slip conditions at the walls, with the wall friction coefficient used to assess the predictions of separation.
+The airfoil test cases at $ = 9^$, $11^$, $16^$ and $18^$ share the same setup and sampling strategy as the training case, with lift and drag coefficients extracted; at these higher angles, separation and stall dominate the flow behavior. 
+The periodic hill cases at three slope scaling factors (\(=0.8\), \(1.2\), and \(1.5\)) impose periodic streamwise and spanwise boundaries with no-slip walls at top and bottom, and streamwise velocity is sampled along wall-normal lines downstream of the hill crest, with points taken every five computational cell, to determine separation and reattachment lengths. 
+Together, these cases form a diverse testbed of separated turbulent flows, ranging from localized recirculation to fully stalled aerodynamic configurations. 
+
+ 
+The secondary flow category contains two types of test cases: square ducts at three Reynolds numbers (\( = 1100, \, 1800, \, 2600\)) and rectangular ducts at four aspect ratios (AR = $3,5,7,10$). In both geometries, a fully developed turbulent profile is prescribed at the inlet, with no-slip walls along all duct boundaries and a constant mass flux condition to sustain the flow. The domain is periodic in the streamwise direction, ensuring statistical stationarity. Velocity observations are taken in cross-sectional planes, identical to the sampling strategy used in the training case, to capture mean velocity distortion and secondary vortex development. The square duct flows emphasize corner-induced vortices, while the rectangular duct flows show how aspect ratio affects secondary circulations. 
+Together, these cases test the ability of turbulence models to capture inherently secondary motions in duct flows.
+
+The generic car challenges turbulence models with bluff-body wake dynamics, including shear-layer vortices, corner vortices, and a large base recirculation zone. Observation data consist of surface-integrated drag coefficient, which reflects the accuracy of predicted separation and wake structures.
+The asymmetric 3D diffuser tests turbulence models under adverse pressure gradients and Reynolds stress anisotropy that drive asymmetric separation. Observation data include velocity profiles across the separated shear layer, and wall friction trends that capture onset and reattachment.
+
+Specialist turbulence model for flow separation
+
+Conventional turbulence models often exhibit poor performance in flows with massive separation. To address this limitation, we develop a specialist model tailored for separated flows. This section describes the training configurations and the test cases selected to evaluate its predictive performance.
+
+ 
+To obtain a specialist model for flows with large separation, we train the model using three benchmark separated flows: flow over periodic hill (described in detail in Section.~), flow over a bump, and flow over a curved step as shown in Fig.~. The bump’s convex curvature induces an adverse pressure gradient that produces an incipient separation bubble with reattachment several bump heights downstream, while the curved step’s sudden streamline curvature generates a large separation region followed by gradual reattachment along the lower wall. Below, we introduce the bump and the curved step in detail.
+
+Flow over a bump is a two-dimensional wall-mounted configuration formed by a circular arc smoothly blended into a flat plate through convex fillets at both ends. This geometry produces an incipient flow separation on the lee side, making it a demanding test case for turbulence model evaluation. At the selected operating condition, the inflow Reynolds number based on the momentum thickness and freestream velocity is $__ = 2500$. While shallow bumps exhibit minimal separation, the present curvature induces a strong adverse pressure gradient downstream of the crest, leading to primary separation near the trailing fillet and a short recirculation bubble.
+The inlet velocity and turbulence profiles are extracted from a precursor large-eddy simulation of a zero-pressure-gradient turbulent boundary layer at the same $__$. Zero-gradient conditions are applied at the top and outlet boundaries, while the bottom boundary is treated as a no-slip wall. We use the wall skin friction coefficient \(c_f\) along the lower surface, sampled at 42 points and obtained from LES, as the training observation and the quantity of interest.
+
+Curved step flow consists of an upstream convex ramp that terminates in a sudden downward step. Unlike the flows over periodic hill and bump, which induce separation after an accelerating boundary layer, this configuration forces the detachment of an already fully developed turbulent boundary layer through abrupt streamline curvature. This setup resolves both the attached upstream boundary layer and the separated region downstream of the step. The flow operates at $ = 13700$ and 27 velocity values are sampled along several wall-normal lines, as shown in Fig.~, and used for model training. 
+
+Two groups of cases for evaluating the trained specialist model for separated flows are chosen and summarized in Table~: test cases within the training categories (seven parameter variations: bumps with different heights ($20, 26, 38, 42$\,mm) and periodic hills with slope factors $=0.8,1.2,1.5$) and a realistic three-dimensional case: the generic car shown in Fig.~.
+
+The bumps retain the same configuration as in training while varying the bump height, which systematically alters the adverse pressure gradient and separation strength. The periodic hills use the same flow conditions as in training, but their geometry varies through a slope scaling factor, creating a family of separated flows with different intensities. Together, these cases extend the training set into controlled parametric variations, enabling assessment of model robustness.
+
+The generic car is a standard benchmark in automotive aerodynamics, used to evaluate turbulence models for bluff-body flows. The model is placed in a wind tunnel domain and a uniform inlet yields a Reynolds number $ = 2.810^6$. A zero-pressure outlet boundary condition is applied at the downstream end, no-slip conditions are imposed on all solid surfaces, and symmetry conditions are used on the top and lateral boundaries to exploit geometric symmetry and reduce computational cost. The drag coefficient is calculated over the entire generic car surface as the observation data.
+The $40^$ slanted rear surface produces a complex three-dimensional wake, including top-shear-layer vortices, corner vortices, and a large base recirculation bubble. These flow structures make the generic car a stringent test for assessing turbulence model capability in predicting complex three-dimensional separation and wake dynamics. 
+
+Specialist turbulence model for secondary flows with separation
+
+We train a specialist turbulence model aimed at accurately capturing secondary flows with separation (multiple mechanisms). Recognizing that practical turbulent flows rarely involve a single dominant mechanism, but instead arise from complex interactions among multiple phenomena, the model is trained on configurations where both effects are prominent. This section outlines the training setups and test cases used to evaluate the model’s predictive performance.
+
+ 
+We select three benchmark cases to train the specialist model for secondary flows with separation shown in Fig.~, targeting large flow separation and secondary flow mechanisms: flow over a periodic hill and flows through square and rectangular ducts. Both the periodic hill and square duct cases are detailed in Section.~. 
+The rectangular duct flow exhibits asymmetric corner vortices, with the vortex on the horizontal wall expanding spanwise and dominating while the vertical wall vortex is compressed, producing a skewed concave flow pattern unlike the symmetric structure in square ducts. Training on these cases enhances the model's ability to capture secondary flows, large separations, and their interactions.
+
+We select two groups to evaluate the trained specialist model for secondary flows with separation shown in Table.~: test cases within the training categories (square ducts at $=1100,1800,2600$, rectangular ducts with aspect ratio = $5,7,10$, and periodic hills with slope scaling factor $=0.8,1.2,1.5$) and a realistic three-dimensional diffuser case. All the test cases within training categories are detailed in Section.~ and we now focus on the 3D diffuser.
+
+The 3D diffuser~ is a challenging validation case for turbulence models. It features incompressible, asymmetric internal flow with strong adverse pressure gradients and significant Reynolds stress anisotropy. The resulting three-dimensional complex separation closely mirrors the flow behavior in practical diffusers, such as those found between compressors and combustors in jet engines. This case is therefore a valuable benchmark for evaluating a model’s ability to predict corner separation and secondary flow dynamics.
+
+The diffuser consists of an inlet channel, a diffuser section, and a straight outlet section. Both the upper wall and the sidewall expand. Boundary conditions prescribe a fully developed turbulent inflow with a bulk velocity $U_ = 1$m/s, giving a Reynolds number $ = 10000$ based on inlet channel height. The diffuser test case is designed to capture three-dimensional separation and reattachment driven by wall expansion. Velocities are sampled at multiple wall-normal locations downstream of the expansion, as indicated by the red markers in Fig.~, to resolve the separated shear layer and recirculation bubble. In addition to velocity profiles, the wall friction coefficient is monitored along the bottom wall to quantify separation onset and reattachment. In total, 64 observations are used, providing detailed information on both the mean flow field and wall-bounded response.
+
+Results
+
+Unified foundation model
+
+We train a unified foundation model on five canonical benchmark cases and evaluate it on 27 diverse test cases. The unified foundation model demonstrates strong generalization across all test categories and consistently reduces the misfit relative to the baseline \(k\)--\(\) model.
+
+We introduce the normalized misfit, denoted $$, to quantify the improvement of the unified foundation model relative to the single-case trained model and to the baseline model; let $e_$, $e_$, and $e_$ denote the misfits of the unified foundation model, the single-case trained model, and the baseline model, respectively, and define
+
+=-e_e_-e_.
+
+By construction $=0$ corresponds to performance equal to the single-case trained model and $=1$ corresponds to the baseline; values $<1$ indicate improvement relative to the baseline while values $>1$ indicate degraded performance.
+For the plane channel case shown in Fig.~, the unified foundation model attains $$ close to 0, indicating performance comparable to the single-case trained model; the baseline model has $=1$ and the single-case trained model has $=0$ by definition, respectively.
+
+The radar plot shown in Fig.~ summarizes normalized misfit $$ for all training and test cases and highlights the unified foundation model’s generalization across four distinct flow categories. The model is trained on five canonical benchmark cases and evaluated on 27 diverse test cases; the plot condenses those results into a single view.
+
+The plot layout makes interpretation straightforward: colored outer bands label the four flow categories -- attached boundary layers, secondary flows, separated flows, and free-shear flows, while the radial axes correspond to individual test cases and are annotated with case parameters such as Reynolds number, aspect ratio, and angle of attack. The baseline corresponds to~$=1$ on every axis, training cases are indicated by markers, and the unified foundation model’s performance is shown as the filled blue polygon.
+
+Across the majority of axes the unified foundation model's polygon lies inside the baseline ring, indicating $ 1$ and therefore reduced misfit relative to the baseline. Training cases cluster near $=0$, showing performance comparable to single-case trained models; a small number of separated flow cases approach $=1$, indicating performance only comparable to the baseline.
+
+These patterns demonstrate robust generalization: the unified foundation model reduces misfit broadly across attached boundary layers, secondary flows, free-shear flows and separated flows, while the radar plot also exposes specific cases where improvement is limited and where targeted refinement would be most beneficial.
+
+The unified foundation model matches the baseline \(k\)--\(\) model in five attached boundary layer cases, demonstrating strong accuracy and generalization across Reynolds numbers and geometries. We evaluate the model on channel flows at \( = 3300, \, 7890, \, 8 10^7\), a turbulent flat plate, with results shown in Fig.~ and two airfoil cases with low angles of attack (\( = 1^,5^\)), with results shown in Fig.~. Among these, the channel flow at \( = 3300\) appears in the unified training set. For the airfoil cases at low angles of attack, where the flow remains fully attached, all models perform similarly.
+
+Fig.~ shows \(u^+\) versus \(y^+\) for ground truth (DNS data, black solid line), the baseline \(k\)--\(\) RANS prediction (red dashed line), and the unified foundation model performance (blue dash-dot line). Because the \(u^+\)--\(y^+\) curve reflects momentum diffusion from the wall, it serves as a stringent benchmark for turbulence models across flow regimes. All four cases represent benchmarks where linear eddy viscosity models typically perform reliably. 
+
+The unified foundation model reproduces near-wall turbulence with high fidelity in the low and moderate Reynolds number channel flows. At \( = 3300\), it closely follows the DNS curve, matching gradients in the near-wall region (\(y^+ < 100\)) and the logarithmic layer (\(y^+ 30\)–\(300\)), where accurate turbulent transport is critical. At \( = 7890\), it continues to match DNS trends and baseline model performance, including in regions where traditional models often overpredict velocities. This consistency shows the model’s capability to deliver accurate predictions within the regimes most relevant to engineering applications. 
+
+The model generalizes effectively to channel flow at high Reynolds number and unseen zero pressure gradient flat plate. At~\( = 8 10^7\), all models align closely, but the unified foundation model offers marginal improvements, indicating successful generalization beyond its training range. In the zero pressure gradient flat plate as shown in Fig.~(d), which differs fundamentally from channel flow, it maintains high accuracy and more effectively captures boundary layer growth than the baseline \(k\)--\(\) model. 
+
+These results highlight the unified foundation model’s strong generalizability, showing that it captures geometry-agnostic, physically grounded features of near-wall turbulence and transfers them effectively across attached boundary layer flow scenarios.
+
+The unified foundation model reproduces centerline velocity decay in a round jet with higher fidelity than the baseline \(k\)--\(\) model. We evaluate it on the same jet flow case used for unified training, with results shown in Fig.~. Compared to high-fidelity DNS data, which show a gradual velocity decay downstream, the unified foundation model (blue dash-dot line) closely tracks the DNS curve across the entire range. It captures jet entrainment and turbulent mixing more accurately than the baseline \(k\)--\(\) model (red dashed line), particularly in the far-field region where the baseline model typically underpredicts the decay.
+
+The unified foundation model accurately predicts secondary flows across a wide range of duct configurations, generalizing beyond its training conditions. We evaluate it on eight test cases as shown in Fig.~ and~: four square ducts at decreasing Reynolds numbers (\( = 3500,\, 2600,\, 1800,\, 1100\)) and four rectangular ducts at increasing aspect ratios (AR = 3, 5, 7, 10). Among these, only the square duct at \( = 3500\) appears in the training set; all other cases serve as generalization tests. For the square ducts, lower Reynolds numbers increase the sensitivity of secondary flow structures to turbulence model accuracy due to stronger viscous effects. Across all Reynolds number, the unified foundation model outperforms the \(k\)--\(\) baseline model, maintaining closer agreement with DNS results. In rectangular ducts, increasing the aspect ratio amplifies and distorts secondary flows, leading to anisotropic patterns that the baseline \(k\)--\(\) model struggles to capture. The unified foundation model captures both the amplification and spatial shifting of secondary vortices with aspect ratio, preserving their qualitative structure and quantitative magnitude. These results confirm that the model generalizes effectively to both Reynolds number and geometric extrapolation, demonstrating robustness for complex internal flows beyond its training set.
+
+The unified foundation model improves prediction accuracy for many separation-dominated flows but shows limited gains in certain configurations. We evaluate the unified foundation model on four types of benchmark cases: periodic hill flows with different slope scaling factors \(=0.8, 1.0, 1.2, 1.5\), flow over a bump, flow over a curved step and airfoil cases at five high angles of attack ($ = 9^, 11^, 14^, 16^, 18^$). Among these, the periodic hill flow with slope scaling factor \( = 1.0\) and the airfoil flow at \( = 14^\) appear in the unified training set. All four types of cases are challenging for linear eddy viscosity models because the local equilibrium assumption and Boussinesq hypothesis fail in separated regions. Results are shown in Figs.~,~ and~. 
+
+The unified foundation model generalizes flow separation mechanism across a wide range of angles of attack for S809 airfoil more accurately than the baseline \(k\)--\(\) model. We compare drag and lift coefficients (\(c_d\) and \(c_l\)) over varying angles, with results shown in Fig.~ alongside ground truth. The unified foundation model closely follows experimental trends across all test angles of attack, particularly in the post-stall region where the baseline substantially overpredicts lift and underpredicts drag. As the angle increases, the baseline model fails to capture the sharp nonlinear rise in \(c_d\) and the drop in \(c_l\) caused by flow separation, most evident at \( = 18^\). The unified foundation model, in contrast, reproduces these separation-driven transitions with higher fidelity, underscoring its capacity to model untrained flow regimes.
+
+The unified foundation model generalizes effectively across periodic hill flows with varying slope steepness, maintaining high accuracy in separated-flow predictions. In these cases (Fig.~), steeper slopes intensify adverse pressure gradients, producing stronger separation and delaying reattachment, where the baseline \(k\)--\(\) model often fails. Across all slopes, the unified foundation model more accurately predicts separation and reattachment locations and matches the velocity profiles from ground truth. In the steepest case (\( = 0.8\)), it captures curvature and asymmetry absent in the baseline, demonstrating robustness to geometric variation beyond the training slope.
+
+For the bump and curved step cases, which involve incipient flow separation, the unified foundation model offers no clear improvement over the baseline. In Fig.~(a), the skin friction coefficient \(c_f\) distribution matches the baseline closely. In Fig.~(b), the normalized streamwise velocity profiles at several downstream locations also align with the baseline, without significant enhancement. These findings suggest that the current unified foundation model lacks specialized capability for these configurations, motivating the development of a specialist model for separated flows. Such a model would rely on tailored training case selection to better capture the flow-specific physics through focused supervision.
+
+The unified foundation model consistently outperforms the baseline model across both realistic 3D cases shown in Fig.~. In the generic car, the baseline model fails to capture the full extent of the separated wake, producing a region that is significantly contracted relative to the ground truth, while the foundation model more closely aligns with the ground truth, albeit still underpredicting the wake size. 
+In the 3D diffuser, the baseline model markedly overpredicts the wall skin friction \(c_f\), maintaining elevated values far downstream, whereas the foundation model closely follows the gradual decay observed in the ground truth. Overall, the unified foundation model demonstrates a substantial improvement over the baseline, yielding better predictions for the separation region and the wall friction respectively.
+
+Specialist turbulence model for separated flows
+
+The specialist model for separated flows learns the corrections to the baseline model on the training cases and generalizes well within the training categories, extending even to the unseen generic car. To achieve this, we train the model to capture the physics of different levels of separation across various flows. We then evaluate the model within the training categories: periodic hills with different slope steepness and bumps with varying heights. In addition, we test it on a realistic three-dimensional flow, represented by a generic car with a slant angle of $40^$.
+
+The specialist model achieves improved performance on all training cases. Fig.~ compares separation bubbles from the ground truth, the baseline $k$--$$ model, and the specialist model across the three canonical training cases. In each case, the baseline overpredicts separation and deviates from the ground truth. After training, the specialist model places the onset and reattachment points closer to the ground truth and produces a separation region that better matches the observations.
+
+The specialist model generalizes well to flows within the training categories, outperforming the baseline. We evaluate bump configurations with heights of $h_b = 20,\,26,\,38,$ and $42\,$, as well as periodic hills with slope scaling factors of $ = 0.8$, $1.2$, and $1.5$ (see Fig.~). Performance in predicting separation is quantified using the normalized misfit $$ and visualized on a radar chart in Fig.~.
+For the bumps, the specialist model consistently reduces the error relative to the baseline, demonstrating robust predictive improvement across all test heights. For the periodic hills, substantial error reductions are observed for slope-scaling factors of $ = 1.0,\,1.2,$ and $1.5$. However, the case with $ = 0.8$ yields results comparable to the baseline. 
+This exception arises from the sharper geometric transitions, which generate flow phenomena beyond the training dataset. Overall, the results show that the specialist model generalizes well to configurations closely related to its training set, but its performance cannot be guaranteed when the test case deviates too far from the training conditions.
+
+To evaluate the specialist model’s ability to extrapolate beyond its training domain, we apply it to the generic car to predict wake separation. In this case, the drag coefficient $c_d$ is a key quantity of interest. Table~ reports the drag coefficients predicted by different models. The baseline model substantially overpredicts the drag compared to the ground truth, yielding values with low predictive credibility. Both the unified foundation model and the specialist model significantly improve upon the baseline. The specialist model provides the most accurate estimate, lying closest to the ground truth, though it still shows a noticeable deviation in this case.
+Fig.~(a) shows the wake, with the $U_x = 0$ contour line marking the separation region. The comparison of separation regions for the generic car reveals clear differences among the three models, baseline, unified foundation, and specialist, relative to the ground truth. The baseline model substantially underestimates the separation, producing a markedly contracted bubble. The unified foundation model improves the prediction by capturing a larger separation zone that extends further downstream, yet it still deviates from the ground truth. The specialist model achieves the best agreement, accurately reproducing the size of the separated region.
+The streamline pattern and the distribution of $g^(1)$ illustrate how the specialist model adapts its closure in separated flows (Fig.~(b)). The streamlines delineate the separation bubble and associated vortex structures, while the $g^(1)$ field highlights regions where the model applies localized adjustments. Elevated values of $g^(1)$ appear near the wake, where the eddy viscosity $_t$~is reduced according to 
+
+_t = - kC_ ,
+ 
+with $C_ = 0.09$ being a constant commonly used in eddy-viscosity models.
+This reduction facilitates separation and yields predictions that are closer to the ground truth.
+
+In summary, the specialist model for separated flows significantly improves separation prediction across the training cases, placing onset and reattachment points closer to the ground truth. 
+When applied to unseen flows within the training categories, the model consistently reduces error relative to the baseline, demonstrating robust generalization. Finally, in the realistic three-dimensional generic car case, the specialist model sustains its improved performance by concentrating corrections near the separation wake, accurately capturing both the separation region and the associated flow structures.
+
+Specialist turbulence model for secondary flows with separation
+
+The specialist turbulence model for secondary flows with separation not only corrects the baseline $k$--$$ model’s overprediction of separation and reconstructs intricate corner-vortex patterns, but also generalizes well to the three-dimensional diffuser by accurately capturing the interaction between secondary flow and separation.
+
+The specialist model improves performance across all training cases. For the periodic hill, which characterizes separated flow, Fig.~(a) shows that it reduces the baseline’s overprediction of separation and produces results closer to the ground truth. For the square and rectangular ducts, which characterize secondary flows, Fig.~(b--c) compares in-plane flows from the specialist model, the baseline, and the ground truth. The square duct exhibits symmetric corner vortices, 
+while the rectangular duct shows asymmetric vortices: those along the horizontal wall expand in the spanwise direction, weakening those along the vertical wall. Streamline visualizations reveal these vortical structures and highlight the improvements achieved by the specialist model.
+
+We evaluate the specialist model’s generalization within its training categories. The tests include periodic hills with slope scaling factors of $0.8$, $1.2$, and $1.5$ to assess separated flows; square ducts at Reynolds numbers of $1100$, $1800$, and $2600$; and rectangular ducts with aspect ratios of $5$, $7$, and $10$ to assess secondary flows.
+
+The specialist model consistently outperforms the baseline model. The radar plot in Fig.~ illustrates these improvement trends. Rectangular ducts with aspect ratios of $5$, $7$, and $10$ show substantial gains over the baseline. For the square duct, trained at $=3500$, performance decreases monotonically as the Reynolds number drops: $=2600$ shows moderate improvement, $=1800$ shows weak improvement, and $=1100$ shows essentially no improvement. Periodic hills with slope scaling factors $=0.8, \, 1.2, \, 1.5$ also outperform the baseline, although the gains are smaller than those at the training case $=1.0$, indicating modest sensitivity to wall curvature and 
+pressure gradient strength.
+
+Velocity contours across key cross sections show that the specialist model predicts separation behavior with the highest accuracy. To assess its performance on realistic three-dimensional flows that couple secondary flow and separation, we evaluate an asymmetric 3D diffuser. Several representative spanwise and streamwise planes are selected for detailed analysis. 
+Fig.~ presents streamwise velocity contours \(U_x/U_b\) with separation lines defined by \(U_x/U_b = 0\) at \(x/h_d=2, \, 5, \, 8, \, 12, \, \, 15\). In the ground truth, the separated region originates near the upper wall and grows downstream while remaining attached to the inclined side wall. In contrast, the baseline model predicts large separation along the inclined side wall and fails to capture the primary upper-wall separation. The specialist model suppresses spurious side-wall separation and relocates the separation line to the upper wall, closely matching the ground truth. The unified foundation model performs between the baseline and specialist models: at \(x/h_d=12\) and \(15\), it strengthens the upper-wall separation and reduces the side-wall separation, but still deviates from the true separation pattern. 
+Fig.~ further shows that, along the spanwise cross section near the inclined side wall, the specialist model more accurately captures the propagation of upper-wall separation and its reattachment at the diffuser exit compared to both the unified foundation model and the baseline model.
+
+Overall, the specialist model for secondary flow with separation not only learns the flow mechanisms individually, achieving improved performance within the training categories, but also handles their interaction. Its strong results on the 3D diffuser, eliminating spurious inclined side-wall separation and correctly predicting upper-wall separation, demonstrate generalization beyond the training manifold.

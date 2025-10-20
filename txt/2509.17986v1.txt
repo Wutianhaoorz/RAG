@@ -1,0 +1,220 @@
+[12pt]article
+
+[numbers,authoryear,round]natbib
+
+);a,,
+
+;0\ 
+,0\ 
+
+Lemma
+Corollary
+
+A self-consistent saturation model for the prediction of aeroacoustic limit cycles emerging in turbulent low-Mach cavity flows ($=(10^5)$, $M0.2$) is proposed. It predicts the nonlinear interactions between the acoustic modes of a deep rectangular cavity and the hydrodynamic instabilities of the turbulent shear-layer that forms over its opening due to the presence of a grazing flow. The model is based on the triple decomposition of the flow variables and the compressible Navier-Stokes equations. At each step of the iterative process, the nonlinear eigenvalue problem associated to perturbations around the mean flow is updated with the steady component of the forcing from the unstable eigenmode's Reynolds stress. The iterations are performed until the dominant eigenmode becomes marginally stable, i.e. its growth rate vanishes. The evolution of the coherent velocity fluctuations as function of the oscillation amplitude is in good qualitative agreement with previously published compressible Large Eddy Simulations. Furthermore, the predictions of the frequency and amplitude of the aeroacoustic limit cycle oscillations are validated against the ones obtained from a low order model, whose parameters were adjusted to reproduce the experimental measurements of the deep cavity whistling.
+
+Introduction
+
+ Low-Mach grazing flows over cavities can lead to constructive interactions between hydrodynamic modes of the shear layer and acoustic modes of the cavity. These interactions can result in high amplitude aeroacoustic limit cycle oscillations, which potentially induce cyclic stresses leading to structural fatigue. The prediction of the occurrence of such whistling phenomenon and its intensity are therefore highly relevant for practical applications such as aeronautical engineering, ground-based transportation systems, and turbo-machinery. The shear layer at the cavity opening is prone to Kelvin-Helmholtz instabilities, leading to the amplification of vorticity oscillations originating from the upstream corner of the opening. Their interaction with the acoustic modes of the cavity creates a positive feedback loop that leads to self-sustained aeroacoustic oscillations, e.g. , , and . In the case of turbulent grazing flow, showed that stochastic perturbation from turbulence can lead to intermittent instability and derived the coupled Langevin equations governing the aeroacoustic system in such situation. Recent experiments and Large Eddy Simulations , uncovered new aspects of governing mechanisms leading to these so-called fluid-resonant oscillations . However the latter simulations require large computational costs, which hinders their use for multiple-step engineering design optimization. Consequently, there is a need for reduced order models such as the Discrete Vortex Model (DVM) implemented by with a modified version of the Rossiter mechanism , or decoupled Computational Aero-Acoustics (CAA) methods, e.g. . Low-order models with experimentally determined constants have also been developed such as the empirical model of that is able to predict whistling frequencies and limit cycle amplitudes for the deep cavity subjected to low-Mach turbulent grazing flow system. 
+ 
+
+ Linear stability analysis around a mean flow, while unable to capture the finite-amplitude interactions leading to the development of limit-cycle oscillations, can provide valuable insights on the system's stability characteristics. For instance, performed a global stability analysis of the compressible Navier-Stokes equations and were able to identify two destabilizing mechanisms of the flow over a cavity. used asymptotic stability analysis, assuming the short-wavelength approximation, to study and categorize the mechanisms of instability of incompressible cavity flow. considered the flow of a jet through a circular cavity and constructed an matched asymptotic model to predict acoustic instabilities via an impedance criterion. The impedances necessary for closure were derived from the linearized Navier-Stokes equations (LNSE). In the work of , the incompressible Navier-Stokes equations are linearized around the mean flow over a deep cavity subjected to external forcing in order to perform a sensitivity analysis of thew flow and identify the mechanisms governing its coherent response. In particular, a saturation phenomenon is observed, where increasing the forcing amplitude reduces the amplitude of the system's response (harmonic gain) to the forcing.
+
+ In the present study a self-consistent analysis of the same flow configuration as the one of and is performed to describe the emergence of finite amplitude aeroacoustic limit cycles. The saturation amplitude and frequency predictions of the model are compared to experimental data and the accuracy of the method is assessed. The self-consistent approach used here is an extension of the work of to the case of a low-Mach, turbulent and compressible flow. was the first to propose an analysis of the linear stability of a mean flow for different amplitudes of a linearly unstable mode. More recently, proposed to solve the mean flow equation iteratively with the updated steady forcing from the unstable mode at each iteration. The idea of iteratively updating the steady forcing field was a crucial improvement to the method proposed by because the eigenmode shape usually strongly depends on the mean flow. Eventually the mean flow becomes marginally stable rendering the growth rate of the instability zero. This indicates a balance between linear and nonlinear effects and the system is then considered to be saturated, e.g. .
+ demonstrated that their self-consistent model can accurately predict the amplitude and frequency of limit cycle oscillations, in the canonical case of periodic vortex shedding in the laminar wake behind a cylinder without reliance on DNS or experimental data for calibration. adapted the self-consistent model to analyze the saturation of the response to harmonic forcing in a laminar backward-facing step flow. In the work of the full compressible NS equations were considered to investigate and predict the acoustic far field caused by the hydrodynamic modes of a laminar oscillating wake behind a cylinder. performed a triple decomposition of the flow and supplemented the incompressible NS with an eddy viscosity model thus accounting for the effects of turbulence. The success of self-consistent saturation models is not limited to the accurate prediction of the saturated base flow field and the limit cycle's amplitude and frequency. It also has the ability to highlight the underlying physical mechanisms leading to saturation i.e. the modifications imposed on the base flow by the developing mode, from the onset of instability up to saturation.
+ In the implementation of self-consistent models in the development of active wake control (AWC) strategies is proposed, after their potential to significantly reduce the computational costs of wake calculations is demonstrated in their work. 
+ 
+ In the present work an extended version of the self-consistent model is proposed. It accounts for low-Mach compressibility effects as well as the effects of high Reynolds turbulence, enabling predictions of aero-acoustic whistling phenomena. The problem is presented in the next section alongside a full description of the methods used. In the last section the results are presented and validated against experiments and compressible Large Eddy Simulations.
+
+Problem description
+
+Flow Domain
+
+ The 2D flow domain consists of a straight duct that features a closed cavity side branch of rectangular shape as shown in figure . The duct cross section length is $D=6.2$ cm, while the cavity measures $W=3$ cm in width and its height $H$ is varied in this work between $18$ and $30$ cm. Air flows inside the duct with a bulk velocity $U_b$ varied between 55 to $70\ ^-1$. This choice of parameters yields a set of flows characterized by small Mach and large Reynolds numbers, $U_b/c_0=M [0.16,\,0.2]$ where $c_0=340\ ^-1$ is the speed of sound and $U_b W/= 1.510^5$ where $=1.510^-5 \ ^2\,^-1$ is the kinematic viscosity, while the Prandtl number $=_0 c_p/ $ is around 0.7, where $_0=1.2\,^-3$ is the density, $c_p=10^3 \ ^-1\ ^-1$ the specific heat capacity and $=2.610^-2 \ ^-1^-1^-1$ the thermal conductivity.
+
+Governing equations
+
+ The compressible Navier-Stokes equations are cast in non-dimensional form using the reference values presented above, as in the work of and on noise prediction from flow over a bluff body and a shallow cavity respectively:
+
+ _t + ()=0,
+
+ _t + (,,P)=0,
+
+$$ (,,P)=() + M^2 P - ()$$
+where $$ is the ratio of specific heat capacities. Furthermore, the non-dimensionalized energy equation reads
+
+ _tT + (,, T)=0,
+ with
+$$ (,, T) = ()T + (-1) T - (-1)():() -^2T .$$
+
+Closure is achieved by means of the equation of state $P = T$, 
+where the non-dimensional pressure $P$ is defined as $(p-p_0)/(_0U_b^2)$. The solution $=[,,T,P]^$ is decomposed into its time averaged component $()$, coherent fluctuations $(,t)$ and turbulent fluctuations $'(,t)$ following , where the different components can be isolated from the complete unsteady flow by phase averaging $( )$ and time averaging $()$
+
+ =++'
+ 
+ 
+$$+'=0,\ = +,\ =0. $$
+Substituting the decomposition into the governing equations results in a coupled system of equations for the mean flow and the coherent fluctuations and omitting the terms $ \ ((q_i-_i)(q_j-_j))| \ i=1,2,3,4, \ \ j=1,3,4 \$ (i.e. omitting all terms involving products of two or more fluctuating quantities except for terms involving products of up to two velocity fluctuation components), which is a reasonable approximation for low-Mach number flows considering that fluctuations of density and temperature vanish in the incompressible limit, the LNSE take the form:
+
+ 
+ ()= 0
+ 
+ 
+ _t + L_C(,)=0
+ 
+ 
+
+ (,)=- ( + ' ' ) 
+ 
+ _t+_N(,)= - ( + ' ' )
+
+ 
+ (,,)=- (-1) [('):(') + ():()]
+ 
+ 
+ 
+ _t +L_E(,,)= - (-1) [():()
+ + ('):(')]
+ 
+
+ - = 0
+
+ 
+ --=0
+
+The expressions for the linear operators $L_C$, $_N$ and $L_E$ can be found in appendix A.
+The steady mean flow equations and the equations governing the evolution of the coherent fluctuations can be rewritten compactly using solution vector notation. Grouping the right hand sides into the non-linear forcing terms $[_('),\ _(')]^$ and $[_(), \ _()]^$ which cover the effects of turbulent and coherent fluctuations respectively, and introducing the triple decomposition into equations - yields:
+
+ _()=_()+_(')
+
+ 
+ _t() +_ (,)=_()+_(')
+
+ 
+
+Where $()=(1,,^2,0)$ is the mass matrix of the system and $_=[L_c,_N,L_E]^$.
+
+The effects of turbulence on the mean flow ($_(')$) are captured by a $k-$ turbulence model which introduces the turbulent viscosity (TV) $_t= k/$ where $k$ is the turbulent kinetic energy and $$ the specific turbulent dissipation rate. The mean Reynolds stresses $''$ are linked to the mean traceless strain rate (Boussinesq approximation) through: 
+
+ -''=_t()[ + ()^ -3()] -3 
+
+To link the coherent component of the turbulent Reynolds stresses $''$ to the traceless strain rate from the coherent fluctuations, the Boussinesq approximation can be used as in the work of and :
+
+ -''=_t()[ + ()^ -3()] -3 .
+
+The governing equations can then be recast as:
+
+ _()=_(),
+
+ 
+ _t +_ (,)=_(),
+ 
+
+where in the final form of the operators $_()$ and $_ (,)$ in equations the modified eddy viscosity $ +_t$ has been incorporated ($=_0$ is the dynamic viscosity). The turbulent viscosity is obtained from an incompressible RANS with $k-$ closure alongside the mean flow variable fields $$. These fields are then used to construct $_$. 
+
+Boundary conditions and mean flow computation
+
+ The walls $_$ are thermally insulated with no-slip velocity ($=0$) condition. On the outlet boundary $_$, the stress-free condition $[(p+(2/3)()-2]=0$ is imposed on the velocity field. To reduce computational expense, a zero shear stress condition $=0$ is set at the lower boundary $_$, which does not affect the aeroacoustic dynamics of the side branch cavity on the upper side of the channel.
+ 
+ In order to replicate the experimental conditions of the inlet and outlet should not reflect waves when the equations for the fluctuations are solved. These anechoic conditions are achieved by combining suitable boundary conditions at $_$ and $_$ and buffer zones damping wave propagation. Non-reflecting boundary conditions has been the topic of intense research for the simulation of compressible flows, e.g. , , and . Given that the duct acts as an acoustic wave guide whose cut-on frequency for transverse mode propagation is significantly above the cavity whistling frequency and that the cavity is relatively far from the inlet and outlet boundaries, the one-dimensional plane wave approximation is used, with the following Riemann invariant wave definition: $R_=u' + p'/_0(1+U_0/c)$, with $+$ denoting downstream and $-$ upstream propagating waves. Based on the work of , the acoustic b.c. are then set to $R_-|__=0, \ \ R_+|__=0$. Acoustic waves are further dampened by grid stretching and buffer zones of thickness $l_s$ that feature artificial viscosity and additional dissipative terms. 
+ 
+ The mean flow is obtained by using a compressible two-dimensional RANS solver with a $k-$ turbulence model implemented in Ansys Fluent . Boundary conditions at the inlet $_$ are uniform stream-wise velocity $U_b$, temperature $T=300$ K and turbulence intensity $5\
+
+Eigenvalue problem for a given mean flow
+
+The compressible LNSE () are now turned into an eigenvalue problem. First, the nonlinear terms $_()$ and $_()$ are neglected and a solution is sought out in the form of an eigenmode expansion. Substituting a solution of the form $=()e^ t+ \ c.c.$ to (), neglecting nonlinear terms in $$ and considering a given mean flow $$ one gets:
+
+ _()=0
+ 
+
+ 
+ +_ (,)=0
+ 
+
+The above eigenvalue problem associated with the LNSE is solved with a finite element method based on the open-source software FreeFEM . The mesh of $N_E=42521$ triangular elements is constructed using FreeFem meshing tools (see appendix B for details and mesh convergence study). A hybrid interpolation approach is employed, using a combination of P2 elements for velocity and P1 elements for state variables. After discretization of the LNSE system, its eigenvalues and eigenmodes are completed by the shift-invert method.
+
+Solving the LNSE system produces a spectrum which typically exhibits a branch of stable eigenvalues as shown in figure a for the case of the RANS mean flow obtained with $U_b=55$ m\,s$^-1$. Their negative growth rate (imaginary part) is generally smaller when their frequency (real part) gets larger. In this spectrum, less stable eigenvalues can be found above the branch. These eigenvalues correspond to eigenmodes involving intense fluctuations along the shear layer developing at the cavity opening. In figure a, the least stable one around $900$ Hz, exhibits a fluctuating pressure field which corresponds to the $3/4$ wave eigenmode of the pure acoustic problem, and velocity fluctuations in the shear layer which correspond to the first Kelvin-Helmholtz (K-H) mode of the pure hydrodynamic, i.e. incompressible, problem. The axial component of the velocity field of this mode and its pressure field are shown in figures a and d. In contrast to the results obtained with the incompressible LNSE by were K-H eigenmodes were always linearly stable, i.e. with negative growth rate, the compressible LNSE considered in this work can lead to linearly unstable, i.e. with positive growth rate, aeroacoustic eigenmodes for some ranges of cavity depth $H$ and bulk flow velocity $U_b$, in agreement with experimental observations of .
+
+Furthermore the TV has a strong damping effect on the eigenvalues of the compressible LNSE problem. It reduces substantially the growth rate of all modes. This is illustrated in figure for the case for $U_b=65$ m s$^-1$, $H=25$ cm treated with and without TV for the same RANS mean flow. The experiments of show that the supercritical Hopf bifurcation which separates cavity resonance condition from aeroacoustic limit cycles occurs close to this bulk flow velocity $U_b$. Comparing figures b and c one can see that TV also modifies the mode shape by reducing the penetration depth of the fluctuation inside the cavity. All the results presented in the remainder of this paper are obtained with TV. Moreover, for all combinations of $U_b$ and $H$ considered in this work, one mode dominates the spectrum of eigenvalues of the compressible LNSE associated to the RANS mean flow. It corresponds to the 3/4 mode of the cavity with an acoustic pressure wavelength equal to approximately 4$H$/3. 
+
+Self-consistent saturation model
+
+For cases where the compressible NS equations linearized around the RANS mean flow lead to a linearly unstable $3/4$ wave eigenmode, infinitesimal perturbations exponentially grow and an acoustic limit cycle is ultimately reached. The method to predict its amplitude is now explained. It is based on the self-consistent analysis of hydrodynamic limit cycles proposed by . They validated their method with the incompressible laminar self-oscillating wake behind a cylinder and developed it by building upon the work of . Assuming that the mode shape does not change with the amplitude, solved an amplitude dependent LNSE eigenvalue problem by subtracting a scaled mean component of the coherent Reynolds stress divergence such that a marginally stable base flow solution is found. The scaling factor then provides an estimate of the stable limit cycle amplitude. However this approach often produces an incorrect estimate of the amplitude because the shape of the mode exerting the steady forcing on the mean flow usually depends on the oscillation amplitude. An elegant way to overcome this issue was proposed by . The saturated state is iteratively obtained by gradually increasing the value of the forcing amplitude and resolving the updated equations at each step. It artificially creates a feedback loop, where steady forcing from the unstable mode (see an example in figure ) modifies the mean flow, which in turn lead to a modified mode shape and so on until the mode amplitude increment leads to a marginally stable mode. This development mimics the physical feedback mechanism that is responsible for saturation processes by gradually varying the shape of the base flow (and the unstable mode), leading to accurate and robust convergence behavior.
+As mentioned in the introduction, the self-consistent saturation analysis performed in this study account for both the effects of turbulence and compressibility. Turbulence effects are accounted for through the terms originating from the triple decomposition of the flow field and an eddy-viscosity closure model as explained in the previous sections, while the effects of compressibility are resolved by the compressible equations for density, temperature and pressure in addition to the momentum equation. The resulting system of equations describing the self-consistent saturation model, including all nonlinear terms up to first order, can be found in appendix or in the work of . For the present low-Mach flow cases, one of the terms dominates the others by more than an order of magnitude and is the only one retained in the present model. Thus, the resulting system in solution-vector notation reads: 
+
+ _(^(j+1))=-2A^2\_^(j)*_^(j)\[0,,0,0]^,
+
+ 
+ ^(j) +_ (^(j) ,^(j) )=0
+
+ 
+where $j^*$ is the iteration step and $_^(j)$ is the velocity component of the unstable eigenmode $^(j)_$, and $_^(j)*$ its complex conjugate. The first mean flow $^(1)$ used to obtain $^(1)_$ with equation is the RANS solution. The forcing	term on the RHS of equation is presented in figure a for $U_b=65$ m\,s$^-1$ and $H=25$ cm. In figure b, one can see the evolution of the linear growth rate of the unstable mode during the iteration process leading to marginal stability after six steps. The constant $A$ in equation can be interpreted as the mode amplitude, and as proposed by in their algorithm, its value is determined by requiring the value of $A_f^2=A^2 _^(j)*_^(j)/_^(j)^2$ to be fixed for ensuring convergence of the iteration process. Introducing $A_f$ is not strictly necessary for the iterative process. Its use explicitly shows the normalization of the eigenvectors using the metric of the space over which they are defined. In the present discretized LNSE operator space the dot product of two vectors is defined using the mass matrix of the problem $()$ with $^2=^() __i^*_i =1$. 
+
+An adequate tuning of $A_f$ is needed for ensuring that a marginally stable (vanishing growth rate) is reached and for minimizing the number of steps (see an example in figure ). Following , under-relaxation is also used to ensure robust convergence by updating the mean flow with $^(j+1)= ^(j-1) +(1 - ) ^(j) , \ j2 $ where $(0,1)$ is the under-relaxation factor. 
+
+Results
+
+The self-consistent model is now employed for the case of $U_b=65$ ms$^-1$ and $H=25$ m. The initial step leads to a forcing from the steady component of the coherent Reynolds stress presented in figure a, and to a linear growth rate of approximately $30$ rad s$^-1$ (see figure b). Figures and contain snapshots of streamwise fluctuation velocity and Reynolds stress terms respectively for the first 6 iterations. Figure clearly demonstrates the decay of the steady Reynolds stress forcing magnitude, when approaching saturation. This decrease in amplitude signifies a reduction in energy transfer between coherent fluctuations and mean flow, hinting at an energetic equilibrium state that will be reached upon complete saturation. Furthermore, one can see in figures and that the region exhibiting the largest coherent fluctuating velocity and the associated steady Reynolds stress forcing progressively migrates toward the upstream corner from an initial distribution spread across the cavity opening. The prediction of this effect from the self-consistent analysis based on the compressible LNSE is in excellent agreement with the compressible Large Eddy Simulations presented by . Indeed, in their work, coherent velocity fluctuations are imposed at the upper end of the side branch and the forcing amplitude is progressively increased, resulting in a very similar modification of the coherent response and of their steady Reynolds stress component. Interestingly, the region toward which high amplitude coherent fluctuations migrate during the self-consistent saturation process is characterized by a high sensitivity to forcing. Indeed, although the steady Reynolds stress forcing amplitude decreases, the effect it has on the mean flow increases. This result is in agreement with the adjoint-based sensitivity analysis of the incompressible flow from . Close to the upstream corner of the cavity, small perturbations are strongly amplified as they are convected downstream along the convectively unstable shear layer. This mechanism leads to a natural reorganization of the mean flow and its unstable mode during the saturation process leading to stable self-oscillations of the aeroacoustic system. 
+
+As shown in figure , predictions for the saturation amplitude of the limit cycle oscillations over a range of the flow velocity $U_b$ and the height of the cavity $H$ are in good agreement with the experimental data of and with their low-order model after its parameters have been calibrated. In the high-amplitude regimes, the self-consistent saturation model converges robustly and captures the non-linear amplitude limiting mechanism attributed to a balance of acoustic energy sources and losses from the self-oscillating flow of the aperture and acoustic energy losses at the channel boundaries. However, for combinations of $U_b$ and $H$ in the vicinity of the supercritical Hopf bifurcation (for instance for $U_b=60$ m\,s$^-1$ and $H=25$ cm), the self-consistent model overestimates the amplitude. This discrepancy arises from the minimum number of iterations required by the self-consistent model to converge, artificially increasing the saturated state amplitude . 
+
+Moreover, the overestimation of the oscillation amplitude close to the Hopf points can also be attributed to overestimated linear growth rate of the mode, themselves due to underestimated aeroacoustic damping in the present 2D analysis which does not account for flow friction along the lateral boundaries of the experiment from . The frequency corrections predicted by the model over the linear stability theory predictions exhibit a systematic and well interpretable trend. As saturation amplitude decreases, the magnitude of the frequency correction increases. The sign of the correction is negative for frequencies above the system's reactance inflection point and positive below it, in good agreement with the acoustic reactance measured in (see figures and respectively).
+
+Finally, it is interesting to discuss the saturated mean flow produced by self-consistent analysis. The example of the saturated mean flow for $U_b=65$ m\,s$^-1$ and $H=28$ cm is given in figure . It exhibits multiple cells that do not span accross the width of the aperture. This final mean velocity distribution leads to a marginally stable $3/4$ wave aeroacoustic mode, in agreement with the experiments.
+
+Conclusions
+
+The aeroacoustic limit cycles of deep cavities subjected to low-Mach turbulent flows have been predicted with a self-consistent model based on the compressible LNSE. It provides intermediate snapshots of the saturation process and make accurate predictions without the need for calibration data from simulations or experiments. Turbulent viscosity was incorporated to the self-consistent model using the triple decomposition of flow field. The predicted amplitude and frequency of the self-oscillating mode are in good agreement with the ones obtained from an experimentally calibrated low-order model, validating the capability of this framework to capture nonlinear effects beyond linear stability predictions.
+Moreover, the present work shows that the self-consistent analysis reproduces key features of the self-oscillating flow, such as the amplitude dependence of the frequency shift, with corrections being more significant as the amplitude decreases, in agreement with previously published experimental results. The model tends to overpredict amplitudes in the vicinity of the supercritical Hopf bifurcation, presumably because iterative convergence criteria are less robust at small amplitude, and because the three-dimensional effects of aeroacoustic dissipation in the lateral boundary layer of the physical system are not accounted for in the present two-dimensional analysis.
+Furthermore, the reorganization of the coherent fluctuations of the flow field enhance the Reynolds stress forcing in regions of high receptivity of the flow. It demonstrates that the saturation mechanism naturally aligns with the physical sensitivity of the initial mean flow obtained by solving the RANS equations. These results consolidate the literature dealing with self-consistent analysis of oscillating flows and demonstrate the method's capabilities in identifying dominant feedback pathways of aeroacoustic instabilities in low-Mach turbulent flows. It also shows its potential for designing control strategies and geometries for aeroacoustic systems, given that this self-consistent method can be operated at a fraction of the computational cost of codes traditionally chosen for this task.
+
+LNSE operators $L_C$, $
+
+ 
+ L_C(,)= + + +
+ 
+ 
+ _N(,)=() +() + () + M^2 -()
+ 
+ $$
+ L_E(,,) = () +() + ()- ^2
+ $$
+ 
+ + ( -1)([() + () +()] 
+ - [():() + ():()]) 
+ 
+
+Domain meshes and non-reflecting boundaries
+
+ 
+ Table provides the different parameters of the meshes used to perform the convergence study of the LNSE eigenmode problem with the RANS mean flow. Mesh M7 has been adopted for all results presented throughout the paper for cases with cavity depth $H=25$ cm and versions of it with extruded (or truncated) cavities, identical otherwise to the original, are used for cases of different depths. 
+
+ A buffer zone approach is adopted in the present work, wherein fluctuating quantities are artificially damped before reaching the domain boundary. This method effectively reduces unwanted reflections by imposing a dissipative effect on the coherent fluctuations. The term $-(x,y)(x)$ is added to the r.h.s. of the linearized equations with the damping function $(x,y)$ defined as:
+ 
+ 
+ (x,y)=0, x_in x x_out
+ 
+ 
+ (x,y)=Mf(x_in,x)\ x x_in
+ 
+ 
+ (x,y)=Mf(x,x_out)\ x x_in
+ 
+ 
+ where $f(x,y)=2(x-y)/l_s^2$, $x_in=-(L_1-l_s)$ and $x_out=(L_2-l_s)$.The constants $$ and $l_s$ determine the damping intensity and length of the buffer zone respectively. To further enhance numerical stability, following the methodology of and , a grid stretching technique is employed to enhance dissipation near the boundaries and an artificial viscosity component scaling with the mesh element size is introduced. This involves progressively coarsening the mesh near the boundaries, further mitigating wave reflections. The artificial viscosity is defined as: $_art=(/N, 1)$, where $$ represents the local mesh element size and $N$ is a tuning parameter that controls the strength of the dissipative effect. This formulation ensures that in high-resolution regions, the artificial viscosity remains negligible, preserving the physical accuracy of the simulation. These boundary conditions ensure minimal acoustic reflections while preserving the reliability of the numerical approach.
+
+ 
+
+Mean flow LNSE including all first order non-linear terms related to coherent fluctuations.
+
+ ()=-2A^2\^* + ^*\
+
+(,)=-2A^2\^*i_i + ^* + ^* + ^*\
+
+$$ (,, ) = -2A^2\^* + ^* + ^*\ $$
+$$ +(-1)[^* + ^* + ^*] $$
+
++ 
+ ^*i_i - (-1) [(^*):()]
+ \
+
+ -1 - = -2A^2\ ^* \

@@ -1,0 +1,161 @@
+[11pt, aps, prfluids, amsmath, amssymb, superscriptaddress, onecolumn,floatfix,tightenlines,showpacs,longbibliography,notitlepage]revtex4-2
+
+[breaklinks,colorlinks = true,linkcolor = blue,urlcolor=blue,citecolor=blue]hyperref
+
+[1]#1
+
+[1]#1
+
+I^
+I^_f
+
+_L
+ I^* 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Dinoflagellates are marine phytoplankton that emit flashes of light in response to flow-induced deformation; they are responsible for illuminating breaking-waves, wakes of ships, and other intensely turbulent spots of the upper ocean. Here, we ask how bioluminescence is affected by the fluctuating nature of turbulence---a question motivated by the dependence of emitted flashes on both the extent and rate of deformation. Introducing a light-emitting dumbbell as a minimal model, we study the Lagrangian dynamics of flashing in a homogeneous isotropic turbulent flow, and contrast it with that in an extensional flow and a Gaussian random flow. We show that turbulent fluctuations strongly enhance bioluminescence, while introducing a Poisson-like stochasticity in the flashing dynamics. Furthermore, the intermittent fluctuations of the velocity-gradient subjects the dinoflagellate to bursts of extreme straining and produces bright flashes---more intense, though less frequent, than what would result from Gaussian fluctuations. Our results suggest that radiant displays of marine bioluminescence are strongly promoted by turbulence and its dissipation-scale intermittency.
+
+ 
+
+ 
+Dinoflagellates are bioluminescent phytoplankton found in the upper ocean and along shore lines. They emit flashes of light when deformed by external mechanical forces, which could be caused by direct contact with predators or by fluid motion . While this deformation-induced emission of light is thought to be a defense mechanism against predation, it also produces spectacular nocturnal displays by lighting up the churning waters below breaking waves and around ships bows . Likened to the northern lights in their mesmerizing beauty , these prominent displays of bioluminescence are clearly associated with turbulent flows. In fact, turbulence is generated artificially by bathyphotometers (devices which measure the in situ bioluminescence of the ocean), in order to elicit an intense luminous response~. These turbulent motions are certainly associated with large mean-stresses that would strongly deform the dinoflagellates; but does the fluctuating nature of turbulence play a role in the stimulation of luminescence?
+
+Ultimately, light is produced by pH-dependent chemical reactions that occur inside specialized organelles called scintillons; the key reaction is the oxidation of luciferase, catalyzed by the enzyme luciferin~. The deformation of the dinoflagellate triggers an action potential which opens voltage-gated proton channels in the membrane of the scintillons, thereby reducing the pH within them and causing the oxidization reaction~. The process of mechanotransduction (the conversion of the deformation stimulus into an intracellular signal that fires-off the action potential) involves stretch-activated ion channels in the plasma membrane , as well as an increase in the cytoplasmic concentration of $^2+$ ions that are released from intracellular stores .
+
+The flow-induced deformation of a dinoflagellate, and the associated light emission, depends on the viscous stresses it experiences (experiments have shown that pressure and acceleration do not stimulate bioluminescence ). The magnitude of shear stress was shown to be a key factor in producing bioluminescence by Latz and coworkers, in a series of experiments involving dinoflagellates in controlled laminar flows---specifically, cylindrical Couette flow , pipe flow , and converging nozzle flow . The positive correlation between shear stress and illumination is robust, to the extent that dinoflagellate bioluminescence can be used as a means of visualizing the stress field . In transient laminar flows, the rate of change of shear stress was also seen to influence the intensity of illumination, with rapidly increasing stress leading to a bright response. This was directly observed in temporally-developing cylindrical-Couette flow , while experiments in an oscillating planar-Couette flow were qualitatively reproduced by a luminescence model that included a dependence on the rate of change of shear stress. 
+
+In terms of deformation, the experimentally-observed dependence on the magnitude and rate-of-change of stress implies that the brightness of a dinoflagellate's response increases with both the extent and rate of deformation. This is exactly what has been observed and quantified by , who measured the light emitted by the dinoflagellate Pyrocystis lunula when subjected to controlled and varying extents and rates of deformation, via indentation by a micropipette. They synthesized their observations into a phenomenological model that predicts the evolution of emitted light intensity given an input rate of deformation. We use this model in the present work.
+
+The dependence of bioluminescence on the rate of change of deformation is of particular relevance in turbulence. Thinking of the dinoflagellate as a sub-Kolmogorov deformable particle, we expect it to experience a fluctuating strain-rate that depends on the velocity-gradient it samples as it is transported in the flow. Over long times, the fluctuating velocity-gradient will act to stretch the dinoflagellate at a time-averaged rate that is proportional to the Lagrangian Lyapunov exponent of the turbulent flow; however, the instantaneous strain-rate will exhibit large deviations from the mean. (The connection between line element stretching and deformation of soft particles has been formalized in the case of an elastic dumbbell by *bfl00,bfl01 and ). Indeed, the velocity gradient in turbulence exhibits strongly non-Gaussian, intermittent statistics , which will result in the dinoflagellate experiencing periods of mild straining interrupted by extreme events of intense straining. 
+
+The possible influence of the intermittent fluctuations of the turbulent velocity gradient on the life of plankton has been recognized, with regard to 
+ encounter (collision) rates and nutrient update . Here, we aim to understand how the time-varying deformations produced by the turbulent velocity-gradient impacts the production of light by dinoflagellates. 
+ To this end, we combine the deformation-induced bioluminescence model of with the simplest mechanical model of a deformable particle, namely the elastic dumbbell. The flashing dynamics of this light-emitting dumbbell in a homogeneous isotropic turbulent flow is examined, for a range of turbulent dissipation rates. A comparison with a uniform extensional flow, which is devoid of fluctuations, and a Gaussian flow, which is stochastic but not intermittent, suggests that intermittent fluctuating straining of dinoflagellates plays an important role in radiant displays of marine bioluminescence.
+
+In the phenomenological model of , the applied strain $(t)$ (defined below, in terms of the elastic dumbbell) generates an intra-cellular signal $s(t)$ (such as a flux of $^2+$ ions), which in turn triggers the emission of light with an intensity that is represented by $I(t)$. The cell's internal relaxation processes by which the flash of light ends, and the cell resets for a subsequent flash, are represented by $h(t)$. The dynamics of these three variables are associated with time-scales $_s$, $_I$, and $_h$:
+
+ + _s^-1 s = ||,
+ _I = s - h - I, 
+ _h = s - h.
+
+The equation for $s(t)$, inspired by Maxwell's viscoelastic model, accounts for the dependence of light emission on both the extent and rate of deformation .
+The three time-scales were determined by fitting the model to data from experiments, performed for different deformation rates $(t)$, maintained for different time intervals (thus yielding different extents of deformation): $_s = 0.027$~s, $_I = 0.012$~s, $_h = 0.14$~s. 
+ observed flashes not only when the dinoflagellate was deformed by the pipette but also when the cell relaxed as the pipette was withdrawn. Therefore, we use the absolute value of $(t)$ in the model. 
+Figure~ illustrates the behavior of the model for one deformation-relaxation cycle. The imposed deformation is shown in Fig.~(a) and the response of all three variables are presented in Fig.~(b). An artifact of the simplicity of the model is that, depending on the form of the input signal $(t)$, $I$ can attain negative values after a flash is completed; we observe this in Fig.~(b). Since such negative values have no physical meaning, we focus on just the positive values and consider $ = I$ for $I 0$ and $ = 0$ for $I < 0$. The final output light signal is presented in Fig.~(c).
+
+As noted by , this model does not account for deformation thresholds, neither for the onset nor for the saturation of light emission, both of which have been observed in experiments . We therefore restrict our study to a range of turbulent dissipation rates for which the fluid stress within a Kolmogorov eddy lies within experimentally-observed stress thresholds (discussed further below). 
+
+When a dinoflagellate flashes repeatedly in quick succession, the intensity of light decreases with each flash (The model in Eq.~ was developed by for just the first flash.) The illumination of a local zone of intense turbulence in the ocean (beneath breaking waves or near a ships bow) would be sustained despite this decay because of the entrainment of fresh dinoflagellates into the region of strong fluctuating stresses. For simplicity, we ignore both decay and entrainment in this work, with the expectation that these counteracting factors will not alter our conclusions regarding the qualitative effect of turbulent straining.
+
+[width=0.32]figures_DNS/light-model-a.eps
+ (-19,30)(a)
+
+[width=0.32]figures_DNS/light-model-b.eps
+ (-19,30)(b)
+
+[width=0.32]figures_DNS/light-model-c.eps
+ (-19,30)(c)
+
+ Illustration of the light-emission model in Eq.~. (a) Strain profile $(t)$, with rate of change of strain $ = _s^-1 5 \,_h^-1$ during deformation and relaxation. (b) Evolution of $s$, $h$, and $I$. (c) Intensity of light $I^*$ obtained by replacing negative values of $I$ with zero (no light emission).
+
+Dinoflagellates have cell walls that resist deformation, though the cytoplasm also plays a role in maintaining the cell's structure . Here we use the simplest mechanical model for an elongated deformable object---the elastic dumbbell. The end-to-end extension vector $ R$ is governed by
+
+ = v( x_cm(t),t) - f() ( R )2_E,
+ 
+f() = [1 - (R/R_m)^2]^-1,
+
+where $R = | R|$ is the instantaneous extension, while \(R_eq\) is the equilibrium extension, to which the dumbbell relaxes in a quiescent fluid. The time-scale of relaxation is \(_E\). The dumbbell has a maximum extension \(R_m\), which is enforced by the finitely extensible nonlinear elastic (FENE) force coefficient \(f(R)\). 
+
+The velocity gradient of the turbulent flow \(\) is evaluated at the position of the center of mass of the dumbbell, $ x_cm$, which evolves like a tracer in the flow satisfying $_cm = v( x_cm)$. We ignore the weak motility of the dinoflagellate and its slight negative buoyancy , properties that would prevent it from behaving exactly like a tracer.
+
+[width=0.325]figures_DNS/strain-rate-pdf.eps
+ (-19,30)(a)
+
+[width=0.315]figures_DNS/R-pdf-Wip3.eps
+ (-19,30)(b)
+ (-110,111) $ = 0.3$
+
+[width=0.325]figures_DNS/PDF_epsDotWip3.eps
+ (-19,30)(c)
+ (-130,30) $ = 0.3$
+
+ Comparison of the PDFs of (a) strain-rates experienced by the dumbbell $| |^-1$ (where $ = R/R$), (b) dumbbell extension $R$, and (c) rate of change of strain $ = R/R_eq$, in the turbulent DNS and in the Gaussian gradient (GG) model. Here $ = 0.3$; analogous results are obtained for $ = 1.0$ .
+
+In our simulations, we use a dataset of \(\), calculated along $10^4$ tracer trajectories in a direct numerical simulation (DNS) of a homogeneous isotropic turbulent flow, with a Taylor Reynolds number $Re_ = 111$ . The DNS is performed in a tri-periodic cube with a $512^3$ pseudo-spectral grid; see the supplementary material (SM) for further details . This Lagrangian dataset has been used previously for studying the stretching of polymers (dumbbells and chains) in turbulence . The stretching action of the fluctuating velocity gradient is best characterized by the Lyapunov exponent along tracer trajectories $$, which is calculated from the data for \(\) using the continuous $QR$ method . $$ is the long-time exponential stretching rate of line elements in the flow. We use $$ to define the Weissenberg number of the dumbbell as $ = _E$. 
+
+To understand the effect of turbulent fluctuations, we perform simulations in a uniform extensional flow,
+\(
+ v = ( & 0 \\ 0 & - )
+\), 
+with strain-rate $ = $. To isolate the effect of extreme-valued fluctuations, we also consider a Gaussian time-correlated random model for \(\), specifically that of . We set the parameters of this model such that it yields the same Lyapunov exponent as the turbulent flow, as well as approximately the same correlation time-scales of vorticity and strain-rate (see the SM for details ). Figure~(a) compares the probability distribution function (PDF) of the magnitude of the strain-rate experienced by the dumbbell, $| |$ (where $ = R/R$), in the turbulent flow (DNS) to that in the random flow with Gaussian gradients (GG). Clearly, the intermittent velocity gradient in the turbulent flow subjects the dumbbell to more episodes of very strong and very weak strain-rates, but less episodes of moderate strain-rates. 
+
+Having a Lagrangian time-series for \(\), we integrate in time using a fourth-order Runge-Kutta method. From $R(t)$, we obtain the strain as $(t) = (R(t) - R_eq)/R_eq$; its time-derivative $ $ is the input to the luminescence model .
+We set
+\(R_eq = 1\), \(R_m = 1.7R_eq\), and $ = 0.3$. These choices yield a mean strain of $ 0.4$ which is comparable to that in the experiments of . We have checked that our conclusions are not sensitive to the precise choice of these parameters, as demonstrated by additional results for $ = 1.0$ in the SM . 
+
+The PDF of the extension is shown in Fig.~(b) for the DNS and the GG flow. The results are almost the same; as shown by , the statistics of dumbbell extension are largely determined by the time-averaged rate of line-element stretching, that is by $$, which is the same in the two flows. So, similar extension can result from sustained moderate-straining (GG) as from relatively weak straining interspersed by bursts of strong straining (DNS) . In contrast, the PDF of the rate of change of extension $ R/R_eq$, which equals $ $, is sensitive to the presence of extreme velocity-gradient fluctuations in the turbulent flow, as demonstrated by Fig.~(c). Hence, the dependence of luminescence on the rate of deformation $ $ must render the flashing dynamics sensitive to extreme-valued turbulent fluctuations. 
+
+We analyze the flashing dynamics for a range of luminous Weissenberg numbers, defined as $ = \,_h$ (recall that $_h$ is the time-scale over which the cell resets itself after flashing). This is equivalent to considering a range of turbulent dissipation rates $$, since $ ^1/2$ as discussed below. Now, dinoflagellates emit light only once the stress experienced by them exceeds a lower threshold , which is species-specific and was shown by , in a study of four different species, to vary from 0.02 to 0.3 . Experiments have also found an upper threshold of $ 1$ beyond which light emission saturates . The stress at the Kolmogorov scale of the flow may be estimated as $ _^-1$ where $_ = (/)^1/2$ is the Kolmogorov time-scale, which is an estimate of both the strain-rate within the smallest eddy and of its turnover time (here, $$ and $$ are the liquid viscosity and density). In water, a Kolmogorov-scale stress in the range 0.02 to 1 requires a turbulent dissipation rate $$ between $4 10^-4$ and $1$ . The corresponding $_$ lies between $5 10^-2$ and $10^-3$ . Since in fully developed turbulence, one typically has $ 0.1 \,_^-1$ (for our DNS data the exact relation is $ 0.136 \,_^-1$ ), we estimate that $ 0.1$ at the onset of luminescence while increasing $$ beyond $ 10$ will not increase light production. We therefore restrict our study to $0.1 < < 10$. 
+
+The Kolmogorov length scale $ = ^-1/4 (/)^3/4$ for the dissipation rates of interest spans $ 200$ to $30$ . And most dinoflagellates have sizes $ 100$ . So, for the strongest turbulent flows, the dinoflagellate can extend beyond the Kolmogorov scale , though not by much. In such cases, the velocity difference across the dinoflagellate is not determined entirely by $ v$, but will have corrections from higher-order terms in the Taylor series. Accounting for super-Kolmogorov sizes is one of several directions for future work, which are discussed towards the end of this paper.
+
+Note that background turbulence in the upper ocean has much smaller values of turbulent dissipation ($10^-10$ to $10^-5$ ) than that required for dinoflagellate bioluminescence. Hence, bright displays of light occur only in zones of abnormally intense turbulence, such as breaking waves and ship wakes .
+
+[width=0.32]figures_DNS/turb-strain.eps
+ (-19,111)(a)
+
+[width=0.32]figures_DNS/turb-R.eps
+ (-19,111)(b)
+
+[width=0.32]figures_DNS/turb-I.eps
+ (-19,111)(c)
+ 
+Evolution of (a) the magnitude of the strain-rate experienced by the dumbbell $| |$ (where $ = R/R$), (b) the end-to-end extension $R$, and (c) the light intensity $I^*$ (for $ = 0.5$ and $2.0$), in the turbulent flow. These repeated flashes may be contrasted with the single, much weaker, flash in an extension flow (see Fig~S1 in the SM ). Here $ = 0.3$.
+
+ The light-emitting dumbbell (Eqs.~ and ) quickly attains a statistically stationary state in the turbulent flow (after a few multiples of $_h$) and exhibits a fluctuating light response $$ that consists of apparently random flashes. Typical time-traces of the strain-rate along the dumbbell $| |$, the extension $R$, and the light intensity $$ are illustrated in Figs.~(a-c). 
+
+The strongest flashes in Fig.~(c) occur during the strongest straining events in Fig.~(a) (around $ t$ = 37 and 46); this is to be expected because the strain-rate $ R$ directly affects the rate of deformation $ = R/R_eq$ [see Eq.~], which in turn drives the internal cellular signal $s$ [see Eq.~]. The extension indeed undergoes its largest fluctuations near the times of the strongest flashes [Fig.~(b)].
+
+The results for different $$ in Fig.~(c) show that larger values of $$, which correspond to stronger turbulent flows with greater dissipation rates, result in brighter flashes. This is confirmed by Fig.~(a), which presents the mean light intensity $$ (averaged over all trajectories and over time in the stationary state) for various $$. Results are presented for the turbulent DNS, the random Gaussian flow, and an extensional flow. Focusing first on the DNS results, we observe an approximate linear increase of the mean light intensity with $$. This is consistent with the experiments in turbulent pipe flow of and , who both report an approximately linear increase of light intensity with the magnitude of the wall shear stress (the dinoflagellates light up near the wall and so the wall shear stress was used as an estimate of the stress experienced by them). Recall that $$ is proportional to the viscous stress experienced by the dumbbell, since $ _^-1$ and $ _^-1$ is the Kolmogorov-scale viscous stress.
+
+To understand the role of flow fluctuations, we calculated the light intensity emitted due to deformation in a uniform extensional flow, with a strain-rate that matches the Lyapunov exponent of the turbulent flow. The dumbbell's extension initially increases and then reaches a constant value, as the dumbbell aligns with the stretching direction of the extensional flow. As a consequence there is only one flash (see Fig.~S1 in the SM ), the intensity of which varies depending on the initial orientation of the dumbbell (qualitatively similar results are obtained in planar shear flow, wherein the dumbbell aligns with the flow direction). On averaging $$ over the initial orientation, and over the time duration of the flash (i.e., when $ 0$), we obtain the results for $$ shown in Fig.~(a) (inverted triangles). Though the average straining rate is comparable in the two flows (since $ = $), the fluctuating turbulent flow elicits a much brighter luminous response than the extensional flow.
+
+The effect of intermittent velocity-gradient fluctuations are revealed by comparing the results in the turbulent flow (DNS) with those in the random flow with Gaussian gradients (GG). The mean light response is seen to be greater in the DNS at large $_L$, though the difference appears to become negligible at small $$ [see Fig.~(a)]. However, on comparing the PDFs of $$ in the two flows [Fig.~(b)], we find that the flashing dynamics is sensitive to extreme velocity-gradient fluctuations even at small $$: the PDF of $$ shows much wider tails in the turbulent flow. Given that $$ is the same at small $$, the wider tails imply that the flashes in the intermittent turbulent flow are brighter but less frequent than those in the Gaussian random flow.
+
+[width=0.33]figures_DNS/Iavg_Wip3.eps
+ (-118,111)(a)
+
+[width=.325]figures_DNS/Ipdf-Wip3.eps
+ (-118,111)(b)
+
+[width=0.32]figures_DNS/tfavg-Wip3.eps
+ (-118,111)(c)
+
+ (a) Variation of the mean light intensity $ I^* $ with $$, in the turbulent DNS and the Gaussian-gradient (GG) flow. (b) PDF of the light intensity $$, for $ = 0.5$ and $2.0$, in the two fluctuating flows. (c) Variation of the mean waiting-time between flashes $ t_f$ with $$. Here, $ = 0.3$; analogous results are obtained for $ = 1.0$ .
+
+ To quantify how the flashing frequency depends on the strength of the turbulent flow, we calculate the waiting time between flashes $t_f$. We identify flashes as the periods of time during which $ $, where the threshold $ = _max$ (the maximum value varies with $$ and is calculated over the whole ensemble of trajectories and across time in the stationary state). We set $ = 0.15$ after checking that our conclusions are not sensitive to the precise value of the threshold. The waiting time $t_f$ is then given by the intervals of time for which $ < $ [see Fig.~S2(a) in the SM ]. The PDF of $t_f$ is found to have approximately exponential tails [Fig.~S2(b) in ], 
+showing that the fluctuations of the flow introduce an apparent stochasticity into the light dynamics, such that the flashes may be modeled as a Poisson process.
+
+The mean waiting time $ t_f $ is presented as a function of $$ in Fig.~(c) for the DNS and the GG flow. As anticipated, the flashes are less frequent ($ t_f $ is larger) in the intermittent turbulent flow, especially at small $$. As the turbulence becomes more intense the rate of flashing increases and becomes insensitive to the presence of extreme velocity-gradient fluctuations. The extreme gradients always generate larger-amplitude flashes, however, as evidenced by the difference in $$ growing with $$ [Fig.~(a)] even as the difference in $ t_f $ shrinks [Fig.~(c)].
+
+With a minimal model of a flashing dinoflagellate that accounts for the dependence of light emission on the extent and rate of deformation, we have shown how the fluctuating and intermittent nature of small-scale turbulent straining enhances bioluminescence. Experiments in turbulent pipe flow by showed that the mean light intensity emitted by dinoflagellates near the wall is the same in a laminar and turbulent flow provided they have the same mean wall shear-stress, which is equivalent to having the same mean wall shear-rate or strain-rate. However, in turbulence, the Eulerian mean at a fixed location is not the same as the Lagrangian mean along the path of a dinoflagellate. 
+The Lagrangian mean will be reduced by cross-pipe turbulent mixing, which will prevent dinoflagellates from persistently experiencing the high strain-rates near the wall. The fact that the light intensity remains the same as the corresponding laminar flow could be attributed to the mechanism uncovered here---the lower Lagrangian mean strain-rate is compensated for by turbulent fluctuations which enhance light emission. Simulations of our light-emitting dumbbell in a turbulent pipe flow should help clarify how bioluminescence varies across the laminar-turbulent transition. 
+
+We have focused here on Lagrangian dynamics and ignored the spatial distribution of luminescence. When exploring the pattern of illumination, it would be relevant to extend the mechanical model to account for the 
+
+motility and possible super-Kolmogorov size of dinoflagellates. These properties cause deviations from tracer-like transport and result in preferential sampling of the flow---
+
+microswimmers sample non-vortical regions~, while long rods sample vortical regions~. This would not only alter the statistics of the strain-rates experienced by dinoflagellates but also lead to clustering~. One could also examine how the shape of a dinoflagellate (rod-like or spherical) affects bioluminescence, by replacing the elastic dumbbell with a more complex structural model like a soft ellipsoid~.
+
+The process of light emission may also be modeled in more detail, as done by (see also ) who use an empirical form for the flash and model flash-triggering as a Poisson process with a firing rate that depends on the fluid stress experienced by the dinoflagellate (the magnitude and the rate of change). This model accounts for the stress-thresholds for light response and the stochasticity of internal cell processes (though the latter is not crucial in turbulence, since even without internal randomness the external turbulent flow produces Poisson-like stochastic flashing). Reformulating this model in terms of deformation and applying it to a turbulent flow, while accounting for cell fatigue (decay of repeated flashes) and turbulent entrainment of fresh cells, would be an important step towards quantitative prediction of turbulent bioluminescence. \\
+
+ We thank Samriddhi Sankar Ray (ICTS, Bengaluru) for sharing the Lagrangian trajectory database. This work was supported by the Indo–French Centre for the Promotion of Advanced Scientific Research (IFCPAR/CEFIPRA, project no. 6704-1). P.K. is grateful for funding from IIT Bombay under the Institute Postdoctoral Fellowship program. J.R.P. acknowledges his Associateship with the International Centre for Theoretical Sciences (ICTS), Tata Institute of Fundamental Research, Bengaluru,
+India. We are thankful for the computational resources provided by the National PARAM Supercomputing Facility PARAM SIDDHI-AI at CDAC, Pune, India. 
+Simulations were also performed on the IIT Bombay workstation Gandalf (procured through DST-SERB grant SRG/2021/001185).

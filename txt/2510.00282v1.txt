@@ -1,0 +1,719 @@
+[
+ aip,
+
+ amsmath,amssymb,
+
+ reprint,
+
+]revtex4-1
+[percent]overpic
+ 
+ 
+ 
+ 
+[1]>p#1
+ 
+ 
+
+ 
+ 
+
+mOwhite(#1)
+
+[utf8]inputenc
+[T1]fontenc
+
+[english]babel
+
+[normalem]ulem
+
+[1]#1 
+
+HTMLB55A43
+HTML3D8C40
+
+[1]>p#1
+
+\@email#1#2
+ 
+ 
+ @RRAPformat
+ @RRAPformat@RRAP*#1#2@RRAPformat
+ 
+
+[Electron neural closure for turbulent magnetosheath simulations: energy channels]Electron neural closure for turbulent magnetosheath simulations: energy channels
+
+ 
+
+$
+ $Deceased, May 2024.
+
+ 
+
+In this work, we introduce a non-local five-moment electron pressure tensor closure parametrized by a Fully Convolutional Neural Network (FCNN). Electron pressure plays an important role in generalized Ohm's law, competing with electron inertia. This model is used in the development of a surrogate model for a fully kinetic energy-conserving semi-implicit Particle-in-Cell simulation of decaying magnetosheath turbulence. We achieve this by training FCNN on a representative set of simulations with a smaller number of particles per cell and showing that our results generalise to a simulation with a large number of particles per cell. We evaluate the statistical properties of the learned equation of state, with a focus on pressure-strain interaction, which is crucial for understanding energy channels in turbulent plasmas. The resulting equation of state learned via FCNN significantly outperforms local closures, such as those learned by Multi-Layer Perceptron (MLP) or double adiabatic expressions. We report that the overall spatial distribution of pressure-strain and its conditional averages are reconstructed well. However, some small-scale features are missed, especially for the off-diagonal components of the pressure tensor. Nevertheless, the results are substantially improved with more training data, indicating favorable scaling and potential for improvement, which will be addressed in future work. 
+
+Introduction
+ 
+Understanding and predicting the behavior of collisionless space plasmas in the near-Earth environment presents a fundamental scientific challenge due to its multi-scale nature. Many of the important theoretical and numerical results can be tested in this environment. Of particular interest are the energy exchanges and dissipation in collisionless plasmas, driven by reconnection and wave-particle interactions. Turbulence drives the formation of thin current sheets that reconnect and may drive secondary reconnection processes. Thus, these phenomena are intimately linked in plasmas~. Figuring out how plasma is energized in such turbulent environments was highlighted as one of the critical research questions for future space missions~. These processes create extreme events posing serious risks to our infrastructure~. 
+
+The Earth's magnetosheath, which separates the bow shock from the magnetopause, is located at the interface between the Earth's magnetosphere system and the solar wind that drives space weather. The interplay between turbulence and reconnection in the magnetosheath has been a subject of study recently, for instance, the influence of turbulence on the length of current sheets formed~. This leaves open questions, such as understanding the interaction between magnetic reconnection and other types of waves and instabilities~ that contribute to plasma heating.
+Indeed, the magnetosheath is also home to a variety of modes that are driven by pressure anisotropies, such as whistler waves, which have been recently associated with driving the formation of electron magnetic holes~. These processes were studied using ECsim~ (an energy-conserving semi-implicit Particle-in-Cell (PIC) code), which allows moderately large domains spanning sub-ion and electron scales and mass ratios $m_e/m_i 100$. 
+
+PIC codes are more efficient than higher fidelity Vlasov fully kinetic simulations~. Such simulations can only be performed for certain parameter ranges and spatial scales. A more efficient approach involves Reduced Order Models (ROMs), such as hybrid Vlasov~ and hybrid PIC codes~, which have been developed for global modelling of magnetospheres. These models have made significant advances in our ability to represent the physics at mesoscales, typically covering MHD and sub-ion scales, but crucially omitting electron scales. Electrons are typically assumed to be polytropic or even isothermal. This is in stark contrast to the physics which takes place at microscopic scales, whereby electrons are de-magnetized in the process of collisionless magnetic reconnection~, where electrons also play a key role in modifying dynamics~. These processes contribute to the heating of electrons that is not captured in hybrid models, as confirmed by simulations of the Hearmean magnetosphere carried out using fully kinetic simulations~ when compared to much cooler electrons found in hybrid simulations~. Thus, in order to understand and predict energization of plasma, it is important to couple high-fidelity fully kinetic simulations with ROMs to properly represent the physics of both electrons and ions.
+
+One of the potentially promising avenues involves coupling PIC codes to fluid codes in an attempt to model complex objects, such as Earth's magnetosphere, more accurately~. This allows resolving the magnetotail with a PIC simulation in a small box coupled to a larger fluid magnetospheric simulation. This approach is more challenging and much less efficient when addressing the problem of filamentation of current sheets in space, which is driven by turbulence.
+
+An alternative approach involves selecting an appropriate closure relation for electrons that is embedded within hybrid simulations. The problem of collisionless fluid closure has a long history in plasma physics, dating back to the works of , which postulated simple double-adiabatic relationships that later became known as the CGL equations, named after the authors Chew, Goldberger, and Low. It is well known that such closures break down under moderate values of Finite Larmor Radius (FLR) effects due to the thermal gyration of particles around magnetic fields. A more advanced version of such anisotropic pressure closure has been proposed in a series of seminal works~, which proposes interpolation between the trapped particle dynamics, more closely resembling the CGL-like dynamics, and passing particle dynamics, which corresponds to the Boltzmann limit where the plasma is isothermal along the field lines. The evidence for this behavior was found~ in Magnetospheric Multiscale (MMS~) observations. One of the limitations of CGL-like models is the inability to deal with agyrotropy, unequal dispersions of the Velocity Distribution Function (VDF) perpendicular to the local field. Enhanced agyrotropy is typically present near the current sheets on the scale of inertial length. Early works~ have shown the importance of such features of the pressure tensor in the total electric field in guide field magnetic reconnection. 
+
+It is possible to close the fluid equations by providing an equation of state for heat flux, rather than pressure, in which case pressure is modeled dynamically. This allows for representing processes such as Landau damping, which is typically not possible within a fluid framework. Such models are usually referred to as Landau fluids, and were introduced by~ and later developed by~. Crucially, they operate under linear response approximation. Under large to moderate guide fields, such models do indeed capture the main features of magnetic reconnection~, with some exceptions such as electron-cyclotron instability. Importantly, it is challenging to apply them in low guide fields~. Although some progress has been achieved in later works~, the strong system-size dependence of the average reconnection rate observed in kinetic and hybrid simulations~ was not completely reproduced, leaving room for new developments. 
+
+More recently, Machine Learning (ML) approaches have become widely applied in the field of fluid dynamics~ and geophysical sciences, including plasma physics~. In Earth weather, neural subgrid closures have been successfully implemented and currently rival fully physics-based solvers~. A subgrid closure is one where small-scale processes are parametrized using approximations or a statistical model. This is a popular approach in Large Eddy Simulations (LES) with deterministic or stochastic parametrizations developed using Variational Autoencoders (VAEs) and Generative Adversarial Networks (GANs)~. While electron pressure or heat flux closure is not equivalent to this, there are parallels which have already been explored using a relatively simple ML architecture in the case of the GEM challenge, i.e., modelling collisionless magnetic reconnection. has applied Histogram Gradient Boosting Regressor (HGBR) and Multi Layer Perceptron (MLP) for this task to map lower order moments such as density, velocity, electric and magnetic field to pressure tensor and heat flux vector. They have reported difficulties reconstructing off-diagonal components related to agyrotropy, especially in the region bound by the reconnection X-lines. 
+
+In parallel, there have been approaches focusing on the field of symbolic and sparse regression~, where equations are extracted directly from simulation or observation data. For instance,~ have extracted polytropic closures from collisionless shock simulations using a popular method referred to as SINDy (Symbolic Identification of Nonlinear Dynamics)~. This method has been subsequently applied to extract heat flux closures in magnetic reconnection~ and some electrostatic phenomena~. While we believe that the approach is promising and there are many unexplored avenues in symbolic regression in general~, this falls beyond the scope of this manuscript. In addition, there are some disadvantages to using SINDy, such as the need to choose a specific library of terms, i.e., preselected choice of potential expressions, and limitations on expressivity due to polynomial representation. 
+
+Therefore, our goal is to learn pressure and heat flux closure using neural networks trained on multiple simulations performed with the fully kinetic code ECsim~. Our approach differs from~ in that we consider a problem of magnetosheath turbulence, which is a significantly more challenging setting due to the presence of chaotic turbulent eddies. To improve upon the state-of-the-art, we introduce a Fully Convolutional Neural Network (FCNN) that operates on patches rather than locally and study the importance of using global closure for both pressure and heat flux. We evaluate the performance of the new closure by inspecting energy channels using a scale filtering approach and discussing both the spatial structures and overall statistics. This includes evaluating anisotropy versus $_\|$ plots that are well bounded by whistler and electron firehose instabilities in our simulations, as well as the learned closure. 
+
+The manuscript is organized as follows. In section~ we discuss the methodology starting from the description of the dataset in section~, then in section~ we introduce the closure theory and simple adiabatic closures like CGL.
+
+[width=1.0]img/Network.png
+
+ The input/output and architecture of the Fully Convolutional Neural Network (FCNN), top, and Multi Layer Perceptron (MLP), bottom. The images on the left are being fed into both architectures using either a patch-based approach, as indicated by a green frame in the case of FCNN, or a point-based approach, as indicated by a green arrow in the case of MLP. On the right, the output pressure tensor is plotted. The internal architecture of FCNN consists of 3 convolutional layers with (number of channels, kernel dimension 1, kernel dimension 2) indicated on top. The green arrows indicate the application of activation functions and batch normalization. MLP consists of 4 layers, each with 100 neurons.
+
+Methodology
+
+Collisionless plasmas evolve according to the Vlasov equation, which can be written for each species
+
+ t+ +m_s(+ c) =0,
+
+where $f_s = f_s(,,t)$ stands for one-particle distribution function for species $s$ and $$ and $$ self-consistent electromagnetic fields. The Vlasov equation is solved coupled to Maxwell's equations
+
+ t = -c 
+
+and
+
+ =c(4 + t)
+
+Here $c$ stands for the speed of light and $$ the total current. This deceptively simple-looking system of equations can be solved numerically using Vlasov~ or Particle-in-Cell codes~; however, due to the multiscale nature of plasma, it becomes prohibitively expensive for certain problems. 
+
+Simulation data
+
+In this study, we reuse a 2D-3V simulation described in (hereafter referred to as run A) that was carried out using the energy-conserving semi-implicit Particle-in-Cell code ECsim , under conditions comparable to those of Earth's magnetosheath. The parameters of the run are tabulated in column A of Table~, indicating that the run was performed with 5000 particles per cell. 
+
+As will become clear from the section~, a single simulation does not produce satisfactory results when supervised learning is applied. Furthermore, if only a single run is given, the only possible data splits are random or chronological, which we do not consider robust tests for closure. 
+
+Thus, we have performed six supporting simulations (referred to as run B) that are initialized using very similar values of the parameters, except for $ B/B$, which is larger in run A0 from the start of the simulation and remains larger over the whole simulation time. Due to computational costs, we limited the six runs to 256 particles per cell; therefore, B runs tend to be noisier in general. For these reasons, we can treat run A0 as a generalization test when applying closure trained (Section~) on runs B. 
+
+Simulations A and B2 have been run until the maximum $J_rms$ is reached, which is typically associated with the onset of a fully developed turbulence regime. Runs B1, B3-B6 run for longer.
+
+Fluid closure and adiabatic invariants
+
+Instead of solving the original system of equations~,~, and~, which is computationally expensive, we switch to fluid quantities.
+
+Defining the number density $n_s(,t) := d^3 v\, f_s(,,t)$, we may integrate equation~ over $ d^3 v$ to obtain the continuity equation
+
+ t + (n_s _s) = 0.
+
+Integrating equation~ over $ d^3 v \;v$ and defining $ V(,t) := n^-1 d^3 v \; f(,,t) $ gives the momentum equation
+
+m_s t(n_s_s) 
++ m_s\,\!\!(n_s\,_s_s)
+= n_s q_s( + c _s ) 
+- \!\!_s,
+
+where we have defined the pressure tensor $P_s := d^3 v \; ( _s - _s ) ( _s - _s ) \, f(,_s,t)$. Neglecting the displacement current in equation~, defining the bulk (average) plasma velocity as $$, and considering the mass ordering $m_e m_i$, we get:
+
+ - n \, 
+= - \, 
+ + n \, ( )
+ + n \, \\[0.3em]
+ - n \, P_e
+ + n \, [ + ] \\[0.3em]
+ - n \, ( n ),
+
+which is known as the generlized Ohm's law. We have written this equation in normalized units, so that spatial coordinates scale as $d_i$, the ion inertial length, and time units as $_ci$, the ion cyclotron frequency. The terms multiplying $d_e$, representing the electron inertial length, are related to electron inertia effects. They play an important role in the Electron Diffusion Region (EDR), near the X-point of reconnection events, where they compete with the influence of the electron pressure tensor $P_e$, which is the subject of this manuscript. 
+
+If the generalized Ohm's law, equation~, is coupled with the fluid or Vlasov equation (equation~) for ions, under an appropriate choice of $P_e$, the electron pressure tensor, the system is closed. If the ion closure is also prescribed (e.g., at the level of the ion pressure tensor $P_i$), the system is sometimes referred to as eXtended MHD (XMHD) and can be proven to be Hamiltonian~, i.e., possesses structure preservation and even topological invariants~. 
+
+The standard collisional magnetohydrodynamic condition for $P_e$ corresponds to an adiabatic equation of state, $_e n^ I$, where $I$ stands for the identity matrix. This relationship breaks down in the case of plasmas that are not in local thermal equilibrium. Under a rather strong assumption on the slow variation of the magnetic field on the spatial scales of the Larmor radius scale, one may assume that the first and second adiabatic invariants are conserved
+
+ := ^22 B= const. ; := m V_\| L= const. 
+
+Indeed, in the absence of Hall, Finite Larmor Radius (FLR) effects and heat flux one arrives at the well-known CGL (Chew-Goldberger-Low) condition~ $p_\| n^3/B^2$ and $p_ n B$. See, for instance, ref~. 
+Below, we consider a more general closure found in seminar works~
+
+& _\|, e=2 +1 ^36 ^2+2+ ; \\
+& _, e= +1 +1+ 
+
+where $=n_*^3 / B_*^2$, and for any quantity $Q, Q_*=Q / Q_$, where $Q_$ is the value of $Q$ the reference region away from current sheets. This model is an interpolation of the trapped particle CGL regime and the passing particle Boltzmann regime, controlled by the parameter $$. It was originally applied in simpler current sheet conditions. We chose to adapt the model~ by fitting a multiplier $$ in front of the parameter $$ to better match the data. 
+
+It is possible to obtain more accurate but more expensive 10-moment closures, where the constituent relation is for the heat flux tensor, and thus, pressure is evolved dynamically. Here, we present a version of the heat flux vector under the assumption of a gyrotropic pressure tensor:
+
+& p_\|, t=-p_\|, u_-2 p_\|, b u_ b- (q_\|, b)+2 q_, b,\\
+& p_, t=-2 p_, _+p_, _ - (q_, )-q_, ,
+
+In general, at EDR, the electron pressure tensor tends to develop agyrotropy. Following ~ we define agyrotropy as
+
+A=^2+P_xz^2+P_yz^2P_^2+2 P_ P_\|
+
+Agyrotropy tends to be present in conjunction with Finite Larmor Radius (FLR) effects.
+
+Alternatively, we can construct an empirical formula that is even a better fit using the following anzats 
+
+& p_\|, e= _e^ B^+ ; \\
+& p_, e= _e^ B^+ _e,
+
+where parameters $, , , $ and $$ are all empirically determined. 
+
+Neural closure
+
+The main goal in this manuscript is to seek a mapping for the electron pressure tensor
+
+ = _ (n, _e, , )
+
+in terms of lower-order moments and neural network hyperparameters $$. We make no assumption concerning the orientation of the magnetic field to achieve closure, which also works in regions of magnetic field reversals. To achieve such closure, we employ two alternative approaches.
+
+The Multi-Layer Perceptron (MLP) is an approach identical to that of , where the input fields are fed pointwise into the layers of the fully connected neural network (See Figure~).
+
+_ =
+f^(L) \!(
+ W^(L) \,
+ f^(L-1) \!(
+ 
+ f^(1) \!(
+ W^(1) + ^(1)
+ )
+ 
+ )
+ + ^(L)
+)
+
+where $$ are the inputs to the network, $W^(l)$ are referred to as weights and $b$ as biases, while $f$ stands for nonlinear activation functions and $$ is the prediction made by the network. The operation in equation~ is usually referred to as the forward pass.
+
+The Fully Convolutional Neural Network (FCNN) is an architecture consisting solely of convolutional layers (See Figure~). Each convolutional layer performs a dot product of an image with its neighbors, multiplying the elements of the image by the corresponding elements of the kernel matrix. Each layer is equipped with a certain number of such kernels that are concatenated together, thus producing a 3-tensor whose outer dimension is referred to as the channel or filter dimension, whereas the other two correspond to spatial dimensions. The choice of FCNN ensures full translation invariance because only the neighbors of each node are connected. This also makes FCNN much more efficient and lightweight compared to the alternative of connecting every point to every other point, which would be impractical and lead to overfitting. To summarize, due to its geometry, FCNN allows us to feed it patches or entire images, rather than points, as in the case of MLP. The way each layer is padded ensures that the output dimension of each layer matches the input dimension. In principle, the forward pass can still be formally represented by the operation in equation~, but not all weights are allowed. 
+
+The weights and biases are obtained from the data on which the networks are trained by minimizing the Mean Squared Error (MSE) between the predicted values and the actual data (ground truth). 
+
+ = N ^N_i=1(y_i - _i, )^2
+
+The choice of the loss function is motivated by the fact that MSE corresponds to cross-entropy over a continuous Gaussian variable. We have verified that the moments, such as pressure, indeed follow distributions close to Gaussian in the data. In principle, more advanced loss functions can be considered in the future to refine the optimization objective. To minimize MSE in equation~, the procedure of backpropagation is applied, which is essentially an optimization problem that gradually adjusts the weights of the network according to the gradients of MSE (gradient descent). 
+To evaluate the quality of predictions, $R^2$ determination score is computed on validation and test sets:
+
+R^2=1-_i(y_i-)^2,
+ 
+i.e., $R^2$ measures how large MSE is compared to the typical variance in the data. Thus, $R^2 = 0$ corresponds to perfect prediction, while $R^2 < 0$ implies that the error is larger than the typical variance in the data. Any such prediction from a statistical perspective is considered worse than random guessing. We note that here $R^2$ is an ensemble metric that evaluates the quality of predictions pointwise. As such, it does not care about the spatial integrity of the image and is strongly affected by the noise in the PIC data, which influences small scales. 
+
+ 
+Datasplit
+
+ 
+
+ When applying Machine Learning (ML) to physical science, it is crucial to properly split the data into training, validation, and testing sets to prevent data contamination. The training set is defined as the one on which backpropagation and weight and bias optimization are performed. Validation set is defined as the one on which hyperparameters, such as the number of layers and when to stop training, are optimized. The test set is a separate dataset prepared for evaluating the performance of several successful ML architectures. There are four levels of datasplit that can be defined, ranked according to the degree of difficulty. Random split involves randomly splitting the data into the aforementioned sets. This approach would be highly problematic for evaluation purposes, as data that is spatially correlated may be mixed both in training and testing, and the resulting metrics would not be relevant for generalization to a future state or a new run. Chronological split involves taking chunks of temporal data and distributing them accordingly across training, testing, and validation. This is a better approach, but it is most suitable when a stationary regime has been achieved. Nevertheless, there is still no guarantee that satisfactory performance on a chronological split implies that the network will generalize on a new run. Initialization split uses an ensemble of runs that share the same governing parameters, and differences arise only from random initialization, turbulence seeds, or noise. This is the approach we take in the current study, where the runs are labeled B1, B2, B3, B4, B5, and B6 (see Table~ and the corresponding timeshots used). This way, we can confirm that the methodology generalizes across new initial conditions. 
+
+Finally, the most challenging from the ML point of view is the Out-of-Distribution (OOD) split. This implies changing the characteristic parameters, such as $_e$ or $ B/B$, across validation training/testing (distributing runs with different values of these parameters in training and test sets). From Table~ we see that run A has larger values of $ B/B$. The difference appears relatively mild, although further analysis reveals that this difference persists over time. 
+
+[ht!]
+
+@c@c@c@ 
+
+0.33
+ 
+ 
+ [width=]img/Real/T2D10c1_filter2_Pxx_e_panel.png
+ 
+ 
+ 
+ 
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/FCNN/pred_Pxx_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/MLP/pred_Pxx_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+\\
+
+0.33
+ [width=]img/Real/T2D10c1_filter2_Pxy_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/FCNN/pred_Pxy_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/MLP/pred_Pxy_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+\\[-1.5ex]
+
+^-1$, with run B1 serving as a test set 
+(see Table~). 
+Rows correspond to different pressure tensor components 
+($P_xx$, and $P_xy$), while columns correspond to 
+(a,d) ground truth, (b,e) FCNN predictions, and (c,f) MLP predictions. Each quantity corresponds to the pressure tensor components, with the corresponding color bar on the right. To provide a reference, we add contours of $A_z$, which is equivalent to the flux function in 2D.
+
+Pressure-strain and scale filtering
+
+Here, we review the Quantities of Interest (QOIs) useful for estimating the transfer of energy between flow, thermal, and electromagnetic that have been extensively studied in the past by~. Using the equations of motion~,~ and~, one can arrive at the following set
+
+_t E_s^f+ (E_s^f _s+_s _s)=(_s ) _s+_s 
+
+_t E_s^+ (E_s^ _s+_s)=-(_s ) _s,
+
+_t E^m+4 ( )=- ,
+
+where we follow the standard notation for fluid kinetic energy $E^f_s:= n_s u_s^2/2$, thermal energy $E^th_s:= m_s d^3 v\,(-_s)^2 f_s(,,t)/2 $, electromagnetic energy $E^m :=(B^2 + E^2)/(8)$ and heat flux vector $_s :=m_s d^3 v \, (-_s)^2 \,(-_s) \,f_s(,,t) /2 $. The terms containing spatial gradients on the l.h.s. are responsible for spatial redistribution, whereas the terms of the r.h.s. can be considered as sources and are a major focus. It is convenient to represent the pressure-strain term
+
+-(_s ) _s & =-p\, _i j \,_j V_i^s-(P_i j^s-p_s _i j) \,_j V_i^s \\
+& =-p_s \,_s-_i j^s\, D_i j^s =: -p_s\,_s - PiD_s,
+
+where $p_s:= P_i i^s/3$ is the isotropic part, $ _i j^s:=P_i j^s-p_s _i j$ is deviatoric part, $_s:= _s$ is the compressible pressure dilation, and $D_i j^s:=(_i V_j^s+_j V_i^s)/2-_s\, _i j/3$. The last of equation~ is referred to as pressure-strain interaction or ``Pi-D''.
+Following~, we introduce three more QOIs that are relevant for identifying coherent structures:
+
+Q_D^s=2 D_i j^s D_i j^s / 2 D_i j^s D_i j^s
+
+Q_^s=4 ^2_s /_s^2,
+
+where we have introduced vorticity $ = $
+
+Q_J^s=4 _s^2 /_s^2
+
+For scale filtering performed on the quantities, see Appendix~.
+
+[ht!]
+
+@c@c@c@ 
+
+0.35
+ 
+ 
+ [width=]img/FCNN/q/T2D10c1_filter2_qz_e_panel.png
+ 
+ 
+ 
+ 
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.35
+ [width=]img/FCNN/q/pred_qz_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+
+^-1$ for (a) ground truth, (b) FCNN prediction. Heat flux vector plots are equipped with a corresponding color bar on the right. To provide a reference, we add contours of $A_z$, which is equivalent to the flux function in 2D.
+
+[ht!]
+
+@c@c@c@ 
+
+0.33
+ 
+ 
+ [width=]img/FCNN/pearson_scores.png
+ 
+ 
+ 
+ 
+ (10,75)[green] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/MLP/pearson_scores.png
+ (10,75)[green] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/FCNN/q/pearson_scores.png
+ (10,75)[green] 
+ 
+ 
+ 
+\\
+
+ 
+
+Results
+
+We obtain pressure and heat flux closure by training the neural networks on data split 1, as shown in Table~. We evaluate the performance by comparing the predicted pressure and derived quantities, such as pressure-strain and agyrotropy, to the ground truth, i.e., the actual values in Run B1. In addition, we provide overall statistics of the comparisons, such as the determination score $R^2$. In what follows, we focus on electron closure; thus, when the species index is not specified, we imply $s=e$ for electrons.
+
+Pressure and heat flux
+
+To provide a baseline model for anisotropic closure, we take the model~ developed by~ for parallel $p_\|$ and perpendicular $p_$ pressure, while introducing a fitting parameter $$ to better match the observations. This model is referred to as ``symbolic'' and is tabulated in Table~, see discussion in Section~. It can be seen that it achieves the same $R^2$ for $p_$ as the simpler double-adiabatic CGL model; however, CGL yields very poor $p_\|$ performance with a negative $R^2$. A negative determination score implies that the model is making predictions that are further from the ground truth than the typical variance in the data, indicating that it is not only incorrect conditional on the inputs ($n, B$) but also unconditionally. 
+
+In Table~, we also compare the results of the symbolic fit to those of the Multi-Layer Perceptron (MLP) and Fully Convolutional Neural Network (FCNN) introduced in Section~ with the pipeline graphically represented in Figure~. From Table~ we see that evaluation of MLP and symbolic model~ results in comparable $p_\|$ and $p_$. In contrast, FCNN outperforms MLP on all metrics, yielding relatively good $R^2 0.8$ for diagonal components of the pressure tensor. FCNN yields below average $R^2 0.4$ determination score for off-diagonal components, which significantly outperforms MLP $R^2 0$. 
+
+To provide spatial characteristics of the neural closures, in Figure~, we plot pressure components $P_xx$ and $P_xy$ from a subset of the simulation at $t=500_pi^-1$, focusing on an island chain that has just undergone reconnection. Fully developed turbulence is typically identified by the maximum of the Root Mean Square (RMS) current, which occurs at $t = 550_pi^-1$, indicating we are near this regime. We see that FCNN prediction for $P_xx$ on Figure~ matches Figure~ better than MLP prediction on Figure~. For instance, a ridge just outside of the main magnetic island at (15 $d_i$,37 $d_i$) is missed by the MLP. In addition, FCNN is more faithful to the overall structures, but we note small-scale vapor-like artifacts that are not present in the original $P_xx$ or the MLP prediction. In contrast, MLP prediction appears smoother. The scale of the artifacts is below $d_i$. 
+
+FCNN prediction on Figure~ for $P_xy$ captures overall features of the ground truth on Figure~ significantly better than MLP on Figure~. For instance, the positive $P_xy$ at the separatrix at ($16 d_i, 53 d_i$) is more accurately reproduced with FCNN, while MLP tends to predict sign reversal incorrectly. FCNN is more accurate at reproducing the signs of the ridges around the magnetic island ($15 d_i,37 d_i$). Nevertheless, one cannot help but notice certain small-scale irregularities in FCNN prediction, which can also be described as vapor-like noise. These features are consistent with overall scores reported in the Table~. 
+
+We complete this subsection by reporting on the spatial structures of FCNN predicted heat flux $q_z$ in Figure~. Despite the relatively low $R^2$ score reported in the Table~, we see that FCNN captures main structures, for instance, counter streams of $q_z$ inside magnetic islands, and even structures around the ridges. Upon closer inspection, we see the same vapor-like noise that likely contributes to a poor $R^2$ score. 
+
+Characteristics of anisotropies
+
+We utilize the synthetic electron pressure predicted by FCNN and MLP, and apply it in conjunction with lower-order moments $n_e, _e, \,,\, $ to compute derived quantities.
+We plot ground truth agyrotropy defined in equation~ in Figure~ at $t=500 ^-1$ at the same location as Figure~. We observe that agyrotropy is strongest at the X point and along the separatrices. It also takes large values near the ridge surrounding the principal magnetic island in the island chain. This general structure is replicated in the FCNN closure estimated agyrotropy on Figure~. However, MLP closure hardly predicts any agyrotropy in Figure~, which is consistent with $R^2 0$ for off-diagonal elements as indicated in Table~. 
+
+[ht!]
+
+@c@c@c@ 
+
+0.33
+ 
+ 
+ [width=]img/Real/T2D10c1_filter2_agyrotropy_e_panel.png
+ 
+ 
+ 
+ 
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/FCNN/pred_agyrotropy_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/MLP/pred_agyrotropy_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+\\
+
+0.33
+ [width=]img/Real/T2D10c1_filter2_PiD_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/FCNN/pred_PiD_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/MLP/pred_PiD_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+
+) and incompressible pressure-strain $PiD$ at $t = 500 \; _pi^-1$ for (a) agyrotropy ground truth, (b) FCNN prediction of agyrotropy, (c) MLP prediction of agyrotropy, (d) $PiD$ ground truth, (e) FCNN prediction of $PiD$, (f) MLP prediction of $PiD$. To provide a reference, we add contours of $A_z$, which is equivalent to the flux function in 2D.
+
+[ht!]
+
+@c@c@c@ 
+
+0.33
+ 
+ 
+ [width=]img/nathan/T2D10c1_filter2_brazil_FCNN_ground_t725.png
+ 
+ 
+ 
+ 
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/nathan/T2D10c1_filter2_brazil_FCNN_pred_t725.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]
+img/nathan/T2D10c1_filter2_brazil_MLP_pred_t725.png
+ (0,80)[black] 
+ 
+ 
+ 
+\\
+
+As is well known, anisotropies in the Velocity Distribution Function (VDF) lead to microinstabilities, such as the whistler instability~, which constrain VDFs. This is usually illustrated by plotting~ the anisotropy $T_\|/T_$ versus $_\|$ as we do on Figure~. Figure~ corresponding to ground truth shows that VDF is constrained from above by whistler instability and from below by electron firehose instability, with some traces outside those ranges. Concurrently, FCNN on Figure~ predicts a similar distribution respecting the instability thresholds, but it appears to reduce the variance of $T_\|/T_$ anisotropy somewhat. The pressure computed from MLP has an even smaller range, as indicated in Figure~, which bolsters previous results concerning the comparisons between the two architectures. 
+
+Energy channels
+
+Energy channels discussed in Section~ express the conversion of flow~ into thermal energy~ signified by the pressure-strain term as well as more conventional Ohmic dissipation that converts electromagnetic energy~ into flow~. First, we are going
+to investigate scale-to-scale k-filtering defined in Appendix~ and applied to pressure-strain $PS(k > k_c) $~, which is essentially a high-pass filter at scale $k_c$. We plot $PS(k > k_c) $ on Figure~, which demonstrates that overall, both FCNN and MLP capture the general distribution of pressure-strain over the scales, with FCNN shadowing accurately the quantity and MLP underestimating it by a factor of 2. 
+
+Since pressure-strain quantifies the particle heating, it is of interest to investigate whether it peaks on coherent structures, as was done in~. For this aim, we compute the average incompressible portion of pressure-strain $ PiD | Q > Q^ $, where $Q$ stands for any of the three quantities in equation~,~,~, each represented by dashed, dot-dashed, and solid lines on Figure~, which compares ground truth to FCNN and Figure~ for MLP. We note the similarity of $ PiD | Q > Q^ $, which tends to be larger for larger thresholds, consistent with . However, in this case, the same trend is also observed for $Q_J$ conditionals, indicating the association of current sheets and heating in our simulations. The comparison reveals qualitatively similar behavior for FCNN closure but rather poor results for MLP closure, which completely underestimates conditionals of $ PiD | Q > Q^ $. 
+
+[ht!]
+
+@c@c@c@ 
+
+0.33
+ 
+ 
+ [width=]img/nathan/T2D10c1_filter2_FCNN_MLP_k_sweep_e_high_t725.png
+ 
+ 
+ 
+ 
+ 
+ (5,80)[black] 
+ 
+ 
+ 
+&
+0.32
+ [width=]img/FCNN/PiD_thresholds.png
+ (-1,80)[black] 
+ 
+ 
+ 
+&
+0.32
+ [width=]img/MLP/PiD_thresholds.png
+ (3,80)[black] 
+ 
+ 
+ 
+\\
+
+,~) - dashed line,~ - solid line and~ - dot dashed line. This quantity is computed for the ground truth (blue curves) and neural network prediction (orange curves). Note that in panel b, the orange curve corresponds to the predictions made with the help of FCNN, while in panel c, it corresponds to the predictions made with the help of MLP. 
+
+Ablation study and generalization
+
+Our aim here is two-fold. First, we would like to perform an ablation study, i.e., remove certain features (inputs such as $n_e, _e, , $ from $_e = _NN(n_e, _e, , )$ and retrain the FCNN. This gives as a collection of models that we refer to as default := $_NN(n_e,_e,,)$, noE := $_NN(n_e,_e,)$, Jtot := $_NN(n_e,,,)$, JtotnoE := $_NN(n_e,,)$ and allows us to study the influence of each feature in predicting our target $$. Secondly, we would like to study the generalization of the neural network trained, validated, and tested on B1-B6 to run A1 (see Table~). To this end, we plot the results of the ablation/generalization study in Figure~. It is organized into three panels: Figure~ applies the test set B1, Figure~ applies the test set A0, and Figure~ illustrates the difference between the two. 
+
+The conclusion from Figure~ is that test set B1 is less sensitive towards the collection of ablation models. The worst-performing (marginally) model is noE, for instance the default results in $R^2 = 0.82$ for $p_$, while noE yields $0.73$. Likewise default model yields $R^2 = 0.75$ for $p_\|$, while noE gives $0.68$. The effect is strongest for diagonal components. This indicates that the Electric field contains useful information for predicting the heating of plasma, albeit marginally. On the other hand, when the same set of models is applied to test set A0, a different picture is observed in Figure~. The most noticeable is the complete reversal of the performance of the noE model, which turns out to be the most performant model for the diagonal part of the pressure tensor. For instance, it yields $R^2 = 0.75$ for $p_$, while default only results in $R^2 = 0.47$. Similarly, default yields $R^2 = 0.61$ for $p_\|$, while noE yields $R^2 = 0.61$. The worst-performing model is Jtot with $R^2=0.15$ for $p_\|$ and $R^2 = 0.25$ for $p_$. The off-diagonal components of the pressure tensor are largely unaffected. The conclusion that can also be drawn from Figure~ is that noE is the most statistically robust model; therefore, we use it for the remainder of the manuscript. 
+
+Next, we investigate the fidelity of the spatial structures of the FCNN closure of noE model in Figure~. The ground truth that comes from run A0 consists of several current sheets that have already become unstable. The choice of the time snapshot also occurs near the maximum $J_rms$, like in Figure~. The most interesting one is located at $(6 d_i, 35 d_i)$ and leads to enhancement of heating as can be inferred from large values of $P_xx$ in Figure~. In Figure~, strong positive and negative values of $P_xy$ are seen at the right separatrix, and a negative enhancement of $P_xy$ is seen just north of the X point. The inspection of Figure~ at that location reveals a similar pattern of $P_xy$, albeit less intense. In general, $P_xy$ served by FCNN appears less intense and a bit more patchy, but even some small-scale structures coincide. We turn towards comparison between the incompressible part of pressure-strain $PiD$ on Figure~ and the predicted on Figure~. We see that in both cases, $PiD$ tends to have large positive values on the separatrices. Comparison between other structures is also consistent, with some exceptions. For instance, the X point at $15 d_i, 60 d_i$ has a mismatch in the polarity of $PiD$.
+
+[ht!]
+
+@c@c@c@ 
+
+0.33
+ 
+ 
+ [width=]img/FCNN/panel_test1.png
+ 
+ 
+ 
+ 
+ 
+ (0,95)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/FCNN/panel_test2.png
+ (0,95)[black] 
+ 
+ 
+ 
+&
+0.33
+ [width=]img/FCNN/panel_diff.png
+ (0,95)[black] 
+ 
+ 
+ 
+\\
+
+$ score tables for (a) Test Set PIC B1, (b) Test Set PIC A0, and (c) their difference $= -$ for each predicted quantity (rows) and model variant (columns). Each panel consists of a grid with rows labelled by specific quantity that is predicted, such as $p_\|,p_,$ while the columns are labelled by different models which are distinguished by their inputs: default = $(n_e,_e,,)$, noE = $(n_e,_e,)$, Jtot = $(n_e,,,)$, JtotnoE = $(n_e,,)$. Warmer colors indicate higher $R^2$, see the color bar; in the difference panel on the right, red (blue) denotes improvement (degradation) on PIC B1 relative to PIC A0. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+We conclude the results section with the analog of Figure~ with the same analysis performed to obtain $ PiD | Q > Q^ $, applied to the dataset A0 and plotted on Figure~. The blue lines represent the ground truth, showing consistency with Figure~ in regards to $Q_$ and $Q_D$ conditionals, but showing that the A0 dataset has stronger $PiD$ conditionals to $Q_J$ and diverges even more from the result of . The prediction of FCNN matches the $ PiD | Q > Q^ $ behavior qualitatively but shows a different large $Q$ threshold tail for all three conditionals. We note, however, that for large $Q > 4$ this statistic is not reliable because the larger the $Q$, the fewer pixels are actually used to compute these quantities of interest.
+
+[ht!]
+
+@c@c@c@ 
+
+0.33
+ 
+ 
+ [height=.8]img/NN2data/data_filter2_Pxx_e_panel.png
+ 
+ 
+ 
+ 
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [height=.8]img/NN2data/data_filter2_Pxy_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+
+0.33
+ [height=.8]img/NN2data/data_filter2_PiD_e_panel.png
+ (0,75)[black] 
+ 
+ 
+ 
+\\
+
+0.33
+ [height=.8]img/NN2data/pred_Pxx_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+0.33
+ [height=.8]img/NN2data/pred_Pxy_e_panel.png
+ (0,80)[black] 
+ 
+ 
+ 
+&
+
+0.33
+ [height=.8]img/NN2data/pred_PiD_e_panel.png
+ (0,75)[black] 
+ 
+ 
+ 
+
+^-1$, with run A serving as a test set (see Table~). (a) Ground truth $P_xx$. (b) Ground truth $P_xy$. (c) Ground truth $PiD$. (d) FCNN predicted $P_xx$. (e) FCNN predicted $P_xy$. (f) FCNN predicted $PiD$. Each panel is equipped with the corresponding colormap. To provide a reference, we add contours of $A_z$, which is equivalent to the flux function in 2D.
+
+Here Table~ is important, with an appendix version Table~.
+
+Generalization to run A
+
+Figure~ and the numerical value of $R^2$ score and the Pearson correlation coefficient are compared with the Table~.
+
+Discussion
+
+In this manuscript, we introduce a new non-local neural closure for the electrons in the turbulent magnetosheath. This closure is obtained by training a Fully Convolutional Neural Network (FCNN) on the output of a fully kinetic Particle-in-Cell simulation of the energy-conserving code ECsim~. We submit this closure to multiple statistical evaluations on a hold-out test set, which comes from two separate numerical simulations. One test set comes from run B1 (tabulated in Table~) with the exact same ECsim parameters but a different random initialization. The other test set comes from run A0, which is a simulation performed earlier~ with a much larger number of particles and slightly different physical parameters (see Table~). Because of this performance on run A0 can be considered a generalization test.
+
+The closure we obtain is a five-moment closure for the electron pressure tensor as a function of density, electron velocity, magnetic field, and electric field. It can be considered a neural generalization of trapped/passing particle closure $p = p(n, B)$~ (see equation~), which is a symbolic expression and is itself a generalization of CGL~. We also compare it to architecture similar to the one used by , which consists of a Multi-Layer Perceptron (MLP), a more traditional neural network that we apply locally, pointwise. In contrast, FCNN is applied to patches and can thus be considered a non-local closure. We benchmark the performance of FCNN, MLP, and more traditional symbolic anisotropic $p_\|$ and $p_$ closures~. We also attempted to learn a 10-moment closure for the heat flux using an FCNN architecture, but we found the performance to be relatively poor, which could be attributed to the limited data available. In general, we found that the 5-moment pressure tensor closure performed significantly worse when trained on a single simulation, compared to the one trained on four simulations. 
+
+Generally speaking, for the diagonal elements, we find that MLP provides results identical to symbolic closure~, but FCNN identifies many of the mesoscale structures more accurately (see Section~), while introducing some vapor-like noise. Furthermore, MLP does not capture well the quantities related to off-diagonal elements of the pressure tensor, such as agyrotropy (see Section~). MLP underestimates the distributional spread in the anisotropies, as well as derived quantities, like pressure-strain (Section~), which is quite important in estimating the energy budget and energy channels in turbulence. In contrast, FCNN closure captures the important structures in the off-diagonal pressure tensor, albeit not perfectly. This is confirmed by lower values of determination score $R^2 0.4$ compared to diagonal components $R^2 0.75$. Nevertheless, the derived quantities from the FCNN-computed pressure tensor, such as the spatial distribution of pressure-strain and scale-to-scale filtered incompressible pressure-strain, appear quite similar to the results from Direct Numerical Simulation (DNS). In particular, the budget of mean incompressible pressure-strain PiD, conditional on coherent structures defined according to the approach of~, reveals agreement between the actual and predicted values by the FCNN. The mean scale-to-scale filtered distribution of pressure-strain over the spatial scales, down to the smallest scales, is also consistent when comparing FCNN to the ground truth, while MLP tends to underestimate it.
+
+To gain insight into the importance of pressure-strain features, such as the electric field, for instance, we train a selected set of pressure tensor models with different inputs in Section~. Of particular interest are the following models: default, which is the standard model that takes as input all the lower-order moments, and noE, which omits the electric field. These models are evaluated on two sets, A0 and B1, corresponding to very large and small number of particles per cell, respectively (see Table~). We find that default drastically under-performs on the generalization data set A0, while the score for noE is essentially unchanged. This is confirmed when carefully inspecting the spatial structures of $P_xx$, $P_xy$, and $PiD$ associated with current sheets in the simulation. This leads to the conclusion that the electric field is not a reliable predictor of the closure, at least when the closure is trained on more noisy simulations in the set B. 
+
+The fact that noE is able to generalize to the simulation with a different number of particles is reassuring, since certain small-scale structures are not consistent across the runs, and indicates that when the input parameters are chosen properly, the closure appears robust. We emphasise that this was achieved for only one set of physical parameters, namely $ B/B 0.6-0.7$, $_i 5.3-5.7$, and $_e 1.3-1.4$, consistent with magnetosheath conditions, and in 2D. In the future, we plan to train on a broader set of conditions, consisting of a parameter sweep over these quantities, to find a closure that interpolates between these regimes and extend our method to 3D. Generally, such parameter changes entail out-of-distribution shifts (OOD) in the relevant quantities such as density or pressure. This problem is usually treated with transfer learning. This implies taking a pre-trained base network and fine-tuning some of the network's layers in response to distribution shifts in the new physical conditions. This approach has shown promise in Large Eddy Simulations (LES) in the work of~ for several cases: adapting to changes in increased forcing wavelength and increasing Reynolds number. We propose that such a work be undertaken in plasma physics in the future. The problem of introducing a neural network into a parametrization of a physical process is a challenging one and requires a series of adaptations, including training on multiple-step roll-outs~. This implies wrapping a numerical solver inside the loss function of the optimization algorithm, a method also referred to as online (a posteriori) training and testing. 
+
+Additional steps can be taken in the future to improve the quality of the pressure tensor closure. It is clear that with more training data, better results may be achieved; however, this implies computational costs associated with generating such data, especially since some runs must be reserved for validation. In principle, many groups worldwide possess Particle-in-Cell or Vlasov simulation data that could be useful for training such closures. Thus, one could conceive of deeper neural network architectures that are trained on the wealth of simulation data, mirroring the works in meteorology where neural surrogate models were obtained and trained on 40 years of reanalysis data, rivaling numerical weather prediction models~. This is, of course, possible thanks to the existence of high-quality data obtained on assimilating observations into models~, a dataset of such quality we do not possess in the context of space plasmas. Thus, from this angle, developing data-driven models that outperform existing high-fidelity numerical simulations such as ECsim~ does not appear to be feasible in the near future; however, training neural surrogates that are more efficient than conventional methods can still be achieved. In particular, the closures obtained in this way can be embedded in Reduced Order Models (ROMs) such as fluid~ and hybrid kinetic models~ that are more computationally tractable than fully kinetic simulations and with the appropriate closure can reproduce the outputs of such fully kinetic simulations~. Similar closures allow the study of kinetic processes such as Kinetic Alfen Wave (KAW) turbulence on a larger span of inertial range~. The goal of data-driven closure is to extend the validity of ROMs, which, thanks to their efficiency, can be simulated more often and for a larger set of parameters than high-fidelity models.
+
+We would like to emphasize a few other avenues that could guide data-driven closure development. First, in this manuscript, we have experimented with rather traditional architectures, such as MLP and FCNN, which leave room for more modern AI models, including neural operators, such as Fourier Neural Operators (FNOs) ~. FNO has already been applied for neural surrogate modelling of a plasma fusion device~. Furthermore, we have relied solely on the standard loss function, Mean Squared Error (MSE), and have not exploited soft constraints~, additional physics-based constraints that can enhance the physical fidelity of the learned representation. 
+
+Another promising line of research for obtaining closure relations is equation discovery~, which is a collection of methods that extract equations from data using symbolic or sparse regression. In sparse regression, a library of preselected expressions is fitted~. These methods have also been applied in conjunction with data augmentation~, such as applying Lorenz/Galilean boosts that enforce such invariance and improve the fidelity of the learned models. We would like to emphasize that methods such as physics-informed sparse regression~, Genetic Programming, and pre-trained transformers~ warrant more attention in plasma physics with regard to these types of problems. Naturally, as is the case with other forms of Machine Learning, these methods are prone to overfitting when presented with partial data and high expressivity (complexity of the expressions that can be fitted by the method). This is where intuition regarding physics-based closures~ can be very useful in restricting the set of possibilities a priori. We firmly believe that progress in this field is possible by a careful combination of Machine Learning, high-performance computing, and theoretical considerations. 
+
+Conclusion
+
+This work is the first application of non-local neural closure for the electron pressure tensor, achieved via a Fully Convolutional Neural Network (FCNN). Using a combination of statistical and physical fidelity diagnostics, such as pressure-strain and agyrotropy, we have demonstrated the generalization of this new closure from noisy (fewer particles per cell) Particle-in-Cell (PIC) simulations to more accurate (higher particle counts per cell) simulations. Pressure-strain diagnostics indicate that the closure accurately captures overall energy channels and certain local characteristics near the X-point of the reconnection site. This is promising, as we run PIC simulations for training data generation; however, with a higher number of particles per cell, simulations become prohibitively expensive to run in large quantities. Crucially, we demonstrate that FCNN significantly outperforms known closure relations, such as the previously used Multi-Layer Perceptron (MLP) or other double adiabatic-type models. We have addressed this problem in the context of Earth's magnetosheath decaying turbulence simulations, considering a specific set of physical parameters associated with large ion $$ and moderate electron $$. Future works will involve extending the validity of this closure to a broader set of parameters, 3D geometry, and coupling it to Reduced Order Models (ROMs), such as two-fluid and hybrid kinetic simulations. It will contribute to the development of efficient multi-scale models capable of probing larger domains of magnetospheric physics while accurately representing small-scale physics.
+
+G.M. dedicates this work to the memory of Giovanni Lapenta, whose guidance, insight, and goodwill were essential.
+
+We would like to thank Thierry Passot, Pierre-Henri, Silvio Cerri, Francesco Carella, Rony Keppens, Stefaan Poedts, and Maria Elena Innocenti for their valuable discussions and support.
+
+G.M.\ has received funding from the European Union’s Horizon research and innovation program under the Marie Skodowska-Curie grant agreement No 101148539. N. F. Oliveira Lopes and P. Dazzi would like to acknowledge the Research Foundation – Flanders (FWO), HELIOSKILL project grant (G0B9923N). 
+
+The resources and services used in this work were provided by the VSC (Flemish Supercomputer Center), funded by the Research Foundation - Flanders (FWO) and the Flemish Government.
+
+Data Availability Statement
+
+Upon acceptance, data and code will be made openly available in a Zenodo repository that issues datasets with DOIs. The GitHub repository, which includes detailed documentation and examples, will also be made publicly available. 
+
+Scale-to-scale analysis
+
+To investigate the behavior of energy conversion channels at different length scales, we employ the scale-filtering/coarse-graining method, widely used to analyze both magnetohydrodynamic and plasma turbulence. We introduce a general filtering operation
+
+_^s(, t)= d^d r \; G_() f_s(+, t),
+
+where, for the remainder of the manuscript, we will only use the box-car filter following~. In addition, we will need the ``Favre-filtered'' (density-weighted filtered) quantities
+(),
+
+_^s=^s / _^s
+=
+
+Below, we present a scale-to-scale filtered version of the equations~, where we have removed the spatial transport terms by performing spatial averaging $, $.
+
+_t _s^f =- _s^V V - _s^V T - _s^V b,
+
+_t ^m =-_s _s^b b +_s _s^V b.
+
+Spatial averaging symbol will be omitted for the remainder of the manuscript. Here, the filtered fluid flow energy is given by 
+
+_s^J = 2 _s _s^2 ,
+
+and the filtered electromagnetic energy is 
+
+^m = ^2 + ^28 .
+
+The sub-grid-scale (SGS) flux of fluid flow energy across scales due to nonlinearities is 
+
+_s^uu = -(_s\,_s^V ) _s 
+- c _s\,_s^b _s ,
+
+where 
+
+_s^V = _s _s - _s _s , 
+ 
+_s^b = _s - _s .
+
+The SGS flux of electromagnetic energy across scales due to nonlinearities is 
+
+_s^bb = -q_s _s _s^e _s , _s^e = - .
+
+The rate of conversion of flow energy into internal energy is 
+
+_s^uT = -(_s ) _s.
+
+The rate of conversion of fluid flow energy into electromagnetic energy is 
+
+_s^ub = -q_s _s _s ,
+
+Datasplit 2
+
+In Table~ we present results of study similar to Table~ and Figure~ but applied to a different datastplit, see Table~. It appears that $R^2$ score for both diagonal and off-diagonal pressure tensor is consistent, which bolsters the robustness of the study.

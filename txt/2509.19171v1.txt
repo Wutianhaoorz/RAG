@@ -1,0 +1,357 @@
+[preprint,12pt]elsarticle
+
+[a]Chunheng Zhao
+[b]Saumil S. Patel
+[a]Hai Lu Lin
+[c]Misun Min
+[a]Taehun Lee
+
+[a]Department of Mechanical Engineering, City College of New York, New York, NY 10031, USA
+[b]Computational Science Division, Argonne National Laboratory, Lemont, IL 60439, USA
+[c]Mathematics and Computer Science Division, Argonne National Laboratory, Lemont, IL 60439, USA
+
+We develop a spectral element lattice Boltzmann method (SELBM) with the flux bounce-back (FBB) scheme, to enable accurate simulations of single-phase fluid dynamics in unstructured mesh. We adopt an Eulerian description of the streaming process in place of the perfect shift in the regular LBM. The spectral element method is used to spatially discretize the convective term, while the strong stability-preserving Runge-Kutta (SSPRK) method is used for time integration. To increase stability, we investigate the use of an explicit filter, particularly in the context of the sensitive double shear layer problem. The results indicate that by using the high-order polynomial, we can effectively eliminate the small vortices around the neck region. We introduce the flux bounce-back scheme to enable the current scheme to handle complex boundaries. The proposed scheme and flux boundary method are validated through benchmark simulations, including the unsteady Couette flow and the planar Poiseuille flow. Further validation is provided through the Taylor-Green vortex problem, demonstrating the accuracy and convergence of the scheme for isotropic turbulence. Finally, we consider a fully developed turbulent flow within a cylindrical pipe and correctly predict the turbulent boundary layer profile.
+
+ Spectral Element method
+ Lattice Boltzmann method
+ Flux bounce-back scheme
+ Turbulent pipe flow
+
+spectral element method lattice Boltzmann method unstructured mesh flux bounce-back scheme
+
+ 0000 111 1
+
+ 0000 1111
+
+Introduction
+
+The Lattice Boltzmann Method (LBM) is widely used as a numerical solver for fluid dynamics in single- and multi-phase flows~. Instead of directly solving the macroscopic governing equations (i.e. Navier-Stokes equations), LBM solves the evolution of the particle distribution function and recovers density and momentum through moments of the particle distribution functions~. It is computationally efficient due to a local collision function and a perfect shift streaming function~. These features enable massive parallelization, making LBM particularly well suited for modern high-performance computing architectures~. The perfect-shift approach to the streaming step in the LBM ensures that the distribution function propagates along the characteristic direction with a constant speed, effectively eliminating numerical errors in the advection step. As a result, the primary source of error in LBM arises from the collision step, which maintains second-order spatial accuracy. Through Chapman-Enskog analysis, the Navier-Stokes equations can be recovered and directly derived from LBM~. Although the LBM provides a relatively straightforward alternative to directly solving the Navier-Stokes equations, several critical aspects need careful consideration. Typically, LBM is implemented on a structured mesh~, or lattice grid, where the spatial interval $ x $ and the time step $ t$ are set to one lattice unit, and the Courant-Friedrichs-Lewy (CFL) number is fixed at $1$, implying a uniform grid-spacing. In certain scenarios, unstructured meshes are indispensable. For example, boundary layer meshes are required to accurately capture the turbulent boundary layer profile~. Using a regular LBM scheme in such cases would require excessive grid refinement, leading to a significant waste of computational resources. Other examples arise in simulations involving complex geometries, such as fluid flow in porous media or pebble bed reactors~.
+
+The LBM on unstructured meshes can be broadly categorized into finite volume (FV) LBM~ and finite element (FE) LBM~. In unstructured meshes, wall normals generally vary across adjacent boundary surfaces, making it difficult to clearly define the incoming and outgoing directions. As a result, identifying the correct bounce-back directions for boundary conditions in unstructured meshes becomes particularly challenging~. Moreover, the perfect shift in the streaming used on structured meshes cannot be directly applied to unstructured meshes, which may introduce additional stability and accuracy issues. In finite volume LBM, modified bounce-back schemes~ and distance-based bounce-back approaches~ have been proposed to address complex boundaries. However, most finite volume formulations directly discretize the discrete Boltzmann equation~, which may induce stability concerns at high Reynolds numbers. Finite element LBM provides a more natural framework for constructing high-order streaming operators, such as those based on spectral elements. For the discontinuous Galerkin (DG) LBM, flux-based boundary conditions are applied at the boundary element interfaces~. For the continuous Galerkin LBM~, flux boundary conditions combining with a bounce-back scheme can be imposed. However, further investigation is needed to provide a physical interpretation for the Lax-Wendroff-type boundaries~, which involve high-order streamline diffusion. The DG-LBM has demonstrated the ability to produce stable solutions using the flux bounce-back (FBB) scheme. However, this approach comes with a trade-off: the DG method inherently introduces additional dissipation at the element interface to enhance stability at high Reynolds numbers. Building on previous research, we have developed a spectral element Lattice Boltzmann method based on a continuous Galerkin formulation. Unlike the Lax-Wendroff streaming method, our approach employs a Strong Stability-Preserving (SSP) Runge-Kutta scheme to minimize numerical dissipation. Additionally, a non-dissipative filter is applied to the distribution functions, effectively preserving both density and momentum conservation as well as maintaining numerical stability. 
+
+The following sections present the proposed scheme and its validation through benchmark simulations. Section 2 describes the methodology and formulation of the scheme. Section 3 provides validation results through a series of benchmark tests, including the stability test, double shear layer, boundary condition verification, unsteady Couette flow, and planar Poiseuille flow. Additional validations are performed for turbulent flows using the Taylor Green vortex and the Poiseuille pipe flow.
+
+Methodology
+
+Lattice Boltzmann method
+
+We start with the discrete Boltzmann equation of the density distribution function $f_$ for the $ $-direction, with an external forcing term $F_$:
+
+ ( t+_)f_=-(f_-f_^eq)+F_,
+
+where $f_^eq$ denotes the equilibrium distribution function given as:
+
+ f_^eq=t_(1+ _ c_s^2+
+_)^22c_s^4-
+|^22c_s^2 ).
+
+In Equations~() and~(), the weights $t_$ are associated with the equilibrium distribution function. The vector $$ represents the discrete velocity vector for $$-direction. The parameter $$ represents the relaxation time, which is connected to the kinematic viscosity $$ through the equation $= c_s^2$, where $c_s$ denotes the speed of sound. For this study, we chose the $D2Q9$ and $D3Q19$ models, and the parameters mentioned above are given in~. The external forcing term can be expressed as:
+
+ F_=t_(_-c_s^2+_)_c_s^4)_,
+
+which can be expressed as a combination of a leading-order term and a higher-order terms~. The leading-order forcing term $F_^*$ can be expressed as:
+
+ F^*_=t_(_c_s^2) _,
+
+and the higher-order forcing term $F_^**$ is then:
+
+ F^**_=t_(_)_c_s^4-c_s^2)_. 
+
+Here, the body force is represented by $_$. We then integrate Eq.~() along the characteristic direction and apply the trapezoidal rule. In addition, we introduce the modified equilibrium distribution function as follows~.
+
+ _^eq=f_^eq-0.5 t F_^*,
+
+and the modified distribution:
+
+ _=f_+2-0.5 t F_^*,
+
+where $=/ t$ denotes the dimensionless relaxation time.
+
+The discrete Boltzmann equation can be then solved by a local collision function and a non-local streaming function with the force splitting method~. The collision is conducted as follows:
+
+ f_^*=_-+0.5(_-_^eq)+ t F_^**,
+
+which is followed by the substitution:
+
+ _(,t- t)= f^*_(,t- t),
+
+and the streaming is given as:
+
+ ( t +_)_ =F_^*.
+
+Finally, the density and momentum can be recovered by the distribution function by: 
+
+ =_ _,
+
+ =_ _ _ .
+
+Spectral Element Continuous Galerkin method
+
+By the force splitting method~, we can incorporate the higher-order forcing term $F_^**$ into the collision operator to preserve the conserved moments, i.e., $_ F_^**= _ _ F_^** = 0$, while the leading-order forcing term $F_^*$ is applied to the streaming step. We express the streaming process as a pure advection equation of the particle distribution function based on an unstructured mesh shown in Eq.~(), instead of the perfect shift.
+The weak form of Eq.~() in a given element domain $_e$, can be obtained by multiplying the advection equation Eq.~() by a test function $$:
+
+ (_ t +_ _ -F_^*,)__e=0.
+
+We can express the above equation in the following matrix form:
+
+ _d t =-__+_^*,
+
+where $$ and $$ are the mass and convection matrices respectively, whose entries are given as:
+
+ M_ij=__e_i_j\ d,
+
+ C__ij=_k=1^d(e_,x_k__e_i_x_k_j\ d).
+
+The particle distribution function and the forcing terms defined on the nodes become vectors or one-dimensional arrays for sequential storage, shown as $_$ and $_^*$. We employ a tensor product basis of the 1D Legendre–Lagrange interpolation polynomials given as:
+
+ l_i()=N(N+1)(-_i)L_N(_i)
+
+where $_i$ are the Gauss-Lobatto-Legendre (GLL) quadrature nodes. Based on GLL quadrature, we can obtain the formulation for lumped diagonal mass matrix in $3D$ as:
+
+ [,]=_^2J()_i_j_k, \ =1+i+(N+1)j+(N+1)^2k
+
+where 
+$$_i=N(N+1)[L_N(_i)]^2$$
+represents the specific weights, and $J()$ denotes the Jacobian determinant according to the reference domain where:
+
+J()=det r_i
+
+The convection matrix $_$ can be expressed as:
+
+_=^T_,
+
+where 
+
+=\
+
+&(_x,_y)^T, & d=2; \\
+&(_x,_y,_z)^T, &d=3,
+
+.
+
+is the derivative matrix composed of $d$ matrices and $_x$ is composed of the one-dimensional derivative matrix $_x$ related to GLL points. When we consider a two-dimensional case, 
+
+&_x=_x, \\
+&_y=_y,
+
+where $$ is the identity matrix, and the operator $$ denotes the tensor product~. For a three-dimensional simulation, 
+
+&_x=_x, \\
+&_y=_y,\\
+&_z=_z.
+
+After we transfer the domain to the reference domain, from $[x,y,z]$ to $[r,s,t]$, the chain rule needs to be considered and the change of variables should be done from $$ to $$:
+
+ _=^T_^*,
+
+where now
+
+^*=\
+
+&(_r,_s)^T, & d=2; \\
+&(_r,_s,_t)^T, &d=3,
+
+.
+
+The geometry information is then stored in the matrix $$, which is composed of $d^2$ diagonal matrices:
+
+=
+
+_11 & _12 \\
+_21 & _22
+, &d=2,\\
+
+=
+
+_11 & _12 &_13\\
+_21 & _22 &_23\\
+_31 & _32 &_33
+, &d=3.\\
+
+The diagonal matrix can then be expressed as
+
+ _ij[,]=_l_m_n_k=1^d x_kJ(),
+
+where $=1+l+(N+1)m+(N+1)^2n$.
+
+From the scenario of the discontinuous Galerkin method, it is intuitive to numerically compute the flux at the interface as well as the boundary condition. Here, in our continuous Galerkin LBM, we weakly impose the boundary condition only at the boundary nodes, for which the bounce back scheme is implicitly applied~. As shown in previous work~, we further introduce a surface integration of the flux term from the outer boundary rather than each element interface, and the entire equation can be expressed as:
+
+ _ t+__=^*_+(_),
+
+where $=__e _i_j\ d$ is the surface integration, $$ is the normal vector, and $_$ is the flux at the boundary. In this work, we apply the Lax-Friedrichs flux:
+$$ _=\
+
+&_[_]_bc,& &_ <0, \\
+& & & _ 0.
+
+.
+$$
+When we apply the bounce-back at the boundary, the flux term is expressed as:
+
+ [_]_bc=_-_-2t__0(_ _b)/c_s^2,
+
+for which $$ is the opposite direction of $$. When no slip is applied to the simulation, we simply apply flux bounce-back at the boundary. When we have a moving boundary with velocity $_b$, we further add the last term to maintain a constant velocity. 
+
+It is noted that the integration of the flux term is applied only to the distribution functions for incoming directions, while the other distribution functions will not be affected by this flux term. Essentially, when we have a flat surface boundary, the flux bounce-back will yield the same results as the normal bounce-back approach. 
+
+We consider the Runge-Kutta to explicitly solve the distribution function. To solve the distribution function $_ $ in Eq.~(), we propose the 3rd order strong stability-preserving Runge-Kutta method for:
+
+ _d t=_,
+
+where $=+^-1(-_)$ is the spatial operator. The each turn of the SSP RK3 is then:
+
+ ^1_=_(t- t)+3_(t- t),
+
+ _^2=_^1-4( _(t- t)- _^1),
+
+ _^3=_^2+3(_(t- t)- _^1+_^2),
+
+ _(t)=_^3-4(_(t- t)- _^1+_^2-_^3).
+
+As we get the the current time distribution function $_(t)$, we can further evaluate the macroscopic density and momentum from Eq.~() and ().
+
+One key difference between the current scheme and the conventional LBM lies in the streaming process. The conventional LBM employs perfect shift streaming without any numerical error. As a result, the stability of the conventional LBM is typically enhanced through the collision process~. Methods such as multi-relaxation time (MRT) collision~, two-relaxation time (TRT) collision~, increasing bulk viscosity~, and regularizing the collision~ operator are commonly used to stabilize the LBM solver for high Reynolds number simulations. Filtering macroscopic values, such as density or velocity, can introduce conservation issues and is therefore generally avoided~. In the current scheme, the perfect shift streaming is changed to the spectral element and RK scheme. Although the continuous Galerkin method ensures a continuous distribution function across the element interface, the gradient of the distribution function term, which appears in the convective term $ f_$, is not exactly continuous, which may induce stability issues. 
+
+In Nek5000~, when simulating a fluid system with a high Reynolds number, an explicit filter is used to suppress the spurious modes of pressure and momentum at the end of each time step. This filter interpolates the nodal solution using a pseudo-projection~. After each solving process, the velocity and pressure terms in space are replaced with filtered solutions by applying a filter transfer function $$. For example, in an $N^$-order spectral element system, the filtered pressure term can be expressed as:
+
+ p=_k=0^N_k p_k_k(),
+
+where $p_k$ is the physical space solution, and $_k()$ is the test function. The filter transfer function can be expressed as:
+
+_k=\
+
+&1-(N-k_c)^2, & k>k_c, \\
+&1, & k k_c.\\
+
+.
+
+In the above equation, $k_c$ is defined as the cutoff mode, and $$ denotes the amplitude. For example, when we choose $k_c = 2$ and $ = 0.1$, the filter is applied starting from the $2^$ order solution, and the interpolation magnitude for higher-order solutions is $0.1$. Further details on the construction of the filter and interpolation can be found in~. However, it is important to note that, although this is a non-dissipative method, it violates the divergence-free condition for incompressible flow when we use the explicit filter on the velocity and pressure in Nek5000.
+
+For our approach, we do not apply the explicit filter to the density and momentum, as this would violate the conservations $ f_^eq = f_$ and $ f_^eq _ = f_ _$. Instead, the explicit filter is directly applied to the distribution function $f_$ before the update step. In this case, conservation relations are preserved.
+
+ We summarize the full process of the scheme as:
+
+$$ Initialize of the distribution on each node and element;
+
+$$ Compute the loop from the collision by BGK, with higher order forcing term;
+
+$$ Solve streaming as a hyperbolic partial differential equation with external lower order forcing term and boundary flux by SSP RK3;
+
+$$ Apply the filter for each direction distribution function;
+
+$$ Update the macroscopic parameters which are essential for the next collision step.
+
+Simulation Results
+
+The validations are performed for the investigation of the stability and boundary conditions. Our results are generated from a modified version of the Nek5000 code, which we henceforth refer to as NekLBM. NekLBM leverages many of the numerical operators and parallelization inherent in Nek5000 with the distinguishing feature of solving the discrete Boltzmann equations rather than the Navier-Stokes equations. 
+
+Double shear layer
+
+The first validation case considered is the periodic double shear layer simulation, which is studied to evaluate the solver's stability. In previous LBM studies, Dellar increased the bulk viscosity to effectively resolve small vortices induced by instability~, while Ricot et al. investigated various types of filters applied to the distribution function to address the problem of small vortices~. In this work, it is necessary to revisit this problem using the current model.
+
+We initialize a velocity profile:
+
+u_x=\
+
+&u_0 [(y-0.25)], & y0.5, \\
+&u_0 [(0.75-y)], & y>0.5,\\
+
+.
+
+$$u_y= (2(x+0.25))$$
+in a square domain. The initial velocity magnitude $u_0$ is set to satisfy $Re= u_0 L/ =10,000$, and the parameters related to the velocity profile are given as $=0.05$, $ =80$. The simulation is conducted over the time interval $T/t_0=[0,10]$, where the time scale is $t_0=L/u_0$ and we compare the results from our scheme with those from Nek5000 using the same setup at $T/t_0=10$, as shown in Figure~. In Figure~(a), we fix the number of elements $N_e=32$ on each direction, and set the polynomial order $N=4$ for both methods. The small vortices appear in both simulation results because of the inaccurate evaluation of the convective term. When we increase the polynomial order to $N=8$ while keeping the total number of nodes in each direction $N_tot=128$, our scheme produces better results, which are free from the small vortices, and consistent with Nek5000. As the polynomial order increases, the evaluation of the convective term $ f_$ is more accurate in space. Although the total number of nodes is the same, a higher order simulation will generally provide more accurate results. It is worth noting that for both schemes, an explicit filter with amplitude $=0.1$, and cutoff mode $k_c=2$ is applied. Without the explicit filter, both schemes fail to produce meaningful results.
+
+Unsteady Couette flow
+
+A convergence test for 2D Couette flow simulation is investigated to validate the boundary condition for the current method. We initialize a moving wall at the top of the square domain, and keep a stationary no-slip boundary on the bottom. The left and right boundary conditions are set to periodic. We first test the case with $Re=u_topL/ =10$ and $Ma=u_top/c_s=0.1$. The viscous stress will induce the flow over the domain. For the parameters, the number of elements in each direction is set to $N_e=6$ and the polynomial order is set to $N=4$. The simulation results are compared with the analytic solutions shown in Figure~(a) and consistent results are obtained.
+
+We further increase the Reynolds number to $Re=2000$, and set $Ma=0.05$. We evaluate the $L_$ errors at $T/t_0=40$, where $t_0=L/u_top$, and conduct the convergence test as we increase $N$ from $N=4$ to $N=14$. As shown in Figure~(b), the errors
+show exponential convergence as $N$ increases until it is saturated by temporal error.
+
+Planar Poiseuille flow
+
+We further test the current model by simulating a 2D planar Poiseuille flow to study the "numerical slip" and the effect of implementing the flux boundary condition. The nonphysical "numerical slip" at the boundary of solids cannot be fully removed by node-based bounce-back method~. We can improve the method by an improved collision operator i.e. MRT/TRT or coupling linked-based bounce-back with momentum exchange boundary to recover exact solutions~. The current boundary condition considers the momentum exchange through adding the flux term. Moreover, this method can highly improve the stability for unstructured mesh boundaries.
+
+The simulation is conducted in a square domain with $N_e=4$ and $N=8$. The initial velocity is set to $=$. To drive the flow in the confined planar, we initialize a pressure gradient, $G$, between the left inlet boundary and the right outlet boundary. The steady state velocity profile can be analytically computed as:
+
+ u_x=2y(y-L),
+
+where $y$ is the vertical coordinate, $L$ is the side length, and $$ represents the viscosity. The top and bottom boundaries are set to no slip boundary condition. It is noted that besides the steady velocity, the deviatoric
+stress $$ has to be concerned, since it is naturally recovered by the high order moments of the distribution function. The simulation with large relaxation time will affect the accuracy of the recovered Navier-Stokes equation~. In this example, the normal stress, $T_xx$, which can be expressed as
+
+ T_xx=-2(u_x')^2
+
+decades to zero on the boundary~. 
+
+We first look at the consistency between the numerical results and the analytical solutions shown in Figure~. In this example, we fixed the Mach number $Ma=0.1/$, and the Reynolds number $Re=100$. We evaluate the dimensionless horizontal velocity $u^*_x=u_x/u_max$ and normal stress along the $y$ axis when the system achieves the steady state. The velocity profile is highly consistent with the analytical solution. In addition, we do not see obvious spurious oscillations near the boundary region. However, we notice a small difference for stress at the boundary.
+
+We further test the effect of the relaxation time and investigate the convergence of the current boundary as shown in Figure~. In this test, we fix the maximum velocity by fixing the pressure gradient $G$ but change the relaxation parameter, $$, and
+the time interval, $ t$. We first notice that the current model converges to the small time interval, that is, as we decrease the time interval, we will get a smaller "numerical error". However, for the same time interval, as we increase the dimensionless relaxation parameter, a large slip velocity occurs. We learn that since the time marching is solved by SSPRK3 rather than a perfect shift, we can expect a time error at the boundaries. Secondly, the pressure gradient is determined from the viscosity and the relaxation parameter, which may induce a large slip error at the boundary. Besides that, we still notice a more than linear increase in slip velocity which is induced by collision. A further improvement of the boundary condition can be considered by implementing different collision model to obtain a smaller slip velocity.
+
+Taylor Green vortex
+
+We then verify the current approach using the 3D Taylor Green vortex case~ to evaluate the energy dissipation in isotropic turbulence. For this simulation, we use a D3Q19 LBM model~. The simulation is initialized with an isotropic velocity profile within a 3D cube with a side length of $L/L_0=2$:
+
+&u_x(x,y,z,0) =u_0 (L_0) (L_0) (L_0), \\
+&u_y(x,y,z,0) =-u_0 (L_0) (L_0) (L_0), \\
+&u_z(x,y,z,0) =0,\\
+
+For this simulation, we set $Ma=u_0/c_s=0.1/$, $Re=_0 L_0/_0=1600$. The time scale is defined as $t_0=L_0/u_0$. Based on previous research, we evaluate the energy evolution and dissipation rate over the time interval $T/t_0=[0,20]$, comparing the simulation results with Nek5000. Two simulations are performed using the current method, with same element numbers on each direction $N_e=16$, employing the polynomial order $N = 8$ and $N=12$. The first comparison focuses on the kinetic energy $KE=0.5_0^2$, scaled by the initial kinetic energy $KE_0$. As shown in Figure~(a), both simulations exhibit a consistent trend with Nek5000 for $N=12$.
+
+Another comparison, shown in Figure~(b), evaluates the dissipation rate as:
+
+& =2[( x)^2+( y)^2+( z)^2-3]+ \\
+& [( x+ y)^2+( z+ y)^2+( z+ x)^2]. \\
+
+The dissipation rate is scaled by the maximum dissipation, $_max$. Our approach captures the consistent increase and decrease in the dissipation rate for both cases.
+
+To perform a more sensitive comparison, we analyze the velocity profile at $T/t_0 = 12.11$ along the centerlines in the $x$ and $y$ directions. This comparison, conducted between our approach and Nek5000, is shown in Figure~. Our approach with $N=12$ produces highly consistent results compared to Nek5000 with same set up.
+
+Pipe Poiseuille flow
+
+Finally, we perform a 3D pipe Poiseuille flow simulation using the current scheme. The geometry of the pipe is constructed using GMSH, with the ratio between the diameter and the length $L/D = 4$. An example of the mesh, shown in Figure~, consists of $N_e = 3915$ elements. To capture detailed boundary layer information, relatively refined elements are assigned near the edge regions. 
+
+To obtain fully developed turbulence, we initialize the velocity profile which contains the viscous sublayer and inertial sublayer:
+
+u^+=\
+
+&y^+, & viscous\ region;\\
+&+C^+, & inertial\ region.
+
+.
+
+Here, the parameter $=0.41$ represents the Von Kármán constant, and $C^+ 5$. In the equations above, $u^+=u_z/u_$ and $u_=$ are the dimensionless velocity and friction velocity, respectively. The scaled wall coordinate is $y^+=yu_/$, where $$ is the kinematic viscosity. 
+
+We apply the forcing approach suggested in~ to drive the turbulence. To maintain turbulence, the flow is forced by the body force $(F_x,F_y,F_z)=(0,0, g)$, where $g$ is related to the friction velocity $u_$ as
+$g=2u_^2/R$. A further non-uniform, divergence-free force field to the flow during the first three large-eddy turnover times of the simulation, $T/t_0<3$ where $t_0=R/u_$, is given as:
+
+ F_r'=-g B_0rLP)\1-l]\
+ L),
+
+ F_'=g(1-) B_0k_LP)l]
+ L),
+
+ F_z'=-g B_0rP)l]
+ L).
+
+In the above forcing equations, $k_r$ and $k_$ are wavenumebers of the perturbation in streamwise and azimuthal directions. $P$ is the forcing period. In this case, it is set as $P/t_0=8$. The forcing magnitude is expressed as $B_0=50.0$, and the weighting parameter is denoted as $=0.5$. The above forcing is added only to the region $l_0 R-r l_0 +l$ in radial direction, where $l_0=0.2R$, $l=0.4R$. In current scheme, the forcing is then transferred to the cartesian coordinate as,
+$(F_x',F_y',F_z')=(F_r'-F_'sin,F_r'sin+F_',F_z')$. Finally, the above forcing field is applied to collision and streaming by means of the force split method shown in Eqs.~() and~(). The further validations and details about this forcing approach can be found in~.
+
+The simulation is carried out based on the friction Reynolds number $Re_=u_ R/=180$, and the fully developed turbulence is obtained based on the Reynolds number $Re=u_0D/5300$, where $u_0$ is the mean velocity.
+We present the volume contours of the fully developed turbulence at $T/t_0=7.2$ in Figure~. Our goal is to recover the law of the wall, which provides a reliable approximation of the velocity profile in natural streams. We evaluate the wall shear stress, $_w=( u_z/ y+ u_z/ x)$, using the global average value located at the boundary nodes. The average velocity profile in the axial direction, $u_z$, is approximated by both the time and spatial averages. For a high Reynolds number, in the inner region of the pipe, the mean velocity parallel to the wall follows a self-similar logarithmic law, and the viscous effects can be neglected. However, near the wall, viscosity significantly affects the flow field.
+
+As shown in Figure~, the simulation results are consistent with the law of the wall. Closest to the wall, the velocity profile follows the behavior of the near-wall laminar sublayer. This is followed by a transitional buffer region. In the inner region of the pipe far from the wall, we observe the log-law behavior.
+
+Conclusion Remarks
+
+We present a spectral element continuous Galerkin Lattice Boltzmann method (LBM) to evaluate its capability in solving fluid flow problems in an unstructured mesh. The boundary condition is solved by the flux boundary method which is first applied to discontinuous Galerkin LBM in~. Instead of using the perfect shift streaming operator in regular LBM, we solve the streaming step using the SSPRK3 scheme. Unlike previous studies employing the discontinuous Galerkin method, we explore the continuous Galerkin method to further reduce the dissipation introduced by the flux term at element interfaces. To enhance stability, we validate an explicit filter through sensitivity for the double shear layer simulation.
+
+The flux boundary condition is rigorously validated using unsteady Couette flow and planar Poiseuille flow. Both the velocity and stress profiles exhibit excellent agreement with analytical solutions. However, as the relaxation time increases, a noticeable increase in slip velocity is observed. Conversely, reducing the time step results in a relatively smaller slip velocity. Further investigation is required to understand the relationship between slip velocity and relaxation time.
+
+We also validate the dissipation characteristics of the current scheme using the Taylor Green vortex test case. As the number of elements increases, we observe a convergence trend and consistent energy dissipation, which aligns with results from Nek5000.
+
+Finally, we apply the proposed scheme to simulate fully developed turbulent flow in a cylindrical pipe. The simulation is initialized with a constant body forcing between the inlet and outlet. In addition, we apply a non-uniform, divergence-free forcing field to the flow. As the Reynolds number and shear stress reach equilibrium, we compute the average velocity profile and boundary stress. The results recover the turbulent boundary layer profile, accurately capturing the viscous region, buffer region, and log-law region.
+
+Acknowledgment
+
+This material is based upon work supported by the U.S. Department of Energy (DOE), Office of Nuclear Energy, under Award No. DE-NE0009420, the DOE Office of Science-Advanced Scientific Computing Research Program, under Contract No. DE-AC02-06CH11357, and the National Science Foundation under Grant No. 2344147. This research used resources of the Argonne Leadership Computing Facility, a DOE Office of Science user facility at Argonne National Laboratory.

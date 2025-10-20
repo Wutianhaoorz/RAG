@@ -1,0 +1,224 @@
+=1
+url
+xcolor
+[11pt]article
+
+[T1]fontenc
+[utf8]inputenc
+
+[margin=1in]geometry
+
+\@ifundefinedKOMAClassName
+ 
+ 0pt
+ 6pt plus 2pt minus 1pt
+ 
+
+ 
+
+@noskipsec
+
+ 
+
+ 
+ [protrusion]basicmath
+
+3em
+0pt0pt
+
+[english]babel
+
+ 
+
+[3]
+ 
+
+,
+ pdflang=en-US,
+ pdfkeywords=canopy flow, vegetation drag, LAI/LAD mapping, pedestrian wind, urban microclimate, CFD, steady RANS,
+ colorlinks=true,
+ linkcolor=blue,
+ citecolor=Blue,
+ urlcolor=Blue,
+ filecolor=Maroon
+
+\@date\@empty
+
+Vegetation belts are widely used in urban planning to manage pedestrian wind, dust dispersion, and outdoor thermal comfort. This paper presents a compact method for predicting canopy-induced flow using a steady two-dimensional RANS model with Spalart--Allmaras closure and a quadratic drag model for vegetation. Each planting zone is defined by a single leaf area index (LAI). The workflow maps LAI to porosity using an exponential coefficient of 0.5, converts porosity to a local LAI per cell, divides by the grid-measured canopy thickness to form a leaf area density, and applies a quadratic drag term. 
+
+The model is benchmarked against streamwise-mean velocity profiles reported by Liang et al.~[4] at heights 0.25h, 0.75h, and 1.25h (where h is canopy height) for a belt spanning \(x/H = 0\) to 5. Results accurately reproduce the three canonical regions—approach, in-canopy deficit, and leeward wake—and show strong agreement with experimental data in the leeward wake, critical for siting homes and streets near planting. The method is computationally efficient, faster than 3D CFD, uses designer-friendly inputs, and is transparent for early design screening. Implementation details, including LAI-to-porosity mapping, grid-based canopy thickness, quadratic drag, and boundary sponges, are provided to enable reproduction in AirSketcher (Polar Dynamix) or comparable solvers.
+
+Introduction
+
+Cities and industrial sites increasingly use trees and hedges to manage specific urban objectives such as pedestrian-wind shelter, pollutant dispersion, and outdoor thermal comfort [1--3]. These actions map directly to ESG priorities: environmental performance (reduced pollutant spread and energy penalties) and social outcomes (safer, more comfortable streets and public spaces). To make planting decisions credible and repeatable, planners need predictions of how a belt of vegetation will change the wind field---not months from now, but during concept design and stakeholder reviews.
+
+High-fidelity 3-D CFD with canopy turbulence models can provide this detail, but it is costly to set up, slow to iterate, and opaque for early trade-offs. At the other extreme, hand rules lack physical grounding and do not generalize. The gap is a compact, explainable model that runs quickly, uses inputs designers understand (such as a single leaf-area index per planting zone), and still reproduces the main flow features that matter behind vegetation.
+
+This paper presents such a model: a steady two-dimensional RANS formulation with a quadratic vegetation-drag term and a one-equation Spalart--Allmaras closure. A 2D model is suitable for early screening because urban canopy flows are often dominated by streamwise momentum, reducing computational complexity while capturing key wake features. Each planting zone is specified by one user LAI; the solver converts that to an effective leaf-area density per cell using the local canopy thickness extracted directly from the grid. The result is a small set of transparent assumptions, minimal data entry, and fast runtimes suitable for screening multiple layouts.
+
+To ground the method, the model is benchmarked against the canonical wind-tunnel study of Liang et al.~[4]. Their canopy provides height-resolved leaf-area density in ten bins over one canopy height; those bins are integrated to a single equivalent LAI and streamwise-mean velocity profiles are compared at three elevations (quarter-, three-quarter-, and one-and-a-quarter-height). The test is deliberately demanding: a sharp leading edge and a short canopy fetch produce strong entrance and wake effects that expose weaknesses in simplified models.
+
+The remainder of the paper details the LAI workflow and drag implementation (Methods), presents the comparison with Liang's profiles and interprets results by zone (Results), discusses differences relative to 3-D canopy turbulence models and the role of vertical LAD structure (Discussion), and closes with guidance on when this lightweight model is sufficient and when a layered-LAD or full 3-D approach is warranted (Conclusions).
+
+Methods
+
+This study uses the published streamwise-mean velocity profiles \(U_x(x,z)\) at designated stations from Liang et al.'s model-forest wind-tunnel study (apparatus, geometry, and probe positions as reported therein) [4]. Validation targets the same station heights. Reported profiles at those stations are non-negative; i.e., the dataset does not include a centerline recirculation bubble at the probe locations.
+
+From LAD\((z)\) to a single LAI
+
+The solver accepts one LAI value per canopy zone. To preserve the correct total leaf area per ground area, the height-resolved leaf-area density (LAD) is integrated:
+\[
+_=_0^H(z)\,z .
+\]
+
+Liang et al.~report \(\) at ten equally spaced heights over \(0\)--\(H\) with \(H=1~\) (Table ) [4]. The integral is approximated using the midpoint rule with uniform bins \( z=0.1~\),
+\[
+_ z _k=1^10_k
+= 0.1 _k=1^10_k 16.48 \;(16.5).
+\]
+
+For a different canopy height \(H^\) but the same total foliage per planform area, scale linearly and use a uniform LAD inside the canopy zone:
+\[
+_^ 16.5\,1~,
+_=_^H^.
+\]
+This preserves the depth-integrated foliage that controls quadratic drag; picking a single height bin would under/over-represent the frontal area [5--6].
+
+Governing equations, mapping, and momentum sink
+
+We solve the steady, incompressible RANS equations in 2-D and march in pseudo-time to convergence. Turbulent (eddy) viscosity is denoted \(_t\) and computed from the Spalart–Allmaras working variable \(\) (i.e., \(_t=f_v1\)); the effective viscosity is \(_=+_t\).
+
+The momentum sink term is \(-12\,C_D\,a_f\,\,\), where \(a_f = C_\,\) is the wind-normal frontal-area density.
+
+\!\! &= 0,\\
+ t
++(\!\!)
+&= - p
++ \!\![(+_t)(+^\!)]
+-12\,C_D\,a_f\,\,.
+
+Using \(p^n\) and \(_t^\,n\) (coordinates \(x\) horizontal, \(z\) vertical):
+
+u^ &= u^n - t\,(u^n u_x + v^n u_z) - \,p_x^\,n
++ t\,(+_t^\,n)\,(u_xx+u_zz),\\
+v^ &= v^n - t\,(u^n v_x + v^n v_z) - \,p_z^\,n
++ t\,(+_t^\,n)\,(v_xx+v_zz).
+
+(Variable-coefficient diffusion is discretized in conservative form; the Laplacian above is a schematic.)
+
+A single LAI per zone is mapped to porosity
+\[
+=(-K\,), K=0.50 ,
+\]
+where \(K=0.5\) was chosen based on empirical fits to typical canopy porosities, balancing drag and flow penetration [7]. If \(\) is stored, it is inverted cell-wise to \(_=-/K\).
+Local canopy thickness \(H_c\) is obtained by a vertical scan through contiguous canopy cells using the true grid spacing \( z\) (solids stop the scan; open air is excluded). The area density are
+\[
+=_H_c,
+a_f=C_\,.
+\]
+
+Integrating \(/t=-K_q\,\) over \( t\) with initial \(^\) yields
+\[
+^n+1
+=^1+ t\,K_q\,^,
+
+K_q=12\,C_D\,C_\,_H_c
+=12\,C_D\,C_K\,H_c\ \ ().
+\]
+Here \(K_q\) has units \([^-1]\); \(C_D\) and \(C_\) are dimensionless.
+
+A small threshold \(_=10^-6\) classifies solids; the \(H_c\) scan uses the actual (possibly non-uniform) \( z\) with a standard \(\) safeguard [8].
+
+Although the sink enters through the product \(C_D C_\), this study keeps them separate because they encode different physics and dependencies: \(C_D\) characterizes element-scale drag and can vary with local Reynolds number (material/shape effects), whereas \(C_\) converts plan-area LAI to wind-normal frontal area and captures orientation/clumping, anisotropy, height variation, and wind-direction effects. This separation improves transferability and enables layered or directional canopies (\(C_=C_(z,)\)) without re-fitting \(C_D\). For fixed isotropic cases, a single lumped coefficient \(C_=C_D C_\) is equivalent.
+
+The coefficient pairs were selected to span a range of damping strengths, informed by typical values for urban vegetation [7]. To probe sensitivity of trough depth and wake level around a common LAI, the following \((C_D,\,C_)\) combinations are used: (0.25,\ 12), (0.25,\ 9) and (0.15,\ 12). Results for these three settings are overlaid at each validation height; the experimental profiles are shown with markers in Figure .
+
+Inlet, domain, and boundary conditions
+
+Modified power-law ABL (inlet)
+\[
+U(z)=U_[+(1-)(z_)^],
+\]
+with floor \(=0.10\) so \(U(0)=0.1\,U_\). The exponent \(\) is set to \(0.16\) unless otherwise noted. Inflow is imposed as a Dirichlet condition each step.
+
+Domain and other boundaries.\\
+The domain spans \(-5H x 20H\), \(0 z 10H\).\\
+Ground: no-slip (\(u=v=0\)). Top: free-slip (\(v=0,\ u/ z=0\)). Outlet: zero-gradient (\( u/ x= v/ x= p/ x=0\)).
+
+Results
+
+This study compares a steady 2-D SA + explicit-drag solution with the digitized wind-tunnel profiles of Liang et al.~[4] (x marks). A single canopy zone is assigned \(=16.5\) (the integral of the ten \((z)\) bins). Drag is applied cell-wise using the porosity mapping and the local canopy thickness \(H_c\) scanned vertically through the canopy zone. The inflow is identical across cases. The canopy occupies \(0 x/H5\) with a sharp leading edge. Profiles are shown at three elevations \(z/H=\0.25,\,0.75,\,1.25\\).
+
+Three flow zones
+
+ Approach (\(x/H<0\)). All three settings reproduce the mild upstream deceleration toward the canopy face and remain aligned with the experimental level at all heights.
+ Within canopy (\(0 x/H5\)). Quadratic drag forms the core deficit in the correct location and width. The case \(C_D=0.25,\;C_=12\) produces the deepest trough (strongest damping); \(C_D=0.15,\;C_=12\) is intermediate; \(C_D=0.25,\;C_=9\) is the least damped. These relative depths are consistent at all \(z/H\).
+ Wake (\(x/H>5\)). Recovery trends are captured, with height-dependent differences in level:
+ 
+ \(z/H=1.25\) (top). The over-canopy jet and relaxation are reproduced. \(C_D=0.25,\;C_=12\) tracks the data best through the wake; \(C_D=0.15,\;C_=12\) is slightly high; \(C_D=0.25,\;C_=9\) recovers fastest and sits highest above the measurements downstream.
+ \(z/H=0.75\) (middle). Just behind the canopy, \(C_D=0.25,\;C_=12\) rises most slowly and stays closest to the experimental wake through \(x/H\!\!12\); \(C_D=0.15,\;C_=12\) is higher; \(C_D=0.25,\;C_=9\) overshoots most and remains high downstream.
+ \(z/H=0.25\) (bottom). Near the ground the measured recovery is slow. \(C_D=0.25,\;C_=12\) under-predicts early-wake speeds; \(C_D=0.15,\;C_=12\) reduces this bias and follows the experimental slope best very near the exit, but farther downstream \(C_D=0.25,\;C_=12\) aligns more closely with the measured wake.
+ 
+
+Coefficient choices
+
+ The approach region and the width/location of the within-canopy trough are robust to coefficient choice.
+ Coefficients mainly tune trough depth and wake level:
+ 
+ Lower \(C_\) (\(C_D=0.25,\;C_=9\)) \(\) least damping and a fast over-canopy recovery, but tends to over-predict aloft.
+ Lower \(C_D\) (\(C_D=0.15,\;C_=12\)) \(\) moderate damping that eases the very-near-ground early-wake low bias.
+ \(C_D=0.25,\;C_=12\) \(\) closest overall agreement with the experimental wake across heights; recommended as the default setting for design screening.
+ 
+ For design screening behind planting belts (homes, streets, courtyards), prioritize the leeward wake: use \(C_D=0.25,\;C_=12\) by default; switch to \(C_D=0.15,\;C_=12\) only if specifically targeting the immediate near-ground recovery right behind the canopy. \(C_D=0.25,\;C_=9\) generally over-predicts aloft.
+
+ Note on single-LAI representation. Collapsing the reported \((z)\) profile to one \(_\) preserves the depth-integrated foliage that multiplies the quadratic drag, so large-scale features (deficit core, jet height, recovery length) are retained. Residual differences are height-dependent: slightly deeper troughs and a mild positive bias above the canopy when the measured LAD peaks mid-height but the model uses a height-uniform LAD. These appear as the relative spacing among the three simulated curves.
+
+Discussion
+
+Liang et al.~[4] solved a 3-D ``improved'' \(k\)--\(\) model in PHOENICS with a momentum sink for canopy drag and extra source/sink terms in the \(k\) and \(\) budgets to represent wake production and enhanced dissipation inside foliage. Their formulation augments the eddy-viscosity relation and ties turbulence production/loss directly to the measured leaf-area density \(a(z)=(z)\) (their ten-bin profile).
+
+In contrast, the present study uses a 2-D RANS solver with a one-equation Spalart--Allmaras closure for \(\). Vegetation acts only through an explicit quadratic momentum sink \(-12\,C_D\,a_f\,\,\), with \(a_f=C_\) and \(=_/H_c\). A single user LAI per canopy zone is mapped via \(=(-0.5\,)\) and inverted cell-wise to \(_\), while the local canopy thickness \(H_c\) is obtained by a vertical scan through the canopy zone. This compact closure is robust and fast for attached shear layers and, as the results show, captures the streamwise-mean canopy signatures (core momentum deficit, shear-layer jet, and wake recovery).
+
+Sources of discrepancy between the simulation and experimental data
+
+ Vertical structure of \( Liang's digitized profile peaks mid-canopy: values climb from \(\!0.5\)--\(1~^-1\) near \(z/H0.3\) to \(\!35\)--\(36\) at \(z/H0.6\), then drop to \(\!6\) at the top. Collapsing to a single \(_\) and using \(=/H\) tends to over-damp the lower canopy and under-damp the upper canopy. Using a uniform LAD increases the near-ground trough depth by approximately 10–15\
+ Turbulence closure and canopy--turbulence coupling. Liang et al.~[4] add canopy-dependent source/sink terms to \(k\) and \(\), which enhance mixing and speed up near-wake recovery. The SA model here omits those terms, yielding a somewhat more pronounced in-canopy trough and gentler early-wake rise, while matching the far-wake slope.
+ Dimensionality. The solver is 2-D; the experiment is 3-D and allows spanwise transport and secondary motions that redistribute momentum and turbulence. Suppressing that degree of freedom keeps a sharper entrance/exit signature and a somewhat slower lateral relaxation in the near wake.
+
+Recommendation for urban wakes (buildings/streets with planting)
+
+For comfort and dispersion behind belts, the leeward wake is the metric of interest rather than in-canopy details. Based on Fig.~, \(C_D=0.25\) with \(C_=12\) best matches the experimental wake profiles across heights and is recommended as the default. If the focus is specifically the immediate near-ground recovery just behind the canopy, \(C_D=0.15,\ C_=12\) can be used as a targeted tweak. \(C_D=0.25,\ C_=9\) generally over-predicts aloft.
+
+Conclusions
+
+A steady 2-D RANS (Spalart--Allmaras) solver with explicit quadratic canopy drag and a single user LAI per zone (here \(=16.5\) from integrating the ten \((z)\) bins) reproduces the key streamwise-mean behavior of canopy flow at \(z/H=\0.25,\,0.75,\,1.25\\). The three canonical regions are captured: (i) in the approaching layer the model matches the pre-adjustment and the sharp entrance; (ii) within the canopy it places the momentum-deficit trough in the correct streamwise position; and (iii) behind the canopy it follows the measured wake recovery and the over-canopy shear-layer jet, relevant for assessing leeward wind reduction around homes and streets.
+
+Remaining differences reflect modeling choices rather than numerical issues. Using a height-uniform \(=/H\) in place of Liang's mid-height-peaked \((z)\) produces a slightly deeper trough near the ground and a mild positive bias above the canopy, while the 2-D SA closure omits canopy-dependent turbulence source/sink terms used in Liang's 3-D \(k\)--\(\) model. These do not alter leeward recovery trends and can be reduced by supplying layered LAD (or importing the ten bins) and by applying a thin one-cell blending at canopy/air interfaces.
+
+For practical urban applications where the wake behind planting controls comfort and pollutant dispersion, =12\) provides the closest overall wake match and is recommended as the default. Use \(C_D=0.15,\ C_=12\) only if the goal is to ease the very near-ground low bias immediately behind the canopy; \(C_D=0.25,\ C_=9\) generally over-predicts aloft. The workflow remains fast for screening and leaves a clear upgrade path to layered \((z)\) or fully 3-D canopy models when finer vertical detail is required.
+
+References
+
+[1] R. Fang, X. Li, H. Guo, and Z. Wang, ``Shelter effect of pedestrian wind behind row trees in a street canyon,'' Forests, vol. 13, no. 5, p. 653, 2022.
+
+[2] C. Gromke and B. Ruck, ``Influence of trees on the dispersion of pollutants in an urban street canyon—Experimental investigation,'' Boundary-Layer Meteorology, vol. 131, pp. 19--34, 2009.
+
+[3] T. E. Morakinyo and Y. F. Lam, ``Simulation study on the impact of tree configuration, planting pattern and wind condition on street-canyon microclimate and thermal comfort,'' Building and Environment, vol. 103, pp. 262--275, 2016.
+
+[4] L. Liang, L. Xiaofeng, L. Borong, and Z. Yingxin, ``Improved k--$$ two-equation turbulence model for canopy flow,'' Atmospheric Environment, vol. 40, pp. 762--770, 2005.
+
+[5] R. H. Shaw and U. Schumann, ``Large-eddy simulation of turbulent flow above and within a forest,'' Boundary-Layer Meteorology, vol. 61, pp. 47--64, 1992.
+
+[6] S. E. Belcher, N. Jerram, and J. C. R. Hunt, ``Adjustment of a turbulent boundary layer to a canopy of roughness elements,'' Journal of Fluid Mechanics, vol. 488, pp. 369--398, 2003.
+
+[7] P. R. Spalart and S. R. Allmaras, ``A one-equation turbulence model for aerodynamic flows,'' AIAA Paper 92-0439, 1992.
+
+[8] AirSketcher / Polar Dynamix User Manual, 2025.
+
+[9] J. Counihan, ``Adiabatic atmospheric boundary layers: A review and analysis of data from the period 1880--1972,'' Atmospheric Environment, vol. 9, pp. 871--905, 1975.
+
+[10] A. S. Monin and A. M. Obukhov, ``Basic laws of turbulent mixing in the surface layer of the atmosphere,'' Trudy Geofiz. Inst. AN SSSR, vol. 151, pp. 163--187, 1954.
+
+[11] B. E. Launder and D. B. Spalding, ``The numerical computation of turbulent flows,'' Computer Methods in Applied Mechanics and Engineering, vol. 3, no. 2, pp. 269--289, 1974.
+
+[12] A. S. Sogachev and O. Panferov, ``Modification of two-equation turbulence models to calculate canopy flow,'' Boundary-Layer Meteorology, vol. 121, pp. 383--414, 2006.

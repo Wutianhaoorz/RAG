@@ -1,0 +1,958 @@
+Lemma
+Corollary
+
+, Ao Xu Heng-Dong Xi
+
+Institute of Extreme Mechanics, School of Aeronautics, Northwestern Polytechnical University, Xi'an 710072, PR China
+National Key Laboratory of Aircraft Configuration Design, Key Laboratory for Extreme Mechanics of Aircraft of Ministry of Industry and Information Technology, Xi'an 710072, PR China
+
+We studied the reconstruction of turbulent flow fields from trajectory data recorded by actively migrating Lagrangian agents. 
+We propose a deep learning model, Track-to-Flow (T2F), which employs a Vision Transformer as an encoder to capture the spatiotemporal features of a single agent trajectory, 
+and a convolutional neural network as the decoder to reconstruct the flow field. 
+To enhance the physical consistency of the T2F model, we further incorporate a physics-informed loss function inspired by the framework of Physics-Informed Neural Network (PINN), 
+yielding a variant model referred to as T2F+PINN. 
+We first evaluate both models in a laminar cylinder wake flow at a Reynolds number of $Re = 800$ as a proof-of-concept. 
+The results show that the T2F model achieves velocity reconstruction accuracy comparable to existing flow reconstruction methods, 
+while the T2F+PINN model reduces the normalized error in vorticity reconstruction relative to the T2F model. 
+We then apply the models in a turbulent Rayleigh-B\'enard convection at a Rayleigh number of $Ra = 10^8$ and a Prandtl number of $Pr = 0.71$. 
+The results show that the T2F model accurately reconstructs both the velocity and temperature fields, 
+whereas the T2F+PINN model further improves the reconstruction accuracy of gradient-related physical quantities, 
+such as temperature gradients, vorticity, and the $Q$ value, with a maximum improvement of approximately 60\
+Overall, the T2F model is better suited for reconstructing primitive flow variables, while the T2F+PINN model provides advantages in reconstructing gradient-related quantities. 
+Our models open a promising avenue for accurate flow reconstruction from a single Lagrangian trajectory.
+
+ B\'enard convection, Plumes/thermals, Machine learning.
+
+Introduction
+
+Access to high-resolution spatiotemporal flow fields is critical for a wide range 
+of real-world applications, including the autonomous navigation of aerial and underwater 
+vehicles , 
+migration of microswimmers , 
+and environmental monitoring . 
+For example, in unmanned aerial vehicles (UAVs) and underwater autonomous navigation, 
+accurate knowledge of the underlying turbulent flow fields enables the implementation 
+of globally optimal path planning algorithms including model predictive control 
+ and adaptive control , 
+which can outperform local decision-making approaches such as reinforcement learning 
+. This capability 
+allows autonomous vehicles to identify and exploit beneficial flow features (e.g. updrafts), 
+thereby improving energy efficiency and extending operational endurance. 
+However, in realistic atmospheric or ocean environments, direct measurements of the full Eulerian 
+flow field are often infeasible due to limited sensor coverage and the high cost of deployment. 
+Instead, the available observation data are typically a single Lagrangian trajectory, 
+collected by mobile sensors mounted on the vehicles themselves. These measurements are 
+inherently Lagrangian in nature and often represent the only accessible data under operational 
+conditions . 
+Several methods have been proposed to reconstruct Eulerian fields from Lagrangian observations. 
+For example, FlowFit and VIC+ 
+reconstruct Eulerian fields using physics-constrained approaches that achieve accurate reconstructions when dense particle tracking data are available. 
+However, in realistic scenarios of autonomous aerial or underwater navigation, only a single Lagrangian trajectory may be accessible, 
+and the information contained in such sparse measurements is insufficient for these methods.
+This situation poses a challenge: 
+Can we accurately reconstruct the flow field from a single Lagrangian trajectory?
+
+This flow reconstruction challenge can be formulated as a super-resolution 
+reconstruction problem, where the goal is to infer high-resolution flow fields from sparse 
+and incomplete measurements. Conceptually, the task parallels classical image super-resolution 
+in computer vision, where high-resolution images are reconstructed from their low-resolution 
+counterparts . Given the sparsity of the available data, 
+machine learning-based super-resolution (MLSR) methods have emerged as promising tools 
+to address this problem. Recent advances have extended MLSR methods to fluid flows by 
+replacing the RGB (red, green and blue) image channels with physically meaningful 
+quantities such as velocity or temperature fields . 
+Building on this analogy, various machine learning architectures have been developed for 
+flow-specific MLSR tasks. introduced a convolutional neural network (CNN) 
+architecture for a two-dimensional laminar cylinder wake and homogeneous decaying turbulence. 
+Subsequent extensions include a spatiotemporal MLSR method , a Voronoi 
+tessellation-assisted MLSR method , and a single-snapshot 
+MLSR method , each tailored to distinct application scenarios. 
+The applicability of MLSR approaches across diverse flow configurations has also been 
+demonstrated by . To enhance the robustness 
+and generalizability of these models, physics-informed loss functions that incorporate 
+the governing equations of fluid dynamics have been introduced into the training process 
+. These physical constraints may be imposed in 
+unsupervised learning or incorporated 
+as part of a hybrid loss function that combines physical consistency with traditional mean 
+square error (MSE) loss function in supervised learning .
+Recently, demonstrated an elegant physics-based method for reconstructing the temperature field by solving a Poisson equation derived from applying the curl operator twice to the Navier-Stokes equations. 
+Similar to MLSR methods, this temperature field reconstruction requires Eulerian measurements.
+
+Despite recent advancements, reconstructing flow fields from sparse Lagrangian trajectory 
+data remains more challenging than conventional super-resolution tasks. First, 
+the input measurements consist of irregularly sampled and temporally evolving trajectories. 
+This irregularity hinders effective feature extraction by conventional CNN-based MLSR methods, 
+thereby motivating the development of alternative architectures capable of directly 
+processing Lagrangian inputs . 
+Second, in practical applications, trajectory data are often corrupted by sensor 
+noise and localization errors, which degrade signal quality and introduce 
+uncertainties into the reconstructed flow fields. The reconstructions must remain 
+physically consistent under such noisy conditions, particularly when gradient-related 
+flow quantities (e.g. vorticity or velocity gradient) are of interest . 
+These quantities are highly sensitive to even minor spatial errors in the reconstructed 
+primitive fields, and any lack of physical consistency may result in significant distortions 
+of the underlying flow structures.
+
+Together, these challenges underscore the need for machine learning models that not 
+only accommodate irregular and noisy Lagrangian trajectory data but also enforce physical 
+consistency throughout the reconstruction process. In this work, we present a deep 
+learning model, termed Track-to-Flow (T2F), for reconstructing flow fields from the 
+Lagrangian trajectories of self-propelling agents. The T2F model integrates a 
+Vision Transformer (ViT) to capture spatiotemporal patterns within the trajectory data, 
+and a convolutional neural network (CNN) as the decoder to generate flow fields in the 
+vicinity of the agent trajectories. In addition, a physics-informed loss function is 
+incorporated to enhance the physical consistency, particularly in gradient-related quantities. 
+The rest of this paper is organized as follows. In ~, 
+we introduce the T2F model in detail. In ~, we validate the model in the 
+laminar cylinder wake flow, serving as a 
+proof-of-concept test. In ~, we extend the application to the turbulent 
+Rayleigh-B\'enard (RB) convection, a canonical flow system representative of convection 
+in the atmosphere and ocean. The main findings of this work are summarized in ~.
+
+Numerical methods
+
+An overview of the T2F model is illustrated in figure . We first employ reinforcement learning 
+to train self-propelling Lagrangian agents to perform point-to-point migration tasks within a 
+flow environment, thereby generating agent trajectories as training data. Subsequently, the 
+T2F model takes the trajectory information from the self-propelling agents as input and outputs 
+the flow field in the vicinity of those trajectories.
+
+Migration of self-propelling agents
+
+In this work, we consider an inertia-less self-propelling agent model 
+, which is described as:
+
+_ 
+= _ + _ 
+= _ + U_ 
+[(), ()] \\
+
+_(t + dt) 
+= _(t) + 
+_(t) dt
+
+where $dt$ is the time step.
+Here, $_$ and $_$ denote 
+the velocity and position of the agent, respectively; 
+$_$ is the local fluid velocity, and $U_$ 
+is the self-propelling velocity magnitude generated by the agent. The agent moves at a constant 
+speed $U_$ and directly controls its swimming direction $$.
+This is a toy model that describes the kinematics of UAVs in the atmosphere or 
+autonomous underwater vehicles in the ocean. The model is justified by the fact that, 
+in realistic atmospheric or oceanic scenarios, the characteristic length scale 
+of the vehicles (on the order of metres) is several orders of magnitude smaller 
+than that of the atmospheric or oceanic convection layer (typically kilometers). 
+Similar dynamic models have been adopted in previous works 
+.
+
+To control the migration behaviour of a self-propelling agent within a flow environment, 
+we employ reinforcement learning (RL), a model-free control strategy rooted in behavioral 
+psychology, in which an agent learns optimal actions through trial-and-error interactions 
+with its environment . The RL has been increasingly applied in fluid mechanics, 
+including drag reduction , vortex shedding 
+control , and biologically inspired navigation tasks . In 
+this work, we formulate a point-to-point migration problem, wherein agents are trained 
+to reach randomly assigned target locations from randomly initialized starting points. The 
+environmental cues available to the agent include its current position, its position 
+relative to the target, the local fluid velocity, and the target position. This information 
+defines the observation state $s = [_, 
+ _, 
+_, 
+_]$, where 
+$ _ = _ - _$. 
+Based on this observation, the agent takes an action $a_t$, defined as the control 
+of the propulsion direction $$ . The agent's behaviour 
+is shaped by a reward function that encourages efficient navigation toward the target. 
+Following , we define the reward function as: 
+
+ r_t = -dt + 10[ 
+ _t-1 - _\|U_ - 
+ _t - _\|U_ 
+ ] + r_
+
+where
+
+ r_ = 
+ 
+ 200, & \|_t - _\| < H/36\\[6pt]
+ 0, & 
+ 
+
+Here, $_t$ and $_t-1$ denote the agent's position at the current and previous time steps, respectively.
+$H$ is the height of the computational domain.
+The first term of equation penalises time consumption, 
+thereby encouraging the agent to navigate quickly. 
+The second term of equation rewards progress toward the target, 
+while the last term of equation provides a large terminal reward for successful 
+arrival within a defined proximity to the target.
+
+The RL training is conducted using the Soft Actor-Critic (SAC) algorithm, 
+which aims to maximise both the expected cumulative reward (i.e. successful task completion) 
+and the entropy of the policy (i.e. encouraging exploration). 
+The optimisation objective is defined as:
+
+ ^*()= _ E_ [ _t=0^\ r_t(s_t,a_t,s_t+1)+ H[( | s_t)] \ ]
+
+Here, $$ denotes the policy, 
+represented by a neural network that maps the observation state $s_t$ 
+to a Gaussian distribution over actions $a_t$. 
+The notation $( s_t)$ denotes that the policy is 
+stochastic. $^*$ denotes the optimal policy, 
+i.e. the policy with optimized parameters $^*$. 
+The trajectory $ = (s_0, a_0, s_1, a_1, , s_t, a_t)$ 
+represents a sequence of states and actions generated 
+by the policy, and $ $ indicates that the trajectory is sampled from $$. 
+The reward function is $r_t(s_t, a_t, s_t+1)$ defined in equation , 
+and $H[( s_t)]$ is the entropy term that encourages exploration.
+
+The entropy $H$ of the policy $$ at state $s_t$ is computed as: 
+
+ H[(|s_t)]=E_a_t ( | s_t)[- (a_t|s_t)]
+
+For a Gaussian distribution $( | s_t)$ over actions $a_t$ with 
+mean $(s_t)$ and standard deviation $(s_t)$,
+the entropy can be simplified as:
+
+ H[( | s_t)] = 2 (2 e (s_t)^2)
+
+The entropy $H$ encourages exploration by favouring more stochastic policies. 
+The parameter $$ is a trade-off coefficient that balances the reward and entropy terms. 
+Further details on the SAC algorithm can be found in .
+
+ Deep learning model: Track-to-Flow
+
+We develop the T2F deep learning model to reconstruct flow fields from the Lagrangian 
+trajectories of self-propelling agents. The T2F model adopts an encoder-decoder architecture 
+comprising a Vision Transformer (ViT) as the encoder and a Convolutional Neural Network (CNN) 
+as the decoder (see figure ). Encoder-decoder architectures are widely employed 
+in deep learning, particularly in natural language processing 
+and computer vision . The encoder transforms the input sequence into a set 
+of high-dimensional feature representations, which are subsequently utilised by the 
+decoder to generate the desired output. Such architectures have been successfully applied 
+to aerodynamic feature extraction under extreme conditions .
+
+In this study, the input to the model consists of localised trajectory data 
+from self-propelling agents. These trajectories encode both fine-scale gradient 
+information over short timescales and broader spatial-temporal correlations 
+over longer horizons. Such multiscale features are inherently difficult to extract 
+using traditional methods. Interestingly, these input characteristics resemble 
+those encountered in natural language processing and computer vision tasks, where 
+close contextual relationships exist between adjacent words or pixels, while longer-range 
+dependencies span across sentences or image regions. To this end, we adopt the 
+Transformer architecture, which is capable of capturing both short- and long-range 
+dependencies in sequential data. Specifically, we utilise the ViT as the encoder 
+, as illustrated on the left side of figure . 
+The ViT has demonstrated competitive performance in visual 
+tasks by directly processing images as sequences of patches, which are small segments 
+obtained by partitioning the input image. 
+In the two-dimensional setting, 
+we model a single particle trajectory as a short 'video' composed of local flow snapshots. 
+The input of the T2F model encoder is a four-dimensional tensor 
+$x_0 ^\,l_p l_p l_t C$
+where $l_p$ is the edge length of each square patch so that one patch spans 
+an $l_p l_p$ neighbourhood of grid points; 
+$l_t$ is the number of time steps sampled along the trajectory; 
+and $C$ denotes the number of physical channels stored at every 
+grid point (e.g. the velocity components ($u$,$v$), pressure, temperature, etc).
+Next, Transformer architecture is applied to extract 
+spatiotemporal features from the Lagrangian input. 
+The final output of the ViT encoder is a tensor $x_^l_t d_e$, 
+which represents a latent embedding of the input sequence.
+
+Following feature extraction, a decoder is employed to reconstruct the corresponding 
+Eulerian flow field. The decoder is based on a CNN, which is a class of deep learning 
+models widely used in image processing tasks . Through multiple layers of 
+convolution and pooling, CNNs progressively extract and refine hierarchical spatial 
+features. In this study, we utilise the inverse operation of convolution, namely deconvolution, 
+to reconstruct the flow field from the encoded features. Specifically, the deconvolution 
+operation transforms an input tensor $x_in ^H_1 W_1 C_1$ 
+into an output tensor $ x_out ^H_2 W_2 C_2$, as illustrated on the right side of figure . 
+The encoded features are first reshaped into multi-channel matrices and then progressively 
+upsampled through multiple deconvolution layers. The final output is the reconstructed flow field
+$y ^H W C$, 
+where $C$ represents the number of physical quantities being reconstructed, 
+and $H W$ represents the spatial domain adjacent to the agent trajectories. 
+Details of the T2F model architecture, including the number of layers and
+hyperparameters, are provided in the Appendix .
+
+ The physics-informed loss function
+
+We employ a physics-informed loss function inspired by the framework 
+of Physics-Informed Neural Networks (PINNs), which are a class of mesh-free 
+methods for solving partial differential equations using neural networks 
+. In conventional neural network training, data-driven 
+models learn mappings between inputs and outputs by minimising a loss function 
+defined over labelled datasets. PINNs extend this paradigm by incorporating 
+governing physical laws (typically represented as differential equations) directly 
+into the loss function. This approach enables the neural network to learn solutions 
+that approximately satisfy the underlying physics, even in the absence of 
+dense or high-fidelity training data. Although PINNs offer significant advantages, 
+they enforce physical constraints only approximately, treating the governing 
+equations as soft constraints. As a result, their accuracy may degrade when 
+solving forward problems at moderate-to-high Reynolds numbers . 
+Nevertheless, PINNs have demonstrated success in inverse problems, where system 
+parameters or hidden fields must be inferred from sparse or noisy observations. 
+Representative applications include the inference of structural properties, pressure, 
+and velocity fields , 
+as well as the reconstruction of experimental flow velocity fields from noisy measurements 
+.
+It is worth mentioning that the philosophy of physics-informed approach has also been applied to operators by embedding PDEs into the loss functions, 
+such as physics-informed neural operator, as demonstrated in the novel application of LESnets (large-eddy simulation nets).
+
+In the following, we first describe the mean-squared error (MSE) loss function used in 
+the standard T2F model, which does not incorporate any physics-based constraint. 
+In the standard T2F model, the loss function \( L_ \) is defined as:
+
+ L_ = L_ = N C _j=1^C _i=1^N (y_^(i,j) - y_^(i,j))^2
+
+where \(N = H W\) is the total number of spatial grid points, 
+and \(C\) is the number of physical quantities being reconstructed. 
+The terms \(y_^(i,j)\) and \(y_^(i,j)\) denote the 
+reconstructed value and the reference values, respectively, at the \(i\)-th grid 
+point for the \(j\)-th physical quantity. Minimising this loss encourages the 
+model to align its predictions closely with the ground truth data.
+
+To incorporate physical constraints, we augment the loss function with a physics-informed term, yielding the T2F+PINN model, in which the total loss 
+function comprises a data loss \(L_\) and an equation-based loss \(L_\). 
+The equation loss is derived from the residual of the governing partial differential equations, expressed in general form as:
+
+ t + [u] = 0, x , \, t [0,T],
+
+where \( u(x,t) \) is the latent solution field, 
+\( \) is a nonlinear differential operator, \( \) 
+is the spatial domain of the equation, and \([0, T]\) is the time interval. 
+The residual function is defined as
+
+ f = t + [u].
+
+which quantifies the degree to which the reconstructed field violates the governing equations. 
+The equation loss \( l_ \) for a single equation is given by:
+
+ l_ = N _i=1^N | f(t_i, y_i) |^2
+
+where $N$ is the number of grid points. 
+Here, $f(t_i, y_i)$ denotes the residual evaluated at the $i$-th grid point, 
+where $t_i$ is the time and $y_i$ is the reconstructed field value at that point.
+For systems governed by multiple equations, 
+the total equation loss is a weighted sum of individual residuals:
+
+ L_ = _k=1^N_f w_k \, l_^k = _k=1^N_f w_k \, N _i=1^N | f_k(t_i, y_i) |^2
+
+where $N_f$ is the number of governing equations, 
+$f_k$ denotes the residual for the $k$-th equation, and $w_k$ is the corresponding weight. 
+In summary, the full loss function for the physics-augmented T2F+PINN model is:
+
+L_ = w_ L_ + _k=1^N_f w_k \, l_^k
+
+where \( w_ \) and \( w_k \) controls the relative contributions 
+of data fidelity and physical consistency, respectively. 
+
+In this study, the inclusion of the physics-informed loss function transforms the reconstruction task into an inverse problem, in which the model aims to infer the latent Eulerian fields from observed Lagrangian trajectories. 
+In contrast to conventional PINN formulations, the absolute spatial coordinates $$ and time $t$ are not supplied as explicit inputs to the network; 
+instead, the model processes local Eulerian patches extracted along the particle trajectory, while spatiotemporal context is introduced only through learnable positional embeddings.
+As a result, we cannot apply automatic 
+differentiation to compute temporal derivatives (e.g.\,\( u/ t,\ T/ t\)). 
+Instead, these temporal derivatives are calculated using the reference velocity and 
+temperature fields obtained from numerical simulations. After training, we assess the 
+reconstruction performance of both models using the normalized \(L_2\) error, which provides 
+a scale-invariant measure of accuracy. For a single reconstruction, 
+the normalized \(L_2\) error \(\) is defined as:
+
+ = - y_ \|_2\| y_ \|_2
+
+where $ _2$ 
+denotes the Euclidean norm. This metric enables consistent comparisons across 
+different datasets and physical quantities.
+
+ Flow Field Reconstruction in Cylinder Wake
+
+Simulation settings
+
+We evaluate the T2F and T2F+PINN models in a two-dimensional cylinder wake flow as a 
+proof-of-concept test. The governing equations for the incompressible flow around a circular cylinder are:
+
+ = 0,
+
+ t + = - p + ^2,
+
+where $ = (u, v)$ is the velocity field, $$ is the density, $p$ is the pressure, and $$ is the kinematic viscosity. To non-dimensionalise the equations, we introduce the following scaling:
+
+\[
+x^ = D, 
+
+t^ = D, 
+
+^ = U_, 
+
+p^ = \,U_^2
+\]
+where $U_$ is the freestream velocity, and $D$ is the cylinder diameter. The dimensionless governing equations then become:
+
+ ^ = 0,
+
+^ t 
++ ^ ^ 
+= - p^ + Re ^2^.
+
+where the Reynolds number is defined as:
+
+Re = D,
+
+The computational domain is set to $[12D, 6D]$, and the mesh resolution is 
+$1024 512$. The cylinder is placed at the centre of the domain at 
+coordinates $(D, 3D)$. The simulation is performed using the open-source lattice 
+Boltzmann solver Palabos . A Reynolds number of $Re = 800$ is chosen. 
+The resulting vorticity field exhibits a well-defined K\'arm\'an vortex street (see figure ).
+
+Migration of self-propelling agents
+ 
+
+Using the simulated flow field, we train self-propelling agents via reinforcement learning 
+to generate $n_ = 100$ point-to-point migration trajectories. 
+As a benchmark, we refer to the study by . 
+However, unlike their setup, we modify the locations of the initial and terminal regions. 
+In our configuration, agents migrate along the streamwise direction (see figure ), whereas reported zigzag-like trajectories aligned with the spanwise direction. 
+This modification slightly reduces task complexity while significantly improving training 
+efficiency. In our case, the agent's reward signal saturates after approximately 1000 episodes 
+and reaches its maximum value by around 4000 episodes. In contrast, the best-performing 
+agent in Gunnarson et al.'s study required roughly 5000 episodes to plateau and more than 
+10000 episodes to reach its optimal reward.
+
+Evaluation of the T2F and T2F+PINN models
+
+We evaluate the performance of the T2F and T2F+PINN models by reconstructing the velocity 
+components in both the horizontal ($u_x$) and vertical ($u_y$) directions, corresponding to 
+a total of $C = 2$ output channels. The reconstructed velocity fields are subsequently 
+used to compute the out-of-plane vorticity, defined as $_z = ( )_z$. 
+The training dataset for both models is constructed as follows. First, the reinforcement 
+learning agent described in ~ is used to generate $n_ = 100$ 
+point-to-point migration trajectories. From each trajectory, $n_ = 10$ 
+segments are extracted at randomly chosen initial times, each segment consisting of 50 
+consecutive timesteps. This yields a total of 
+$n_ = n_ n_ = 1000$ training samples. 
+The same procedure is applied in the testing phase to generate $n_ = 1000$ 
+samples for evaluating the reconstruction accuracy of the models.
+
+Figure presents the reconstructed velocity fields obtained using the T2F and T2F+PINN models 
+for a representative input, with the normalized $L_2$ error reported beneath each reconstructed 
+flow-field. We can see that both models are able to capture the spatial patterns of the flow structure. 
+However, the reconstructions from the T2F model exhibit a noticeable blurring effect (see figure d,e), 
+resulting in the loss of fine-scale features. This blurring phenomenon is widely reported in 
+flow-specific MLSR tasks across different flow scenarios 
+. 
+In contrast, the T2F+PINN model occasionally 
+produces spatial misalignments in the reconstructed flow structures (see figure g,h). 
+This raises a natural question: how do such visual discrepancies in the primitive flow variables 
+(e.g. velocity) affect the accuracy of gradient-based quantities (e.g. vorticity). When the 
+reconstructed velocity field exhibits sharp but inconsistent transitions, as observed in the T2F model, 
+the resulting vorticity computation becomes less accurate (see figure f). This suggests that, 
+although the purely data-driven T2F model can recover the overall flow structure, it lacks 
+sufficient adherence to physical constraints necessary for accurately reconstructing gradient-based 
+quantities. In contrast, the T2F+PINN model, by incorporating governing equations into the training 
+process, effectively mitigates such inconsistencies and improves the accuracy of the reconstructed 
+vorticity field (see figure i). These differences underscore the importance of incorporating 
+physics-informed constraints in enhancing the physical fidelity of reconstructions, particularly 
+for gradient-related quantities.
+
+Figure shows the pointwise error fields associated with the reconstructions produced 
+by the T2F and T2F+PINN models. For the T2F model, the reconstruction errors appear to 
+be randomly distributed across the domain, with no discernible spatial structure 
+(see figure a--c). 
+In contrast, the reconstruction errors from the T2F+PINN model 
+exhibit geometrically structured patterns (see figure d--f), indicating that the error 
+distribution is more closely aligned with the underlying physical processes. 
+In particular, the reconstructed vortical structures in the T2F+PINN case display physically 
+constrained translations and deformations, rather than spurious or uncorrelated distortions. 
+Compared with the results in figure , these observations suggest that incorporating 
+physics-informed constraints via PINN leads to more accurate reconstructions of vortical 
+structures, thereby improving the recovery of gradient-based flow features.
+
+We also evaluated reconstruction errors across all $n_ = 1000$ samples in the test set. 
+Figure shows the averaged normalized $L_2$ error for the reconstructed variables as a 
+function of training epoch. For the T2F model, the errors in the reconstructed velocity 
+component $u_x^$ and $u_y^$ at $10\,000$ training epochs are approximately 0.06 and 0.19, 
+respectively, which are much lower than those of the T2F+PINN model (see figures a,b), 
+corresponding to reductions of approximately 38.1\
+of the T2F+PINN model at $10\,000$ epochs is approximately 0.91, slightly lower than that of the 
+T2F model, with a reduction of around 4.2\
+behaviours of the two models. The purely data-driven T2F model rapidly captures the dominant 
+velocity structures but struggles to learn accurate velocity gradients, leading to higher errors 
+in vorticity. The T2F+PINN model, on the other hand, incorporates physics-based constraints via 
+the governing equations. While this results in a modest degradation in velocity reconstruction 
+compared to the T2F model, it significantly enhances the fidelity of the reconstructed vorticity field. 
+Similar trends have been reported by , who observed that 
+optimisation using only data loss produced distorted fluctuations in velocity components, 
+whereas incorporating physics-based loss reduced sharpness in the flow-field details. 
+We attribute this trade-off to the inherently multi-objective nature of the T2F+PINN framework. 
+In addition to the data loss minimised by the single-objective T2F model, it introduces 
+a physics-based loss term (see ~). During training, these competing objectives 
+require compromise, forcing the T2F+PINN model to balance physical consistency against direct 
+data fidelity. As a result, when evaluated purely in terms of data loss (i.e.\ the $L_2$ 
+error for primitive variables), the T2F+PINN model may underperform relative to the T2F model.
+
+To benchmark our method, we compare its performance with the MLSR approach by , 
+which reconstructs high-resolution Eulerian fields from downsampled Eulerian inputs. 
+Although the problem settings differ substantially, as our model infers flow fields from 
+sparse Lagrangian trajectories, whereas reconstruct high-resolution fields from uniformly downsampled low-resolution data, 
+we think such comparison is still informative in interpreting the achievable reconstruction error levels. 
+In the study by , a normalized $L_2$ error of approximately $ = 0.04$ was reported, when reconstructing a $192 112$ high-resolution field from a $12 7$ low-resolution input using 1000 snapshots. 
+In comparison, our T2F model was also trained on 1000 samples, and it achieves a normalized $L_2$ error of approximately $ = 0.06$ when reconstructing a $128 128$ velocity field from $2 2 50$ trajectory-based measurements. 
+This similarity in error magnitude demonstrates the data efficiency of our proposed T2F model, particularly considering its reliance on sparse, irregular, and non-grid-aligned Lagrangian inputs. 
+
+In this work, we model the unmanned aerial or underwater vehicle as a point-particle agent. 
+In practice, however, such vehicles have finite size and often carry multiple sensors, 
+making it reasonable to assume that local flow information in the vicinity of the particle is accessible. 
+Accordingly, in our simulations each temporal slice of the trajectory corresponds not to 
+a single-point measurement, but to a square spatial patch of size $l_p l_p$ 
+centered on the particle position, containing $C$ physical variables ($C = 2$ for $u$, $v$). 
+We investigate the robustness of the T2F and T2F+PINN models under varying the 
+patch size $l_p$.
+We consider four patch sizes: $l_p = 1$, $2$, $4$ and $8$ grid points. 
+For $l_p = 1$, the input patch is a single point, which represents the limiting scenario in which the particle probes only a single point per time step, and it is obtained by bilinear interpolation of the nearest grid point. 
+The result for T2F and T2F+PINN model are shown in table . 
+For both models, the reconstruction errors for $u_x^$ and $u_y^$
+remain relatively stable across different patch sizes, with a maximum variations about 19\
+Moreover, the vorticity error $_z^$ exhibits a slightly larger decrease of about 20\
+when the patch size is increased from $l_p = 1$ to $l_p = 8$. 
+Overall, the T2F and T2F+PINN models demonstrate robust performance across a range of patch sizes,
+indicating their flexibility in handling different spatial scales of input data.
+
+In practical applications, observed environment cues may be contaminated by noise arising from sensor inaccuracies or environmental disturbances. 
+To further evaluate the robustness of our model, 
+we assess the performance of the T2F and T2F+PINN models under varying levels of input noise. 
+Specifically, Gaussian noise is added to the input variable in the test set, 
+which consists of the two velocity components $(u_x, u_y)$. 
+For each component, random values are drawn independently from a normal distribution $(x_, x_/3)$, 
+where $x_$ and $x_$ denote the mean and maximum values of that component, respectively. 
+This design choice reflects realistic scenarios in autonomous aerial or underwater navigation, where onboard sensors measure local velocities, and adding noise to the measured variables therefore provides a faithful representation of sensor uncertainty. 
+The noisy input is given by:
+
+x_ = x_ + (x_, x_/3)
+
+where $$ controls the noise amplitude. We consider three noise levels 
+of $ = 0.1$, $0.2$, and $0.5$. Figures and present the reconstructed 
+velocity components $u_x^$, $u_y^$, and the vorticity $_z^$ 
+obtained from the T2F and T2F+PINN models, respectively, for a representative 
+test case under each noise level. At the low noise level ($ = 0.1$), 
+the T2F+PINN model achieves lower reconstruction errors in $u_x^$ (0.080 versus 0.097) 
+and $_z^$ (0.613 versus 0.819), while yielding a slightly higher 
+error in $u_y^$ compared to the T2F model (see figures a--c and a--c). 
+As the noise level increases to $ = 0.2$, the T2F model experiences substantial 
+degradation in velocity reconstruction, with relative error increases 
+of 85.6\
+exhibits improved robustness, with smaller error increases of 65.0\
+for $u_x^$ and $u_y^$, respectively. For the vorticity field, the T2F+PINN 
+model shows only a 14.0\
+T2F model (see figures d--f and d--f). Under high-noise levels ($ = 0.5$), 
+both models fail to reconstruct coherent vortex structures, with large errors across 
+all fields. Nevertheless, the T2F+PINN model continues to yield relatively lower 
+errors in $_z^$, reflecting its superior resilience to noise 
+(see figures g--i and g--i). In summary, as noise levels increase, the T2F model 
+exhibits a significant decrease in reconstruction accuracy, especially for vorticity, 
+whereas the T2F+PINN model maintains more stable performance across a wide range of 
+noise levels.
+
+We further assess the influence of input noise on the T2F and T2F+PINN models by computing 
+the average reconstruction error over the entire test set consisting of $n_ = 1000$ 
+samples. Figure presents the variation of the normalized $L_2$ error $$ with 
+respect to the noise amplitude $$ for the velocity components $u_x^$ and $u_y^$ 
+as well as the vorticity $_z^$. As shown in figures a and b, the T2F model 
+exhibits slightly lower reconstruction errors for $u_x^$ and $u_y^$ at low noise 
+levels ($ < 0.1$). However, its performance degrades more rapidly as noise increases, 
+resulting in error levels comparable to those of the T2F+PINN model at higher noise ($ = 0.5$). 
+In contrast, the T2F+PINN model displays a more gradual increase in error, demonstrating 
+enhanced robustness in reconstructing primitive variables under noisy input conditions. 
+For the vorticity field (figure c), the T2F+PINN model consistently outperforms the T2F 
+model across all noise levels. Its error increases at a slower rate, indicating that the 
+incorporation of physics-based constraints via the PINN framework effectively mitigates 
+the degradation in gradient-based quantities caused by input noise. These findings confirm 
+that although both models are affected by noise in the input trajectories, the T2F+PINN model 
+exhibits superior robustness, particularly in reconstructing derived flow features such 
+as vorticity. Similar robustness of physics-informed loss function has also been demonstrated 
+in classical flow-specific MLSR tasks .
+
+ Flow Field Reconstruction in the RB Convection
+
+Simulation settings
+
+The RB convection is a canonical system for modeling buoyancy-driven flows in the atmosphere 
+and ocean . In RB convection, 
+thermal plumes emerge from the thermal boundary layers near the hot and cold walls and 
+subsequently interact to form a coherent large-scale circulation (LSC) structure. 
+We simulate the RB convection under the Oberbeck-Boussinesq approximation, wherein 
+temperature is treated as an active scalar that modulates the velocity field via a 
+buoyancy force. The governing equations for the RB convection system are given by:
+
+ = 0,
+
+ t + 
+= -_0 P + ^2
++ g_T(T - T_0),
+
+ t + T
+= _T ^2 T,
+
+where $ = (u, v)$, $P$, and $T$ denote the velocity, pressure, and 
+temperature fields, respectively; $_0$ and $T_0$ are the reference density 
+and temperature, respectively. $$ is the unit vector in the direction 
+of gravity; $g$ is the gravitational acceleration. $$, $_T$, and $_T$ represent 
+the kinematic viscosity, thermal expansion coefficient, and thermal diffusivity, 
+respectively. With the following scaling:
+
+\[
+x^ = H, 
+
+t^ = _T), 
+
+^ = H_T,
+\]
+
+\[
+P^ = _0 g _T_T H,
+
+T^ = _T.
+\]
+
+Then, the governing equations can be rewritten in dimensionless form as:
+
+ ^ = 0,
+
+^ t^
++ ^ ^
+= - P^
++ Ra^2^
++ T^,
+
+ t^
++ ^ T^
+= Pr\,Ra^2T^.
+
+Here $H$ is the cell height and it is chosen as the characteristic length; 
+$t_f = _T)$ is the free-fall time and it is chosen as the characteristic time. 
+$T_0$ is the temperature of the cooling walls, and $_T$ is the temperature 
+difference between the heating and cooling walls. 
+The system is characterised by two dimensionless numbers, the Rayleigh number ($Ra$) and 
+the Prandtl number ($Pr$), defined as
+
+Ra = _TH^3_T,
+
+Pr = _T.
+
+We adopted the OpenFOAM solver to simulate the RB convection system at a 
+Rayleigh number of $Ra = 10^8$ and a Prandtl number of $Pr = 0.71$. The computational 
+domain is set to $[2H, H]$, corresponding to an aspect ratio $ = 2$. The domain is 
+discretized using a uniform grid with a resolution of $1024 512$. 
+The simulation was carried out for a total of 200 free-fall times with an adaptive 
+time step ensuring the Courant-Friedrichs-Lewy (CFL) number $ 0.3$. To eliminate transient effects, 
+the initial 167 free-fall times were discarded as spin-up. 
+Subsequently, snapshots were recorded every 0.01 free-fall times.
+For training and testing, we used 1000 frames, corresponding to the statistically stationary interval between 167 and 177 free-fall times.
+A representative snapshot of the temperature field is shown in figure , where thermal plumes emerging 
+from the top and bottom boundaries are clearly visible. These plumes self-organize into 
+two oppositely rotating LSCs, characteristic of RB convection at this parameter regime 
+.
+
+Migration of self-propelling agents
+
+Using the simulated flow field, we trained the self-propelling agents via reinforcement 
+learning to generate $n_ = 100$ trajectories, following the same navigation 
+protocol as described in the cylinder wake case (see ~). The resulting 
+trajectories are shown in figure . Agents are initialized in a designated region near 
+the left-lower corner of the domain. They are initialized, advected upward by the ascending 
+hot plumes, traverse the bulk of the convection cell, and subsequently descend along the 
+cold plumes near the cell centre, eventually accumulating in a terminal region near the 
+upper-right corner. These trajectory patterns are consistent with previous findings in a 
+$ = 2$ RB convection system , which highlight the 
+agents' ability to actively exploit thermal structures in the environment for efficient 
+navigation .
+
+Evaluation of the T2F and T2F+PINN models
+
+Inspired by previous studies on navigation in fluid environments, which highlight the importance 
+of velocity , 
+and temperature fields , 
+we focus on reconstructing the horizontal and vertical 
+velocity components $u_x$, $u_y$, and the temperature field $T$. These three variables are 
+treated as separate channels in the model's input and output, corresponding to $C = 3$. 
+From the reconstructed velocity and temperature fields, we further compute gradient-related quantities, 
+including the out-of-plane vorticity $_z = $, the horizontal 
+temperature gradient $_x T$, and the $Q$ value defined as $Q = ( ^2 - ^2 ) /2$.
+Here, $ = [ - ( )^]/2$ is the 
+antisymmetric vorticity tensor and $ = [ + ( )^]/2$ 
+is the symmetric strain-rate tensor. 
+The training and testing configurations follow those used in the cylinder wake reconstruction (see ~). Specifically, we generate 
+$n_ = 100$ agent trajectories via point-to-point migration, and extract 
+$n_ = 1000$ training samples and $n_ = 1000$ test samples to 
+evaluate model performance. 
+
+Figure presents reconstruction results for the primitive flow variables, 
+including the velocity components $u_x^$, $u_y^$, and the temperature 
+field $T^$, while figure shows the reconstruction of gradient-related quantities, 
+including the vorticity $_z^$, horizontal temperature gradient 
+$_x^T^$, and the $Q$-value $Q^$, for a representative input 
+sample using both the T2F and T2F+PINN models in the RB convection system. The numerical 
+values shown beneath each reconstructed field indicate the corresponding normalized 
+$L_2$ error $$. We can see that both models successfully capture the 
+spatial flow structures. Specifically, the differences in reconstruction errors 
+of $u_x^$ and $u_y^$ between the two models within 1\
+However, the temperature field reconstructed by the T2F+PINN model exhibits an 
+error approximately 57\
+suggesting that the T2F model is more effective at reconstructing 
+primitive physical variables in this case. Nevertheless, the T2F model displays noticeable 
+blurring in the reconstructed velocity and temperature fields, which leads to 
+degraded accuracy in the derived gradient-related quantities (see figures d--f). 
+In contrast, the T2F+PINN model mitigates such artifacts by incorporating physical 
+constraints from the governing equations during training, resulting in flow 
+reconstructions that are more physically consistent with the underlying dynamics 
+(see figures g--i). The representative sample captures the cold plume located 
+near the centre of the RB convection domain, which is an important feature for 
+flow perception and environment inference by navigating agents . It is 
+worth noting that in this specific case, the T2F model achieves a slightly lower error 
+in the reconstructed temperature gradient. This discrepancy is attributed to 
+stochastic variability within the test dataset rather than indicating a 
+consistent performance trend.
+
+Figure~ presents the evolution of the 
+normalized $L_2$ error with respect to training 
+epochs for both the T2F and T2F+PINN models, evaluated over all $n_ = 1000$ 
+samples in the test set. We consider both the primitive variables $u_x^$, $u_y^$, 
+and $T^$ (see figure a--c), as well as the gradient-related quantities including 
+the vorticity $_z^$, the horizontal temperature gradient $_x^T^$, 
+and the $Q$-value $Q^$ (see figures d--f). 
+For the primitive variables, both models exhibit a decreasing trend in reconstruction error 
+as training progresses. The T2F model reaches a final 
+normalized $L_2$ error of approximately 0.09 for $u_x^$, 0.08 for $u_y^$, 
+and 0.21 for $T^$ at 10 000 epochs. The corresponding values for the T2F+PINN model are 
+0.09, 0.07 and 0.21, respectively. For the gradient-related quantities, 
+the T2F+PINN model consistently outperforms the T2F model. 
+At 10000 training epochs, the T2F+PINN model achieves 
+relative reductions in normalized $L_2$ error of 33.3\
+31.6\
+These quantities involve spatial derivatives and are therefore more sensitive to local 
+field smoothness and physical consistency, which are better preserved by the 
+physics-informed constraints embedded in the T2F+PINN model. 
+These results show that in the RB convection system, the T2F+PINN model excels in reconstructing
+gradient-based quantities, while the purely data-driven T2F model 
+shows minor advantages in reconstructing primitive variables. 
+Those conclusions obtained in the $ = 2$ RB convection system are expected to 
+generalize to larger $$ system; where the number of convection rolls 
+increase with $$ , and the agents migrate a longer 
+distance in the horizontal direction to mimic the behaviour of long-distance migrating 
+birds or patrolling UAVs .
+
+We also test the influence of input noise on the T2F and T2F+PINN models by computing the average reconstruction error over the entire test set,
+consisting of $n_ = 1000$ samples in the RB convection. 
+Noise is added to the input variable in the test set, which consists of the velocity components $(u_x, u_y)$ and temperature $T$, 
+following the procedure described in ~. 
+Figure shows the variation of the normalized $L_2$ error $$ 
+with respect to the noise amplitude $$ for primitive variables $u_x^$, $u_y^$, $T^$, and for the gradient-based quantities $_z^$, $ T^ / x^$, $Q^$. 
+As shown in figures (a--c), 
+both models exhibit a gradual increase in error for the primitive variables as the noise level rises, 
+and their performance remains broadly comparable cross the full range of $$. 
+In contrast, for the gradient-based quantities (see figures (d--f)), 
+the T2F+PINN model consistently outperforms the T2F model, with its error increasing at a slower rate. 
+These result are consistent with the findings in the cylinder wake case (see figure ), 
+where the T2F+PINN model demonstrates enhanced robustness in reconstructing gradient-based quantities under noisy input conditions.
+
+We finally investigate the robustness of the T2F and T2F+PINN models under varying the 
+patch size $l_p$ the RB convection case. 
+The result for T2F and T2F+PINN models for $l_p = 1$, $2$, $4$ and $8$ 
+grid points are shown in table . 
+Similar to the result in the cylinder wake, 
+the reconstruction errors for both models
+remain relatively stable across different patch sizes. 
+The T2F model exhibits a maximum variation of about 9\
+of $u_x^$, $u_y^$ and $T^$, 
+and the T2F+PINN model shows a slightly larger maximum variation of about 18\
+in the reconstruction errors. 
+Overall, the T2F and T2F+PINN models demonstrate robust performance across a range of patch sizes
+in the RB convection case as well.
+
+ Conclusion
+
+In this work, we proposed a deep-learning model T2F for reconstructing flow 
+fields from sparse, localized trajectories of actively navigating Lagrangian 
+agents. The model adopts an encoder-decoder architecture, where a ViT encoder 
+captures both local and long-range temporal dependencies in agent motion, and a 
+CNN decoder reconstructs the corresponding spatial flow structures. This design 
+enables the extraction of rich spatiotemporal representations from limited 
+Lagrangian input. To enhance physical fidelity, we further developed a 
+physics-informed variant, the T2F+PINN model, by augmenting the data-driven loss 
+with equation residuals derived from the governing physical laws. This integration 
+of physics-based knowledge into the training process promotes reconstructions that 
+are not only data-consistent but also dynamically coherent.
+
+We first validated the model using the laminar cylinder wake flow as 
+a proof-of-concept test. The T2F model demonstrated high accuracy in reconstructing 
+the velocity field, while the T2F+PINN model significantly improved the 
+reconstruction of vorticity. The T2F model outperformed in estimating 
+primitive variables due to its purely data-driven optimization, whereas the 
+T2F+PINN model achieved greater accuracy in reconstructing gradient-based 
+quantities by incorporating physical constraints. Under varying levels of 
+input noise, the T2F+PINN model exhibited enhanced robustness, showing markedly 
+lower error growth in vorticity reconstructions even under strong input perturbations.
+
+We then applied the model to the turbulent RB convection, which is a paradigm 
+system for convective flow in the atmosphere and oceans. Both the T2F and T2F+PINN 
+models accurately reconstructed the primitive variables $u_x$, $u_y$, and $T^$, 
+but exhibited markedly different performance in gradient-related quantities. 
+The T2F+PINN model consistently achieved superior reconstruction accuracy in vorticity, 
+temperature gradients, and the $Q$-value, outperforming T2F by up to 60.1\
+normalized $L_2$ error. These results highlight the capability of the T2F model 
+to infer temperature and velocity structures in regions adjacent to sparse Lagrangian 
+trajectories, while the T2F+PINN model offers a robust solution for applications 
+requiring accurate inference of physically derived quantities.
+
+Beyond demonstrating reconstruction accuracy, our results provide broader 
+insights into Lagrangian sensing and data-driven flow reconstruction in turbulent 
+environments. We open a promising avenue for real-time, physics-consistent 
+inference of flow structures from sparse, localized observations. Owing to its 
+data efficiency and robustness, the proposed model is particularly well-suited 
+for environmental perception tasks in scenarios where global field measurements 
+are unavailable, such as soaring flight or underwater navigation. Looking ahead, 
+our models can be extended to dynamic flow environments by incorporating 
+online-learning strategies that adapt a pre-trained model using only physics-based 
+loss functions, thereby eliminating the need for additional labeled data.
+It is also worth mentioning that the recently developed novel knowledge-integrated 
+additive approach by sheds light on the integration 
+of physics and machine learning, and may enhance reconstruction by additively 
+embedding domain-specific physical constraints directly into our T2F model.
+
+[Funding.]
+This work was supported by the National Natural Science Foundation of China (NSFC) through
+ grants nos. 12272311, 12388101, 12125204; the Young Elite Scientists Sponsorship Program by CAST
+ (2023QNRC001); and the 111 project of China (project no. B17037).
+The authors acknowledge the Beijing Beilong Super Cloud Computing Co., Ltd for providing HPC resources that have contributed to the research results reported within this paper (URL: http://www.blsc.cn/).
+
+[Declaration of interests.]
+ The authors report no conflict of interest.
+
+[Author ORCIDs.]
+Ao Xu, https://orcid.org/0000-0003-0648-2701;	Heng-Dong Xi, https://orcid.org/0000-0002-2999-2694.
+
+T2F model architecture
+
+Here, we provide a detailed description of the T2F model architecture,
+which is based on a vision transformer (ViT) encoder 
+and a convolutional neural network (CNN) decoder.
+
+(i) Tokenization, patch embedding and position embedding.
+
+The ViT processes the input tensor as follows. 
+For each instant $t = 1, , l_t$, ViT extracts a local spatial patch of size $l_p l_p$ 
+with $C$ physical variables. 
+Flattening this patch yields a vector of length $d_p = l_p^2C$, 
+referred to as a token.
+Collecting tokens across all time steps $l_t$ 
+produces the input tensor $x_^l_t d_p$.
+This input tensor is then linearly projected into a higher-dimensional
+space through a linear layer, a process referred to as patch embedding. 
+The transformation is expressed as:
+
+ x_ = x_ W_e + b_e,
+ W_e^d_p d_e,\;\; b_e^d_e,
+
+where $d_e$ is the embedding dimension, 
+$W_e$ is a learnable weight matrix, and $b_e$ is a learnable bias vector (broadcasted and added to each token). 
+Finally, a sequence of $l_t$ learnable positional embeddings is added to incorporate temporal positional information, yielding:
+
+ x_ = x_ + p_e,
+ p_e^l_t d_e,
+
+where $p_e$ is a learnable positional embedding matrix.
+
+(ii) Vision Transformer encoder.
+
+The ViT contains $n_$ sub-encoder layers. 
+After patch and positional embedding, the first sub-encoder layer
+takes $x_$ as input, 
+and its output is subsequently passed to the next sub-encoder layer. 
+Each sub-encoder layer employs multi-head self-attention (MSA) to extract 
+spatiotemporal features from the input $x_in$. 
+
+The MSA layers compute the attention scores between all pairs of input tokens. 
+The computation is performed across $h$ heads in parallel. 
+For each head $h_i$, the input tensor $x_in$ is projected into three matrices:
+
+ Q_i = x_in W_Q_i, K_i = x_in W_K_i, V_i = x_in W_V_i
+
+where $W_Q_i$, $W_K_i$, and $W_V_i$ are learnable weight matrices for the query, key, and value matrices, respectively. 
+The attention scores are then computed as:
+
+ (Q_i, K_i, V_i) = ()V_i
+
+where $d_k$ is the dimension of the key vectors. 
+The outputs of all heads are concatenated and projected back to the original input dimension:
+
+ x_ = (Z_1, Z_2, , Z_h)W_O
+
+where $Z_i = (Q_i, K_i, V_i)$, and $W_O$ is a learnable weight matrix.
+
+Each MSA layer is followed by a feed-forward network (FFN) with layer normalization. 
+The FFN applies a non-linear transformation consisting of two linear layers with a ReLU activation function:
+
+ x_ = (x_W_ + b_)W_ + b_
+
+where $W_$ and $W_$ are learnable weight matrices,
+and $b_$ and $b_$ are learnable bias vectors.
+The final output of the layer is normalized as: 
+
+ x_ = (x_in + x_)
+
+where $$ normalizes each token's feature vector across the 
+embedding dimension by computing its mean and variance. 
+The final output of the ViT encoder is a tensor $x_^l_t d_e$, 
+which represents a latent embedding of the input sequence. 
+This latent representation is a learned feature with no explicit physical meaning.
+For further details of the Vision Transformer, we refer to .
+
+(iii) Convolutional Neural Network decoder.
+
+The output $x_$ is linearly projected and 
+reshaped to a 3-D tensor of shape $l_w0 l_w0 C_0$, 
+where $C_0$ is the number of channels. 
+This reshaped tensor is then processed by $n_$ 
+transposed convolutional layers, 
+each followed by a ReLU activation function. 
+These transposed convolutional layers upsample the feature maps
+to the desired output resolution. 
+For an input $x ^H_ W_ C_$, 
+the transposed convolution operation is defined as:
+
+ y_c_[i,j] = 
+_c_=0^C_-1 
+_m=0^H_-1 
+_n=0^W_-1 
+x_c_[m,n]
+W_[c_, c_,\, i - ms + p,\, j - ns + p] + 
+b_c_
+
+where $y_c_[i,j]$ is the output feature map at channel $c_$ and location ($i,j$). 
+The kernel $W_$ has shape $C_ C_ K K$, 
+with $K$ the kernel size, $s$ the stride, 
+and $p$ the padding along height and width.
+
+The final transposed convolutional layer is followed by a 
+standard convolutional layer to produce the output tensor. 
+For an input $x ^H_ W_ C_$, 
+the convolution operation is given by:
+
+ y_c_[i,j] =
+ _c_=0^C_-1
+ _m=0^K-1
+ _n=0^K-1
+ x_c_[\,i s - p + m,\; j s - p + n\,]\,
+ W_[c_, c_, m, n] + 
+ b_c_
+
+with notations consistent with those of the transposed convolution. 
+Further details of these operations are provided in .
+
+The final output is a tensor $x_$ of shape $l_w l_w C$, 
+where $l_w$ is the output resolution and $C$ is the number of channels ($C = 2$ for the cylinder wake and $C = 3$ for the RB convection). 
+The detailed parameters of each layer are shown in figure~. 
+
+The hyperparameters of the T2F and T2F+PINN models are summarized in table , 
+including the input trajectory length, patch size, number of transformer layers and attention heads, CNN layers, batch size, learning rate, and number of training epochs. 
+With these settings, the T2F model contains approximately $2.110^8$ trainable parameters ($$ 811 MB). 
+The computational cost for training a single T2F model takes about 4 hours on an NVIDIA P100 GPU (16 GB).

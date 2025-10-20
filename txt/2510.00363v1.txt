@@ -1,0 +1,261 @@
+rgb0.743,0.766,0.918
+rgb0.487,0.533,0.836
+rgb0.230,0.299,0.754
+rgb0.941,0.803,0.830
+rgb0.882,0.606,0.660
+rgb0.824,0.407,0.490
+rgb0.765,0.213,0.320
+rgb0.706,0.016,0.150
+rgb0.813,0.854,0.854
+rgb0.625,0.708,0.708
+rgb0.438,0.563,0.563
+rgb0.292,0.354,0.417
+rgb0.146,0.146,0.271
+
+RGB0,200,0
+[1]#1
+[1]#1
+
+ ,
+ Rahul Deshpande,
+ Gabriel G. Katul
+
+School of Civil Engineering, University of Sydney, Sydney, NSW 2006, Australia
+Department of Mechanical Engineering, University of Melbourne, Parkville, VIC 3010, Australia
+Department of Civil and Environmental Engineering, Duke University, Durham, NC 27708, USA
+
+The variance and spectra of wall-normal velocities are investigated for direct numerical simulations of turbulent flow in a channel, pipe, and zero-pressure-gradient (ZPG) boundary layer, across a decade of wall friction Reynolds numbers. Spectra along the spanwise wavenumber have a pronounced peak at intermediate wavenumbers that is proportional to the turbulent kinetic energy dissipation rate and the cube of the local shear stress throughout the bottom half of the boundary layer for all flow cases. The observed scaling with the local stress rather than the surface shear velocity $U_$ accounts for differences in the ZPG wall-normal variance seen in previous studies. The scaling is attributed to the fact that wall-normal motions are predominately `active' per Townsend's attached eddy hypothesis and directly contribute to the local shear stress, while noting this hypothesis does not account for the linear decay of the total stress in enclosed flows. The Reynolds number dependence of the variance is determined from the scale separation between the spectrum peak and the dissipative cutoff, where the resulting semi-empirical fit aligns with variance values in the literature. At the high-Reynolds-number limit, the spectral peak leads to a variance between 1.45 to 1.65 times the local shear stress. This range is consistent with previous predictions relative to $U_$, including for the vertical velocity in the near-neutral atmospheric boundary layer. However, universality in the exact proportional constant is precluded by relatively minor contributions from the `inactive' motions at low wavenumbers, which vary with wall-normal position and for different flow configurations.
+
+Introduction
+
+The Attached Eddy Hypothesis (AEH) of A. A. , along with several decades of subsequent investigations , is a key advancement in describing turbulent statistics in canonical wall-bounded flows. The AEH provides a phenomenological link between the turbulence, the logarithmic mean velocity profile, and the logarithmic decay in the streamwise and spanwise velocity variances. These trends have all been supported by measurements at sufficiently high Reynolds numbers across various canonical wall-bounded flows [see, e.g.,][]Jimenez2008,Hultmark2012,Marusic2013,Orlandi2015,Lee2015 including the near-neutral atmospheric surface layer .
+
+The population of attached eddies envisioned by Townsend also produces a constant wall-normal velocity variance $$ and Reynolds shear stress $$ within the logarithmic region of the boundary layer:
+
+ 
+ (z) U_^2 &= B_3, \\
+ (z) U_^2 &= 1, \
+ 
+
+ where both are proportional to the surface shear (friction) velocity $U_ = $ corresponding to the wall shear stress $_w$ and fluid density $$. Wall-normal profiles of $$ tend to vary only weakly within the logarithmic region and there is evidence for a constant third-order skewness . Yet, there is no conclusive universal value for $B_3$ from observations and Eq. has the least experimental support among the statistics predicted by the AEH .
+
+There are two primary challenges in determining the value of $B_3$. The first is that the AEH models an asymptotically high-Reynolds-number wall-bounded flow with negligible viscosity effects within the logarithmic region. Observations of $$ in available simulations and laboratory-scale experiments are limited to finite Reynolds number and must account for its dependence. An example is shown in Fig. (a) for direct numerical simulations (DNS) of flows in a zero-pressure-gradient (ZPG) flat plate boundary layer , channel , and pipe . The $$ for channel and pipe flows is nearly constant across intermediate distances, but the magnitude increases with the friction Reynolds number $Re_ = U_ / $ with $$ being the boundary layer thickness and $$ the kinematic viscosity.
+
+Perry and co-authors estimated this Reynolds-number dependence by considering the finite scale separation between the wall parameters and the viscous motions in the spectrum of $w$, resulting in a correction for $B_3$ as a function of $z^+ = z U_ / $. An alternative approach was recently proposed by , who used extrapolation of profiles at different Reynolds numbers following the technique of . The method accurately describes channel data , but is empirical in nature and is not linked to the flow phenomenology. These previous efforts collectively have not produced a conclusive Reynolds number correction to Eq. and further research on the matter is warranted.
+
+The exclusion of viscous effects in the AEH and Eq. applies also to the Reynolds shear stress in Eq. , which neglects the viscous stress contribution. Equation further neglects any decrease in the total stress profile below $U_^2$ as the wall-normal distance increases. Given that $$ and $$ have both been postulated to receive contributions solely from the `active' motions per 's (1976) AEH,
+it is possible that viscous stresses and a decreasing total stress can directly impact $$. However, these effects have not been closely investigated in the context of Eq. .
+
+The second challenge to determining $B_3$ is an observed difference in the variance between wall-bounded flow configurations. As seen in Fig. , the ZPG boundary layer has higher $$ relative to $U_$ and a peak that occurs farther from the surface. This difference is often discussed in terms of enclosed versus non-enclosed flows. conducted a survey of available datasets and acknowledged the different amplitudes (see, e.g., their Fig. 4). A similar survey by discussed the different position of the variance peak, but noted limited differences in the amplitudes. An explanation for these trends has not been offered in these previous studies, however, and it remains an open question regarding the wall-normal variance.
+
+The combination of the Reynolds-number dependence and the different profile for ZPG boundary layers has led to a range of reported $B_3$ values for the high-$Re$ limit. found $B_3 $ 1.75 empirically from early DNS at low Reynolds numbers. refined their spectral approach with a model spectrum and fitted $B_3 1.6$ to experimental ZPG boundary layer data. revised this value to $B_3 1.78$ using further measurements, and the higher $B_3$ agrees well with measurements in high-$Re$ laboratory facilities as well as the atmospheric surface layer . Empirical fits to a wider range of atmospheric measurements suggest $B_3$ 1.55 to 1.7 in neutral conditions . Recent experimental pipe flow data are also consistent with a higher $B_3$ value close to 1.85 .
+
+The range of reported values $B_3$ 1.5 to 1.85 is promising in terms of being relatively narrow. However, reaching a consensus on a more precise value will require addressing the open questions and challenges in the dependencies of the wall-normal variance. Accordingly, the goal of this work is to further investigate the three questions indicated in Fig. : (1) what is the correct formulation for the Reynolds number dependency? (2) why do ZPG boundary layers have a higher variance relative to $U_$? (3) what is the value of $B_3$ in the high-$Re$ limit and is it universal?
+
+The same DNS featured in the Fig. example are used throughout the study. The focus of the analysis is to identify scaling behavior in the spectrum of the wall-normal velocity. The integrated spectrum is then used to assess the implications of the observed scaling on the variance statistics, including for the questions given above. The remainder of the article is outlined as follows: the methodology is detailed in , including an overview of the simulations and spectrum analysis; results are then presented in ; the implications for the motivating questions are discussed in ; concluding remarks are given in .
+
+Methodology
+
+Simulations
+
+Three published DNS datasets are used here: ZPG flat plate boundary layer , channel flow , and pipe flow . Each dataset includes a range of friction Reynolds numbers that are listed in Table and shown as different color shades in Fig. . All statistics and variables directly follow the published datasets, except where noted below.
+
+For the ZPG flat plate dataset, three intermediate runs between $Re_$ = 1310 and 1990 are excluded here for clarity in later figures, and on account of the relatively modest $Re_$ difference across all runs compared to the other cases. The reported boundary layer thickness $_99$ based on the convergence of the mean flow to free-stream conditions is not used. Rather, $$ is determined as the $z$ position where the local total shear stress is $(z) = 0.0015_w$ based on $_w$. Defining $$ based on the vanishing stress is more appropriate for comparison between flow cases due to the relevance of the stress profile to the later analysis; for the enclosed cases, the stress is zero at the channel half-height and pipe center that correspond to $$.
+The present TBL thickness definition yields $$ values within 1\
+
+Datasets with higher Reynolds numbers have been presented in the literature for some of the enclosed flow configurations [see, e.g.,][]Pirozzoli2021,Hoyas2022. The datasets in Table are used instead due to availability of spanwise wavenumber spectra at the time of the analysis.
+
+Spanwise wavenumber spectra
+
+One-dimensional velocity spectra are traditionally studied as a function of the streamwise wavenumber $k_x$. Along this direction -- and also for time series -- the wall-normal velocity spectrum $E_ww(k_x)$ is approximately constant at the lowest wavenumbers before undergoing an extended transition to the inertial subrange of scales at higher $k_x$ . The number of contributing factors to the shape of this transition make it infeasible to identify the appropriate length scale for this region of the spectrum.
+
+In contrast, the spectrum $E_ww(k_y)$ as a function of the spanwise wavenumber $k_y$ exhibits a distinct peak at intermediate scales as seen in Fig. (a). There is a clearer segregation of motions in the spanwise spectrum, where the peak and low-wavenumber limit have different behaviors and can be individually assessed. Accordingly, $E_ww(k_y)$ statistics are investigated in this study. The spectra for the ZPG flat plate case are available at a limited number of $z$ positions, such that wall-normal profiles of spectral properties are coarse for this case in later figures.
+
+Unlike a channel and flat plate that have a fixed length along $y$, a pipe geometry has a decreasing cross-flow distance (i.e., circumference) with increasing wall-normal distance. To account for this difference, the tangential wavenumber $k_t$ for the pipe flow must be converted to spanwise wavenumber as $k_y = k_t/(1-z/R)$ where $R=$ is the pipe radius.
+
+The $E_ww(k_y)$ spectra are well described by a model von K\'arm\'an spectrum :
+
+E_ww(k_y) = a [ 1+ (c k_y)^2 ]^11/6 f(k_y),
+
+ where $a$, $b$, and $c$ are fitted. The dissipative cutoff occurring at the Kolmogorov microscale $$ is $f(k_y)= ( -5.2 [ \ (k_y )^4 +0.15^4 \ ^1/4-0.15 ] )$ with $=$ 5.2 following experimental evidence , and 0.15 chosen empirically based on the alignment with the DNS spectra seen in Fig. (b).
+
+Equation is a general form of the von K\'arm\'an spectrum because the integral length $L$ and root-mean-square velocity are not imposed. The scaling properties of the spectrum are a goal of the analysis and no parameters are assumed aside from $$. The primary use of the model in Eq. is to estimate the low-wavenumber limit $E_k_y 0=a$ that corresponds to the energy splashing region captured within the DNS domain . It is noted that the wavenumber $k_peak$ associated with the spectral peak may be determined analytically when assuming $f(k_peak)=1$ (i.e. high Reynolds number flow). This wavenumber location is determined by setting $dE_ww(k_y)/dk_y=0$ to yield
+
+k_peak = c\,.
+
+This finding implies that (i) $b>11/6$, which is satisfied by $b=8/3$ in the original spectrum model ; and (ii) $k_peak$ is insensitive to $a$. While the leading factor does not determine the wavenumber of the peak, $E_ww(k_y=0) = a = 2 ^2 L_w /$ relates to both the variance and the integral length scale $L_w$ of $w$ defined from the autocorrelation function. This definition for $E_ww(k_y=0)$ and $a$ results directly from the spectrum's relation to the autocorrelation, which corresponds to $L_w$ for $k_y=0$.
+
+Scaling parameters
+
+A direct outcome of the attached eddy population in the AEH is that $z$ and $U_$ are the appropriate scales for the energy-containing production region in the spectrum of turbulence. These scales are accordingly used in previous studies on the spectrum of $w$ , and are included in this analysis as a basis for comparison.
+
+The scales $z$ and $U_$ are strictly applicable to the logarithmic region in the high-Reynolds-number limit, and the parameters must be generalized outside of these conditions. To this end, Davidson and coauthors proposed a length scale $U_^3/$ based on the local dissipation rate $$. This scale provides a mathematically consistent transition into the inertial subrange of the spectrum where $$ is the sole scaling parameter, and accounts for the fact that lengths besides $z$ may contribute to setting $$ depending on the conditions . In practice, $U_^3/$ asymptotes to $ z$ in the high-$Re$ logarithmic region , where $$ is the von K\'arm\'an constant, but outperforms $z$ in scaling the start of the inertial sublayer for finite Reynolds numbers , within the roughness sublayer , and for stratified flow .
+
+The velocity scale can also be generalized by considering a local-in-$z$ shear velocity corresponding to the decaying stress profile. This is a relaxation of Eq. in the AEH to account for conditions when the local stress decreases below the surface value given by $U_$. The generalization allows $$ to maintain its relation with the local stress as discussed in . In atmospheric flows, this approach is known as ``local scaling'' and it provides improved mean velocity similarity under stratified conditions . The local velocity scale is used here also to define the dissipation-based length scale discussed above, leading to the following revised scaling parameters:
+
+ u_ z^2 &= - + dz, \\
+ _ &= ^3. \
+
+ Here, the local shear velocity $u_ z$ is defined from the total shear stress $(z)$ comprising a turbulent and viscous component. Including the viscous component leads to improved spectral scaling compared to using only the turbulent Reynolds shear stress.
+
+The relation between $z$ and $_$ from Eq. is shown in Fig. . The DNS align closely with $_ = z$ from the top of the buffer layer near $z^+ $ 30 in Fig. (a) to the top of the logarithmic region at $z/ $ 0.1 in Fig. (b). The only exception is for $Re_=$ 180, where there is insufficient separation between the buffer and wake regions for a logarithmic region to develop. The peak of $_$ near $z/ $ 0.5 in Fig. (b) is different between the DNS cases owing to well-known differences in outer layer structure, along with the presence (absence) of turbulent/non-turbulent interfaces in non-enclosed (enclosed) flows . 
+
+An important consideration to the later analysis is scale separation between the production and dissipative regions in the spectrum of turbulence. If $_$ is the appropriate scale for the production region, this separation can be directly represented by the dissipation-based Reynolds number $Re_ = _ / $, where $=(^3/)^1/4$ is the Kolmogorov length scale. From the definitions of $$ and $_$ in Eq. , the Reynolds number can be rewritten as $Re_ = (_ u_ z / )^3/4$. As seen in Fig. (c), the value can be approximated as $Re_ ( z^+)^3/4$ in the logarithmic region where $_ z$ and $u_ z U_$. These findings are consistent with studies that connect the degrees of freedom of a (3-D) turbulence cascade to $[(l_i/)^3/4]^3$ , when setting the integral scale $L_i$ to $l_$.
+
+Results
+
+Spanwise spectrum properties
+
+Example spectra $E_ww(k_y)$ are compared at fixed positions of $z$ in viscous and outer units to evaluate the scaling parameters introduced in . Then, trends in the peak and low-wavenumber spectrum properties are evaluated across the full boundary layer thickness for all DNS cases. These properties are introduced and visualized in Figure (a).
+
+Figure compares the DNS $E_ww(k_y)$ spectra at three positions: $z^+=$ 30, $z^+=$ 100, and $z/=$ 0.5. The spectra are normalized by the wall-scaling parameters $U_$ and $z$ in Fig. (a) and by the generalized parameters $u_ z$ and $_$ in Fig. (b). Normalization with generalized parameters yields a better collapse of the spectrum peak at each of the wall-normal positions shown, indicating that $u_ z$ and $_$ are better scales for defining the wavenumber $k_peak$ and energy density $E_peak$ of the peak across a broad range of Reynolds numbers.
+
+At $z^+=$ 30 and $z^+=$ 100, the spectral peaks of the highest $Re_$ cases are well described by both wall scaling in Fig. (a) and the generalized scales in Fig. (b). The alignment of both options under high-$Re$ conditions is consistent with the close relation $_ = z$ seen in Fig. . The discrepancies at lower $Re_$ in Fig. (a) are accounted for using the more general length and velocity scales, indicating that $u_ z$ and $_$ can account for finite-Reynolds-number effects in the spectral peak. The only deviation in Fig. (b) occurs for the $Re_=$ 180 cases at $z^+=$ 100, due to the position being in the upper half of the boundary layer where $$-scale effects are substantial.
+
+At $z/=$ 0.5, the spectrum peak remains well defined by $_$ as seen in Fig. (b). In contrast, wall-scaling normalization in Fig. (a) cannot account for differences observed between the ZPG, pipe, and channel cases even for the highest $Re_$. The result indicates that the generalized $_$ in Eq. can be applied deep into the outer layer and beyond the limits of the logarithmic region where deviations from wall scaling begin to arise.
+
+Another noteworthy trend at $z/=$ 0.5 is discrepancies at the lowest wavenumbers in Figure (b). The ZPG case contains significantly more low-wavenumber energy relative to $u_ z$ and $_$, such that there is no longer a true local peak at intermediate wavenumbers. 
+The different low-wavenumber behavior in the ZPG TBL case is revisited in the later analysis.
+
+Figure shows wall-normal profiles of the $E_ww(k_y)$ spectrum properties discussed above, i.e. the wavenumber peak $k_peak$, energy density peak $E_peak$, and low-wavenumber limit $E_k_y 0$. The profiles for the ZPG TBL case are based on a limited number of $z$ positions compared to the channel and pipe cases. The properties $k_peak$ and $E_peak$ are estimated directly from the spectrum point with the highest energy density. The low-wavenumber limit is $E_k_y 0=a$, where $a$ is determined from fitting the Eq. von K\'arm\'an model to each spectrum as seen in Fig. (b).
+
+The wavenumber peak $k_peak$ in Fig. (a) is proportional to the wall-normal distance $z$ for the highest $Re_$ cases at intermediate distances beginning near $z^+$ 30 corresponding to the start of $_ z$ in Fig. (a). In contrast, the peak $k_peak$ in Fig. (d) remains proportional to $_$ across a much wider range from the viscous sublayer to approximately 0.5$$, and accounts for deviations from $z$ scaling in the lowest $Re_$ cases. The wavenumber peak $k_peak _$ is not constant within this range, however, and varies moderately with wall-normal position including a weak decrease in the outer layer. This variability may be due to how lower and higher wavenumber regions of the spectrum can influence the peak. Specifically, the low-wavenumber energy grows significantly in the outer layer, where this growth appears to overlap with the peak in Fig. (b), causing the peak to shift to a lower wavenumber. In this context, $_$ is the dominant scale in determining $k_peak$, but is not the sole parameter.
+
+The peak energy density $E_peak$ also follows the generalized scales in Fig. (e) more closely than the wall scaling in Fig. (b). In particular, $_$ and $u_ z$ account for the Reynolds-number effects apparent in Figs. (a) and (b). The generalized scales also accounts for the higher peak amplitude of the ZPG TBL case seen in Fig. (b). The initial increase of $E_peak$ within the near-wall viscous region in Fig. (e) is likely due in part to insufficient scale separation in the spectrum at these positions, where the dissipative cutoff will directly overlap with and dampen the peak energy at small $Re_$, i.e. $f(k_peak ) < 1$ in Eq. . The normalized energy density decreases moderately in the outer layer before increasing again in the upper half of the boundary layer. The intermediate decrease is not fully understood at this time. The final noteworthy trend in Fig. (e) is that the ZPG TBL case has a greater peak in the outer layer, which is related to the low-wavenumber contribution and lower $k_peak$ discussed above.
+
+The low-wavenumber limit $E_k_y 0$ in Fig. (c,f) follows the same trends as $E_peak$ in Fig. (b,e). The generalized scales in Fig. (e) accounts for the differences in DNS cases within the near-wall region including the logarithmic layer. Consistent with the spectra in Fig. (b) at $z/=$ 0.5, the ZPG TBL flow has increased energy relative to $_$ and $u_ z$ in the outer layer. The largest $w$ motions are expected to scale with $$ and $U_$ based on studies of large-scale-motions in the literature [see, e.g.][]Guala2006,Balakumar2007. 
+However, this expectation is difficult to confirm with the present results because the majority of the $w$ spectrum is governed by the local scale $_~ O(0.1)$ which has limited separation from $$ far from the wall (see, e.g. Fig. (b)), and $E_k_y 0$ additionally varies with $z/$ in the outer layer regardless of the normalization.
+
+Scale-decomposed variance of the wall-normal velocity
+
+If the $w$ spectrum peak scales with $_$ and $u_ z$, these parameters will determine the overall variance corresponding to the integrated spectrum. Two additional factors will contribute to the variance: (1) the largest motions in the given spectrum, which vary in intensity between flow configurations as seen in Fig. , and (2) the scale separation between the spectral peak and dissipative cutoff that determines the total small-scale energy. These two factors are evaluated here by computing the area under the spectrum both before and after the peak as classified in Fig. (a). The two integrals $^2_l = _0^k_peak E_ww dk_y$ and $^2_s = _k_peak^ E_ww dk_y$ sum to the total variance as $^2 = ^2_l + ^2_s$. In this section, `large' and `small' refer to the size of turbulent motions relative to the spectrum wavenumber peak at a given wall-normal position.
+
+The segregation of large and small scales using the spectral peak is considered a first-order estimate. This simplicity is preferred here due to the lack of tuning parameters. More sophisticated methods may be possible in the context of discussions presented in , but are left for future research. These methods would need to be applicable across the full boundary layer for a wide range of $Re_$ to be of use for the present analysis. As an alternative, it may be possible to compute conditional statistics by integrating the model von K\'arm\'an spectrum defined in Eq. and shown in Fig. . However, there is no clear analytical solution to the integral of this model when $f(k_y)$ is included, and regardless the fitted model constants would need to be parameterized using the relevant physical scales.
+
+Wall-normal profiles of $^2_l$ and $^2_s$ -- based on the integrated spectrum at each $z$ position -- are shown in Fig. relative to the local velocity scale $u_ z$. The vertical axis limits are matched in Fig. (a,b) to visualize the relative contribution of the two spectral regions. The contribution of large scales in Fig. (a) is relatively small and weakly variant throughout the boundary layer, where the observed range corresponding to the dashed lines is approximately bounded by $^2_l/u_ z^2 =$ 0.15 to 0.35. The small range and lack of prominent differences between flow configurations is attributed to two factors: limits in the lowest non-zero wavenumber which results from the domain size, and the method for estimating $^2_l$ which neglects low-wavenumber influences on the spectrum at and beyond the peak $k_y k_peak$. No further parameterization or interpretation of Fig. (a) is given for these reasons.
+
+The high-wavenumber variance contribution $^2_s$ generally aligns with a common curve in the lower half of the boundary layer in Fig. (b). The increase with increasing $z$ is expected based on the greater scale separation and more extensive Kolmogorov region of the spectrum farther from the wall. Given the scaling of $k_peak$ with $_$ observed in Fig. (d), the Reynolds number $Re_ = _ / $ is a more direct representation than $z^+$ for the extent of the spectrum beyond the peak. Accordingly, $^2_s$ is plotted versus $Re_$ in Fig. (c), where there is a modest improvement in the collapse of the DNS cases to a common curve. Similar to the limitations for $^2_l$, the estimate of $^2_s$ is imperfect due to the sharp division applied between large- and small-scale contributions.
+
+The local scaling observed in Figs. (a,b) can be combined with theoretical forms of the spectrum to propose a semi-empirical expression for the wall-normal velocity variance. At a sufficiently large $Re_$, an inertial subrange of scales will emerge in the spectrum with self-similar behavior following Kolomogrov's hypotheses:
+
+E_ww(k_y) = C_w ^2/3 k_y^-5/3,
+
+ where $C_w $ 0.65 is a constant . The lower wavenumber limit of the inertial subrange has been shown to scale with $_$ (see and references therein) such that $E_ww = C_w ^2/3 _^5/3$ at $k_y=_^-1$. The observed scaling of the $E_ww$ peak with the generalized parameters in Fig. , along with the definition in Eq. , leads to the same proportional relation:
+
+E_peak u_ z^2 _ ^2/3 _^5/3.
+
+ The definition of $_$ is therefore inherently consistent with the transition from the larger scales that determine $$ to the inertial subrange scales that depend only on $$ as seen in Eq. . The only external factor in correctly setting this transition is the velocity scale used to define $_$ in Eq. , which must be chosen based on observed scaling in the spectrum.
+
+In the high-Reynolds-number limit, the variance contribution $^2_s$ becomes governed by the inertial subrange behavior in Eq. :
+
+^2_s __^-1^^-1 C_w ^2/3 k_y^-5/3 dk_y,
+
+ where the integral limits are the scales for the start and end of the inertial subrange. Equation neglects the shape of both the spectrum peak and dissipative cutoff which deviate from -5/3. Evaluating the integral and using the definition of $_$ in Eq. leads to
+
+^2_s u_ z^2 ( A_3 - 1.5 C_w Re_^-2/3 ),
+
+ where $A_3 = 1.5 C_w$ is relaxed to an undefined constant on account of the neglected peak shape. The start of the integral near $k_peak 0.5 _$ also impacts the value of $A_3$. The variance within the Kolmogorov region of the spectrum becomes proportional to the velocity scale $u_ z$ due to its appearance in the definition of $_$. In addition to setting the length where the -5/3 inertial subrange aligns with the peak scaling, $_$ also ensures the high-wavenumber variance contribution shares the same velocity scaling as the spectral peak.
+
+Equation is fitted to the DNS cases in Fig. (c). The fit includes an additional empirical higher-order term $Re_^-2$ to account for effects at moderate Reynolds numbers when the dissipative cutoff cannot be neglected. Choosing a different (or multiple) higher-order term does not significantly change the goodness of fit. The fit results in the high-wavenumber contribution $^2_s u_ z^2 ( 1.3 - 1.5 C_w Re_^-2/3 - 18 Re_^-2)$, which aligns well with the DNS up to $z/=$ 0.4 as seen in Fig. (c). Combining this fit with the low-wavenumber range $^2_l/u_ z^2 =$ 0.15 to 0.35 yields an approximation for the overall variance:
+
+u_ z^2 = 1.55 0.1 - 1.5 C_w Re_^-2/3 - 18 Re_^-2.
+
+Equation -- informed by observed trends in the spectra -- indicates that the wall-normal variance should scale with the local shear velocity $u_ z$ rather than the surface friction velocity $U_$. This new scaling is supported by the normalized spectra seen in Figs. and . An explanation for the local scaling is given in .
+
+Discussion
+
+Besides the observed scaling, Eq. also provides insight into the three main questions of the study given in and highlighted in Fig. . These questions are discussed in the subsequent sections: the asymptotic limit of $B_3$ and its Reynolds-number dependence are further evaluated in , the deviations observed for the ZPG-TBL flow are explained in , and the universality of $B_3$ for canonical wall-bounded flows is considered in .
+
+Reynolds-number dependence of wall-normal variances
+
+In the context of the AEH prediction in Eq. , the new result in Eq. suggests a more generalized form for the variance can account for differences in Reynolds number and flow configuration:
+
+u_ z^2 = B_3 - f_3(Re_),
+
+ where the high-$Re$ limit is $B_3 1.55 0.1$ and the Reynolds-number dependence can be approximated as
+
+f_3(Re_) 1.5 C_w Re_^-2/3 + 18 Re_^-2.
+
+ The finite Reynolds-number dependence in Eq. should theoretically be the same for the streamwise and spanwise variances assuming the spectrum is isotropic at the Kolmogorov scales , with the only difference being a lower constant $C_v$ for the spanwise $v$ component aligned with the spanwise wavenumber $k_y$ .
+
+The revised variance prediction is evaluated for the DNS profiles in Fig. (a). The horizontal lines represent $B_3$ and the profiles are compensated by $f_3(Re_)$ in Eq. to offset the variance ``missing'' due to the finite Reynolds number. The compensation leads to an observed collapse of the DNS along $B_3 $ 1.55 in the range $z^+=$ 10 to 100, with discrepancies seen only for the cases with $Re_=$ 180.
+
+While Fig. (a) indicates promise for the revised $B_3$ and $f_3(Re_)$, the profiles also exhibit modest variability at higher $z^+$ positions. Specifically, there is a greater decrease in the compensated variance above $z^+=$ 100 with increasing $Re_$. The trend is consistent with the spectrum properties in Figs. (a,b). The shape of the curves in Fig. (a) are sensitive to at least two factors: (1) the changing contribution of large-scale energy across the boundary layer, and (2) the choice of the empirically fitted higher-order term in Eq. . A single empirical term is used here due to the modest range of $Re_$ in Fig. (c) and the simplistic method employed for separating variance contributions which does not fully isolate the Reynolds-number dependence. Expanding Eq. to include additional terms would require a more sophisticated methodology and a correction that is informed by the shape of the dissipative cutoff. The results in Fig. (a) are therefore considered preliminary evidence in support of Eq. , with further tuning improvements left for future research.
+
+As seen in Fig. (c), the Reynolds number can be approximated as $Re_ ( z^+)^3/4$ in the logarithmic layer. The Reynolds-number dependence in Eq. can therefore be expressed as a function of $z^+$ for cases with sufficiently high $Re_$:
+
+f_3(z^+) 1.55 z^+^-1/2 + 71 z^+^-3/2.
+
+ The same leading-order term $Cz^+^-1/2$ has been used in previous spectrum-based estimates for the Reynolds-number dependence . However, the coefficient $C$ varies significantly across studies, including 0.65 , 1.55 (present), 4.37 , and 5.58 .
+
+The $f_3(z^+)$ relation in Eq. is combined with $B_3 1.5 5 0.1$ in Fig. (b) to evaluate the present findings against previous measurements of wall-normal variances. The literature measurements defined in the Fig. caption are specific to $z/ =$ 0.1 at the limit of the logarithmic region and are shown relative to $u_ z$. There is close agreement with $B_3-f_3(z^+)$ across the included range of measurements. Most of the points are within the narrow uncertainty range corresponding to variability in large-scale energy seen in Fig. (a). The measurements outside of the dashed lines are all from laboratory experiments, which have a higher level of uncertainty due to challenges in measuring $w$ across all scales. A notable exception to the agreement in Fig. (b) is CICLoPE pipe measurements , which are excluded here because the variances exceed 2 with local scaling and are considered to be an outlier. 
+
+In addition to Eq. aligning with measurements in Fig. (b), the asymptotic limit $B_3 $ 1.55 is within the literature range $B_3 = $ 1.5 to 1.85 discussed in . In particular, the value closely aligns with $B_3 $ 1.55 fitted to measurements in the atmospheric surface layer , indicating agreement in the DNS extrapolation to much larger Reynolds numbers. Atmospheric measurements are not included as individual data points in Fig. (b) due to significant scatter resulting from uncertainties including non-stationarity, thermal effects, and instrument limitations. While the agreement with atmospheric results is promising, more accurate measurements for $z^+ O(10^5)$ are needed to improve confidence in the $B_3$ value.
+
+Wall-normal variances in enclosed and ZPG flows
+
+The previous results and Eq. support the variance $ u_ z^2$ being proportional to the local stress rather than the surface scale $U_^2$. This distinction is important when comparing statistics between different flow configurations that can have different stress profiles $(z) / _w = u_ z^2 / U_^2$. Example stress profiles are shown in Fig. (a). The profiles are at matched Reynolds number $Re_ $ 2\,000 to minimize any differences due to Reynolds-number effects.
+
+The channel and pipe flows in Fig. (a) both have linearly decaying stresses with $u_ z^2 = U_^2 (1-z/)$. In contrast, the ZPG-TBL flow has an approximately sigmoidal shape with $u_ z U_$ near the surface. These differing shapes result directly from the mean momentum balance at $z=0$, which reduces to $dP/dx = d / dz$ with the stress decay balancing the mean pressure gradient. Equation and a constant near-surface stress is therefore specific to ZPG flows. In pressure-driven flows like a pipe or channel there is a non-negligible stress decay throughout the logarithmic region.
+
+The different stress profiles can be compensated using $u_ z^2/(1-z/)$ to normalize the variance. This normalization is identical to $U_^2$ for a linear stress profile, and for the ZPG flow it compensates for the difference in $u_ z^2$ from the linear decay. The compensated variances in Fig. (c) show much closer agreement between the flow configurations than the surface normalization in Figs. (a) and (b). Compensating for the stress profile also accounts for the peak farther from the surface observed in Fig. (b). The higher $w$ variance and peak value farther from the wall can therefore be attributed predominately to the local scaling $ u_ z^2$ and the impact of the pressure gradient on the near-wall stresses.
+
+The remaining differences between flows in Fig. (c) are small but non-negligible. They cannot be attributed to effects of $f_3(Re_)$ in Eq. because the $Re_$ profiles in Fig. (c) overlap closely at the matched $Re_$. The remaining differences are more likely due to the moderately larger footprint of turbulent eddies at low wavenumbers for the ZPG-TBL flow, which is evident from Figs. (b), (f), and (a). This footprint is discussed in further detail below.
+
+Active and inactive motions
+
+The analysis thus far utilized a primitive decomposition of large- and small-scale contributions to the variance shown in Fig. (a). For the purpose of this discussion, a more physically meaningful classification of the turbulent eddies is the concept of active and inactive motions . Per Townsend's orginal hypothesis, at a given height $z_1$ in a population of superimposed attached eddies, active motions are centered near $z_1$ and contribute to the local Reynolds shear stress $(z_1)$. Inactive motions are larger and centered farther from the wall, and the portion of the eddy extending down to $z_1$ does not contribute to the correlation between $u$ and $w$ at $z_1$ .
+
+Inactive motions contribute substantially to the streamwise and spanwise variance , but the AEH considers $w$ fluctuations to be purely active with negligible inactive contributions . The wall-normal $w^$ fluctuations are thus closely related to the local shear stress, especially for the most energetic scales in the spectrum $E_ww$. It is therefore reasonable for these active motions to be proportional to $u_ z$ corresponding to the local stress. The dominance of active motions can then explain the observed scaling for both the peak in the spectrum and the overall variance. This local scaling is equivalent to the wall scaling in Eq. for ZPG flows in the high-$Re_$ limit, but not for enclosed flows with a linear stress decay as seen in Fig. (a).
+
+While $w$ fluctuations are predominately active, recent investigations indicate the presence of inactive contributions to both $w$ and $uw$, highlighting a limitation in Townsend's hypothesis . The AEH predicts statistics for canonical wall-bounded flow based solely on a linear superposition of fluctuations emerging from a hierarchy of vorticity-dominated structures whose center scales with distance from the wall, i.e. geometrically self-similar eddies.
+In real wall-bounded flows, however, these attached eddies coexist alongside non-self-similar motions including viscosity-dominated small scales and superstructures or very-large-scale motions, and there is non-linear interaction across all the motions . These non-linear interactions result in small contributions from the inactive motions to both the $w$ and $uw$ signals . 
+
+These inactive contributions can be detected via an energy decomposition methodology requiring specific multi-point statistics that are not readily available for all the DNS datasets considered herein. The presence of active and inactive $w$ motions are instead inferred here by qualitatively comparing the $E_ww$ spectra in Fig. with the $E_uw$ shear stress spectra shown in Fig. . The latter exhibits the same scaling as $E_ww$: the wavenumber and amplitude of the $E_uw$ peak are well described by $_$ and $u_ z$ and the normalized peak value is approximately 1 at each of the $z$ positions shown.
+This reaffirms the validity of 's (1976) hypothesis that the $w$ and $uw$ signals are dominated by contributions from the active (i.e. localized) motions.
+
+While the scaling of the spectral peaks and surrounding wavenumbers is consistent between $E_ww$ and $E_uw$, the differences in Figs. and before the peak show a clear failure of the local scaling at low wavenumbers.
+Further, the contribution from the largest spanwise eddies to $E_ww(k_y)$ grows with distance from the wall as seen in Fig. , which does not necessarily contribute to the correlation of $u$ and $w$ at that same scale, as can be noted from the trends in Fig. .
+The spectra thus indicate that the contributions to $w$ and $uw$ at the low spanwise wavenumbers are likely coming from the inactive motions. The contribution of these inactive motions to the overall variance, however, is small based on Fig. (a). 
+On considering the energy distribution across frequency or streamwise wavenumber $k_x$ (not shown here), the spectra $E_ww(k_x)$ and $E_uw(k_x)$ are closely related even at the lowest wavenumber, suggesting the minor contribution of inactive motions is more difficult to discern from the dominant active motions in signals along time or $x$ . 
+
+The weak signature of inactive motions in Fig. corresponds with the wavenumbers of large- and very-large-scale motions, owing to which it is stronger in the outer region than in the lower log region. These motions are different for enclosed and non-enclosed flows , due to the influence of the opposite wall on global modes and the presence of a turbulent-nonturbulent interface in the latter case. The footprint of these motions varies with $z$, the type of flow and its Reynolds number, consistent with the trends seen in Fig. (f). It is therefore expected that the inactive motions, which deviate from $u_ z$ scaling, are responsible for small discrepancies in $B_3$ including those seen in Fig. (c), thus precluding universality in the constant even at asymptotically high Reynolds numbers. Importantly, the inactive contributions become stronger at higher Reynolds numbers .
+
+An oversimplified model
+
+Based on the findings, it is instructive to simplify $E_ww(k_y)$ into 2 idealized regimes that replace Eq. for the purpose of identifying how the presence of inactive motions quantitatively changes the wall-normal variance. The low-wavenumber region imposes the leading-order behavior $E_ww k_y^2$ in the vicinity of $k_y 0$, seen in the numerator of Eq. . The second region follows an idealized inertial subrange decay $C_w ^2/3 k_y^-5/3$ up to $k_y ^-1$, yielding a normalized composite spectrum
+
+(k_y_)u_ z^2 _ =
+ 
+ A_ia + (C_w-A_ia)k_y^2 & k_y < _^-1\\
+ C_w k_y ^-5/3 & _^-1 k_y ^-1
+ 
+ 
+
+ The transition point at $k_y _^-1$ imposes a spectral peak at the same location as seen in Fig. . The leading constant $a$ from Eq. is replaced here with $A_ia$ to represent the spectral amplitude of the large-scale and presumably inactive motions, and $(C_w - A_ia)$ ensures the two regions match at the peak. When $A_ia = 0$ with no inactive contributions, the model in Fig. resembles the stress spectra in Fig. , and for finite $A_ia$ the shape is closer to the $w$ spectra in Fig. . Integrating Eq. yields the idealized model variance
+
+u_ z^2 = 3 A_ia + C_w [ 6 - 2 Re_^-2/3 ], 
+
+ where the high-Reynolds-number limit is $B_3 0.67 A_ia + 1.2$ following Eq. with $C_w =$ 0.65. The idealized variance can therefore range from $B_3 $ 1.2 for $A_ia=$ 0 with no inactive contributions to $B_3 $ 1.63 when $A_ia=C_w$ yields a low-wavenumber plateau as seen in Fig. for the TBL flow at $z/ =$ 0.5.
+
+This range matches closely with the $B_3$ uncertainty in the DNS datasets considering the simplicity of the idealized model. The oversimplified approximation of the variance in Eq. and the discussed range demonstrate how a small inactive contribution $A_ia$ can lead to lower wall-normal variances even in the high-$Re_$ limit. This reduction corresponding to lower large-scale inactive contributions was only speculated in the near-neutral atmospheric surface layer, where $B_3=$ 1.39 was reported .
+
+Summary
+
+In theory, Townsend's Attached Eddy Hypothesis for high-Reynolds-number flows predicts a constant wall-normal velocity variance $B_3$ within the logarithmic region as seen in Eq. . In practice, $B_3$ depends on $Re_$, varies weakly with wall-normal distance, and has a higher value for zero-pressure-gradient flows (Fig. ). These dependencies are investigated here using spectra $E_ww(k_y)$ as a function of spanwise wavenumber for DNS of channel, pipe, and ZPG flat plate boundary layers. This choice is motivated by the presence of a distinct peak at intermediate scales of the spanwise wavenumber spectra (Fig. ), which is not present in the streamwise wavenumber or frequency spectra.
+
+The amplitude and wavenumber of the spectrum peak scale with the local shear velocity $u_ z$ (Eq. ) and dissipation-based length scale $_$ (Eq. ). This scaling persists from the viscous sublayer to approximately half the boundary layer depth (Figs. and ). While these parameters are equivalent to the attached parameters $U_$ and $z$ in the near-wall region at high Reynolds numbers (Fig. ), the generalized definitions account also for trends at small $Re_$ and across flow configurations. Further, $_$ transitions the spectrum directly into the inertial subrange which depends only on the local rate of dissipation ( ).
+
+The observed spectrum scaling results in the wall-normal variance depending on $u_ z$ and a local Reynolds number $Re_=_/$ (Fig. c). The dependence is approximated using a leading-order $Re_^-2/3$ term derived from the inertial subrange and a higher-order empirical term to correct for the dissipative cutoff (Eq. ). The resulting semi-emperical expression aligns closely with the present DNS and other variance measurements in the literature (Fig. ).
+
+Extrapolating Eq. to the limit $Re_ $ suggests $B_3 1.55 0.1$, which is within the range of values previously reported and is closely aligned with empirical fits to atmospheric boundary layer measurements . However, the scaling with $u_ z$ rather than $U_$ is new, and is attributed to the wall-normal motions being predominately ``active'' per the terminology of 's (1976) attached eddy hypothesis, which ties $w$ to the local Reynolds shear stress. The local scaling with $u_ z$ accounts for most of the difference in variance observed for ZPG and enclosed flows (Fig. ), which have different stress profiles. While the constant stress profile in Eq. is approximately achieved for ZPG flows in the high-$Re_$ limit, the local scaling is required for pressure-driven flows to account for the linear total stress decay.
+
+The lowest wavenumbers in the $E_ww(k_y)$ spectrum contribute relatively little to the total variance (Fig. a), but this contribution increases with wall-normal distance and is greater for ZPG flows (Figs. b and f). The motions at these wavenumbers are considered ``inactive'' owing to the absence of energy at the same wavenumbers in the shear stress spectrum (Fig. ). The minor yet non-negligible dependence of the variance on these inactive motions, which changes with distance and flow configuration, leads to a range of possible $B_3$ values in the high-Reynolds-number limit. If so, the work here suggests there is not a single universal value for $B_3$ applicable to all wall-bounded flows. 
+
+Declaration of interests
+
+The authors have no conflicts to disclose.
+
+Data availability statement
+
+All data are available from the original DNS studies and their corresponding datasets hosted online.

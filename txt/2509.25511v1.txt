@@ -1,0 +1,553 @@
+[aps,prl,reprint,superscriptaddress]revtex4-2
+
+[dvipsnames]xcolor
+
+OT1pzcmit
+
+$
+_s
+_s
+_s
+
+ f
+ g
+ v
+ u
+_s
+ w
+ k
+ p
+ q
+ x
+
+ r
+ E
+ B
+ I
+ J
+ K
+ D
+ P
+ R
+ S
+ X
+ V
+ T^3
+
+ D
+s
+T
+p
+
+_s
+
+ D
+ Q
+ G
+
+c
+
+,
+
+\,
+\!$
+ sign
+$\!$-$\!$-$\!$-$\!$-$\!$-
+
+HTML06a4ca
+HTML87bf77
+HTMLfec832
+
+8pt
+8pt
+
+We show that the three-point skewness of concentration fluctuations is non-vanishing
+in free liquid diffusion, even in the limit of vanishingly small mean concentration gradients. 
+We exploit a high-Schmidt reduction of nonlinear Landau-Lifshitz hydrodynamics for a binary fluid, 
+both analytically and by a massively parallel Lagrangian Monte Carlo simulation. 
+Non-Gaussian statistics result from nonlinear coupling of concentration fluctuations to thermal velocity fluctuations, 
+analogous to the turbulent advection of a passive scalar. Concentration fluctuations obey no central limit theorem, 
+counter to the predictions of macroscopic fluctuation theory for generic diffusive systems. 
+
+Introduction. 
+The origin of macroscopic hydrodynamics from microscopic molecular dynamics is 
+a vexing open problem in physics, with various competing proposals such as
+Zwanzig-Mori coarse-graining methods , 
+hydrodynamic scaling limit (HSL) and macroscopic fluctuation theory 
+(MFT) , renormalization group (RG) 
+and effective field theory (EFT) , 
+or kinetic theory for low-density gases . 
+The problem became even more complex with the theoretical discovery 
+and experimental verification of 
+generic spatial long-range non-equilibrium correlations. Such second-order correlations are predicted by linearized fluctuating hydrodynamics 
+and have been interpreted in MFT as central limit theorem (CLT) 
+corrections to a leading-order law of large numbers. Important topics of on-going 
+research 
+
+are the dynamical emergence of these correlations 
+and the higher-order correlations , 
+ 
+As stated in a comprehensive review 
+: ``While the two-point correlations...have been measured... 
+and correspond to not too large (Gaussian) fluctuations, for higher order correlation the 
+MFT gives new predictions.'' There is added importance because higher-order correlations
+
+especially as the latter 
+can be measured experimentally in some condensed-matter systems, such as atomic superfluids
+. Indeed, the universal validity of MFT has been challenged 
+by the prediction of non-Gaussian statistics of charge density fluctuations in Dirac metals
+based on nonlinear fluctuating hydrodynamics , with higher statistics 
+different from MFT predictions for generic diffusive systems .
+
+In this Letter we show that non-Gaussian statistics appear already in a very commonplace 
+example: the free diffusion of a solute in a liquid solvent, such as a drop of dye in water. 
+Long-range correlations in free liquid diffusion were long ago observed in terrestrial 
+experiments by light-scattering . Although quenched at large-scales 
+by bouyancy effects on earth, they are observed up to system size in on-going low-gravity space experiments
+. The concentration
+second-order correlations were successfully predicted by linearized fluctuating hydrodynamics 
+ and fluctuations are thus widely expected to be Gaussian . 
+However, in a landmark work 
+, Donev, Fai \& vanden-Eijnden (hereafter, DFV) succeeded to explain 
+these fluctuations in a liquid at rest by a nonlinear advection equation 
+
+$_t c+ c = D_0 c,$
+where $c$ is the concentration of the solute, $$ is the thermal velocity field of the solvent 
+liquid governed by linearized fluctuating hydrodynamics, and $D_0$ is the bare diffusivity.
+In agreement with the EFT interpretation, there is an explicit high-wavenumber cut-off in this model taken 
+to be of the order of the radius $$ of the solute molecule. 
+
+In the limit of high Schmidt number $/D_0 1$ appropriate to most liquid mixtures, 
+DFV showed that this system 
+
+reduces to a version of the Kraichnan model of turbulent scalar advection
+:
+ _t c+ c = D_0 c 
+where $$ denotes the Stratonovich product and $$ is a Gaussian random velocity
+with zero mean and covariance 
+$ w_i(,t) w_j(',t') = R_ij(,') (t-t') $
+where $= G$ with $ G$ the Greens function of the Stokes operator (Oseen tensor). 
+The DFV theory leads 
+naturally to a renormalization of the bare diffusivity $D_0$, so that the mean concentration field
+satisfies a Fickian diffusion equation 
+
+$_t ( x, t) = D _ x ( x, t),$ 
+
+in which the diffusivity at macroscopic scales is given by the Stokes-Einstein relation 
+$D=k_BT/6 D_0,$ where $T$ is temperature and $= $ the shear viscosity of the solvent. 
+DFV 
+explained the emergence of long-range correlations 
+as closely analogous to a turbulent cascade of an advected scalar. 
+Just as in the Kraichnan model , closed equations hold 
+
+ &&_t C_12=D (_ x_1 +_ x_2 ) C_12
+ +1 2 
+ R_ij(_1,_2)_x_1^i_x_2^j C_12 \\
+&&\; + R_ij( x_1, x_2) _x_1^i_1 _x_2^j_2
+ 
+for second cumulants $ C_12= C(_1,_2,t),$ also 
+
+&& _t C_123=D[_ x_1+_ x_2+_ x_3 ] C_123
+&& +R_ij( x_1- x_2)_x_1^i_x^j_2 C_123+R_ij( x_1- x_3)_x_1^i_x^j_3 C_123
+&& +R_ij( x_2- x_3)_x_2^i_x^j_3 C_123
+&&+R_ij( x_1- x_2)[ _x_1^i \; _x^j_2 C_23
++ _x^j_2 \; _x_1^i C_13
+] 
+&&+R_ij( x_1- x_3)[ _x_1^i \; _x^j_3 C_23 
++ _x^j_3 \; _x_1^i C_12
+]
+&&+R_ij( x_2- x_3)[ _x_2^i \; _x^j_3 C_13
++ _x^j_3 \; _x_2^i C_12
+], 
+
+for triple cumulants $ C_123= C(_1,_2,_3,t)$ 
+of concentration fluctuations, and so forth. In these
+equations, gradients of the lower-order cumulants appear as source terms. It was shown recently 
+ that the DFV model yields second-order correlations 
+in the form observed experimentally :
+$ C_12 |(t)|^2 r_12, $
+where $(t)$ is the mean concentration gradient and $r_12=|_1-_2|.$
+
+It was pointed out also in that the higher-order cumulants of concentration 
+fluctuations should not vanish in the DFV theory, just as they do not in turbulent 
+scalar cascades. The structure of the source terms in the closed equations ,, etc. suggests 
+that, in general, the $P$th-order cumulant $C_12...P ()^P.$ If so, not only are cumulants 
+for all $P>2$ non-vanishing, but also when normalized by the $P/2$ power of the second-cumulant 
+$ C_12$ they will remain non-zero in the limit $| | 0.$ Such higher cumulants 
+non-dimensionalized by the second cumulant generalize the concepts of skewness and kurtosis and their 
+non-vanishing indicates persistent non-Gaussianity as $| | 0.$ A main assumption 
+of MFT is that macroscopic diffusion equations 
+arise as a ``law of large numbers'' in a hydrodynamic scaling limit 
+where macroscopic gradients become arbitrarily weak on the microscopic scale.
+The experimentally observed second cumulants of concentration fluctuations are then interpreted in MFT 
+as ``central limit theorem'' corrections, predicted to become Gaussian in the limit
+. 
+ 
+The non-vanishing in the weak-gradient limit of non-dimensionalized cumulants 
+for $p>2$ would contradict the MFT expectations. 
+ 
+
+To address these questions, we consider here the simplest situation 
+with initial concentration profile 
+$c_0( x)=2( 1+ erf(2))$ 
+in infinite three-dimensional space and gradients nonzero only in the $z$-direction. 
+The parameter $$ with units of time is introduced to set the magnitude of the initial concentration 
+gradient as $| c_0|=c_0/.$ Our problem set-up idealizes laboratory experiments on free diffusion with initial interfaces in 
+concentration, but where the spatial domain was finite and gravity appeared. Following DFV, we ignore 
+initial local equilibrium fluctuations of concentration, which are orders of magnitude smaller 
+than the non-equilibrium fluctuations of interest (see , Fig.~2).
+
+Note that the mean concentration $(,t)$ obtained by evolving
+the error function profile under the diffusion equation 
+keeps the same form, but 
+with $ t+.$ To probe the non-Gaussian statistics, we will calculate the three-point skewness 
+function $ S_123= C_123/( C_13 C_23 C_12)^1/2.$ 
+
+We focus first on the early-time, transient regime when non-equilibrium correlations 
+begin to emerge. In fact, in the free-decay problem where the mean-gradient decreases 
+in time as $| | c_0/,$ the largest cumulants 
+in absolute magnitude appear near the end of this early-time regime 
+and thus should present the largest experimental signal. This early-time regime was first 
+investigated theoretically by DFV whose results for the spectral structure 
+function of concentration were confirmed in physical space to have the form :
+ 
+&& C(r_12, _12,Z_12,t) 3 c_0^2 8 r_12(1+^2_12) 
+&& [ E_1( +4z^2_122D(t+)) - E_1( 
++4z^2_122D) ], 
+&& Dt ^2 r^2, 
+ 
+ 
+where $r_12,_12$ are spherical coordinates (omitting azimuthal angle) of the separation vector 
+$_12=_1-_2$
+of the two points, $Z_12=(z_1+z_2)/2$ is the mean of their vertical positions, $z_12=r_12_12$ 
+is the vertical coordinate of $_12,$ and $E_1(x)$ is the exponential integral function: see [(6.6.1)]NIST:DLMF. 
+The result is derived from by a short-time, large-$r$ asymptotic expansion 
+in which the source term is evaluated with the infinite-space Oseen tensor $G_ij=8 r(_pq
++r^2)$ and treated as the leading term on the righthand side, the diffusion term 
+being regarded as a small perturbation. The formula then results from direct time integration 
+of the source term. The triple cumulant $ C_123$ can be evaluated in the analogous 
+asymptotic scheme. With the symmetries of the interface problem, the 
+triple cumulant is specified at each time $t$ by the triangle 
+in $ R^3$ with vertices $_1,_2,_3$ or, more geometrically, by the lengths of its three sides
+$r_13,$ $r_23,$ $r_12,$ by two Euler angles $,$ $$ specifying its orientation, and by the
+vertical position $Z=z_3.$ See SM, A. The asymptotic solution for short times $Dt ^2$ 
+and large triangles $_p,q R_pq $ is obtained by integrating in time
+the six source terms on the rightthand side of , treating the diffusion terms as a perturbation.
+Although the calculation is straightforward in principle, the resulting expression for $ C_123$ 
+is quite lengthy. See SM, A for details of the derivation and the full analytical result. 
+
+Especially relevant to the validity of a central limit theorem 
+is $ C_123$ in the weak-gradient limit $| c_0| 0$ or, equivalently, 
+$.$ The analytical expressions simplify in that limit so that, for example,
+the result analogous to for general particle pair $p,q$ becomes 
+ 
+&& C(r_pq, _pq,Z_pq,t) 3 2 Dt 
+| c_0|^2 r_pq (1+^2_pq), 
+&& D \r^2_pq,Z^2_pq\ ^2 Dt
+ 
+The latter conditions for all pairs $p,q$ guarantee not only that $ | c_0|/c_0 1$ but also 
+that the triangle with vertices $_1, _2, _3$ lies entirely in the interface
+region 
+
+where the mean concentration gradient $ | c_0|$
+is nearly a space-time constant. The time-integrals of the six forcing terms on the righthand side of 
+ 
+
+ 
+can be evaluated in the same large-$r$ limit 
+to give contributions of the form 
+ 
+&& _0^t _k R_ij(R_ij,_pq,Z_pq,s)\, ds 
+&& -4| c_0|^3 r^2_pq(1+^2_pq) D t^2
+and similarly for $ C_pq/ (_pq),$ whereas those 
+for $ C_pq/ Z_pq$ are much smaller. 
+We conclude that 
+
+can be computed in the same manner, yielding 
+$ C_123 | c_0|^3 ( Dt)^2/r^3$ 
+
+(where $r$ is some combination of $r_13,$ $r_23,$ $r_12$ 
+depending on $,$ $$), 
+so that skewness $ S_123 ( D t/r^3)^1/2$ is growing in time and 
+independent of $| c_0|,$ even as $| c_0| 0.$ 
+See the End Matter for a sketch of the calculation and SM, A for full details. 
+ 
+This conclusion is verified 
+by the analytical results plotted in SM, A, Fig.???. 
+ 
+
+[t!]
+[width=1.5]C3_R_50_all_taus_tex
+$ going from left to right, top to bottom, respectively. Solid lines with symbols and shades show the numerical results and corresponding errors from the Lagrangian Monte Carlo computation. Dashed lines correspond to the analytical expression in SM, A, valid asymptotically for short times, as highlighted by the insets. For 
+corresponding results on the combined second cumulant $( C_13 C_23 C_12)^1/2$ used to calculate the three-point skewness, see End Matter, Fig.. 
+
+These conclusions may be confirmed and extended by an independent evaluation
+of the concentration cumulants with a Lagrangian Monte Carlo method, first employed for 
+passive scalars in the Kraichnan model of turbulent advection 
+
+and recently applied by us to liquid mixing . In this method,
+the DFV model is solved for $D_0=0$ at the three points $_p,$ $p=1,2,3$
+in one realization of the thermal velocity $$ by setting $c( x_p,t)=c_0( _p(t))$
+where $d _p/dt= w_p,$ $ _p(0)=_p,$ $p=1,2,3$ with 
+$ W=( w_1, w_2, w_3)$ a 9-dimensional Gaussian white-noise with covariance 
+
+ w_pi(t)w_qj(t')_=R_ij( _p(t), _q(t))(t-t')
+ \,,
+ 
+
+for $p,q = 1,...,3$ and $i,j=1,...,3.$ By repeating this numerical integration for independent 
+realizations $ W^(n),$ $n=1,...,N,$ the triple cumulant 
+can then be evaluated by an empirical average over samples
+ C_123 N _n=1^N c^(n)( x_1,t)c^(n)( x_2,t) 
+c^(n)( x_3,t) 
+ 
+where $c^(n)( x,t)=c^(n)(,t)-(,t).$
+This scheme yields the exact cumulants without restriction to short times and large-$r$ but 
+it is subject to slow Monte Carlo convergence and can require a large number $N$ of samples.
+In the original application to turbulent advection 
+ a number of samples 
+$N 10^7$ sufficed, but our problem is much more demanding. First, the correlations 
+between thermal velocity fluctuations decay with distance, opposite to the growing correlations 
+for turbulent velocities. Second, we consider a problem of free decay rather than a 
+statistical steady state as in the turbulence studies 
+, and 
+the decaying mean concentration field generates higher cumulants with absolute magnitude
+decreasing in time. 
+For these reasons, accurate results for 
+our case required $N 10^14$ samples, which we only achieved by a CUDA-MPI 
+implementation designed to leverage the massive parallel-processing capabilities of GPU's. 
+For more details on the numerics, see and SM, B. All results 
+are calculated in dimensionless form, with $r^*=r/,$ $t^*=2Dt/^2,$ $c^*=c/c_0$
+
+We present in Fig.~ the triple cumulant $ C_123^*$ 
+at three points forming an equilateral triangle with sidelength 
+$r_13^*=r_23^*=r_12^*=50$ and lying in a plane perpendicular to $z=0$
+$(=0,=/2).$ (Results for another value $r^*=100$ are presented 
+in SM, C, which lead to the same conclusions.) 
+The Lagrangian numerical results for four values 
+of $^*=10^4-10^10$ are seen generally to grow in magnitude with $t^*$ 
+and then roughly to saturate, within increasing Monte Carlo error. They 
+agree well with the analytic predictions for shorter $t^*,$
+as seen especially in the insets. The non-vanishing triple cumulants demonstrate 
+non-Gaussianity of the concentration statistics. Note the intriguing change in 
+sign between $^*=10^4$ and $^*=10^6.$ For $^*>10^6,$ however, the 
+triple cumulants appear to become qualitatively similar and 
+simply decreasing in magnitude with increasing $^*,$ consistent 
+with the estimate $ C_123 | c_0|^3.$ The latter 
+scaling is confirmed by the plot of the 3-point skewness $ S_123$ 
+in Fig.~, in which the results for the three largest $$-values,
+differing over four orders of magnitude, essentially collapse. 
+Note that the skewness from the Lagrangian Monte Carlo also agrees well with the 
+asymptotic prediction at short-$t^*$ (inset) but thereafter attains a maximum 
+value of about 0.01 and then slowly decreases in $t^*$, possibly to a 
+non-zero quasi-steady value. Crucially, the skewness is essentially 
+$$-independent, not only in the early-time regime but over the entire 
+$t^*$-range, and there is no central limit theorem with zero skewness
+in the limit of vanishingly small gradients,
+$ c_0 0$ or $.$ Figure constitutes 
+the main result of this Letter. 
+
+We have thus shown that nonlinear Landau-Lifschitz fluctuating hydrodynamics 
+for a binary mixture, in the high-Schmidt limit appropriate to liquid diffusion, 
+implies non-Gaussian statistics of concentration fluctuations. An experimental 
+test of these predictions might be feasible by light-scattering methods 
+.
+We have considered 
+
+free diffusion of an initial inhomogeneous concentration field, but it would be interesting 
+to investigate 
+
+also non-equilibrium steady states.
+
+Beyond correlations,
+other statistics could show turbulent-like, non-Gaussian features such as fat tails 
+in probability density functions . Note, however, that 
+this can occur only for multi-point variables such as concentration increments, 
+as the PDF of the single-point concentration indeed becomes Gaussian as $ c_0 0:$
+see End Matter. Bouyancy effects 
+of gravity that are known to quench long-range concentration correlations can be incorporated
+into the DFV model and it is worth understanding 
+their influence on non-Gaussianity. In low-gravity environments, by contrast, thermal noise 
+effects are observed to propagate to the system size and thus non-Gaussian statistics 
+occurring in liquid diffusion may have critical importance for space exploration 
+. 
+
+``the understanding of diffusion in liquid mixtures 
+in the presence and in the absence of external fields and reactions represents a challenging topic of strategic 
+relevance for space exploration.'' or 
+``As humanity ventures further into space with the goal of establishing long-term missions on planets like the Moon 
+and Mars, understanding the behavior of fluids and particles in low-gravity and hypergravity environments becomes 
+crucial.'' 
+ 
+
+Our results contradict the na\"ive expectations of MFT that statistics of fluctuations 
+should become Gaussian in the limit of weak gradients. 
+These predictions of MFT are rigorous central limit theorem results for simple toy models of 
+particle diffusion,
+such as Kawasaki lattice gases, in a suitable `hydrodynamic scaling limit'' (HSL)
+. 
+
+However, it is not at all clear how to formulate a ``hydrodynamic scaling limit'' for the problem of 
+liquid diffusion and recent work has shown that the HSL, even when mathematically applicable 
+in principle, may be physically unattainable . 
+Furthermore, the DFV model accurately predicts other effects missed by MFT, such as
+renormalization of the bare diffusivity 
+that is commonly observed in
+molecular dynamics studies . The latter renormalization
+as well as the non-Gaussian statistics calculated in the present study are due to nonlinear 
+coupling of the diffusive mode with the momentum mode, which is a general phenomenon 
+predicted by renormalization group but not included in MFT analyses 
+of diffusion . It was a fundamental insight of the Kraichnan model 
+that relative advection even by a Gaussian velocity field, such as thermal velocity 
+fluctuations in this study, will produce non-Gaussian multi-point statistics for the advected scalar . 
+The non-Gaussian diffusive statistics predicted in Dirac fluids arise from a similar mechanism . 
+The magnitude of the skewness that we observe is not large (only $~0.01$ at maximum in the 
+case considered in Fig.) but non-vanishing as $ c_0 0,$
+indicating persistent nonlinear coupling of concentration and velocity fluctuations. 
+We have thus confirmed and extended the claims of earlier work that ``non-equilibrium 
+fluctuations do not represent merely a perturbation of a macroscopic state'' 
+. 
+Our results imply that MFT and HSL cannot be a universally valid explanation for origin 
+of hydrodynamic behavior, not even for the familiar example of liquid diffusion. 
+
+Acknowledgements. 
+We are grateful to B. Doyon and H. Spohn for discussions of this work.
+This research is supported by an ERC grant (ERC-STG E-Nucl. Grant agreement ID: 101163330) (PI M. Gallo).
+Support is acknowledged also from the Sapienza Funding Scheme ``Avvio alla Ricerca - Tipo 2", project No. AR22419078AD8186 (PI M. Bussoletti). Computational resources were made available from ICSC-Italian Research Center on High Performance Computing, Big Data, and Quantum Computing under ``MDR-TP - Spoke 6". We also acknowledge support for computational resources from CINECA under the ISCRA iniative, relative to the ISCRA-B D-RESIN (PI M. Gallo) and ISCRA-C EMADON (PI M. Bussoletti) projects. 
+G. Eyink thanks the Department of Physics of the University of Rome ‘Tor Vergata’ for hospitality while this work was begun and acknowledges support from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation program (Grant Agreement No. 882340). Funded by the European Union. Views and opinions expressed are however those of the authors only and do not necessarily reflect those of the European Union or the European Research Council Executive Agency. Neither the European Union nor the granting authority can be held responsible for them. 
+
+Data Availability. 
+The data that support the findings of this study will be available 
+through a public repository on the Zenodo platform.
+
+ 
+
+ 
+
+ 
+
+ 
+
+*
+
+End Matter
+
+ 
+
+Sketch of analytical computation of triple cumulants.
+
+We give here a brief sketch of the calculation of the triple cumulant 
+of the concentration fluctuations, asymptotically for large separations and for short times. 
+We refer to Figure for a sketch of the three points in the triple 
+cumulant, forming the vertices of a triangle in the plane perpendicular to the mean gradient. 
+The triangle is shown in the reference position that we adopt, before rotation by Euler angles 
+$,$ $$ into general orientation. The side lengths $r_13,$ $r_23,$ $r_12$
+and the interior angles $_13,$ $_23,$ $_12$ specify the geometry of the 
+triangle. The source terms on the righthand side of the equation for the triple 
+cumulant that arise from gradients of the mean and second cumulant of the concentration 
+depend on both the geometry of the triangle and also on its orientation and displacement 
+along the gradient. The latter dependencies appear in the second cumulant $ C_pq$
+through the azimuthal angle $_pq$ and the mean displacement $Z_pq,$
+which ultimately can all be calculated knowing the geometry, orientation and displacement 
+of the triangle. Using these variables and the symmetries of the problem, the six source
+terms can all be calculated; for example, the first one, $F_123 = R_ij( x_1- x_2)_x_1^i \; _x^j_2 C_23,$ becomes
+ 
+ && F_123 = 4 r_12 '(z_1) \ (_23	-_13 _12) _23 r_23 
+&& + +_12(_12+_13_23)r_23 _23 (_23) 
+&& + 2 (1+^2_12) _23 Z_23 \
+ 
+and similarly for all six source terms. 
+
+Following the asymptotic scheme outlined in the main text for the second cumulant, the leading 
+order contribution to the triple cumulant for large separations and short times is obtained 
+simply by integrating in time the contributions from these six source terms. We here 
+discuss only the simplifications that occur in the time $$. First, 
+the mean concentration gradient becomes $t$-independent to leading order:
+$ c_0 c_0/.$ In that case, one 
+must evaluate time-integrals only of the derivatives of the second cumulants. These are 
+easily evaluated for large-$$ from to be 
+
+&& _0^t r_pq(r_pq,_pq,Z_pq,s)\, ds 
+&& -4| c_0|^2 r^2_pq(1+^2_pq) D t^2
+
+and 
+ 
+&& _0^t (_pq)(r_pq,_pq,Z_pq,s)\, ds 
+&& 2| c_0|^2 r_pq _pq D t^2
+ 
+ with other contributions asymptotically smaller. Combining the contributions from 
+ the six source terms and recalling that $D=k_BT/6$, one obtains 
+$ C_123 | c_0|^3 ( Dt)^2/r^3$ as claimed in the main text. 
+It follows from this result that the 3-point skewness $ S_123$ 
+will remain finite in the limit of weak gradients or $,$ at least 
+for the large-separation, short-time regime. See SM, A for complete details 
+of the calculation and also a short Matlab code to evaluate the triple cumulant as 
+a function of time in this regime, for any choice of the three points. 
+
+Numerical results for second cumulants.
+
+To obtain the Lagrangian Monte Carlo results for the 3-point skewness $ S_123$ 
+plotted in Fig.~, not only are the results required for the triple cumulant $ C_123$ 
+plotted in Fig.~ but also required are the second cumulants $ C_13,$ $ C_23,$ 
+$ C_12.$ The results for the second cumulant from the same Lagrangian Monte Carlo 
+scheme were presented in our earlier paper and these were compared
+there with the large-separation, short-time approximation . However, for completeness,
+we present here a similar comparison for the particular combination 
+$( C_13 C_23 C_12)^1/2$ that appears in our definition 
+of the three-point skewness. In Figure we show this combination for the same 
+three points and for the same $$-values as that for the triple cumulants plotted in Fig.~. 
+An interesting observation is that the Monte Carlo errors are much smaller 
+for the second cumulants than for the triple cumulants. In fact, it is these small error bars 
+which, by standard propagation of error formulas, led to the relative smaller errors in the 
+3-point skewness in Fig.~ relative to the triple cumulant in Fig.~. 
+We have also plotted in Fig. the predictions of the large-separation, 
+short-time asymptotics. It can be seen especially in the insets of the figures, which zoom into the 
+short-time region, that the agreement between the analytical and numerical results is excellent. 
+This close agreement provides a good check on both methods. 
+
+ 
+[htpb]
+[trim=0 0 0 0,clip,width=1.5]C2_R_50_all_taus_tex.pdf
+_13 C_23 C_12)^1/2$ 
+for the vertical equilateral triangle with side lengths $r^*=50$ and for initial mean concentration profiles with $^*=10^4$, $10^6$, $10^8$ and $10^10$ going from left to right, top to bottom, respectively. Solid lines with symbols and shades represent numerical results and dashed lines the analytical prediction. Monte Carlo error is too small to be visible at this scale. 
+
+ 
+
+ 
+
+1-point PDF's of concentration fluctuations.
+
+Although it is not immediately obvious how to calculate the probability density function (PDF) 
+of concentration fluctuations at multiple space points, it is easy in our model 
+for $D_0=0$ to evaluate the PDF at a single point by using the fact that $c( x,t)=
+c_0( (t))$ where $ (0)= x$ and $
+d /dt= w$ is a 
+white-noise process with covariance
+$ w_i(t) w_j(t') = 2D_ij (t-t').$
+Since our non-dimensionalization corresponds to taking $2D=1,$ this gives 
+$c^*(z^*,t^*)=c_0^*(z^*+N)$ in dimensionless variables, 
+with $N$ a standard normal random variable. From our adopted initial concentration profile 
+$c_0^*(^*)=2( 1+ erf()),$
+it is then straightforward to find the PDF of the concentration $c^*(z^*,t^*).$
+
+Because $c_0^*(^*)$ is a nonlinear function, this random variable is in general 
+non-normal. For example, when $t^*=^*,$ the theory of inverse transform sampling 
+implies that $c^*(0,t^*)$ has a uniform distribution on the unit interval $[0,1]$
+of concentration values and for increasing 
+
+ 
+$$\,$$
+$t^*>^*$ its PDF becomes more peaked 
+at values $c^*=0$ and $c^*=1$. On the other, in the opposite limit of weak concentration 
+gradients, $^* t^*, (z^*)^2/2,$ the result 
+$$ c_0^*(^*) 2(1+ (^*)^1/2^*)$$
+implies that 
+$$ c^*(z^*,t^*) 2(1+ (^*)^1/2N)$$
+and converges to a Gaussian random variable with mean $2$ and standard deviation 
+$ c_0^*$
+It should be noted that a similar result holds also for $D_0>0,$ since this amounts 
+simply to replacing $D D+D_0.$
+
+Thus, the single-point statistics of the concentration indeed become Gaussian in the limit 
+$ c_0 0.$ This fact underlines the non-triviality of our results for multi-point 
+statistics, which remain non-Gaussian in this same limit.

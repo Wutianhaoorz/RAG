@@ -1,0 +1,40 @@
+[preprint,12pt, review]elsarticle
+
+ 
+
+ 
+
+ 
+
+[section]placeins
+
+[colorlinks=true,bookmarks=false,citecolor=blue,urlcolor=blue]hyperref
+~#1
+
+[1]#1
+[1]#1
+[1]#1
+
+$
+
+[width=1.0]Images/Graphical_Abstract.pdf
+
+ An adjoint-based fluid topology optimization framework using open-source simulation suite SU2.
+ A novel density-based topology optimization formulation for multi-channel flow manifold design.
+ Application to complex \ multi-channel flow manifold design cases.
+
+Topology optimization Flow manifolds Uniform flow distribution Adjoint-based optimization SU2
+
+[1]
+ A[General Symbols]
+ B[Greek Symbols]
+ C[Subscripts]
+ D[Superscripts]
+
+1cm
+
+- 
+
+*3
+
+*

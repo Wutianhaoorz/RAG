@@ -1,0 +1,460 @@
+[dvipsnames]xcolor
+
+=1
+
+Lemma
+Corollary
+
+=
+[1]( #1 )
+[2](#1,#2)
+
+ and Beth A. Wingate
+
+ Division of Applied Mathematics, Brown University, Providence, RI 02906, USA
+ Department of Mathematics, Harrison Building, University of Exeter, Exeter EX4 4PY, UK
+
+The Lagrangian-Averaged Navier-Stokes-$$ (LANS-$$) model, a turbulence closure scheme based on energy-conserving modifications to nonlinear advection, can produce more energetic simulations than standard models, leading to improved fidelity (e.g., in ocean models). However, comprehensive understanding of the mechanism driving this energetic enhancement has proven elusive. To address this gap, we derive the fast quasi-geostrophic limit of the three-dimensional, stably-stratified LANS-$$ equations. This provides both the slow, balanced flow and the leading-order fast wave dynamics. Analysis of these wave dynamics suggests that an explanation for the energetic enhancement lies in the dual role of the smoothing parameter itself: increasing $$ regularizes the dynamics and simultaneously generates a robust landscape of wave-wave resonant interactions. Direct numerical simulations show that $$ plays an analogous role to that of the Burger number ($Bu$) in governing the partition of energy between slow and fast modes -- and consequently, the timescale of geostrophic adjustment -- but with key differences. Increasing $$, regardless of the relative strengths of rotation and stratification, extends the lifetime of wave energy by delaying the dominance of the slow modes. We find that the creation of an energy pathway only involving fast waves is a universal outcome of the regularization across all values of $Bu$, contrasting with a disruption of slow-fast interactions that is most impactful only in the $Bu=1$ case. These insights unify the LANS-$$ model's characteristic energetic enhancement with, in some cases, its known numerical stiffness, identifying potential pathways to mitigate stability issues hindering the broader application of LANS-$$-type models.
+
+Introduction
+
+ The Lagrangian-Averaged Navier-Stokes-$$ (LANS$-$) equations constitute a turbulence closure model that has achieved at lower resolution what other more commonly used closure schemes require higher resolution to accomplish, in a number of contexts . Notably, LANS-$$ produces more energetic simulations . This improves heat and salinity transport resolution and turbulence statistics in ocean models and representations of eddy momentum flux in atmosphere models . The $$-regularization also lowers the critical wavenumber for baroclinic instability , improving its ability to model the transfer of potential to kinetic energy on coarser grids. 
+ The LANS-$$ model is fundamentally different from classical closure schemes: it regularizes nonlinear advection rather than introducing an eddy diffusivity. This functions to filter the nonlinear dynamics at length scales smaller than the namesake parameter $$. The effectiveness of the LANS-$$ model, as well as its key physical and mathematical properties --- such as a Kelvin circulation theorem , a K\'arm\'an-Howarth theorem , a conserved energy , bounded enstrophy , well-posedness , and the existence of a finite-dimensional global attractor --- are perhaps unsurprising, given that its formulation emerged independently from several lines of inquiry. For instance, while its mathematical roots trace back to Leray's seminal work, in which regularizing Navier-Stokes is the key idea needed to prove the existence of weak solutions , it more directly originates from the Gjaja-Holm Wave-Mean Flow Interaction (WMFI) equations . The LANS-$$ equations also share mathematical connections with closure schemes that parameterize eddy stress based on deformation . As in those methods, numerical instabilities can sometimes arise when implementing the LANS-$$ model, limiting its broader application . Both the significant advantages and the primary obstacle of the LANS-$$
+model lead to the central question of this work: can the model's energetic enhancement be understood through the parameter $$'s role in modifying the underlying wave dynamics and energy transfers?
+
+ While there are partial explanations for why the LANS-$$ model is more energetic --- varying $$ modifies the dissipation range , a property shared by related $$-regularization models , and introduces an effective Rossby deformation radius, enabling baroclinic instability to be resolved at coarser resolution --- further insight into the processes driving this increased energy would benefit both the theoretical understanding of the model and its implementation. To this end, we investigate the energetics of the LANS-$$ model within the quasi-geostrophic (QG) limit. 
+ The QG equations, originally derived by , describe the large-scale, balanced dynamics primarily driven by planetary rotation. The three-dimensional, continuously stratified system considered here is further constrained by strong background stratification. By design, the QG equations effectively filter out fast, small-scale motions like inertia-gravity waves, isolating the dominant ``balanced" flow. The first derivation of the QG limiting dynamics for the Boussinesq-$$ equations appears in . We extend by presenting the first fast singular limit derivation of QG-$$ for the Boussinesq-$$ model. In our work, the leading-order asymptotic solution is the conservation of PV-$$ modulated by the leading-order fast dynamics, which is found by deriving an operator to project the full dynamics onto the null space of the fast operator. Using this framework, we show there exists a rich dynamical structure involving interactions purely among fast waves (fast-fast-fast dynamics) that is absent in the unregularized ($ = 0$) case (Figure ). Further, the prognostic variable PV-$$ derived in this limit is intrinsically useful for future studies of LANS-$$; it is the central dynamical variable of the balanced system and a quantity fundamental to understanding large-scale geophysical flows (e.g., ; ; ; ; ; ). In other words, we derive QG-$$ by formulating a projection operator onto the balanced flow. This projection serves a dual purpose: it also provides the foundation for our primary goal of analyzing the energetics of LANS-$$ by enabling the partitioning of the system's energy between the balanced and fast wave dynamics.
+ The complete elimination of fast dynamics without affecting the evolution of the mean flow, as is intended in Charney's QG equations, has been described as the existence of a ``slow manifold," a concept furthered by and . Ideally, a reduced equation resulting from an asymptotic expansion in physical parameters of interest would correspond to a slow manifold: attracting other dynamics toward balanced states, representing dominant dynamics in a lower-dimensional subspace, and ensuring that trajectories initialized on this subspace remain there. In reality, this ideal is rarely achieved, and the ``slow manifolds'' that can be obtained are better described as ``fuzzy" slow manifolds . Even if an original set of equations permits a corresponding slow manifold in the mathematical sense, it may not serve as the desired physical slow manifold, e.g., in the QG limit, one where gravity wave activity is entirely absent . Indeed, the QG equations do not represent a perfectly invariant subspace, since even perfectly balanced initial conditions can generate exponentially small inertia-gravity waves . Furthermore, even though fast and slow dynamics are decoupled at leading order, they are connected in subtle but dynamically significant ways. Resonant interactions allow slow (also called potential vorticity or geostrophic) modes to affect the distribution of fast waves . When forcing is not restricted to the slow dynamics, a common scenario in realistic settings, fast dynamics can significantly impact the distribution of energy throughout the system . A robust analysis of the energetics of the LANS-$$ model thus requires not only deriving the slow QG-$$ equations but also accounting for the influence of the fast dynamics. 
+ To do so, we depart from methods that strictly isolate a slow manifold and instead take a fast singular limit . By taking the same parameter limit as traditional QG -- low Rossby number ($Ro 0$, geostrophic balance) and low Froude number ($Fr 0$, hydrostatic balance), while the ratio between them ($F= Fr/Ro=f/N$) remains fixed -- this approach recovers the standard QG equations for the slow dynamics while retaining fast dynamics at leading order. Applying this process to the LANS-$$ equations yields a system we term the ``fast QG-$$ dynamics" (or fast QG-$$ limit). The fast QG-$$ dynamics decompose into the slow dynamics, the balanced geostrophic flow corresponding to the traditional QG equations (but with $$ regularization), and the fast dynamics, the inertia-gravity waves filtered out in the traditional limit. The fast dynamics are decoupled from the usual slow dynamics in the sense that the leading-order fast dynamics cannot influence the slow dynamics because these fast, oscillatory effects cancel out when averaged across many wave periods. In this context, the fluctuations about the balanced QG-$$ state are the $O(1)$ fast dynamics together with all $O()$ dynamics, where the small parameter $$ is taken to be the Rossby number. Physically, the frequency of the fast-wave oscillations is inversely proportional to $$. This approach is rigorously justified by Schochet's method of cancellation of oscillations for hyperbolic PDEs and may be thought of as averaging over fast waves in geophysical flows. 
+ The three-dimensional Boussinesq (or in this work, Boussinesq-$$) equations admit two kinds of eigenfrequencies: slow (geostrophic) modes (vortical modes) which have zero frequency for all wavenumbers $$ and fast (ageostrophic) modes (dispersive waves). While potential vorticity in the fast QG (or QG-$$) limit is determined solely by slow modes, in other balanced limits such as low Rossby/finite Froude or low Froude/finite Rossby, waves associated with the slower physical process can contribute to the slow dynamics . 
+ To understand what drives the LANS-$$ model's distinctive energetics, we analyze three-wave resonant and near-resonant interactions. Resonant interactions between slow and fast modes, i.e., interactions between geostrophic turbulence and waves, are a primary mechanism for geostrophic adjustment via a direct cascade of wave energy . These resonant interactions are highly dependent on the Burger number ($Bu=Ro^2/Fr^2$), which is related to the ratio $F=f/N$ via $Bu=1/F^2$. For example, show analytically that as stratification increases compared to rotation, ageostrophic energy cascades are ``unfrozen," allowing nonlinear geostrophic adjustment to occur. With small-scale forcing, geostrophic dynamics dominate at large scales for $1/2 F 2$ (or equivalently, $1/4 Bu 4$), a range with no triad interactions exclusively involving fast waves . With large-scale forcing, the system transitions from being vortical-energy dominated for $F 1$ ($Bu 1$) to being wave-energy dominated for $F>1$ ($Bu<1$) . Near-resonant interactions, while more challenging to analyze and weak for $F O(1)$ , also play an important role in the transfer of energy to slow wave modes . 
+ Our numerical simulations reveal that the smoothing parameter $$ plays a role analogous to that of the rotation-to-stratification ratio $F$ and affects wave-vortex energy ratios in a similar manner. However, a key difference emerges when varying $$ as opposed to $F$ (or $Bu$): increasing $$ markedly extends the persistence of wave energy, thereby slowing the typical transition to vortical energy dominance. A likely mechanism for this is found in how $$ reshapes three-wave resonant interactions. In the standard fast QG limit, resonant interactions in which two fast waves produce another fast wave are nonexistent for many Burger numbers and sparse otherwise. In contrast, by numerically tabulating how often our analytically-derived eigenfrequencies satisfy the condition for resonance interactions, we find that $$-regularization drastically increases the number of these interactions (as illustrated in Figure ). While $$ was previously known to modify the dissipation range, these alterations to the triad interactions reveal that the introduction of $$ can both cause energy to accumulate within the waves and decrease resonant interactions generally responsible for cross-scale energy transfer, providing a mechanism by which energy may be prevented from reaching dissipative scales and thus accumulate within the system. Collectively, our results indicate that LANS-$$ is likely more energetic than other models because of the way $$-regularization modulates fast waves, affecting their persistence and ability to satisfy resonance conditions that drive energy transfer among the slow and fast components of the flow.
+ The remainder of this paper is organized as follows. In $ 2$, we introduce the LANS-$$ equations, including their non-dimensional, non-local form, and interpretation as Lagrangian-averaged Navier-Stokes. The derivation of the fast QG limit for LANS-$$ is presented in $ 3$; this section includes energy conservation laws, the slow dynamics (conservation of PV-$$), the fast limiting dynamics ($O(1)$ wave dynamics), and an analysis of how the parameter $$ modifies three-wave resonance interactions. In $ 4$, we present numerical simulations focusing on the evolution of slow and wave energies in the QG limit and how it depends on $$. Finally, in $ 5$, we discuss the main findings and their broader implications.
+
+The LANS- equations
+
+Non-local form of the LANS- equations
+The LANS$-$ equations with the Boussinesq approximation (the Boussinesq-$$ equations) are given by : 
+
+ t + + ^T + f + +_0g &= ^2n , \\
+ t + - b &= ^2n , \\
+ &= 0, \\ 
+ &= - ^2 , 
+ 
+
+where $=(v_1,v_2,v_3)$ is the three-dimensional velocity, $f$ is the Coriolis parameter, $$ is a modified pressure, $$ is the buoyancy variable (density), $_0$ is a reference density, $g$ is the gravitational constant, $$ is kinematic viscosity, $b$ is the strength of the underlying density stratification, $$ is buoyancy diffusivity, and $ $ is a parameter with units of length. While this length scale $$ can be interpreted in many ways -- such as the typical deviation of a particle trajectory from its time-averaged path or a filter width -- we adopt the interpretation that it is the length scale below which the dynamics are regularized. This regularization is accomplished through the introduction of a new velocity field, $$, as defined in . In this framework, the smoothed field $$ advects the momentum $$, mitigating the development of sharp gradients at scales smaller than $$.
+ The difference between the Boussinesq-$$ equations and the usual Boussinesq equations is essentially due to the introduction of the smoothed velocity $=(u_1, u_2, u_3)$. Denoting the Helmholtz operator as 
+
+ (1-^2 )
+
+($$ for ``smoothing"), the smoothed velocity $$ is constructed via $^-1$ . The smoothed velocity contributes an additional advective term, $ ^T$ (also written as $( )^T $ or $v_j_i u_j$), in and necessitates a modification to the pressure. The usual pressure $p$ has been replaced with the modified pressure $$ in , where 
+
+ _0 - 2||^2-2| |^2.
+
+From the definition of $$ , the incompressibility of $$ implies that of $$, and vice versa, since the order of the divergence and the Laplacian can be interchanged. Note also that $$ can be applied to scalar functions, with the interpretation that $$ is the scalar Laplacian rather than the vector Laplacian. Using the Helmholtz operator to smooth the advecting velocity does not introduce dissipative effects, since and are time-reversible when $==0$.
+ In -, the density has been decomposed as 
+
+_ = +, = p_0 - bz, b>0.
+
+ The dissipation terms in are presented in a general form, and when $n=1$, the dissipation is of the usual Laplacian type. The domain is $[0,L]^3$, for a length scale $L$, with triply periodic boundary conditions, to facilitate the comparison of the results presented here to those of previous turbulence studies and the classical fast singular QG limit .
+ We non-dimensionalize the Boussinesq-$$ equations by considering a characteristic length scale $L$ (e.g., the domain length) and velocity scale $U$, which correspond to the advective time scale $L/U$. Using the Brunt-V\"ais\"al\"a frequency $N=(gb/_0)^1/2$, we define the buoyancy fluctuation scale $B=NU/g$. Note that throughout this work, $N$ is considered constant. We non-dimensionalize $'=/L$, $t'=t/T$, $=/U$, $'=/(_0 B)$, and the pressure via $p'=p/$ where $$ is a reference pressure (c.f. ). Using these scalings, the Rossby, Froude, Reynolds, Prandtl, and Euler numbers arise naturally:
+
+Ro fL, Fr NL, Re , Pr _0, Eu _0 U^2.
+
+The parameter $F$, which measures the relative strength of rotation versus stratification,
+
+ F Ro=N,
+
+also arises in the system and must be assumed fixed when taking the QG limit. This parameter is closely related to the Burger number 
+
+ Bu Fr^2=F^2,
+
+and will play an important role in the dynamics.
+ Omitting the primes, the non-dimensionalized version of is given by 
+
+ t + + ^T+ Ro + + &= Re^2n , \\
+ t + - Fr &= RePr^2n , \\ 
+ &= 0, \\
+&=^-1.
+
+Here, $$ is actually the non-dimensionalized Helmholtz operator, $(1-L_^2 )$, where $L_ /L$. Since $$ is a fraction of the domain length, and we use the domain size as the characteristic length scale, $L_ [0,1]$. The modified pressure $$ is also the non-dimensional version. 
+The constant $ BgLU^-2$ but we will use the scaling $ = Fr^-1$. We will consider $n=1$ in the diffusivity for simplicity. 
+ We obtain the non-local form of by solving the elliptic equation for the modified pressure, so that
+
+ = ^-1(Ro ^-1 - (^-1 + (^-1)^T)-Fr).
+
+The modified pressure thus does not further differentiate the Bousinessq-$$ equations from the unregularized Boussinesq equations; $$ is a free variable in exactly the same sense $p$ is. 
+ This system reduces to the usual Boussinesq equations in the case of $=0$, so we expect the slow and fast dynamics derived for the LANS-$$ model to reduce to those found in , , and upon setting $=0$.
+
+Interpretation as Lagrangian-Averaged Navier-Stokes
+
+ The definition of the smoothed velocity indicates that $$ should be interpreted as the Lagrangian average of $$ to justify that this system is ``Lagrangian-averaged" Navier-Stokes. It must then be the case that the Helmholtz operator, applied to a Lagrangian-averaged field, yields an Eulerian-averaged field, and vice versa with the inverse. When defined as the Helmholtz operator dependent on the scalar $$, $$ is an approximation to the true operator for which this is (asymptotically) true. This operator, the dynamical Helmholtz operator, is given by $(1-)$ where $ = $ . Here, $$ represents a displacement fluctuation of a particle trajectory $$, so that $ $ is the covariance of the displacement fluctuation. It can be seen to $o(||^2)$ that the quantity 
+
+( ) ^L,
+
+where $ ^L$ is a Lagrangian mean velocity, is the Stokes drift. Thus, the dynamical Helmholtz operator $(1-)$ can be interpreted as mapping Lagrangian-averaged fields to their Eulerian-averaged counterparts. 
+ However, the LANS-$$ equations do not involve the dynamical Helmholtz operator; $$ is replaced with $^2 $. This assumes the isotropy condition $ ^k ^l = ^2 ^kl$, where $$ is constant if the statistics are homogeneous. Thus, by assuming statistically stationary and isotropic turbulence (in a sense), LANS-$$ can be interpreted as Lagrangian-averaged Navier-Stokes. This interpretation allows the dynamical Helmholtz operator to be commuted with the advective operator, a key property used in the derivation the slow dynamics. While it is by now standard to regularize Navier-Stokes by applying a number of different filters, this particular filter, with the given meaning of $$, is especially advantageous due to its commutative properties with space and time derivatives and advection. 
+
+The fast quasi-geostrophic limit of the LANS- equations
+
+Abstract framework
+ 
+As in , , , and , we write the dependent variables as a vector, 
+
+ \\ .
+
+The non-dimensionalized LANS-$$ equations may then be rewritten in the abstract operator form 
+
+ t + Ro_Ro + Fr_Fr + (,) = .
+ 
+In , the operators are defined:
+
+ _Ro &= ^-1(_H^+
+ _H ^-1 (( ))) \\ ^-1( z^-1(( ))) \\ 0 
+ , \\
+ _Fr &= - _H ^-1( z) \\ -^-1( z^2 )+ \\ -^-1w ,\\
+ (, ) &= (^-1 ) - ^-1( ((^-1 ) + (^-1)^T)) \\ (^-1 ) , \\ 
+ &= Re \\ Pr .
+
+To write the operators in this form, we made use of the commutative properties of $$. Each of these operators reduces to those in , , and in the case of $=0$.
+ We decompose the full solution to , $$, as 
+
+ = _F+_S,
+
+where the subscript $F$ is for ``fast" and the subscript $S$ is for ``slow."
+This decomposition is possible because there exists a projection operator $P$ onto the null space of the fast operator (see Appendix ), in a triply periodic domain, such that 
+
+ P_S = _S, P_F = 0.
+
+In the fast QG-$$ limit, the fast operator is given by $F_Ro+_Fr$. We will use the decomposition to find evolution equations for the components of the flow and energy on and off the slow manifold in the proceeding sections.
+ Both the derivation of the slow dynamics and the fast dynamics involves a spectral analysis of the fast operator; for simplicity, we consider with triply periodic boundary conditions.
+
+Energy conservation laws
+ 
+The equation for the global integrated total energy is given by (see Appendix ) 
+
+ 2dt _ ( + ^2) \,= -Re_ ( )( ) - RePr( ) \,.
+
+ Since the LANS-$$ equations can be written in the abstract operator form and the fast operator is skew-Hermitian, the results of and together with the energy conservation equation yield that 
+
+ (0)(0) + (0)^2 = _F _F + _F^2 + _S_S+_S^2,
+
+where in the notation of , $_F=(_F,_F)^T$, $_S=(_S,_S)^T$, and an analogous decomposition for $^-1$ defines $_F$ and $_S$. Thus the ratio of total (as in, kinetic plus potential) fast and slow energy is conserved in the limit as $ 0$ ($=Ro$). 
+ This allows the energy of the slow balanced flow and that of the fast waves to be treated as distinct quantities. The energy partition is necessary to investigate the mechanism by which the Lagrangian-averaging parameter $$ alters the interplay between slow vortical and fast wave modes.
+
+Slow dynamics, PV-
+To find the slow dynamics, we formulate a projection operator onto the null space of the fast linear operator, as in . A projection is given by (see Appendix )
+
+ P__ = 
+ _H - F^2^-2 __^-1_H z^2 - __^-1(_H(_H _H) + F^-1 _H^( z))\\ 0 \\ -F ^-1__^-1( z(_H _H)) - ^-1___H, 
+
+where $__ = _H + F^2^-2 z^2$, and $^-2$ denotes $^-1$ applied twice. When $=0$, since $=^-1=I$, this correctly reduces to the projection operator in the QG, $=0$ case in .
+ The (slow) QG-$$ dynamics are (see Appendix )
+
+Dt(_H + F^2 ^-1 z^2)=0,
+
+where $Dt t + _H$, and $$ denotes the potential (here, the modified pressure), so that the vertical vorticity $_3= _H $. 
+By using the commutative properties of $$, we can see that analogously to the $=0$ case, the potential vorticity is simply the $__$ operator applied to the potential $$. We can also rewrite as
+
+Dt(_3 - F ^-1 z)=0,
+
+which is very similar to the PV conservation equation in the $=0$ case, 
+
+ Dt(_3 - F z)=0,
+
+where the vertical vorticity reduces to $_3 =_H p$ as usual, since $=I$ in the $=0$ case. The key differences between (the slow portion of) QG-$$, , and the usual QG, , are that in QG-$$, the density is now smoothed, the vorticity has a different relationship to the (modified) pressure, now involving the Helmholtz operator, and the material derivative is with respect to the smoothed velocity. Thus, the dominant, slow QG-$$ dynamics are regularized compared to the dominant, slow QG $(=0)$ dynamics (Figure ): an expected outcome given that LANS-$$ is a regularized model. 
+
+Fast limiting dynamics and modifications of triad interactions by 
+While $$ regularizes the dynamics, we find that it alters the balance between the slow and fast dynamics, amplifying the role of the fast dynamics. To show this, we analyze the triad interactions within the LANS-$$ equations and compare to those of the unregularized equations. The dispersion relations for the modes associated with the fast QG-$$ limit are found by seeking eigenfunctions of the fast operator $_F$ of the form 
+
+ = (i - i()t),
+
+where $$ is an associated eigenvector, $()$ is an associated eigenfrequency, and $=(k_1,k_2,k_3)$ is a wavenumber. In this context, $()$ will be either zero or the classic inertia-gravity wave dispersion relation. We also denote 
+
+ || (k_1^2+k_2^2+k_3^2)^2 |_H|(k_1^2+k_2^2)^2.
+
+Analytic formulas for the eigenfrequencies are required to characterize all possible three-wave resonances. In the usual fast QG limit, the eigenfrequencies are given by :
+
+ ^(0)()=0 ^( 1)() = _H|^2+F^2k_3^2)^2||. 
+
+Physically, the zero frequency (slow) modes are zero frequency Rossby waves, while the modes with frequency $^( 1)$ are (dispersive) inertia-gravity waves. The parameter $F=f/N$ appears in the dispersion relation and sets the relative importance of vertical versus horizontal structure. For instance, when stratification is stronger than rotation ($N>f)$, the impact of vertical variations on the inertia-gravity wave frequency is reduced.
+ In the fast QG-$$ limit, the eigenfrequencies are modified by the non-dimensional Helmholtz operator in spectral space, $(1+L_||^2)$, where $L_=/L$ is the non-dimensionalized version of $$. The eigenfrequencies when $ 0$ ($L_ 0$) are given by
+
+ ^(0)()=0 ^( 1)() = |^2)|_H|^2+F^2k_3^2)^2(1+L_||^2)||.
+
+The smaller $L_$ is, the closer the $$-regularized dynamics are to the unregularized dynamics. When $L_=0$, the $$-regularized dynamics reduce to the usual dynamics; notice that reduces to when $L_=0$. 
+
+ The set of resonant triads is described by 
+
+R_, ^ \(, , ', '')\;|\; +=, \; ^(')()+^('')() = ^()()\,
+
+where the superscript $$ emphasizes that the set of possible interactions now depends on $$ due to . The relevant classes of triads are described in Table . Of these, we consider the slow-fast-fast and fast-fast-fast triads, as the set of possible slow-slow-slow resonances does not change with $$ and there are no exact slow-slow-fast resonances both when $=0$ and $ 0$.
+ Slow-fast-fast interactions, when $F 1$ ($Bu 1$), have been seen to result in a rapid downscale energy transfer, and have been described as catalytic interactions responsible for the emergence of a geostrophically adjusted state . When the eigenfruencies are given by , the condition for wavenumbers $$ and $$ such that $+=$ to be an element of $R_,^0$ (with $'= 1, ''=0, = 1$), as defined in , is
+
+ _H|^2+F^2k_3^2)^2|| = _H|^2+F^2q_3^2)^2||,
+
+or similarly with $$ in place of $$, interchanging the roles of $'$ and $''$. The condition produces a resonance for any $, , $ when $F=1$ or a near-resonance when $F=O(1)$. When the eigenfrequencies are instead given by , the condition is 
+
+ |^2)|_H|^2+F^2 k_3^2)^2(1+L_||^2)|| = |^2)|_H|^2+F^2 q_3^2)^2(1+L_||^2)||,
+
+or similarly with $$ upon interchanging the roles of $'$ and $''$. 
+
+ Due to the additional nonlinearity of as compared to , it is challenging to reason analytically exactly how the number and distribution of the elements of $R_,^$ changes with $$ (or $L_$), but it is possible to do so numerically. Our results show that for $F=1$ ($Bu=1$), the introduction of a nonzero $$ drastically curtails the number of slow-fast-fast resonant triads, including the cross-scale interactions responsible for transferring energy between large-scale and small-scale dynamics (Figure ). This reduction disrupts the primary channel for downscale energy transfer. Further increasing $L_$ leads to an increase in the number of resonances, though it does not return to the number when $L_=0$ for reasonable values of $L_$ (given that in modeling studies, typically $$ is only a few grid points in length, i.e., $ = 2 x$). For the regimes in which this energy pathway is already less active, $F=1/2$ ($Bu=4$) and $F=2$ ($Bu=1/4$), the introduction of nonzero $$ has a different effect, only increasing the number of resonances and thus altering rather than shutting down energy exchange via slow-fast-fast resonances. 
+
+ Fast-fast-fast exact resonant interactions do not occur when $1/2 F 2$ in the $=0$ case, and resonant and near-resonant interactions occur only rarely otherwise. The condition is
+
+ _H|^2+F^2k_3^2)^2|| _H|^2+F^2p_3^2)^2||= _H|^2+F^2q_3^2)^2||.
+
+When $ 0$, becomes instead
+
+ |^2)|_H|^2+F^2 k_3^2)^2(1+L_||^2)|| &|^2)|_H|^2+F^2 p_3^2)^2(1+L_||^2)|| \\&= |^2)|_H|^2+F^2 q_3^2)^2(1+L_||^2)||.
+
+ The new nonlinearity and dependence on wavenumber in allows the number of fast-fast-fast resonances to significantly increase, even in cases where it is usually zero without $$-regularization. When $ 0$, the number of fast-fast-fast resonant interactions becomes comparable to the number of slow-fast-fast resonant interactions (Figure ). This stands in stark contrast to the usual fast QG limit, where fast-fast-fast triads are typically sparse or nonexistent. The emergence of a large number of fast-fast-fast resonances allows energy to be efficiently exchanged and redistributed purely among the fast modes, independent of the slow vortical flow. A detailed view of this emergence (Figure ) confirms that the number of fast-fast-fast triads appears to grow continuously from $L_=0$ rather than spiking discontinuously; this is especially evident in the $F=1/2$ ($Bu=4$) and $F=2$ ($Bu=1/4$) plots.
+
+ Perhaps most significantly, as $$ becomes sufficiently large, the numbers of both slow-fast-fast triads and fast-fast-fast triads converge to values largely independent of the rotation-to-stratification ratio $F$, indicating that $$ supersedes $F$ as the dominant parameter shaping the potential for resonant interactions. The overall effect of $$ on the fast dynamics is not to simply smooth but to restructure the energy pathways.
+
+Numerical simulations
+ 
+
+Description of the numerical method
+
+For all numerical experiments, we use Dedalus, a pseudo-spectral solver in Python . The non-dimensional LANS-$$ equations - are solved within the triply periodic domain $[0,1]^3$, discretized on a uniform grid of $N^3=256^3$ points with a $3/2$ dealiasing rule. The system is initialized from a state of rest. For time-stepping, we employ an explicit second-order, two-stage Runge-Kutta scheme (RK222). This scheme was selected for computational efficiency and validation runs confirmed its results were comparable to those from the third-order, four-stage scheme (RK443). The time step is adjusted dynamically by a CFL condition. 
+ The physical setup of our experiments is similar to that of . Energy is injected into the system via a stochastic forcing that is constant in time. The forcing spectrum, $F(k)$, is a Gaussian in wavenumber space, centered at the forcing wavenumber $k_f$:
+
+ F(k) = (2)^2s(2s^2).
+
+The energy injection rate is $_f=1$ and the standard deviation is $s=1$ for all simulations. Since we are interested in the quasi-geostrophic limit, we use low wavenumber forcing, $k_f=3(2)$. This forcing defines a characteristic eddy turnover time, 
+
+ = (_f k_f^2)^-3.
+
+All simulations are integrated to a final non-dimensional time of $t=1$, corresponding to approximately $7$. This duration is sufficient for observing the initial development of the turbulent flow involving the transfer of energy between vortical and wave modes. In , we have hyperviscosity with $n=8$, as in , except the coefficient is constant in time and defined based on the dealiased grid cutoff wavenumber, in order to allow for more direct comparisons across simulations of different grid sizes. 
+
+ We investigate the system's behavior for three values of $F$: 1 (equally strong rotation and stratification), 2 (stronger rotation), and 1/2 (stronger stratification), achieved by setting $(Ro, Fr) = (0.1, 0.1)$, $(0.1, 0.2)$, and $(0.2, 0.1)$ respectively. In all cases, both $Ro$ and $Fr$ are small in order to reflect the QG limit. For each $F$, we systematically vary the nondimensional regularization parameter across five values: $L_ = 0, 0.01, 0.1, 0.15, 0.2$. 
+
+Evolution of slow vortical and fast wave energy
+
+The numerical simulations illustrate how the modifications to the set of resonant triads analyzed in $$ manifest in the flow's energy evolution. To see this, we track the partition of total energy between the vortical modes of the slow dynamics and the fast wave modes. Note that the total energy for the $L_ 0$ cases is given by $2_ ( + ^2) \,$ as opposed to $2_ ( + ^2) \,$, as the former is the conserved quantity in . The former is smaller in magnitude than the latter, especially for large $L_$, because $$ is modified according to $ = (1-L_^2)$ (the energy $$ for the $L_ 0$ cases better illustrate how the LANS-$$ simulations are indeed more energetic overall). 
+
+ The decomposition is computed by performing an eigenvalue decomposition of the fields outputted by the simulations, as in , according to the eigenvalues in $$. This method is equivalent to applying the projection operator described in $$. 
+
+ The most immediate effect of the changes in the fast dynamics, as shown in the total energy plots for each value of $F$ (Figures , , and ), is a consistent delay in the evolution towards a state dominated by slow vortical modes. For all values of $F$ considered, increasing $L_$ systematically extends the crossover time at which the energy in vortical modes surpasses that in the wave modes (right-hand panels of Figures , , and ). This directly corresponds to a delay of geostrophic adjustment, and by hindering the flow's relaxation towards the balanced state, more energy is retained in the wave modes for a longer duration. 
+
+ The emergence of fast-fast-fast resonant triads offers a potential mechanism to explain this delay. As shown in $$, the introduction of a nonzero $L_$ creates a dense network of these interactions, which are sparse or nonexistent in the $L_=0$ case. This new resonant pathway allows for the efficient exchange and redistribution of energy purely among the wave modes. Such a self-sustaining wave field, where energy is actively transferred among fast modes rather than being propagated away, is consistent with the observed delay in the system's relaxation to a geostrophic mode-dominated state. The creation of this fast-fast-fast pathway is a universal outcome of the regularization across all values of $F$, contrasting with the disruption of slow-fast-fast triads that is expected to be most impactful only in the $F=1$ ($Bu=1$) case. For the $Bu=1$ case, where geostrophic adjustment is extremely efficient in the absence of regularization, the disruption of this slow-fast-fast pathway likely plays an important, complementary role in producing the observed delay (Figures and ). 
+ Although the regularization parameter $L_$ becomes the dominant factor (as opposed to $F$) shaping the fast dynamics (e.g., Figure ), the system's energy evolution still exhibits clear dependencies on the relative strengths of rotation and stratification. In the unregularized case, the dynamics vary considerably, as expected: the $F=2$ flow (Figure ) is most persistently wave-dominated, while the $F=1/2$ case (Figure ) becomes dominated by the slow modes most rapidly. Yet, the response to the regularization is also not uniform. For $F=1/2$ and $F=1$, the crossover time is a monotonically increasing function of $L_$ (Figures and ). The $F=2$ case, however, exhibits a non-monotonic response, where a small amount of regularization ($L_=0.01$) actually accelerates the onset of vortical dominance before larger values delay it. 
+ The regularization parameter $L_$ acts as a second control on the system's energetics, in the sense that it governs the evolution of the partition of energy in a manner analogous to $F$ (and $Bu$). While higher values of both parameters ultimately limit the maximum proportion of vortical energy (see for a comparison of the impact of many different values of $F$ in the $=0$ case), their effects on the initial distribution of wave and vortical energy are opposite. As shown in Figures , , and , higher values of $L_$ lead to a smaller initial portion of wave energy -- the opposite effect from that of $F$. 
+ Over longer timescales, the growth in total energy is primarily driven by the slow vortical modes. This is evident from the steeper slope of the vortical energy curves after the initial adjustment period. However, the wave energy does not simply saturate or decay after the crossover. While in some cases it does appear to stagnate for brief periods, it generally continues to increase throughout the simulations, albeit at a slower rate than its vortical counterpart. 
+ These results show that $$ acts as a second control parameter for the system's energetic pathways, with effects that complement and sometimes oppose those of the rotation-to-stratification ratio, delaying geostrophic adjustment and sustaining energy growth in both wave and vortical components. 
+
+Conclusions
+
+ In this paper, we derive the fast QG limit for the LANS-$$ model to analyze its energy evolution. In the absence of forcing and dissipation, the slow dynamics amount to the conservation of PV-$$. We find that $$ has the expected smoothing effect on these dominant, slow dynamics, but also that it amplifies the role of the fast wave dynamics. The regularization parameter $$ alters the frequencies of the waves and, in turn, the conditions for three-wave resonances, which play a key role in the distribution and transfer of energy in the system. By numerically testing integer wavenumbers, we find that introducing $$ allows for a rapid increase in the number of resonant triads where two fast waves produce a third fast wave. We also find that the number of slow-fast-fast resonant interactions greatly decreases in the $F=1$ case, unlike the creation of a large number of fast-fast-fast resonant interactions, which is universal across different values of $F$ (Figures and ). Since the fast and slow dynamics are decoupled, we derive an energy conservation equation partitioned into slow and fast energies. Numerical simulations of the LANS-$$ system for three values of the rotation-to-stratification ratio $F$ and a range of $$ ($L_$) values produce fields that, once decomposed into slow and fast portions, exhibit energy dynamics consistent with this modification to the resonances.
+ Perhaps most significantly, as $$ becomes sufficiently large, the numbers of both slow-fast-fast triads and fast-fast-fast triads converge to values largely independent of $F$, indicating that $$ supersedes $F$ (and the Burger number) as the dominant parameter shaping the potential for resonant interactions. This reshaping both fundamentally alters the pathway for geostrophic adjustment and creates a rich wave-wave interaction regime. Indeed, the inflection point seen in the slow-fast-fast triad count (Figure ) 
+(and in the crossover time in Figure ) may hint at a critical threshold for this behavior; exploring whether this value of $L_$ separates a stable regime from an unstable one, and its dependence on $F$, merits further investigation. 
+
+Beyond its implications for the physics of the LANS-$$ model, this surge of fast wave interactions points to a potential physical origin for the model's numerical instabilities. We propose that such a dense field of interacting waves poses a challenge to numerical schemes because, for example, numerical discretizations can cause dispersion relations to produce both physical modes and computational modes, and the latter can lead to numerical instabilities . A model whose physics permits many more interactions between the physical modes may, in its numerical implementation, also provide more opportunities for the computational modes to interact with each other and the physical modes to trigger numerical instability. This supports the hypothesis that the origin for the known numerical instabilities of the LANS-$$ and related models is nonlinear, consistent with linear analyses indicating the model is stable (e.g., ). In fact, a (linear) stability analysis of the shallow water LANS-$$ model indicates that its numerical implementation should be more stable than that of its unregularized counterpart in the sense that it permits a larger maximum allowable timestep as $$ increases . However, such linear analyses do not account for how numerical errors in individual waves can combine via triad interactions to further compromise the accuracy of the nonlinear dynamics, which can be a significant source of error depending on the choice of time-stepping scheme . Our results on enhanced wave-wave interactions indicate that future work, when using the LANS-$$ model or related models , could not only consider the inherent stability of the computational modes (e.g., the thorough analysis in ), but also how they interact with other computational or physical modes in the context of fast-fast-fast interactions.
+
+Ultimately, this analysis demonstrates that by reshaping the conditions for resonance, the LANS-$$ model permits a previously inaccessible regime of fast wave interactions which in turn affect the model's energy evolution, though the full implications of these dynamics and how they change in other relevant parameter regimes merit further study. 
+
+[Acknowledgements]The authors thank Bruce Sutherland for valuable feedback on an earlier version of this manuscript.
+
+[Funding]For the purpose of open access, the author has applied a ‘Creative Commons Attribution' (CC BY) license to any Author Accepted Manuscript version arising from this submission. This work was funded by the Geophysical Fluid Dynamics Fellowship at Woods Hole Oceanographic Institution. LRS was also supported by the Department of Defense (DoD) through the National Defense Science and Engineering Graduate (NDSEG) Fellowship Program. BW's research was also supported by the UK Engineering Physical Science Research Council (EPSRC) grant number EP/R029628/1, Leverhulme Trust Research Fellowship RF-2022-013.
+
+[Declaration of interests]The authors report no conflict of interest.
+
+[Data availability statement]The code used to produce all simulations and analysis for this study is available on GitHub at and has been archived at .
+
+[Author ORCIDs]L. R. Seitz, , Beth A. Wingate .
+
+ 
+
+Derivation of the slow dynamics
+
+Derivation of the projection operator
+
+In this section, we derive the formula for the projection onto the null space of the fast operator as in . In the QG limit, the fast operator is given by the linear combination $_Fr+F_Ro$, with these component operators defined in . We take Fourier transform and find the the matrix for this fast operator:
+
+A() = ||^2 -Ro(1+L_||^2) & -Ro(1+L_||^2) & 0 & -Fr \\ Ro C & Ro(1+L_||^2) & 0 & -Fr \\ -Ro(1+L_||^2) & Ro(1+L_||^2) & 0 & Fr \\ 0 & 0 & -|^2Fr(1+L_||^2) & 0 .
+
+The null space is spanned by the unit vector
+
+(k_1^2+k_2^2+(1+L_||^2) ^2 k_3^2)^-2 k_2 \\ -k_1 \\ 0 \\ 1+L_||^2 k_3.
+
+Then we can construct, where $_k=(_k, _k, _k, _k)$,
+
+P_k = k_1^2+k_2^2+(1+L_||^2)^2k_3^2k_2^2_k-k_1k_2_k+1+L_||^2k_2k_3_k \\ k_1^2_k-k_1k_2_k-1+L_||^2k_1k_3_k \\ 0 \\ 1+L_||^2 k_3(k_2_k-k_1_k+1+L_||^2k_3_k) .
+
+To transform back into physical space, one simply adds and subtracts $(k_1^2+F^2(1+L_||^2)^-2k_3^2)_k$ from the first component of and $(k_2^2+F^2(1+L_||^2)^-2k_3^2)_k$ from the second. This produces a cancellation with the denominator that yields the $_H$ term in (notice this does not have any $^-1$). Transforming all terms back into physical space yields . 
+
+Fast-slow decomposition
+
+In this section, we present additional details of the fast-slow decomposition that will inform how to use the projection to derive the slow dynamics (completed in Appendix ). In , we can identify the fast operator as $_F = F_
+Ro + _Fr$, which is multiplied by $$, where $$ is the Rossby number. The solution to , which is based on the method of multiple scales, will be denoted $^$ and depends on both the fast time scale $ = $ and the slow time scale $t$. The solution can be expanded as 
+
+ ^(,t,) = ^0(,t,) + ^1(,t,). 
+
+ Substituting into the abstract operator form , we obtain the $O(^-1)$ equation 
+
+ ^0 + _F(^0)=0.
+
+By separation of variables, has a solution of the form
+
+^0(,t,)=e^- _F(,t).
+
+At next order, we obtain the $O(^0)$ equation 
+
+ ^1 +_F(^1)
+ = -(^0 + _S(^0)+(^0,^0)-(^0)).
+ Using Duhamel's principle and , has a solution of the form 
+ 
+ 
+ e^ _F^1 = ^1|_ = 0 - t(,t)
+- _0^ e^s_F&(_S(e^-s_F)+_Fe^-s_F - (e^-s_F))\,s.
+
+The integral in is zero due to . Then due to the identification , the principal term $(,t)$ has no fast oscillations. Overall, to order $$, 
+
+^(,t) = e^-_F(,t) + o(1),
+ 
+ valid as $ 0$. While $$ has no oscillations, $e^-_F(,t)$ does. This motivates the fast-slow decomposition. Since $_F$ is required to be skew-Hermitian, by the Spectral Theorem, we can decompose $$ into a portion outside of the null space of $_F$ and a portion lying within the null space of $_F$. This decomposition can be interpreted as 
+ 
+ (,t) = _F(, t) + _S(,t),
+ 
+ where $_F _F$ is the fast portion and $_S_F$ is the slow portion. We have thus derived in detail. Substituting into , 
+ 
+^(,t) = e^-_F_F(,t) + _S(,t)+o(1). 
+ 
+ Then $_S$ has no fast oscillations. Now we can find equations whose solutions are $_F$ and $_S$, respectively. We can find an equation for the slow operator by projecting onto the null space of the fast operator. However, we can simplify this by projecting only the $O(^0)$ version of , which we have found so far to be 
+
+ ^0 t + _F(^1)+_S(^0)+^0^0-(^0)=0.
+ 
+ Letting $P$ denote such a projection operator, then $_S$ may be alternatively represented as the solution to (i.e. identified with $^0$ in)
+ 
+ ^0 t + P(_S(^0)+^0^0-(^0))=0.
+ 
+
+Derivation of the conservation of three-dimensional QG PV-
+We use the projection derived in Appendix to derive the slow dynamic equations, in the absence of viscosity. Before doing so, we establish a necessary vorticity identity. From , the vorticity equation for the LANS$-$ equations is
+
+ t + ^-1 = ^-1.
+
+Here, the notation $^-1 $ means multiplying a row vector $^-1$ with the gradient (matrix) of $$. We require an analogous identity for the horizontal vorticity, i.e., the curl of the total advective operator (including the $ ^T$ term) but in two dimensions. An explicit calculation yields that, upon considering incompressibility,
+
+ _H ((_H _H)_H+_H(_H _H)) = (^-1_H _H)_3.
+
+Reducing the projected equations to the conservation of potential vorticity crucially requires the application of hydrostatic and geostrophic balance, which can be seen to be formally valid even in the case of a fast singular limit (e.g., ). The key equation to see that this generalizes in the $ 0$ case is the vorticity identity . From this, a generalized Ertel's potential vorticity theorem can be proven, which is the theorem required to formally show leading order hydrostatic and geostrophic balance. 
+ Now, to compute the slow dynamics equations from the projection, we use . Since the slow operator is zero in this limit and we are finding the slow dynamics in the absence of diffusion, we compute $P__(, )$, where, as before, $ = (_H, w, )^T$. We need to substitute in for $(_H, _H)$ (where this is the appropriately truncated operator):
+
+(^-1_H_H)_H-_H _H^-1(_H ((^-1_H _H) _H)).
+
+ Here, $^-1$ indicates the two-dimensional version of the operator, and there is an $H$ on the inverse Laplacian because it is actually a vector Laplacian. For $(, )$ (this is only the fourth component of the operator), 
+
+(^-1_H _H).
+
+ Upon applying the projection, the contribution from the second term in will be zero. Then
+
+P__(, ) &=__^-1(_H^( _H ((^-1_H _H)_H))-F^-1_H^( z( (^-1_H _H)))) \\
+&= __^-1(_H^( (^-1_H _H)_3) -F^-1_H^( z( (^-1_H _H)))) .
+
+Using the commutativity of $^-1$ with the advection operator (under the interpretation of Lagrangian averaging, i.e., that this is a valid approximation to the dynamic Helmholtz operator), from which it follows due to the lack of time-dependence that there is commutativity with just the $^-1_H _H$ portion, we obtain 
+
+P__(, )= __^-1(_H^( (^-1_H _H)_3) -F_H^( z (^-1_H _H)^-1))). 
+
+We apply hydrostatic balance, which in this case yields that $_3 = _H$ and $ = -F z$. We can commute the partial derivative with respect to $z$ with the advective term due to the relationships with $$. We obtain 
+
+P__(, ) = __^-1(_H^( (^-1_H _H)_H) +F^2_H^( (^-1_H _H)^-1 z^2)). 
+
+Now assembling the first row (velocity portion) of the slow equation , we have 
+
+_H t + __^-1(_H^( (^-1_H _H)_H) +F^2_H^( (^-1_H _H)^-1 z^2)) =0.
+
+After applying $__$ to both sides, and substituting in $_H = _H^ $, we obtain 
+
+ t(_H_H^ + F^2 ^-2 z^2_H^)+ _H^( (_H^ _H)_H) +F^2_H^( (_H^ _H)^-1 z^2) =0.
+
+After pulling out the $_H^$ and either taking the horizontal curl of both sides in order to get a horizontal Laplacian and then applying the inverse horizontal Laplacian to both sides, or integrating each row and then putting together the results to see that the constant of integration must be zero, we obtain exactly .
+
+Derivation of the fast dynamics
+
+Eigenvectors
+
+In this section, we write the formulas for the eigenvectors corresponding to , for the various cases of the wavenumber $$. Both the eigenvalues and eigenvectors are similar to those in and the eigendecomposition that can be used to decompose the dynamics into fast and slow portions (after appropriately orthonormalizing the basis) is given by eq. (2.16) therein.
+ The most general case is when $ 0, _H 0$:
+
+ ^(1)() &= |_H|||(1+L_||^2) i(1+L_||^2)k_1k_3 - ^(1)() \\ i(1+L_||^2)k_2k_3 + ^(1)() \\ -i(1+L_||^2)|_H|^2 \\ _H|^2 ^(1)() , \\
+^(-1)() &= |_H|||(1+L_||^2) -i(1+L_||^2)k_1k_3 - ^(1)() \\ -i(1+L_||^2)k_2k_3+ ^(1)() \\ i(1+L_||^2)|_H|^2 \\ _H|^2 ^(1)() , \\
+^(0)() &= ||-|^2)k_2^(1)() \\ |^2)k_1^(1)() \\ 0 \\ -^(1)(). 
+
+Even though $_^(0)$ is a double eigenvalue, there are only three eigenvectors because the last does not respect incompressibility. 
+ The second case is when $_H=0$ but $ 0$
+
+ _^(1) = \\ \\ 0 \\ 0 , _^(-1) = - \\ \\ 0 \\ 0 , _^(0) = 0 \\ 0\\ 0 \\ 1 .
+ 
+The last case is when $=0$. In this case the four eigenfunctions all correspond to wave modes, and have frequencies $^( 1)() = 1, ^( 1)() = F$. The eigenfunctions are 
+
+ _^(1) = \\ \\ 0 \\ 0 , _^(-1) = - \\ \\ 0 \\ 0 , _^(1) = 0 \\ 0\\ \\ , _^(-1) = 0 \\ 0\\ \\ - .
+ 
+
+Range of purely fast interactions
+
+In $$, Table , a criterion is given for when there are no fast-fast-fast interactions. When $=0$, there are none when $2 F 2$ (c.f. ). Considering the nonzero eigenvalues , if $k_3=0$, then 
+
+ ^( 1)()= (1+L_|_H|^2)^-2.
+
+If instead $|_H|^2=0$ then 
+
+ ^( 1)()= 1+L_ k_3^2.
+
+Accordingly, 
+
+ |()| = ((1+L_|_H|^2)^-2, 1+L_ k_3^2) |()| = ((1+L_|_H|^2)^-2, 1+L_ k_3^2). 
+
+For $() + () = ()$ (without loss of generality, $(), (), () 0$), it must be the case that $2 | | < | |$. Thus, whenever
+
+2 F(1+L_|_H|^2)^2 2,
+
+there are no resonant triad interactions purely among inertial-gravity waves. 
+
+Derivation of energy conservation
+
+The quadratic invariants of the LANS-$$ equations appeared elsewhere (e.g., ), but for completeness we provide the derivation of here. To derive the energy conservation law , we dot with $$ and multiply by $$ (with $n=1$ in the viscous operator). We obtain the kinetic energy equation, which we integrate over the domain,
+
+ _ t \, + _ ( + ^T) \, + _ () + Fr \, = Re_ \,. 
+
+Note that the rotation term vanished upon taking the dot product with $$. For the potential energy equation, we obtain 
+
+ _ t \,+ _ ( ) \,- _ Fr ( )\, = RePr_ \,.
+
+ We are considering triply periodic functions (which are sufficiently regular, on a sufficiently regular, bounded domain). Consequently, the inverse Helmholtz operator is self-adjoint because the Helmholtz operator is, which is easily seen via the application of integration by parts twice. Using this property, 
+
+ dt_ 2()\, = 2_ t + t \,= _ t \,.
+
+To evaluate the advective term, we write it in index notation:
+
+ _ ( + ^T) \, = _ u_i(u_j_jv_i+v_j_iu_j) \,= _ u_iv_j_iu_j - v_i((_ju_i)u_j+u_i(_ju_j)) \,.
+
+Hence 
+
+ _ ( + ^T) =_ u_iv_j_iu_j -_ v_iu_j_ju_i =0. 
+
+Here we used the divergence theorem twice and evaluated the difference to be zero by relabeling the dummy indices. The pressure term in is zero due to the divergence theorem. For the advection term in , 
+
+ _ ( ) \,= _ (2^2) \,= _ ( 2
+ ^2) \,- _( )(2^2) \,=0,
+
+where we used the product rule to split the integral and divergence theorem and incompressibility to conclude the penultimate expression equals zero. 
+For the diffusive term, 
+
+ Re_ \, = -Re_ ( ) ( )\,,
+
+given $ =0$. Similarly, in , 
+
+ RePr _ \, = -RePr_ \,.
+
+Substituting , , and into , kinetic energy conservation becomes
+
+ 2dt _ + Fr\, = -Re _ ( ) ( )\,.
+
+Substituting and into , the potential energy equation becomes
+
+ 2dt_ - Fr \,= -RePr _ ( )\,.
+
+Adding together and yields exactly .

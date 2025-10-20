@@ -1,0 +1,659 @@
+[letterpaper, 10pt]article
+
+sgrauer@psu.edu*.3em\\
+ Department of Mechanical Engineering, Pennsylvania State University*-1em\\
+
+0
+*-2em
+
+ We numerically investigate the joint observability of flow states and unknown particle properties from Lagrangian particle tracking (LPT) data. LPT offers time-resolved, volumetric measurements of particle trajectories, but experimental tracks are spatially sparse, potentially noisy, and may be further complicated by inertial transport, raising the question of whether both Eulerian fields and particle characteristics can be reliably inferred. To address this, we develop a data assimilation framework that couples an Eulerian flow representation with Lagrangian particle models, enabling the simultaneous inference of carrier fields and particle properties under the governing equations of disperse multiphase flow. Using this approach, we establish empirical existence proofs of joint observability across three representative regimes. In a turbulent boundary layer with noisy tracer tracks ($St 0$), flow states and true particle positions are jointly observable. In homogeneous isotropic turbulence seeded with inertial particles ($St 1-5$), we demonstrate simultaneous recovery of flow states and particle diameters, showing the feasibility of implicit particle characterization. In a compressible, shock-dominated flow, we report the first joint reconstructions of velocity, pressure, density, and inertial particle properties (diameter and density), highlighting both the potential and certain limits of observability in supersonic regimes. Systematic sensitivity studies further reveal how seeding density, noise level, and Stokes number govern reconstruction accuracy, yielding practical guidelines for experimental design. Taken together, these results show that the scope of LPT could be broadened to multiphase and high-speed flows, in which tracer and measurement fidelity are limited.*.5em
+
+: Data assimilation, inverse problems, Lagrangian particle tracking, Eulerian flow reconstruction, inertial particles
+
+*2em
+
+Introduction
+
+Understanding and modeling turbulent flow in real-world systems ideally calls for dense, time-resolved Eulerian fields: velocity, pressure, density, and gradient tensors of the same. These fields allow one to educe coherent structures and superstructures , quantify energy transfer and dissipation , determine surface loading from pressure and shear stress , analyze buoyancy-driven transport in convection , and so forth. In principle, scale-resolving computational fluid dynamics (CFD) methods can deliver such fields, but direct numerical simulation (DNS) becomes intractable when applied to device-scale flows at realistic Reynolds numbers , and large-eddy simulation depends on subgrid-scale closures that require tuning for new physical regimes . Even in a small subdomain, accurate simulations hinge on the fidelity of boundary conditions that are often difficult to specify, such as representative upstream disturbances , wall heat fluxes , or coherent structures in the inflow . These boundaries are challenging to measure experimentally, and it is rare to pose forward CFD simulations in terms of empirical unsteady boundary conditions.
+
+Experiments, by contrast, capture the true behavior of flows but yield measurements that are typically sparse, noisy, and indirectly related to the quantities of interest. Data assimilation (DA) offers a means to combine these complementary capabilities: enforcing the governing equations via CFD methods while matching available measurements, thereby producing physically consistent reconstructions of real flows . In this context, Lagrangian particle tracking (LPT) is an especially attractive diagnostic because it provides time-resolved, volumetric velocity information in complex configurations and at high Reynolds numbers. The data, however, are limited to particle trajectories (also known as ``tracks’’) that are spatially sparse, subject to localization or tracking errors, and, in some flows, whose velocities deviate from the underlying fluid velocity due to particle inertia. This leads to the central question motivating our study: Given experimentally realizable Lagrangian data, to what extent can we recover the antecedent sequence of Eulerian flow states and salient particle properties, such as their true positions, sizes, and densities, by supplementing the tracks with the equations of motion for the carrier and particle phases in a DA reconstruction?
+
+Capabilities and limitations of Lagrangian particle tracking
+
+Lagrangian particle tracking has emerged as a leading diagnostic for volumetric velocimetry in both laboratory and field environments . Compared to tomographic particle image velocimetry (PIV) , it achieves higher spatial resolution and nearly ghost-free particle fields, enabling more accurate computation of derivatives and more reliable pressure inference . Tracks are obtained by seeding the flow with tracer particles (or by leveraging natural tracers), imaging them with one or more cameras, and reconstructing 3D particle positions before linking them in time. Multi-camera triangulation provides high-accuracy localization from overlapping views, while single-camera methods such as digital in-line holography (DIH) , plenoptic cameras , or defocusing imaging enable 4D measurements in settings where optical access is limited. Recent advances, including the predictor--corrector approach of Shake-The-Box (STB) tracking , object-aware LPT near boundaries , field-scale deployments in atmospheric turbulence , and multi-pulse schemes for high-speed compressible flows , have expanded the technique's reach. Hence, LPT is now frequently applied to flows of practical relevance.
+
+Two challenges are especially relevant to the question of observability in LPT. The first challenge is localization and tracking error. Although present in all LPT variants, these errors are most severe for single-camera systems (i.e., based on plenoptic or DIH imaging), which suffer from strongly anisotropic uncertainties due to depth-of-focus limitations. The largest errors occur along the optical axis , degrading velocity estimates and, in turn, derived quantities such as vorticity and pressure. The second challenge is inertial transport. Particles with finite response times, characterized by their Stokes number $St = _/_$, where $_$ and $_$ are characteristic time scales of the particle and carrier fluid, deviate systematically from the local fluid velocity . Such particles appear in varied settings, from helium-filled soap bubbles in wind tunnels to snowflakes in the atmospheric boundary layer , causing measured trajectories to diverge from the carrier-phase motion. Both effects reduce the information content of LPT data and constrain the range of flow states and particle properties that can be inferred. Ultimately, these limitations reflect the dissipative dynamics of inertial particles, weakening the correspondence between the recorded tracks and underlying velocity field .
+
+Data assimilation and observability in Lagrangian particle tracking
+
+Early reconstruction approaches for LPT converted Lagrangian tracks into Eulerian fields by interpolation , but these methods were limited by the particle sampling resolution and prone to amplifying noise. Modern DA methods incorporate the Navier--Stokes equations as constraints, either hard (ensemble Kalman filters, Deng et al., ; adjoint--variational methods, Gronskis et al., ; Foures et al., ; He et al., ) or soft (physics-based interpolation with B-splines, Gesemann et al., ; radial basis functions, Casa \& Krueger, ; vorticity formulations, Jeon et al., ). By enforcing physical consistency, these methods can reconstruct velocity fields beyond the limits of interpolation per se, recovering information at scales finer than the particle-sampling Nyquist wavenumber. Machine learning variants, like those based on physics-informed neural networks (PINNs, Raissi et al., ), offer flexible functional representations and have been successfully applied to a broad range of flows. They are increasingly relied upon for LPT DA, including in the present study, owing to their ease of implementation, robustness in inverse settings, and demonstrated accuracy with sparse or noisy data .
+
+Two central difficulties remain when processing LPT data, stemming from the challenges outlined above. One is localization and tracking errors, which directly limit the fidelity of reconstructed velocities; these errors can be compounded by biases inadvertently introduced during track filtering. The other is the assumption of ideal tracers, which fails when particles have inertia, creating the additional challenge of jointly inferring particle properties alongside flow fields. In other words, the particle--flow coupling must be modeled, and it is not known a priori whether carrier-phase states and particle properties are jointly observable from the track data. A related theoretical question is whether the same framework can also recover the true particle positions from noisy measurements. Although this is rarely a primary objective in LPT, since particle positions are merely a means to recover flow fields, successful recovery of the true positions from noisy data would indicate that the governing physics and the measurements jointly constrain the track geometries, highlighting the information content of Lagrangian data in turbulence. Addressing these challenges requires a DA framework that treats particle positions as the measured quantity rather than velocities, encodes the coupled carrier-phase and particle-phase dynamics, and operates directly on noisy tracks. The development and demonstration of such a framework is one focus of this work.
+
+Present approach and investigations into joint observability
+
+We address the observability of flow state trajectories and particle properties using a framework we term neural-implicit particle advection (NIPA). NIPA couples an Eulerian flow model, parameterized by coordinate neural networks (i.e., PINNs when trained with a physics loss), to individual Lagrangian particle models that embed the particle advection equation as a hard constraint. For inertial particles, their size, density, and other attributes enter the model as trainable parameters, enabling estimation of properties that determine their response times. The governing physics enter via soft constraints on the Navier--Stokes equations for the carrier phase and an extended Maxey--Riley formulation for the particle (or disperse) phase. By design, NIPA works directly from the raw track positions, avoiding biases from pre-filtering, and it estimates both flow states and particle properties without requiring direct observations of either.
+
+This framework provides the means to test joint observability across a range of flow regimes and measurement conditions. Moreover, it represents an algorithmic advance in LPT DA. We investigate observability through synthetic test cases that include noisy tracks from ideal tracers in incompressible turbulence, inertial particles in the same, and inertial particles in compressible flows with shocks. In each case, we examine whether the available track data and governing equations suffice to recover the flow states and particle properties, and we study sensitivities to seeding density, noise level, and Stokes number. These results provide empirical evidence for the existence of an inverse mapping from Lagrangian measurement manifolds, whose dimensions reflect degrees of freedom in the track data, to the flows' global attractors in state space, which capture their essential degrees of freedom. In this way, we hope to set the stage for future theoretical work on the limits of LPT-based state estimation. The remainder of this paper outlines the reconstruction methodology in ~, describes the flow cases used for numerical testing in ~ and the implementation details in ~, analyzes observability of particle positions for ideal tracers in ~, and extends this treatment to inertial particles for turbulent and compressible flow reconstruction in ~. Lastly, in ~, we investigate the sensitivity of reconstruction accuracy to particle inertia in the context of noisy tracks before concluding the manuscript.
+
+Methodology: neural-implicit particle advection
+
+Understanding the joint observability of flow state trajectories and particle properties from Lagrangian data requires a DA algorithm that accounts for the physics of both phases. Existing DA methods either reconstruct the flow but treat the particles as ideal tracers, neglecting particle--fluid interactions, or they infer the particle dynamics given full knowledge of the flow field . Neither approach is adequate to the task at hand. To remedy this shortcoming, we introduce a new framework for LPT DA, which we call NIPA. It features dedicated models of both the flow and the particles, which are coupled through the governing equations of disperse multiphase flow, namely, the Navier--Stokes and extended Maxey--Riley equations. By jointly optimizing flow and particle models to satisfy these equations, NIPA recovers not only time-resolved flow states but also enhanced particle trajectories and otherwise unknown particle properties. This tool thus enables the systematic evaluation of how dataset attributes (e.g., the number and spacing of particles, data fidelity, particle inertia, and compressibility) affect reconstruction accuracy. Below, we present our framework, define the objective loss terms, and describe our flow and particle models.
+
+Framework for data assimilation
+
+The NIPA framework employs ``neural-implicit flow states'' coupled to a set of particle models, with one model per particle, to reconstruct unsteady flows from Lagrangian tracks. A schematic of the approach is shown in . The flow field is represented using one or more coordinate neural networks, which take space--time input coordinates and return flow variables at that position and time,
+
+ 
+ : ^d+1, (, t) (, p),
+
+where $ $ are the spatial coordinates in the flow domain $$, $t $ is a time within the measurement interval $$, $$ and $p$ are the flow velocity and pressure, respectively, and $d \2, 3\$ is the number of spatial dimensions. Additional variables can be added to the outputs of $$ as needed, such as density or temperature in compressible flows. When coordinate neural networks like $$ are trained to minimize residuals to a set of physical equations, they are deemed to be PINNs, i.e., ``physics-informed neural networks.'' Network architectures used in this work are described in more detail in ~.
+
+Measured particle tracks natively comprise sequences of spatial positions determined at the image times. Accordingly, our particle models are defined with respect to these tracked locations, which may be adjusted during training to account for localization uncertainty. For the $k$th particle, we introduce a dedicated model $[k]$ that represents its velocity as a continuous function of time,
+
+ 
+ [k]:[k] ^d, t [k] k \1, , n_\,
+
+where $[k]$ is the velocity of particle $k$ at time $t [k]$, $[k] $ is the time span of that track, and $n_$ is the total number of particle tracks. Although $[k]$ may take various functional forms, admissible particle paths must satisfy an advection equation,
+
+ 
+ _j[k] - _j-1[k] =
+ _t_j-1^t_j [k] (t) t j \1, , n_k-1\
+
+where $_j[k]$ is the measured position of particle $k$ at the $j$th time step $t_j$ and $n_k$ is the number of measurement points along that track. Section~ details the formulation of $[k]$, wherein the above advection equation is enforced as a hard constraint.
+
+Our formulation of $[k]$ provides a general framework for modeling the kinematics of both ideal tracers and inertial particles. In the latter case, properties of inertial particles like their size, density, and shape determine $_$ and govern the particles' dynamics and coupling to the carrier fluid . These properties, and therefore any slip velocities, are nearly always unknown in practice, complicating flow reconstruction. To address this, we treat the relevant particle properties as model parameters to be learned, enabling implicit characterization of particles from LPT data in conjunction with the equations of motion for both phases. In well-characterized experiments, by contrast, where the pertinent particle properties are known prior to reconstruction, they may be fixed in the model.
+
+Composite objective function
+
+Flow and particle states ought to satisfy the governing equations for both phases, they must match known boundary conditions, and they should be consistent with the observed LPT data. To achieve these objectives, the flow model $$ and particle models $[k]$ are trained in tandem by minimizing a composite loss,
+
+ 
+ _ =
+ _1 _^ +
+ _2 \,_^ +
+ _3 \,_^ +
+ _4 \,_,
+
+where $_i$ are weighting coefficients that balance the relative contributions of each term. The four loss terms, detailed below, are the position-based data fidelity term $_^$ (cf. the velocity-based term in ~), the flow physics term $_^$, the particle physics term $_^$, and the boundary condition term $_$.
+
+Particle positions are treated as trainable parameters, meaning that the estimated position of each particle at each measurement time can be adjusted during reconstruction. Without additional constraints, however, allowing the particles to move risks unmooring the models from the measurements. To anchor reconstructions, therefore, we introduce a data fidelity term that penalizes discrepancies between measured and estimated positions, weighted by the localization uncertainty,
+
+ 
+ _^ = ( d n_ _k=1^n_ n_k _i=1^n_k _i[k] - _i[k] _^2 - 1 )^2.
+
+Here, $_i[k]$ and $_i[k]$ are the measured and estimated (trainable) positions of the $k$th particle at time $t_i$, with $n_$ total tracks and $n_k$ samples in the $k$th track. The norm is the matrix-weighted Mahalanobis norm,
+
+ _^2 = ^ ^ , ^ = ^-1
+
+and $$ is the covariance matrix of the positional uncertainty. For independent, centered Gaussian localization errors, this distance follows a chi-squared distribution with $d$ degrees of freedom, where $d$ is the dimension of $$ and also the expected value of the statistic. Normalizing the chi-squared statistic by $d$, subtracting 1, and squaring the result, as in , encourages consistency of the distances $_i[k] - _i[k]_2$ with the expected statistics of the localization errors. Values below $d$ are indicative of overfitting to noise, while values above $d$ suggest underfitting. In isolation, acts as a maximum likelihood criterion for particle positions. To demonstrate this, we train the particle models in a data-only setting, which provides a baseline for comparison. When coupled with the physics and boundary losses, however, underpins a physics-informed particle tracking method.
+
+The flow physics loss penalizes residuals of the carrier-phase governing equations,
+
+ _^ = _)^-1| | _ _ e_ _2^2 \,t,
+
+where $_$ is the residual vector associated with the governing flow equations within $ $. For domains with transient boundaries, the space--time domain is not the simple Cartesian product of $$ and $$; see for details on handling such situations. While most LPT DA algorithms are restricted to incompressible flows, the present framework can be extended to compressible configurations with minimal modification. Appendix~ summarizes the governing equations used in this study, including incompressible turbulent flows and a compressible example involving a conical shock wave followed by an expansion fan.
+
+The particle physics loss is based on residuals from an equation of motion for the disperse phase,
+
+ 
+ _^ = ( _ )^-1n_ _k=1^n_ |[k]| _[k] _[k]_2^2 t,
+
+where $_[k]$ is the residual of the $k$th particle's governing equation along its trajectory. For small spherical particles with a vanishing particle Reynolds number, the dynamics are described by the Maxey--Riley equation . The specific form adopted in this work, including its adaptation for compressible flows, is summarized in appendix~. In cases with inertial particle transport, information about particle properties is obtained through the residuals in , since the equation of motion (and therefore $_[k]$) generally depends on the flow velocity $$, the particle velocity $[k]$, and particle characteristics such as their sizes and densities.
+
+In many LPT experiments, the particles are carefully selected to behave as ideal tracers with negligible slip velocities. In this limit, as $St 0$, the residuals simplify to
+
+ 
+ _[k] = - [k],
+
+which is a pointwise equality between the fluid and particle velocities along each trajectory.
+
+Although neural state estimation does not explicitly require boundary conditions, incorporating known constraints can improve reconstruction accuracy. In turbulent boundary layers (TBLs), for instance, enforcing a no-slip condition at the wall enhances near-wall resolution, where positional uncertainties are worsened by optical reflections and where the flow scales are smallest. This combination of large relative uncertainty and fine-scale dynamics makes boundary conditions especially valuable near walls. The no-slip boundary loss is
+
+ 
+ _ = )^-1| | _ _ _2^2 \,t,
+
+where $ $ denotes the no-slip portion of the domain boundary $ $. This formulation can be extended to moving-wall conditions , enabling inference of wall motion, or to hybrid constraints that feature multiple variables (e.g., a constant free-stream density, adiabatic walls, or known pressures at tap locations) and boundary types (Dirichlet, Neumann, Robin), depending on the pertinent physics.
+
+To evaluate the added value of joint flow--particle reconstruction, we implement a simplified baseline that neglects the particle models and instead relies on velocity information derived from the particle tracks through an intermediate step, as is common in LPT DA . In this baseline, the framework reduces to a flow network $$ that is trained to reproduce the track-based velocities $$ while satisfying the governing equations and boundary conditions. The corresponding loss is
+
+ 
+ _ =
+ _1 _^ +
+ _2 _^ +
+ _3 _,
+
+where $_^$ enforces agreement between the reconstructed flow velocity and particle velocities inferred from the tracks. The velocity-based data fidelity term is
+
+ 
+ _^ 
+ = n_ _k=1^n_
+ n_k _i=1^n_k
+ - _i[k] _2^2,
+
+where $$ is the velocity field from $$ and $_i[k]$ is the velocity estimate for the $k$th particle at time $t_i$. Such estimates may be obtained by differentiating the tracked positions, but finite differencing amplifies noise, so smoothing or interpolation schemes like those based on B-splines, polynomial fits, or kernel convolution are often applied. Here, we demonstrate ``baseline reconstructions'' using both a second-order finite difference scheme (with single-sided differences at the track ends) and a quasi-optimal B-spline filter, detailed in appendix~. While these methods can suppress noise, they also embed errors in $_^$ through the heuristic choice of filter parameters that determine $_i[k]$. By contrast, our position-based formulation in and the associated particle models bypass intermediate velocity estimation. Instead, we anchor the reconstruction to the measured positions, subject only to the localization error statistics.
+
+We wish to emphasize that this baseline is used solely as a reference. It represents the performance attainable when particle--fluid coupling and particle properties are ignored, thereby highlighting the added value of a comprehensive multiphase reconstruction strategy.
+
+Neural flow model
+
+The flow model consists of one or more neural networks, here denoted by $$, comprising an input layer, output layer, and $n_$ hidden layers,
+
+ 
+ 
+ [n_+1] = ([0]) = [n_+1] [[n_] [n_-1] [2] ([0])] + [n_+1],
+ 
+ with
+ 
+ [l] = ^l([l-1]) = ([l] [l-1] + [l]), l \2, , n_\.
+ 
+
+In this expression, $[l]$ are the activations at layer $l$, $[l]$ are the corresponding weights, and $[l]$ the biases. We use the swish activation,
+
+ 
+ (z_i) = 1 + (z_i).
+
+Furthermore, to mitigate the low-frequency bias that commonly occurs in gradient-based training , the first hidden layer $[1]$ is replaced by a Fourier encoding $$ ,
+
+ 
+ [1] = ([0]) = [(2 _1 [0]), \,(2 _1 [0]), , \,(2 _n_ [0]), \,(2 _n_ [0])],
+
+where $_i$ are random frequency vectors, sampled once upon initialization and fixed during training, and $n_$ is the number of features. For incompressible flow represented by a single network, the input is $[0] = (, t)$ and the output is $[n_+1] = (, p)$.
+
+Two additional strategies are used to improve reconstruction accuracy. 
+First, some flow variables (e.g., density, temperature, total energy in compressible flows) must be strictly positive. Enforcing positivity stabilizes the inverse problem, and we achieve this by reparameterizing the corresponding outputs with a softplus function,
+
+ 
+ (z_i) = [1 + (z_i)],
+
+which smoothly maps $ (0, )$. Second, different flow variables often have distinct spectral characteristics, which can hinder the performance of a shared network. For example, in homogeneous isotropic turbulence (HIT), velocity and pressure follow $^-5/3$ and $^-7/3$ scalings, respectively . In such cases, it is advantageous to assign dedicated subnetworks, e.g., $_ : (, t) $ and $_p : (, t) p$ . Both strategies are employed in this work where appropriate and noted, accordingly.
+
+Kinematics-constrained particle model
+
+Particles are represented by models that we term ``kinematics-constrained tracks'' (KCTs), which embed the advection equation as a hard constraint. As a result, trajectories given by KCTs always integrate to the positions specified by the model parameters. Measured positions are incorporated directly into the models. When high-fidelity LPT data are available, the specified particle positions can be fixed. In cases with appreciable localization uncertainty, however, they are treated as trainable variables and refined through optimization of the position-based data fidelity term $_^$ in conjunction with the physics and boundary losses. Velocities, accelerations, and intermediate positions are determined by free parameters of the model, but these parameters are themselves unconstrained. Instead, kinematic consistency is enforced by the model formulation, rather than by explicit nonlinear restrictions in parameter space. This ensures that the model outputs meet a baseline of physical fidelity without complicating gradient-based training. illustrates a representative KCT. In the example, tracked positions are fixed while other model parameters are adjusted, yielding multiple velocity histories that integrate to the same set of data.
+
+In what follows, the KCT formulation is presented for a single velocity component $v$, with the particle index $k$ omitted for clarity. Extension to the full vector $[k]$ is straightforward. The construction draws on the theory of functional connections , which provides a systematic framework for converting constrained optimization problems into unconstrained ones. Within this framework, each velocity component can be written as a function of time,
+
+ 
+ v(t) =
+ g (t) + _j=1^n_ _j \,_j(t),
+
+where $g$ is a user-chosen ``free function,'' $_j$ is a projection coefficient that enforces the integral constraint over the interval $[t_j-1, t_j]$, $_j$ is a switch function that activates the projections over time, and $n_ = n_k - 1$ is the number of constraints. The choice of $g$ determines the form of the projection coefficients. Here, $g$ is taken as a $P$th-order polynomial in time,
+
+ 
+ g(t) = _i = 0^P _i \,t^i,
+
+with the coefficients $_i$ being trainable parameters. To enforce the advection constraint in , the projection coefficients are set to
+
+ 
+ _j = (x_j - x_j-1) - _t_j-1^t_j g(t) t,
+
+where $x_j$ is the tracked position at time $t_j$. The switch functions are linear combinations of a set of so-called ``support functions,''
+
+ 
+ _j(t) = _i = 1^n_ s_i(t) A_ij,
+
+where $s_i$ is the $i$th support function and $A_ij$ is a weighting coefficient. The switch functions must successively activate the integral constraints over the corresponding intervals, which amounts to the condition
+
+ 
+ _t_i-1^t_i _j (t) t =
+ 1, & i = j \\ 0, & i j 
+ i, j \1, , n_\.
+
+Enforcing this condition is equivalent to solving the linear system
+
+ 
+ = ,
+
+where $$ is an $n_ n_$ matrix with entries
+
+ S_ij = _t_i-1^t_i s_j (t) t,
+
+and $$ is the identity matrix. The support functions $s_j$ must yield a nonsingular matrix $$ but are otherwise flexible. While suggested monomials (e.g., $s_j(t) = t^j-1$), the resulting KCT model becomes ill-conditioned for long tracks. Instead, we use radial basis functions,
+
+ 
+ s_j (t) = [-_j^2 (t - t_0,j)^2],
+
+with $_j = (t_j - t_j-1)^-1$ and where $t_0,j = (t_j-1+t_j)/2$ is the midpoint for the $j$th interval.
+
+Given a set of support functions, the coefficient matrix $$ is determined by solving , which may be done independently of the free function $g$ and its parameters. Conversely, the projection coefficients $_j$ explicitly depend upon the polynomial parameters $_i$ through . Substituting the polynomial form of $g$ from yields a closed-form expression for the projection coefficients,
+
+ _j = (x_j - x_j-1) -
+ _i=0^P i + 1 (t_j^i+1 - t_j-1^i+1),
+
+where $t_j^i+1$ is time $t_j$ raised to the $(i+1)$th power.
+
+For ease of implementation, it is convenient to recast in matrix form. We thus define a series of entities: a parameter vector $ = \_0, , _P\$, time vector $_(t) = \t^j j=0, , P\$, displacement vector $ = \x_j - x_j-1 j = 1, , n_\$, support-function vector $_(t) = \s_j(t) j = 1, , n_\$, and $(P + 1) n_$ support matrix $$ with entries
+
+ 
+ C_ij = i^-1 (t_j^i - t_j-1^i).
+
+Using these definitions, the KCT velocity model can be written compactly as
+
+ 
+ v(t) = ^ _(t) + (^ - ^ ) ^ _(t).
+
+This representation, which is one component of $$ for a single particle, provides a continuous, differentiable velocity profile that inherently satisfies the advection constraint. The displacement vector $$ encodes the measured particle positions. For noisy tracks, however, the positions in $$ can be adjusted during training alongside $$, enabling refinement of particle positions at measurement times.
+
+Integration and differentiation of the velocity model yield continuous expressions for the particle's position and acceleration. The position is
+
+ 
+ x(t) = ^ _(t) + (^ - ^ ) ^ _(t) + x_0,
+
+where $x_0$ is the initial position of the chosen track component. The acceleration is
+
+ 
+ a(t) = ^ _(t) + (^ - ^ ) ^ _(t).
+
+As in , all time dependencies are carried by the $$ and $$ vectors. For position, these are
+
+ 
+ _(t) &= \t^j+1/(j+1) \;|\; j = 0, , P\, \\
+ _(t) &= \2 \, _j \, [_j (t - t_0,j) ] \;|\; j = 1, , n_ \,
+ 
+ and for acceleration, they are
+ 
+ _(t) &= \j \,t^j-1 \;|\; j = 0, , P\, \\
+ _(t) &= \-2 \,_j^2(t - t_0,j) \,s_j(t) \;|\; j = 1, , n_ \.
+ 
+
+Lastly, it should be emphasized that while the KCT model enforces particle kinematics as a hard constraint, the dynamics emerge only through the joint optimization of $$ and $[k]$ by minimization of the loss in . For any prescribed set of positions, the KCT admits many velocity histories, as illustrated in . Accordingly, the free parameters $$ and $$ must be identified from the interplay of physics and data losses. In cases involving inertial transport with particles of unknown size, density, or other properties, the kinematic parameters alone are insufficient. Additional training variables associated with the relevant particle dynamics (diameter $d_$, density $_$, etc.) must be included in the optimization.
+
+Flow cases and datasets
+
+We investigate the observability problem posed in the introduction through three flow configurations: a turbulent boundary layer, forced homogeneous isotropic turbulence, and supersonic flow over a cone--cylinder body. These are called the TBL, HIT, and cone cases, respectively. They are introduced in the order in which they are analyzed throughout the paper: tracer position observability in TBL ($St 0$ limit), inertial property observability in HIT and shocked flows (finite $St$ and $Re_$), and interactions between noise and inertial effects in HIT. Each dataset mimics realistic LPT conditions in terms of particle densities and accuracy. Together they incorporate standard experimental challenges, such as localization error, as well as more demanding features, including inertial transport and shocks, which are currently beyond the reach of conventional DA methods. The TBL case tests whether noisy particle tracks, when coupled with governing equations and localization uncertainty, contain enough information to jointly recover both the flow and the true particle positions. The HIT case extends this analysis to inertial particles with finite Stokes numbers, testing the joint observability of flow states, particle positions, and particle characteristics (size and density) across varying seeding densities, localization errors, and Stokes numbers. The cone case establishes joint observability in a compressible, shock-dominated flow, where inertial particles traverse an oblique shock wave followed by an expansion fan.
+
+Turbulent boundary layer with noisy particle tracks
+
+The first case is drawn from a DNS of channel flow with a favorable pressure gradient, obtained from the Johns Hopkins Turbulence Database (JHTDB, Perlman et al., ). A pressure gradient of $p/x = -0.0025$ drives development of TBLs along the top and bottom walls, with friction Reynolds numbers up to $Re_ 1000$. The DNS domain spans $8 3 2$ and is discretized with $3072 2304 512$ voxels in the streamwise, spanwise, and wall-normal directions; data are stored at a dimensionless temporal resolution of 0.0065. Our study focuses on a $126 54 80$-voxel subvolume near the bottom wall, corresponding to a physical region of $56 12 4.25$~mm$^3$ (air, $ = 15$~mm$^2$/s). In viscous units, this region spans $1546 331 117$ and covers the buffer layer. The viscous length and time scales are $l_ = 0.036$~mm and $_ = 0.09$~ms, respectively.
+
+Synthetic LPT data are generated by advecting 70~000 ideal tracers, yielding a seeding density of 0.07~particles-per-pixel (ppp) for a 1~MP camera. Advection is performed with a fourth-order Runge--Kutta scheme and periodic boundary conditions. To mitigate boundary-related artifacts, the tracks are first computed in an extended outer domain and then cropped to an inner region that is 15\
+
+Homogeneous isotropic turbulence with bidisperse inertial particles
+
+The second case is based on a DNS of forced incompressible HIT, also taken from the JHTDB. The flow has a Taylor microscale Reynolds number of $Re_ = 433$ and is simulated in a periodic domain of size $2 2 2$, which is discretized into $1024^3$ voxels. We focus on the central $128^3$-voxel subvolume, spanning 100 frames at a dimensionless temporal resolution of 0.002. To mimic laboratory conditions, the data are dimensionalized assuming air as the carrier fluid, giving a physical volume of $10^3$~cm$^3$, a measurement duration of 0.032~s, and a sampling rate of 2500~Hz. The Kolmogorov length scale is $l_ = 350$~$$m and the time scale is $_ = 8.2$~ms.
+
+Particle tracks are generated by simulating 50~000 spherical soda lime glass beads with density $_ = 2500$~kg/m$^3$. Diameters are drawn from two Gaussian distributions: one with mean 32~$$m and standard deviation 2~$$m, the other with mean 73~$$m and standard deviation 4~$$m, with equal sampling from each distribution. The particle field corresponds to a volume fraction of $3.4 10^-6$ and mass loading of $6.9 10^-3$, near the upper boundary of the one-way coupled regime . The resulting Stokes numbers, based on $_$ and $_$, are approximately 1 and 5, indicating strong inertial lag and clustering . Particle dynamics are governed by the Maxey--Riley equation with a Schiller--Naumann drag correction that is valid for $Re_ < 800$ ; here, the maximum particle Reynolds number is about 6.5 (i.e., well below 800). Following and , the Basset history force is neglected. Trajectories are integrated with a second-order Runge--Kutta scheme, with periodic boundaries applied at the periphery of an extended domain (150~voxels). The simulation runs for 201 frames to minimize initialization and boundary artifacts.
+
+Reconstructions are performed on the $128^3$-voxel subvolume over the final 100 frames at 0.4~ms temporal resolution. On average, 33~000 particles occupy the probe volume at any time, corresponding to 0.033~ppp for a 1~MP camera. This case provides a controlled setting to ask whether inertial particle trajectories, with finite Stokes numbers and a bidisperse size distribution, contain sufficient information to jointly recover flow states and particle properties (viz., diameters).
+
+Supersonic cone--cylinder flow with inertial particle transport
+
+The third case involves a steady compressible axisymmetric flow at Mach~2 over a 15$^$ half-angle cone--cylinder body, generating an oblique shock wave at the nose and an expansion fan over the shoulder. The inflow density and temperature are 0.55~kg/m$^3$ and 166.7~K, and the cylinder radius is 20~mm, consistent with the experiments of Venkatakrishnan and Meier . The flow is simulated with the compressible, axisymmetric Navier--Stokes solver in SU2~7.3.0. The computational domain spans a radius of 0.15~m and a length of 0.25~m, with $ = 1.4$. For reference, the freestream velocity is $U_ 520$~m/s and the cone length is 40~mm, leading to a characteristic Reynolds number of $Re 10^6$. Viscous scales for this flow are on the order of a micron in length and tens of nanoseconds in time, and the physical shock thickness is likewise sub-micron, i.e., well below both the resolution of the CFD grid or LPT experiments. Nevertheless, particle tracks throughout the domain provide physical anchors for DA reconstruction. Further details on the mesh, solver settings, and experimental validation are reported by .
+
+Particle tracks are simulated for 2000 solid spherical particles, modeled as agglomerated spheres. Diameters are drawn from a Gaussian distribution with mean $d_ = 2$~$$m and standard deviation 0.5~$$m, and densities from a Gaussian distribution with mean $_ = 950$~kg/m$^3$ and standard deviation 100~kg/m$^3$, consistent with the measurements of . The mean response time is $_ 20$~$$s, implying strong inertial effects through the shock and expansion. The volume fraction and mass loading are $10^-9$ and $10^-6$, respectively, lying well within the one-way coupled regime. Particle transport is computed using a compressible drag law (see appendix~); particles are injected at the entrance of the computational domain at the freestream velocity and advected downstream with periodic outflow conditions. Synthetic tracks are generated for eight frames at an imaging rate of 0.5~MHz, comparable to the frame rates achieved by ultra-high-speed particle imaging systems . Ultimately, this case tests whether the tracks from inertial particles crossing shocks and expansions contain enough information to jointly recover compressible flow and particle dynamics, thereby extending our assessment of observability to a shock-dominated regime.
+
+Homogeneous isotropic turbulence with varying inertial particles and noise
+
+Lastly, we extend the HIT case from ~ to establish how localization uncertainty and inertial effects interact in determining the joint observability of flow states and particle properties. For computational efficiency, we use the central $64^3$-voxel subdomain of the HIT dataset while keeping the temporal resolution, number of frames, and advection schemes unchanged. A dense field of 6600 particles is first simulated and then downsampled by factors of $2^N$, for $N \1, , 6\$, producing seeding densities with inter-particle spacings from $7.3l_$ to $29.3l_$. The particle density is increased from 2500~kg/m$^3$ in ~ to 6000~kg/m$^3$, and diameters are drawn from a Gaussian distribution with mean 33~$$m and standard deviation 4~$$m. This ensures one-way coupling, even at the densest seeding condition. The mean Stokes number is $St = 3$, and no localization error is applied at this stage.
+
+We then vary localization error and Stokes number independently. A total of 3300 particles are simulated, giving a mean spacing of $9.2l_$, sufficient for a scale-resolving reconstructions in the tracer limit. Particle density is adjusted to set $St \1, , 5\$ via $_ = 2000 St$~kg/m$^3$; diameters are fixed to avoid the two-way coupled regime. The clean tracks are corrupted with additive Gaussian noise, with $_x = _y = 0.1N$~px, assuming a 1~MP camera, and $N \1, , 5\$. The lowest level ($N = 1$) corresponds to STB accuracy in ideal laboratory conditions . Once again, to mimic anisotropy, wall-normal noise is doubled ($_z/_x = 2$). These settings yield 25 cases spanning a matrix of Stokes numbers and localization errors.
+
+Implementation and evaluation
+
+Neural network architectures
+
+We implement NIPA in TensorFlow~2.10. Exact partial derivatives of the models with respect to $$ and $t$ are computed using automatic differentiation. Integrals over $$, $$, and $$ in -- are approximated by Monte Carlo sampling. We query the flow volume using a batch of 5000 points and evaluate boundary losses using 1000 points. For particle tracks, we adopt a two-stage strategy: first, 5000 tracks are sampled; second, ten random points are drawn along each track in time, yielding a batch size of 50~000 points. Although LPT data are inherently discrete, the continuous-time formulation of the KCT model enables dense temporal sampling along the tracks.
+
+The network architectures are tailored to the complexity of each flow case, with parameters listed in . Flow models and submodels are denoted $$, with the target field indicated in the subscript, e.g., $_$ and $_p$ represent networks for the velocity vector and pressure fields, respectively. When no subscript is used, $$ maps directly to the full primitive state vector. This applies in the cone case, where $ : (, t) (, , T)$. An equation of state is incorporated into the physics loss for closure in this case, as detailed in appendix~. All networks employ a Fourier encoding layer, with frequency vectors $_i$ drawn from a standard Gaussian distribution for spatial features and from a zero-mean Gaussian with standard deviation 0.2 for temporal features. The number of Fourier features is fixed at 1024, which provides sufficient expressivity for the turbulent TBL and HIT cases.
+
+Model initialization strategy
+
+We next specify initialization strategies for the flow and particle models. Initialization of the flow model is straightforward: network weights are drawn from a standard normal distribution and biases are set to zero. Initialization of the kinematics-constrained particle models proceeds in three steps. First, long tracks are split into shorter segments to balance accuracy and computational cost (i.e., to keep matrix sizes manageable); guidelines for segment length are given in appendix~. Second, for ideal tracers, particle displacements $$ are initialized directly from the raw (noisy) track data, with the polynomial coefficients in $$ set to zero. We refer to this as a cold start, since it requires no prior information. In contrast, inertial tracks are warm-started using filtered track data to aid convergence. This is necessary because additional unknowns, such as particle diameters and densities, are inferred in the inertial cases, making the problem more ill-posed. Warm-started KCTs inherit both the regularity and the bias of the chosen filter, a trade-off that is necessary for stable optimization. Details of this procedure are reported in appendix~. Finally, all trainable parameters are normalized to order unity. This ensures that particle quantities of different units and scales across all the models can be trained together effectively using a single learning rate. Appendix~ details the normalization procedure and parameter selection strategy.
+
+Training procedure
+
+Flow and KCT models are trained together by minimizing $_$. The weighting coefficients for each loss term $_i$ are chosen through a simple parameter sweep. Results are relatively insensitive to modest variations in noise level or particle density once a quasi-optimal set of weights has been identified; future work will explore robust auto-weighting strategies, e.g., see . Training is performed using the Adam optimizer, with the learning rate for flow networks fixed at $10^-3$. For particle models, the learning rate is annealed from $10^-4$ to $10^-5$ and finally to $10^-6$ to improve precision. All cases are trained to convergence, typically requiring about 2~000 epochs per learning rate. Computations are performed on an NVIDIA RTX A6000 GPU with 48~GB of onboard memory. The total wall-clock training time is approximately 15~hours for the TBL and HIT cases and 3~hours for the cone case.
+
+Error metrics and spectral resolution
+
+We evaluate reconstruction accuracy using global and spectral error metrics. For a field variable $$, the normalized root-mean-square error (NRMSE) is
+
+ 
+ e_ = ( _2^2 _ _2^2 )^1/2,
+
+where $_$ is the ground truth. The averaging operator $ $ may be taken over either the spatio-temporal domain,
+
+ 
+ _ = | | _ _ (, t) \,t,
+
+or across the tracks,
+
+ 
+ _ = n_ _k=1^n_ | [k] | _[k] (t) \,t.
+
+In practice, these integrals are approximated by sums over DNS grid points and time steps for flow fields, and over discrete measurement instants in $[k]$ for tracks. In the unsteady flow cases, we report errors for the fluctuating component $^$, defined by a Reynolds decomposition $ = + ^$. This yields a conservative estimate of reconstruction accuracy, since mean fields $$ are generally easier to recover than turbulent fluctuations. For the steady cone flow case, errors are reported on the full fields.
+
+Spectral error analysis quantifies accuracy across wavenumbers. The spherical averaging operator in Fourier space is
+
+ 
+ _ = _() () 
+
+where $$ is the 3D Fourier transform of $$ and $()$ is a shell of radius $$. In practice, the integration is approximated by averaging Fourier magnitudes within discrete shells of width $$. For velocity fields, the turbulent kinetic energy (TKE) spectrum is computed using for $ = /2$. Normalized velocity error spectra are then given by
+
+ 
+ e_^2() = - _ _2^2 _ _ _2^2 _.
+
+This spectrum measures the energy of velocity reconstruction errors relative to the true turbulent energy at each wavenumber. A key reference point for interpreting these spectra is the particle sampling Nyquist wavenumber,
+
+ 
+ _ = ,
+
+where $$ is the mean inter-particle spacing. Note that $_$ represents the highest wavenumber resolvable from interpolation of the particle velocities, alone. In the absence of physics-based constraints, error levels beyond this limit are expected to saturate at 100\
+
+Observability of flow states with integrated particle tracking
+
+We first examine the observability of flow states and particle positions from noisy trajectories of ideal tracers ($St 0$) in the incompressible TBL case. Track datasets with varying seeding densities and localization errors are generated, as described in ~, to test how much information the Lagrangian data manifold contains and how effectively it can be used. We begin with track-only models: raw tracks with finite-difference velocities, filtered tracks using a quasi-optimal B-spline, and KCT tracks trained on the data loss alone. In parallel, we consider joint flow--particle reconstructions, where trajectories and flow states are optimized together. Flow accuracy is then assessed through baseline reconstructions driven by the raw and filtered tracks and compared again to the jointly-trained results. This sequence isolates the effects of track density and quality as well as the role of each constraint, i.e., data, flow physics, and particle physics.
+
+Particle track optimization
+
+We process datasets with three seeding densities, having mean particle spacings of $ = 9l_$, $18l_$, and $36l_$, where $l_$ is the friction length, and six localization error levels, $_x = 0.09 N l_$ for $N \1, 3, 5, 7, 9, 10\$. Four methods are used to process the tracks. First, raw tracks with velocities from finite differencing. Second, a quasi-optimal B-spline filter, described in appendix~, with supervised tuning of the segment length to minimize error across the dataset, representing a best-case scenario for B-spline filtering. Third, KCT models trained with the data loss only. These three approaches rely solely on measurement data and do not incorporate any flow physics information. Fourth, we trained KCTs jointly with the flow model, using the combined data, flow physics, and particle physics losses in the optimization, the latter of which reduces to $ = $ in the tracer limit. This last setting embeds physical constraints and indicates the degree to which coupling improves track accuracy. These four datasets are labeled raw, filtered, KCT (meaning data only), and joint estimation below.
+
+ report error standard deviations for the $x$- and $z$-directions, respectively. Finite differencing (i.e., ``raw'') amplifies positional errors into very noisy velocity and acceleration estimates; B-spline filtering, by contrast, suppresses these errors by factors of two or more, consistent with the findings of . Data-only KCTs performs worse than raw tracks because the data loss merely promotes statistical consistency of the estimates with the presumed localization uncertainty. This makes the optimization highly ill-posed, since there are infinitely many sets of nonphysical tracks that match the target distribution. Therefore, we exclude data-only KCTs from the flow reconstructions in ~.
+
+In stark contrast, joint particle--flow estimation substantially improves the accuracy of KCT estimates, yielding lower position, velocity, and acceleration errors than filtering across all seeding densities. Unlike the first three methods, however, performance of the jointly-trained models does depend on seeding density: as density decreases, flow fields become under-resolved, which in turn degrades track accuracy. This underscores the need for sufficient Lagrangian information to achieve a converged optimization.
+
+To highlight error trends across noise levels and seeding densities, shows error standard deviations for the raw, filtered, and jointly estimated tracks in the $x$- and $z$-directions. At the lowest noise levels, all methods exhibit similar performance, but at high noise, joint estimation reduces velocity and acceleration errors by 40--60\
+
+ shows a set of raw, filtered, and jointly estimated tracks at the lowest and highest noise levels for the densest seeding case, with $ = 9 l_$. Tracks are colored by the $v_3$-component of velocity and its absolute error, where the $z$-direction corresponds to the optical axis and hence the largest errors. Finite-difference velocities are highly sensitive to noise, obscuring the underlying flow. Filtering suppresses this amplification and recovers tracks that qualitatively resemble the ground truth, but at high noise levels, errors in the filtered tracks remain pronounced. This is especially true within segments that exhibit high curvature, where localization errors rival the real particle motion, and near domain boundaries, where the data are sparse. Joint particle--flow estimation overcomes these challenges by enforcing physics-based constraints, yielding consistently low errors across the entire time span of each track at each noise level and each seeding density. A closeup in illustrates this difference: the jointly estimated track captures subtle fluctuations of the true trajectory, while the filtered track is visibly distorted. Quantitatively, at low noise, NRMSEs of the $v_3$-component velocity are 17.6\
+
+Flow state reconstruction
+
+Flow states are reconstructed by two methods. First, the baseline method, described in ~, trains the flow model using velocities from either raw tracks (via finite differencing) or filtered tracks (via B-splines). Second, the joint estimation technique trains the KCT and flow models together using data, flow physics, and particle physics losses. shows snapshots of the $u_3$ velocity and pressure fields at the lowest noise level, $_ = 0.09l_$, based on the tracks in . Flow fields are rendered on three orthogonal planes at the central snapshot. All three methods reproduce detailed flow features, but finite differencing (17.6\
+
+Real LPT experiments may be subject to large localization errors, especially when using single-camera methods. shows flow fields reconstructed at the highest noise level considered, $_ = 0.9l_$, which is representative of high-quality plenoptic and DIH LPT. All the methods capture bulk flow structures, but baseline reconstructions computed using finite-difference velocities blur-out the finer structures and produce large velocity and pressure errors throughout the probe volume. Using velocity data from filtered tracks notably improves resolution, while joint estimation achieves the lowest errors and recovers high-frequency turbulent features. NRMSEs of the $u_3$ velocity are 20.9\
+
+Estimates shown in correspond to the densest seeding, a very favorable condition, with particles spaced about 10 viscous units apart on average. To examine how seeding density and noise interact, we tested baseline and joint reconstructions across the full set of cases in ~. NRMSEs of the velocity and pressure fields are plotted in over time. As expected, larger inter-particle spacings and higher noise amplify errors for all methods. Baseline reconstructions using finite-difference velocities are especially sensitive, while those based on filtered velocities benefit from B-spline smoothing but still degrade substantially with noise. An interesting feature of the filter-based estimates is the marked inflection in error towards the beginning and end of the observation window, reflecting the fact that the filter lacks constraints on derivatives near track boundaries. In contrast, joint estimation maintains errors within a narrow band across seeding densities and noise levels, consistent with the track error trends in , and provides relatively uniform accuracy over time. These results show how incorporating uncertainty information improves recovery of both particle positions and flow states, synergistically: flow physics constrains track geometry, and optimizing tracks under uncertainty yields better information for learning the flow fields. The boundary error inflections, also noted by , suggest a minimum number of timesteps is required for reliable estimation.
+
+Observability of inertial particle properties in flow reconstruction
+
+We next study the observability of flow states and inertial particle properties from particle tracks: an open question that is outside the scope of existing DA algorithms. Unlike ideal tracers, inertial particles deviate from local flow motion, reducing the dimensionality of the measurement manifold . It is therefore not obvious whether inertial track data contain sufficient information to uniquely identify both the flow states and the unknown particle properties. This amounts to a parameterized PDE-constrained inverse problem, with the Navier--Stokes equations coupled to one parameterized Maxey--Riley equation per particle (here parameterized by particle diameter $d_$ and density $_$). The framework presented in this text allows us to empirically test the joint observability of flow states and particle properties from Lagrangian data. We show that reconstructions are in fact possible, providing an existence proof across distinct flow regimes. Two representative cases are considered: incompressible turbulence seeded with bidisperse particles governed by the Schiller--Naumann drag law , and a supersonic, shock-dominated flow with particle motion described by the compressible Loth drag law . These examples feature one-way coupling at $St 1-5$ and nontrivial compressible dynamics and shock--particle interactions in the latter case.
+
+Homogeneous isotropic turbulence with bidisperse particles
+
+ shows a random subset of 3100 inertial tracks in the HIT flow, colored by particle diameter. Tracks from small and large particles are intertwined in a dense cluster, with the middle and right subplots isolating each group. The comparison highlights qualitative differences between $St 1$ and $St 5$ transport. Smaller particles (purple) whirl around in all directions, resembling the motion of the carrier phase, while larger particles (chartreuse) bear the clear mark of gravitational settling, drifting downward in the negative $z$-direction over time. Importantly, both sets of inertial tracks ``mask'' the underlying flow in distinct ways, and the particles are unlabeled in the reconstruction (i.e., with no knowledge of their diameter). Unlike ideal tracers, which remain strongly correlated to the flow, inertial tracks lose correlation at finite $St$ and become effectively uncorrelated at high $St$. This poses a fundamental challenge for reconstructing coupled flow states and particle trajectories. Nevertheless, we show below that such reconstructions are in fact possible.
+
+Inertial tracks from the bidisperse particles are used in both the baseline flow-only reconstruction from ~ and the joint particle--flow reconstruction. In the baseline case, particles are treated as ideal tracers with $St 0$ and $ = $, leading to the velocity-based data loss in . Particle velocities are obtained from the track data using the quasi-optimal B-spline filter. In the joint reconstruction, each particle diameter $d_$ is a trainable parameter, determining the relaxation time $_$ in the Maxey--Riley equation . For inertial particles, $_$ varies dynamically with the slip velocity through $Re_$ and $C_$ , so the particle dynamics depend on both intrinsic particle properties and local instantaneous flow states. Our framework naturally accounts for this coupling, owing to the continuous representation of both flow and particle tracks, which necessitates joint optimization. For initialization, $d_$ values are drawn from a single Gaussian distribution with mean $52.5~$m and standard deviation $4~$m, chosen to have minimal overlap with the true size distributions.
+
+ shows velocity and pressure cut plots from the ground truth DNS and both reconstructions. Cuts are taken at the bottom ($z = 0$~cm), rear ($y = 10$~cm), and right ($x = 10$~cm) faces of the domain, which represent locations of high error due to the lack of boundary conditions in the reconstructions. While there is qualitative agreement between the DNS and flow-only reconstructions in the $u_1$- and $u_2$-components, significant errors appear in $u_3$ and pressure. These $z$-direction errors arise because the flow-only method cannot separate gravitational settling from advection, and inaccurate velocities prevent pressure recovery . Even for the apparently accurate $u_1$- and $u_2$-fields, the error fields reveal large deviations. In contrast, the joint reconstructions are highly accurate across the baord, as seen in the dark purple (null) error maps. Time-averaged NRMSEs are 4.2\
+
+Spectral analysis provides further insight into flow observability across scales. The left panel of compares the TKE spectra from flow-only and joint reconstructions with the DNS reference. For context, we compute the Nyquist wavenumber $_$ of particle sampling via , which sets the maximum recoverable wavenumber for ideal tracers by interpolation alone, following the Shannon--Nyquist theorem . Inertial particles, however, alter this picture. Flow-only reconstructions exhibit abnormal TKE behavior: underestimating energy at low wavenumbers and giving rise to spurious amplification at high wavenumbers, with low and high wavenumbers demarcated by $_$. The low-wavenumber deficit occurs because inertial particles respond to turbulent fluctuations with a delay, collectively acting as a low-pass filter on the carrier velocity field . At high wavenumbers, weakly inertial particles ($St 1$) continue to track the flow, but heavier particles ($St 5$) detach from fluid parcels experiencing high acceleration such as in vortices and shear layers . This detachment leads to multivalued velocities in an Eulerian description, which flow-only reconstructions cannot reconcile, producing spurious fluctuations at small scales.
+
+By contrast, joint estimation reproduces the DNS spectra across wavenumbers, indicating faithful flow reconstruction. A slight underestimation of TKE appears before $_$, consistent with the spatial filtering effect seen in . This filtering reflects the additional challenge that comes with using inertial tracks, since particle properties (e.g., $d_$) must be inferred simultaneously with the flow states. Because inertial particles encode only indirect information about the carrier phase, they sample the flow less efficiently than ideal tracers. In ~, we show that increasing seeding density mitigates this ill-posedness and improves flow observability across wavenumbers.
+
+Strictly speaking, matching the true TKE spectrum does not guarantee recovery of the target flow fields. For example, distinct snapshots of statistically stationary HIT may share the same TKE spectrum but differ in spatial structure. We therefore compute normalized velocity error spectra, defined in , and plot them in the right panel of . These spectra quantify reconstruction errors relative to TKE across wavenumbers. For reference, we also include results from ideal tracer tracks ($St 0$) reconstructed by two conventional methods: adaptive Gaussian windowing, a na\"ive interpolation approach , and flow-only reconstruction. As expected, interpolation without physics asymptotes to 100\
+
+By jointly training the inertial particle and flow models, we also recover each particle's diameter. shows normalized joint probability density functions (PDFs) of the inferred and true $d_$ values. The left panel depicts the random initialization, drawn from a unimodal Gaussian centered between the two true size distributions. After joint estimation with flow fields, the inferred diameters separate cleanly into two clusters (middle panel), raising the Pearson correlation from 0.01 to 0.95. A slight underestimation bias is visible, with density shifted below the 45$^$ line, which we attribute to spatial filtering in the reconstructed velocity fields: high-acceleration events are smoothed out, reducing apparent slip velocities $|-|$ and thus the inferred particle sizes. To test this, we pretrained a high-fidelity neural flow model on DNS velcity data and froze it during the particle inference. With the flow known, the estimated diameters are unbiased (right panel), and the correlation rises to 0.99. Together, these results provide an existence proof of joint observability in the inertial setting: despite the difficulty of the PDE-constrained inverse problem, both flow states and particle properties can be recovered simultaneously. They also highlight the complementary nature of flow-state and particle-property observability, whereby improving one strengthens inference of the other, echoing the results in ~.
+
+Before leaving this section, we emphasize that the $d_$ classification does not rely on prior knowledge of the flow states nor on analysis of particle images, cf. and . Rather, the results are obtained from the tracks and governing physics alone. When additional sizing information is available, as in or , it can be incorporated into the estmation of $d_$ to further improve accuracy of both the flow states and particle properties. We confirmed this through supplementary tests (not shown), wherein exact values of $d_$ were prescribed, which yielded more accurate reconstructions of $$ and $p$. Statistical priors on $d_$ from calibration measurements can be similarly be beneficial.
+
+Supersonic flow over a cone--cylinder body
+
+We next turn to joint flow--particle observability in a compressible, shock-dominated flow with inertial transport. In high-speed PIV/LPT experiments, seed particles such as or are subject to agglomeration due to electrostatic forces, leading to variability in the size and density of the aggregates . These unknown properties, combined with inertial tracks, obscure the flow field. Prior work has shown that PIV measurements of seed traversing an oblique shock wave can be used to calibrate the particle property distributions, yielding values close to manufacturer specifications . Such calibrations can be used to assign a constant particle relaxation time, $_$, which is then used to correct the apparent velocity fields from a cross-correlation analysis of the image pairs . In practice, however, $_$ usually varies between particles, due to size and density differences, and along trajectories, due to local changes in temperature and viscosity. These variations introduce uncertainty into both particle properties and flow reconstructions. This challenge can be addressed via a joint reconstruction that includes trainable particle diameters and densities.
+
+The left side of shows simulated particle tracks colored by the local particle speed, with background shading indicating the flow speed. Regions of slip, especially in the aft-shock and expansion fan regions, are clearly visible, manifesting as streaks in the continuous flow speed field. Steep gradients in carrier-phase viscosity, density, and sound speed strongly influence particle dynamics across shocks and expansions, causing the particle response time to vary substantially throughout the domain . The right side of presents PDFs of the normalized intra-track range of $_$ for particles punching through the shock wave or lurching forward in the expansion fan. Particles upstream of the shock are excluded, as they are initialized without slip and retain a constant $_$. On average, $_$ varies by 5.5\
+
+Inertial tracks from the cone--cylinder case are pre-processed for joint estimation. Since all tracks have a uniform length of eight positions, no track splitting is required. Initial particle diameters are sampled from a Gaussian distribution with mean 2~$$m and standard deviation 0.5~$$m, while densities are drawn from a Gaussian distribution with mean 950~kg/m$^3$ and standard deviation 100~kg/m$^3$. These distributions provide coarse estimates of particle property statistics, assumed to be available in practice from calibration experiments or manufacturer specifications. presents reconstructed axial and radial velocity, density, and temperature fields for the cone--cylinder flow. Results are compared against the baseline flow-only reconstruction, which assumes ideal tracers with $St 0$. In the baseline estimates, the shock interface is smeared and density temperature artifacts appear near the surface, consistent with prior observations . By contrast, the joint estimation more accurately resolves both the shock structure and associated thermodynamic fields. Absolute error maps, presented on the right side of , quantify this improvement: joint estimation achieves NRMSEs of 1\
+
+ shows the inferred particle properties from the joint estimation in the middle column. The top row plots normalized joint PDFs of the estimated and true particle diameters. Although initialized randomly, $d_$ is effectively optimized to align with the ground truth, with the correlation coefficient improving from 0.01 to 0.8. As in results from the incompressible HIT case, $d_$ tends to be underestimated due to implicit filtering, particularly across the shock. The bottom row shows the joint PDFs of the estimated and true particle densities. In this case, the estimates diverge. This outcome is consistent with the weaker influence of density on the response time, $_$, which depends quadratically on $d_$ but only linearly on $_$, i.e., $_ _ d_^2 / C_ Re_$ (see ). We numerically confirmed that the product of $C_ Re_$ remains of order 0.01 for this flow, with minimal variation across particles. Importantly, even with divergent $_$ estimates, the flow fields are reconstructed with high accuracy, as per , indicating that the flow model is relatively insensitive to uncertainties in particle density at these conditions.
+
+The joint reconstruction above assumed both $d_$ and $_$ to be unknown, representing the most challenging scenario in supersonic PIV LPT. To assess how prior knowledge of particle properties affects joint observability, we reduce the degrees of freedom by fixing $_$ to its true values and allowing only $d_$ to vary. The resulting $d_$ estimates are shown on the right side of . Compared to the fully unconstrained case (the middle of ), the alignment between estimated and true $d_$ values is substantially improved, with the Pearson correlation coefficient rising from 0.8 to 0.93. This enhanced particle characterization translates directly into better flow reconstruction, lowering the NRMSEs to 0.5\
+
+Interaction of noise and inertia in flow--particle reconstruction
+
+Section~ establishes the possibility of jointly observable flow states and inertial particle properties, albeit under ideal conditions with dense, noise-free track data. In real LPT experiments, one must contend with sparse and noisy tracks that could potentially obscure observability. When the number of particles is small, the inversion problem becomes ill-posed: the available data eventually become insufficient to recover both particle properties and flow states. Even when the problem remains formally well-posed, reconstructions may be ill-conditioned in the presence of localization errors or high-$St$ particles, which behave ballistically and interact only weakly with the carrier flow, heightening sensitivity to noise. In this section, we systematically examine how seeding density, localization uncertainty, and Stokes number interact to govern the feasibility and robustness of joint reconstructions with inertial tracks.
+
+Seeding density effects
+
+To start, we examine the influence of particle seeding density. A suite of test cases is generated within a reduced $64^3$ HIT domain, varying the seeding density (equivalently, the inter-particle spacing) as described in ~. Both the flow-only and joint estimation methods are tested for comparison. reports the NRMSEs of the reconstructed velocity and pressure fields as functions of normalized inter-particle spacing, $/l_$. Because the flow-only method neglects particle--fluid coupling, reducing the particle spacing does not improve the conditioning of the problem, and reconstruction accuracy remains poor, with velocity and pressure NRMSEs hovering near 40\
+
+The left side of shows normalized spectral errors via of the flow-only and joint particle--flow reconstructions, providing a scale-dependent assessment of flow accuracy. Again, Nyquist wavenumbers are plotted to aid interpretation. As seen, errors of the flow-only reconstruction stagnate at a high error level (over 10\
+
+As before, particle sizes are jointly inferred through the inertial model. shows normalized PDFs of the initial and optimized $d_$ values against the ground truth for four representative particle spacings (labels are placed atop each subfigure). At low spacings, optimized $d_$ values align closely with the true distribution, while at large spacings the optimization fails to converge, reflecting the poor flow states recovered under sparse seeding. The Pearson correlation coefficient drops from 0.94 to 0.24 between the smallest and largest spacings. As in , $d_$ is systematically underestimated, consistent with the filtering of slip velocities in the reconstructed flow fields. depicts bias and random errors in $d_$ before and after optimization, where bias is the mean error across particles and random error is the standard deviation. Initial $d_$ values are unbiased, as expected from the random initialization, whereas optimized values show increasing negative bias with larger spacings, again tied to degraded velocity field reconstructions (see ). Random error, however, is sharply reduced under dense seeding, falling from around 5~$$m at the sparsest condition to 1.5~$$m at the highest seeding density.
+
+Together, these results underscore once again the dependence of flow and particle observability upon seeding density. Denser track data enriches the measurement manifold, providing sufficient information to reconstruct the attractor of the flow, under which both flow states and particle properties become recoverable from Lagrangian data via the coupled governing equations of both phases.
+
+Noise and Stokes number effects
+
+Lastly, we examine how measurement uncertainty and particle inertia interact to shape the joint observability of flow states and particle properties. Inertial tracks with different combinations of noise level and Stokes number $(N, St)$ are reconstructed. The resulting NRMSEs for velocity and pressure are shown in the 3D bar plots of . Both quantities follow the same trend: they are relatively insensitive to noise at low $St$ but deteriorate quickly at high $St$, where errors grow dramatically with added noise. This behavior is expected. To see why, we rearrange the Maxey--Riley equation to isolate the carrier velocity,
+
+ 
+ = ( t - ) _ + .
+
+In this expression, terms II–IV of are neglected owing to the large density ratio, $_/ O(10^3)$. At low $St$ ($_ 0$), this equation reduces to $ = $: the particle velocity directly tracks the fluid velocity, so flow recovery is robust even with noise, as shown earlier in ~. At high $St$ ($_ O(_)$), however, the acceleration term, $(/t - ) \,_$, becomes dominant, making $$ highly sensitive to errors in particle acceleration. Because acceleration estimates degrade quickly with noise , reconstruction accuracy collapses. In the ballistic limit ($_ $), even small errors in acceleration are amplified without bound, rendering the flow effectively unobservable: large-inertia particles carry too little imprint of the surrounding flow field to allow for accurate inference thereof.
+
+ shows the absolute bias and random errors of $d_$ estimates from joint reconstructions. Bias errors increase with both noise level and Stokes number, mirroring the velocity and pressure trends in . This likely reflects stronger filtering in the reconstructed flow at higher noise and $St$, which propagates into the particle size estimates. The random errors, however, reveal a more nuanced trend. As expected, they grow with noise, but they decrease at larger $St$, indicating improved observability of $d_$ for high-inertia particles, even though flow reconstruction itself worsens, per . This behavior stems from the particle physics loss , which becomes more sensitive to $d_$ at high Stokes numbers. During training, $d_$ is optimized alongside the flow model to yield values of $_$ (via --) that minimize the residuals of . Per , $_$ scales as $_ _ d_^1.313$ under the Schiller--Naumann drag law, so the sensitivity of $_$ to $d_$ increases with particle density. Heavy particles are thus more effectively optimized in gradient descent, reducing random errors at high $St$. The limiting cases illustrate this: when $_ 0$ (ideal tracers), perturbations in $d_$ barely affect inertia and the true particle size becomes nearly unobservable, especially under high positional errors. Nevertheless, the uncertainty about $d_$ in the $St 0$ limit does not compromise flow reconstruction, since tracer particles track the carrier phase with high fidelity.
+
+Several guidelines for LPT with inertial particles follow from the above sensitivity analyses. First, seeding density should be increased whenever possible to make the problem more well-posed, provided that particle--flow interactions remain in the one-way coupling regime (i.e., to simplify the governing equations) and that tracking is not degraded by image overlap at high densities. Second, low-inertia particles are generally preferable for accurate flow reconstruction. When only high-inertia particles are available, high-resolution LPT systems are needed to reduce noise and improve acceleration estimates during joint reconstruction. Third, for joint observation of particle properties, reducing measurement noise lowers both bias and random errors in $d_$. High seeding density is again advantageous, as it alleviates the implicit filtering effect of the flow and thereby reduces bias in the inferred particle sizes.
+
+Concluding remarks
+
+This work investigates the joint observability of flow states and particle properties using Lagrangian track data. The problem is motivated by two central challenges in LPT experiments: noisy particle tracks and inertial transport effects. Existing DA algorithms rely on error-prone velocity estimates derived from fitted tracks and assume ideal tracer particles with zero slip, both of which compromise the fidelity of Eulerian reconstructions. To overcome these limitations, we propose to reconstruct the flow and particle states jointly from track data, under the combined constraints of disperse multiphase flow physics and known localization uncertainties. The resulting framework, termed NIPA, is built on a PINN architecture that couples a neural flow model with a set of kinematics-constrained track models, with one for each particle. Joint training of these models yields flow fields and particle properties---positions, diameters, densities---that at once satisfy governing physics and match the LPT data.
+
+We test NIPA across a range of particle-laden flows: incompressible turbulence with ideal tracers in ~, incompressible turbulence with inertial particles in ~, and compressible, shock-dominated flow with inertial particles in ~. For each case, we ask whether the available track data, together with the governing physics, suffices to recover both flow states and unknown particle properties. In this sense, our results, which demonstrate successful joint reconstructions, constitute empirical existence proofs of joint observability under realistic conditions. We also examine how seeding density, noise magnitude, and Stokes number influence reconstruction robustness in ~. From these studies, four main conclusions emerge, as summarized below.
+
+[topsep=.5ex, itemsep=-.5ex, partopsep=.5ex, parsep=.5ex]
+ For noisy tracks of ideal tracers, both flow states and true particle positions are jointly observable in the TBL case, provided a sufficient number of tracks are available (~). Across a broad range of seeding densities, jointly estimated tracks and flow states achieve higher fidelity than filtered tracks or baseline flow-only reconstructions, underscoring the value of coupled flow--particle learning. As seeding density decreases, accuracy inevitably degrades, and conventional filtering may become preferable once Eulerian fields cannot be reliably inferred from tracks of any fidelity. At large localization uncertainties, however, joint flow--particle estimation was found to be robust, outperforming conventional filters by roughly 50\
+
+ Inertial particle properties are jointly observable with incompressible (~) and compressible (~) flow states. Reconstructions that account for particle--fluid interactions (e.g., via the Maxey--Riley equation) resolve flow states to high accuracy from inertial tracks, whereas tracer-based assumptions fail. At the same time, particle properties such as diameter are inferred implicitly from tracks and governing physics. Particle density estimation in the compressible case diverges, reflecting weak sensitivity of flow reconstruction to $_$, yet without degrading flow accuracy. When particle properties are known and provided for training, flow observability improves substantially, highlighting the complementary relationship between flow and particle inference.
+
+ The information content of the track data strongly influences joint observability in inertial-particle cases (~). Dense seeding enables scale-resolving flow reconstruction, even beyond the particle Nyquist wavenumber, whereas sparse seeding renders the inversion too ill-posed, resulting in heavily filtered flow fields that miss out on most of the high-wavenumber features. These filtered fields further obscure particle observability, leading to systematic underestimation of particle diameters and increasing random errors.
+
+ Flow and particle observability exhibit a coupled dependence on localization uncertainty and Stokes number (~). Reconstruction accuracy declines with increasing noise and $St$, as expected. At high $St$, ballistic particles magnify even small acceleration errors through the Maxey--Riley dynamics, rendering the flow almost unobservable. Bias errors in inferred particle size also increase with noise and $St$ due to stronger filtering of flow fields. Yet random errors decrease with larger $St$, since high-inertia particles yield greater sensitivity of the physics loss to changes in $d_$. In the tracer limit, particle size is effectively unobservable, though this lack of information does not compromise flow recovery.
+
+While the framework developed here was designed primarily to demonstrate the existence of joint observability, the concept itself extends beyond NIPA. Other DA methods, including adjoint--variational approaches , could incorporate joint flow--particle observability in principle. More advanced solvers may further enhance performance, particularly in the inertial regime, and thus broaden the range of conditions under which LPT measurements remain informative. Our findings suggest several productive avenues for future work.
+
+[topsep=.5ex, itemsep=-.5ex, partopsep=.5ex, parsep=.5ex]
+ Apply NIPA to real experimental LPT data with inertial particles, to assess robustness under true experimental uncertainties.
+ 
+ Extend the framework to learn drag models directly from track data by treating drag coefficients as trainable parameters. This would enable in situ calibration of drag laws, rather than relying on correlations fitted in separate flow conditions.
+ 
+ Leverage particle inertia to mitigate non-uniform seeding. In tracer-based experiments, clustering and voids, e.g., near vortex cores , can obscure the underlying flow fields. By incorporating inertial particles with distinct spatial distributions, our framework offers a pathway to reconstruct flows under such conditions.
+
+Carrier-phase governing equations
+
+Lagrangian particle tracking experiments involve disperse multiphase flows, wherein tracer particles constitute the disperse phase and the fluid of interest is the carrier phase. Depending on the particle mass loading and volume fraction, particle--fluid interactions are modeled using one-way, two-way, or four-way coupling schemes . Analysis in this work applies to the one-way coupled regime, where momentum transfer from particles to the carrier flow is negligible. This assumption is appropriate for most PIV and LPT experiments, which typically operate in the dilute limit. Governing equations for flows in the test cases introduced in ~ are summarized below.
+
+Equations for unsteady 3D incompressible flow
+
+Flows in the TBL (~) and HIT (~) cases are governed by the 3D continuity and momentum equations for incompressible flow,
+
+ 
+ 
+ &= 0, \\
+ t + &= - p + ^2 + , 
+ 
+
+where $$ is the 3D velocity vector and $$ denotes the del operator in Cartesian coordinates. For isotropic turbulence, a forcing term is introduced to sustain stationary turbulence ,
+
+ = 3 \,u^2_ ,
+ 
+
+with $$ being the mean energy dissipation rate and $u_$ the root-mean-square velocity. For the TBL case, we set $ = $. In both the TBL and HIT cases, the residual vector $_$ in is formed from the components of .
+
+Equations for steady axisymmetric compressible flow
+
+The cone–cylinder flow (~) is governed by the steady, axisymmetric compressible Navier--Stokes equations for the conservation of mass, momentum, and energy,
+
+ 
+ 
+ ( \,) &= 0, \\
+ ( \, \,^) &= - p +
+ [ ( + ^ ) -
+ 3 ( ) ], \\
+ [( E + p)] &= (k T) +
+ \[ ( + ^ ) -
+ 3 ( ) ] \. 
+ 
+
+In these expressions, $$ denotes the velocity vector with axial and radial components and $$ is the 2D del operator in cylindrical coordinates (axial--radial). The thermodynamic variables are the density $$, pressure $p$, and temperature $T$, while $E$ is the specific total energy and $k$ the thermal conductivity of the carrier phase. The temperature $T$ is obtained from the local total energy and velocity magnitude, and transport properties $$ and $k$ are evaluated via Sutherland's law .
+
+Equation~ comprises four governing equations with five unknowns and must therefore be closed with an equation of state. We adopt the calorically perfect gas law,
+
+ p = ( - 1) 2 )_C_ T,
+
+where $ = C_/C_$ is the ratio of specific heat at constant pressure $C_$ to that at constant volume $C_$. For the cone--cylinder test case, the residual vector $_$ in collects the contributions from each of the conservation laws in .
+
+Disperse-phase governing equations
+
+This appendix summarizes the particle dynamics models employed for the bidispersed HIT case (~) and the supersonic cone--cylinder flow case (~). We begin with the full Maxey--Riley equation, which governs the motion of small spherical particles in incompressible fluids. We then outline its modification for compressible flows, relevant to tracer particle dynamics in high-speed PIV LPT applications. Next, we introduce key dimensionless numbers that quantify the relative importance of viscous, compressibility, and rarefaction effects on particle motion. Finally, we summarize a drag law suitable for supersonic conditions, which incorporates corrections for these effects.
+
+Maxey--Riley equation
+
+Small spherical particles moving in a locally uniform flow are subject to both inertial and viscous forces. The inertial transport regime is commonly characterized by the particle Reynolds number, defined in terms of a characteristic particle length (diameter $d_$), slip velocity, and fluid density and viscosity,
+
+ Re_ = - |^.
+ 
+
+Here, ``slip'' refers to the ballistic motion of the particle relative to the carrier fluid. A related measure is the particle response time, which quantifies the time scale at which a particle relaxes toward the local fluid velocity,
+
+ _ = 3 C_ Re_ d_^2 = 3 C_ 
+ 
+ | - |,
+ 
+
+where $C_$ is the drag coefficient. In the creeping-flow limit, where $Re_ 1$, Stokes' law applies, with $C_ = 24/Re_$. For finite $Re_$, however, inertial effects necessitate modification of the drag law. For our HIT case, we adopt the Schiller--Naumann correlation,
+
+ C_ = Re_ (1+0.15Re_^0.687), Re_ < 800, 
+ 
+
+which has been validated over a broad range of $Re_$. More general drag laws applicable at higher $Re_$ are reviewed in Chapter~8 of Subramaniam and Balachandar and can be incorporated into the DA framework where applicable.
+
+When particles are much smaller than the relevant hydrodynamic length scale (i.e., quasi-point particles), their dynamics are governed by the version of the Maxey--Riley equation modified by ,
+
+ t =
+ - __ +
+ _ t_ +
+ 2 _ (t - t )_ +
+ 2 _ _ _-^t ( - ) _ +
+ _,
+ 
+
+where $/t$ and $/t$ denote total derivatives following a fluid parcel and a particle, respectively. The five terms on the right-hand side correspond to: (I)~quasi-steady drag, (II)~pressure gradient force, (III)~added mass effect, (IV)~Basset history term (unsteady vorticity diffusion), and (V)~gravitational force. Since the carrier-phase momentum equation, i.e., , neglects gravity, buoyancy is not included in . If gravity were retained, the last term would instead appear as $(1 - /_) $, consistent with the formulation of . The relative magnitude of each contribution depends on flow conditions and particle properties (e.g., density, diameter) .
+
+Two simplifications are made based on the properties of the small, dense particles assumed in our simulations. First, owing to the large particle-to-fluid density ratio, $_/ O(10^3)$, we neglect the Basset history force in the forward simulations . In the reconstructions, we additionally omit the pressure gradient and added mass forces, which are indeed included in the forward simulations, since their magnitudes are roughly three orders of magnitude smaller than Stokes drag. This deliberate mismatch between the forward and reconstruction force models highlights the robustness of NIPA to imperfect particle dynamics, which is important in practice. Second, given the minute particle size, we neglect finite-size corrections such as the Fax\'en term and Saffman lift . The Kolmogorov length scale in ~ is about 350~$$m: substantially larger than the maximum particle diameter of $70$~$$m, thereby justifying the quasi-point-particle assumption. Consequently, for the HIT case, the residual vector $_[k]$ in includes only the contributions from Stokes drag and gravity, i.e., terms (I) and (V) in , for the $k$th particle.
+
+Particle dynamics in compressible flows
+
+Tracer particles in high-speed flow are often modeled as solid spheres immersed in an unbounded fluid and subject only to quasi-steady drag . For typical tracers in PIV or LPT, i.e., very small ($d_ 1$~$$m) and with large density ratios ($_/ 1$), the contributions of pressure gradient, added mass, Basset history, and body forces are negligible in high-speed conditions . Under these assumptions, the Maxey--Riley equation reduces to a balance between slip velocity and quasi-steady drag,
+
+ 
+ t = - _,
+
+where $_$ is the particle response time given in . In our supersonic cone flow case, $$ and $$ are 2D vectors (axial and radial), and the residual $_[k]$ in comprises both components of for the $k$th particle. Although pressure gradient, added mass, and Basset history forces can momentarily exceed Stokes drag as particles traverse a shock wave, their cumulative effect on particle trajectories is negligible in the high-density-ratio limit , making them safe to neglect for our purposes.
+
+Compressible drag law
+
+Particle drag in high-speed flow depends not only on viscous forces from the carrier phase but also on compressibility and rarefaction effects. Compressibility effects scale with the particle Mach number,
+
+ Ma_ = - |, 
+ 
+
+where $R$ is the specific gas constant of the carrier phase. Rarefaction effects are governed by the ratio of the mean free path of the carrier fluid, $$, to a characteristic length scale, typically the particle diameter at low $Re_$. This ratio defines the particle Knudsen number,
+
+ Kn_ = d_ = Re_ 2,
+ 
+
+where the expression on the right-hand side follows from the ideal gas law. Thus, drag correlations for compressible particle-laden flows can be expressed in terms of any two of the three nondimensional groups: $Re_$, $Ma_$, and $Kn_$. In practice, this formulation allows models such as Loth's drag law, discussed next, to bridge viscous, compressibility-dominated, and rarefaction-dominated regimes.
+
+ put forth a comprehensive drag correlation for compressible particle-laden flows. The model expresses the drag coefficient $C_$ as a function of particle Reynolds and Mach numbers, thereby defining the particle response time $_$ through . The general form is
+
+ C_ = \ll, Kn, Re1 + Ma_^4 + ^4 C_, f_, Re1+Ma_^4, & Re_ < 45 \\
+ Re_ [1 + 0.15 Re_^0.687] H_ + 1 + Re_^1.16, & Re_ > 45..
+ 
+
+The first branch of applies in the rarefaction-dominated regime ($Re_ < 45$) and the second branch in the compression-dominated regime ($Re_ > 45$). Although we implement the full model in forward simulations, the cone--cylinder case has $Re_ < 23$ throughout, so only the rarefaction branch is used in our reconstructions. shows $C_$ normalized by Stokes drag as a function of $Re_$ and $Ma_$. At low $Re_$, contours of $C_$ align with those of $Kn_$, indicating rarefaction control. As $Re_$ increases, the gradient of $C_ Re_/24$ bends toward the $Ma_$ axis, marking the onset of compressibility effects. In our case, however, the flow remains entirely within the aforementioned rarefaction regime.
+
+Returning to , the rarefaction-specific terms are
+
+ 
+ C_, Kn, Re &= Re_ (1 + 0.15 Re_^0.687) f_Kn, \\
+ f_Kn &= 1+Kn_ [2.514 + 0.8 \,(-Kn_)], \\
+ C_, f_, Re &= 1+(1.63-1) 45, \\
+ C_ &= ^2) (-s_^2)s_^3 + ^4 + 4s_^2 - 1) (s)2s_^4 + 3s_ T, \\
+ s_ & Ma_ ,
+ 
+
+where $T_$ is the particle temperature. The compression-specific contributions to are
+
+ 
+ H_ &= 1 - 1 + 514 \,G_, \\
+ G_ &= \ll 1 - 1.525 \,Ma_^4, & Ma_ < 0.89 \\ 0.0002 + 0.0008 \,[12.77 (Ma_ - 2.02) ], & Ma_ > 0.89., \\
+ C_ &= \ll 3 + 3 \,[3 \,(Ma_ - 0.1) ], & Ma_ < 1.45 \\ 2.044 + 0.2 \,[-1.8 \,(1.5 )^2 ], & Ma_ > 1.45..
+ 
+
+The resultant drag law has been extensively benchmarked using experimental data and employed for many simulations of high-speed particle-laden flow. Recently, published a comprehensive review of relevant results, obtained from particle-resolved DNSs, rarefied-gas simulations, and wind tunnel experiments. The authors found that Loth's original model was not empirically supported near $Re_ = 45$. They reported an updated model that corrects for these discrepancies in . However, updates in that paper do not meaningfully affect the cone--cylinder simulation in ~ because, again, it has a maximum $Re_$ of about 23. We thus employ the original formulation of , as presented above.
+
+B-spline filtering
+
+For the baseline flow-only reconstruction defined in ~, particle velocities are estimated from measured tracks via finite differencing as well as smoothing. Among available options, cubic B-splines provide a standard filtering approach because they yield $C^2$-continuous fits with good stability while relying only on low-order piecewise polynomials . A representative cubic B-spline approximation for the $x$-coordinate of a particle trajectory is
+
+ 
+ (t) = _j=0^K c_j \, ( t),
+
+where $c_j$ are spline coefficients, $\t_j^ j = 0, , K\$ are uniformly spaced knots with spacing $ t$, and $$ denotes the cubic basis function ,
+
+ 
+ (t) = \lll3 - (1-2)t^2, & 0 < t < 1 \\
+ 6, & 1 < t < 2 \\
+ 0, & t > 2..
+
+Velocity and acceleration are then obtained analytically as the first and second derivatives of $$. Naturally, the same construction applies to the other spatial components.
+
+The number of knots $K$ controls the trade-off between smoothness and fidelity. Increasing $K$ improves the ability of the spline to follow fine-scale fluctuations but risks fitting to measurement noise. Conversely, small-$K$ splines over-smooth the trajectories. In practice, we set $K$ adaptively such that each spline segment spans about ten measured points, a choice tuned to ensure sufficient expressivity while effectively suppress measurement noise. The spline coefficients are obtained by minimizing the residual between measured and filtered positions in a least-squares sense, i.e., by minimizing
+
+ _j=1^n_k [k] - (t_j) _2^2,
+
+where $[k]$ is the measured position at the $j$th time step $t_j$, $$ is the spline estimate from evaluated at the same time, and $n_k$ is the total number of points in the track.
+
+In our implementation, filtering is performed via MATLAB's and routines. While details of software usage are secondary, the essential point here is that B-spline filtering yields smoothed particle tracks from which velocities and accelerations can be determined in a consistent manner. These filtered quantities serve as inputs to the baseline reconstruction method introduced in ~, used for comparison throughout our observability tests.
+
+Initialization of the KCT models
+
+Track splitting
+
+Particle tracks in LPT vary in length, ranging from only a few positions to several hundred. Since TensorFlow requires fixed tensor shapes for computational graphs, we divide each trajectory into fixed-length segments of 20 positions. Shorter segments are zero-padded. When a single trajectory spans multiple segments, its particle properties (e.g., size, density) are shared across all segments; these properties may be trainable in cases with inertial particles. Although longer segments are possible, they increase the number and dimension of coefficient matrices in --, thereby raising the computational cost and memory demand of KCTs. Conversely, very short segments disrupt the continuity of tracks and introduce boundary-related artifacts. In practice, therefore, segment lengths of 15--30 points strike a good balance between efficiency and fidelity.
+
+Warm-starting KCTs with filtered tracks
+
+For inertial particles, joint optimization of flow states, particle positions, and per-particle properties from noisy data is ill-posed and prone to divergence. To improve stability, we ``warm-start'' each KCT model using filtered tracks obtained from a conventional smoothing technique, such as polynomial regression or kernel convolution . Initialization is posed as a per-track optimization that identifies the displacement vector $$ and velocity parameters $$ which minimize
+
+ 
+ _ = _j=1^n_
+ (_j-_j_2^2 + _j-_j_2^2),
+
+where $$ balances velocity and acceleration residuals and is assigned as
+
+ = _2 _ _2 _,
+
+with $ _$ indicating an average over the current track. Velocities $$ and accelerations $$ are the outputs of the particle model $[k]$ from and .
+
+We minimize using MATLAB's implementation of the Levenberg--Marquardt algorithm, initializing $$ with raw (noisy, observed) positions and $$ with zeros. In this study, fifth-order polynomials provide the filtered velocity and acceleration vectors $$ and $$, though more advanced methods such as TrackFit could also be employed. This warm-start is only used for cases with inertial particles. For ideal tracers, initializing with filtered tracks offers no improvement and risks biasing the reconstruction, so we simply initialize $$ with raw data and $$ with zeros.
+
+Particle property transform
+
+In inertial cases, particle properties such as their size and density can differ in units and span several orders of magnitude, limiting the precision of optimization. Therefore, we map each positive property $ > 0$ to a dimensionless variable $ O(1)$, with the latter variable being optimized. The forward transformation is
+
+ 
+ = [ (c_1 ) - 1]c_2 - c_3,
+
+with parameters $c_1$, $c_2$, and $c_3$ chosen so that $$ is order one. The inverse transform recovers $$,
+
+ 
+ = [ (c_2 + c_2c_3)+1 ]c_1
+ = (c_2 + c_2c_3)c_1,
+
+where the softplus function ensures that $ > 0$ for $c_1 > 0$.
+
+Parameters are chosen as follows. First, $c_1$ is set to $^-1$, so $c_1 = 1$. Second, given an expected range $ [_, _]$, we determine $c_2$ and $c_3$ by enforcing $(_) = -1$ and $(_) = 1$, yielding
+
+ 
+ c_2 = [ (c_1_)-1]c_3-1, 
+ c_3 = 1--1,
+ 
+ with
+ 
+ = [ (c_1_) - 1] [ (c_1_) - 1].
+ 
+
+This mapping is bijective and has bounded gradients, ensuring one-to-one correspondence between $$ and $$ and stable optimization during backpropagation. The formulation is valid for strictly positive (or negative) properties such as size and density; properties that may cross zero, such as electrical charge, require a different mapping.

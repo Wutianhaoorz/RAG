@@ -1,0 +1,873 @@
+[utf8]inputenc
+[T1]fontenc
+
+*arg\,max
+*arg\,min
+ 
+ 
+
+[1]>p#1
+
+rgb0,0,0
+rgb0,0,0
+
+ 
+
+[itemize]leftmargin=*
+[enumerate]leftmargin=*
+
+[capitalise]cleveref
+
+ 
+ 
+
+ 
+
+[1]
+
+ 
+ 
+ Omer San \\
+ Department of Mechanical and Aerospace Engineering,\\
+ University of Tennessee,\\
+ Knoxville, TN 37996, USA.\\
+ 
+
+Accurately reconstructing and forecasting high-resolution (HR) states from computationally cheap low-resolution (LR) observations is central to estimation-and-control of spatio-temporal PDE systems. We develop a unified superresolution pipeline based on the reduced-order autodifferentiable Ensemble Kalman filter (ROAD–EnKF). The method learns (i) a low-dimensional latent dynamics model and (ii) a nonlinear decoder from latent variables to HR fields; the learned pair is embedded in an EnKF, enabling simultaneous state estimation and control-oriented forecasting with quantified uncertainty. We evaluate on three benchmarks: 1-D viscous Burgers equation (shock formation), Kuramoto–Sivashinsky (KS) equation (chaotic dynamics), and 2-D Navier–Stokes–Kraichnan turbulence (NSKT) (vortex decaying dynamics at $=16,000$). LR data are obtained by factors of $4$–$8$ downsampling per spatial dimension and are corrupted with noise. On Burgers and KS, the latent models remain stable far beyond the observation window, accurately predicting shock propagation and chaotic attractor statistics up to $150$ steps. On 2-D NSKT, the approach preserves the kinetic-energy spectrum and enstrophy budget of the HR data, indicating suitability for control scenarios that depend on fine-scale flow features. These results position ROAD–EnKF as a principled and efficient framework for physics-constrained superresolution, bridging LR sensing and HR actuation across diverse PDE regimes.
+
+ 
+
+Reconstructing and forecasting high–dimensional physical states from sparse, noisy measurements is central to geoscience, fluid dynamics, and control. Ensemble Kalman methods (EnKFs) address this by combining a model–based forecast with a Bayesian‐style analysis, but their cost and sensitivity to model error limit use at high spatial resolutions. A promising direction is to learn reduced surrogates and use them inside the filter.
+
+A recent step in this direction is the Reduced–Order Autodifferentiable EnKF (ROAD–EnKF) of Chen, Sanz–Alonso, and Willett~. ROAD–EnKF learns (i) a low–dimensional latent dynamics
+\[
+z_t \;=\; G_(z_t-1) + _t,
+\]
+and (ii) a decoder mapping latent states back to the physical state,
+\[
+u_t \;=\; D_(z_t).
+\]
+Training maximizes an EnKF–estimated log–likelihood by differentiating through the EnKF, and the learned latent state–space model (SSM) is then used inside the EnKF for reconstruction and forecasting. ROAD–EnKF shows that when the dynamics admit a hidden low–dimensional structure one can obtain accuracy comparable to full–order approaches at much lower cost and handle partial/noisy observations.
+
+We specialize the ROAD–EnKF paradigm to the low–resolution to high–resolution (LR\,$$\,HR) super–resolution regime that arises when sensors deliver coarse fields but decision–making or downstream models require high resolution. Concretely, we assume we observe low–resolution fields \(y_t^\) related to high–resolution states \(u_t^\) by a known or learnable downsampling operator \(()\):
+\[
+y_t^ \;=\; (u_t^) + _t.
+\]
+We learn the same latent SSM as in ROAD–EnKF, but we explicitly design the decoder and the observation path for super–resolution and we train with SR–specific objectives. At test time, SRDA filters LR data to produce HR reconstructions with uncertainty and then forecasts in HR.
+
+Literature Review
+
+Traditional surrogates approximate the solution of a parametric
+PDE on a fixed grid, whereas neural operators learn the entire
+solution map.
+The Fourier Neural Operator (FNO) of
+Li~et al.~
+achieves mesh-independent generalisation by learning spectral
+integral kernels, while DeepONet~
+provides a universal operator-approximation theorem via a
+branch–trunk architecture.
+Recent efforts push capacity and geometric flexibility:
+HAMLET couples graph attention with transformers for irregular
+meshes~;
+physics-informed transformer operators extend to general
+IBVPs~;
+Li~et al. propose a geometry-informed neural operator for
+large-scale 3-D domains~; and
+state-space models such as the Mamba Neural Operator offer
+memory-efficient sequence processing~.
+Kossaifi~et al. introduce a multi-grid tensorised FNO that
+compresses spectral weights via Tucker factorisation
+.
+Complementary work learns data-driven discretizations
+ or embeds symmetries such as Galilean invariance.
+Our decoder adopts the spectral-convolution paradigm but applies
+frequency features only once, keeping inference costs low.
+
+Compute efficiency has become a parallel focus: 
+the decomposed FNO (D-FNO) replaces costly 3-D FFTs with a
+rank-decomposed series of 1-D FFTs, cutting the
+$ O(N^3 N)$ complexity to
+$ O(PN N)$ while retaining accuracy
+. 
+Physics-augmented latent compression further reduces memory via
+low–dimensional latent grids , 
+and a reduced–geostatistical FNO accelerates large 3-D inverse problems
+in hydrogeology . 
+Parameter–efficient adaptation strategies mirror LoRA in NLP:
+FouRA applies low-rank updates to spectral blocks
+, while
+iFNO introduces an invertible FNO that shares weights between
+forward and inverse operators . 
+Collectively, these advances show that high-resolution fidelity and
+computational tractability need not be mutually exclusive.
+
+Learning to reconstruct high-resolution (HR) flow fields from coarse
+data has gained traction as DNS remains prohibitive at realistic
+Reynolds numbers.
+Kim~et al. employed GANs with physics-informed losses for
+3-D turbulence super-resolution .
+Xie~et al. stabilised temporal roll-outs via PDE residual
+penalties~.
+For 2-D Kraichnan turbulence, Maulik and San showed that
+data-driven deconvolution restores power-law spectra more faithfully
+than classical filters~.
+Recent variants integrate recurrent memory and explicit constraints:
+Wang~et al.’s PIRGAN reconstructs rotating-detonation
+combustor flows~, while
+Khademi~et al. combine domain discretization with
+Sobolev-norm losses in DG-PINN for 3-D turbulence
+.
+Our study differs by coupling a latent neural-operator surrogate with a
+differentiable EnKF so that uncertainty is propagated and corrected
+online.
+
+Beyond GAN-based approaches, physics-augmented latent operators now
+deliver SR reconstructions with wall-clock gains that scale favourably
+with grid size .
+
+Snapshot Proper Orthogonal Decomposition (POD) remains the workhorse of
+projection-based ROMs .
+Comprehensive surveys by Benner~et al.
+ and Taira~et al.
+ review balanced truncation, dynamic-mode
+decomposition, and closure models.
+Recent ML-based ROMs seek richer latent spaces:
+$$-VAEs with transformers capture chaotic
+dynamics~,
+and attention-augmented autoencoders improve feature capture in
+unsteady flows~.
+Our latent space serves as a learned, nonlinear ROM trained
+jointly with a dynamics model (Sect.~). 
+
+Multi-level PINN hierarchies also lower solve times for large
+structural-mechanics PDEs by recursively coarsening the residual loss
+.
+
+Foundational work by Lions~ established
+functional-analytic conditions for existence of optimal controls.
+Adjoint-based algorithms were formalised in the monographs of
+Hinze~et al. and
+Tröltzsch .
+Recent ML-oriented approaches include adjoint-oriented neural networks
+(AONN) for all-at-once optimization 
+and PINN frameworks for PDE-constrained control
+.
+Although we do not solve a classical open-loop problem, our latent
+dynamics are trained jointly with the EnKF loss, effectively
+learning a feedback control that steers forecasts towards observations.
+
+The Ensemble Kalman Filter (EnKF) balances Gaussian assumptions and
+particle degeneracy; see Navon’s review .
+Reduced-Order Autodifferentiable EnKF (ROAD-EnKF) enables back-prop
+through the Kalman gain~.
+Hybrid schemes now combine deep surrogates with classical DA:
+Chattopadhyay~et al. augment EnKF with data-driven
+ensembles~;
+Peng~et al. fuse DL and DA for model-error estimation
+;
+and Patel~et al. augment PINNs with turbulence models for
+mean-flow reconstruction .
+Our framework inherits ROAD-EnKF’s differentiability and extends it to
+super-resolution, allowing latent corrections while the decoder bridges
+scales.
+
+A complementary Bayesian perspective places priors on operator weights:
+VB-DeepONet performs variational inference for operator learning
+, 
+Approximate Bayesian Neural Operators propagate parameter uncertainty
+through predictions , 
+and ProbNO extends the idea to fully probabilistic functionals
+. 
+Such methods highlight the growing demand for principled uncertainty
+quantification—addressed here via ensemble spread and, in future work,
+potentially via Bayesian neural operators.
+
+Brunton, Noack and Koumoutsakos chart the rise of ML in fluid
+mechanics .
+Duraisamy~et al. emphasise uncertainty quantification when
+replacing subgrid closures with data-driven surrogates
+. 
+Our ensemble-based formulation provides both HR reconstructions and
+uncertainty bounds, answering this call.
+
+Differentiable-simulation toolkits are making gradient-based design
+routine; Newbury~et al. survey over a dozen such frameworks
+, and
+Joglekar introduces generative neural re-parameterisation to
+amortise PDE-constrained optimization across control queries
+.
+These trends motivate our use of an end-to-end differentiable filter.
+
+Despite impressive individual advances, few works integrate neural
+operators, super-resolution, and differentiable EnKF into a single control based
+pipeline. 
+By coupling a low-dimensional latent neural operator with ROAD-EnKF we
+achieve (i) end-to-end learning of dynamics and observation models,
+(ii) physically consistent HR reconstructions with quantified
+uncertainty, and (iii) computational efficiency suitable for
+optimal-control loops. 
+The following sections demonstrate these benefits on Burgers, KS and
+NSKT benchmarks.
+
+[ht]
+[width=]results/SRDA_ilustr.png
+Conceptual workflow of the super-resolution ROAD-EnKF framework. 
+Left panel – Offline training. A low-resolution (LR) snapshot $y_t^$
+is embedded by the encoder $E_$ into a latent representation $z_t$, advanced
+one step by the latent dynamics operator $F_$ and decoded by
+$D_$ to a high-resolution (HR) field $ u_t$. The network parameters
+$\,,\$ are updated through back-propagation of a composite loss
+comprising an LR reconstruction term, an HR supervision term and a latent
+regularisation penalty. 
+Right panel – Online assimilation and forecasting.
+At $t=0$ the latent ensemble is initialised from an LR state $y_0^$.
+For each subsequent time step, the predicted latent ensemble is corrected by a
+Kalman update (ROAD-EnKF) that assimilates the current LR observation
+$y_t^$ after passing it through the same decoder–down-sample–encoder
+measurement operator used during training. The updated latent state is
+propagated with $F_$ and decoded to produce the HR forecast
+$ u_t+1$; this forecast is then recycled inside the loop to continue the
+assimilation–forecast cycle.
+
+Reduced-Order Autodifferentiable EnKF
+ 
+
+The Reduced--Order Autodifferentiable Ensemble Kalman Filter is a hybrid learning--filtering framework that couples a learnt latent surrogate with an
+online Ensemble Kalman Filter (EnKF) . By performing data assimilation in a
+low-dimensional latent subspace, ROAD--EnKF (i) circumvents the cubic cost of
+full-state EnKF updates and (ii) allows gradients to flow through the complete
+forecast--analysis cycle, enabling end-to-end optimization with stochastic
+gradient descent.
+
+Let $E_$, $F_$ and $D_$ denote the LR encoder, latent
+dynamics, and HR decoder, respectively. For an LR trajectory
+$\ y_t^\_t=0^T-1$, the filter propagates an ensemble
+$\ z_t,i\_i=1^N$ in latent space while repeatedly reconciling
+model forecasts with new observations. The complete algorithm for one
+mini-batch is summarised in Alg.~.
+
+[H]
+
+[1]
+ LR sequence $\ y_t^\_t=0^T-1$, ensemble size $N$, prior std.\ $_$, update period $s_$, noise cov.\ $R$
+ Encode: $ z_0 E_( y^_0)$
+ Initial ensemble: $Z_0 z_0 1_N^ T + _\,$, $ N(0,^2 I)$
+ 
+ = 0$
+ Decode $Z_t$ to HR, down-sample $ Y_t^ f$
+ Compute anomalies $A_z$, $A_y$ and Kalman gain $K$ 
+ Draw perturbed obs.\ $_t N( y_t^, R)$
+ $Z_t Z_t + K(_t - Y_t^ f)$
+ 
+ 
+ break
+ 
+ Prediction: $Z_t+1 F_(Z_t)$
+ 
+ final ensemble $Z_T-1$
+
+During training the stochastic residuals introduced by the perturbed
+observations propagate gradients back to the encoder, latent dynamics, and
+decoder, letting the network learn to minimise the joint forecast error over
+full trajectories while respecting the Bayesian update structure of the
+EnKF.
+
+Datasets
+
+To benchmark the proposed SR-enabled ROAD-EnKF pipeline rigorously, we assemble three complementary datasets spanning synthetic turbulence, canonical geophysical flows, and real-world observations. 
+
+Viscous 
+We consider the dimensionless viscous 1‑D equation (see Fig. ) on the unit circle,
+
+_t u(x,t) + u(x,t)\,_x u(x,t) = \,_xxu(x,t), x[0,1),\; t>0,
+
+subject to periodic boundary conditions $u(0,t) = u(1,t)$ and an initial condition $u(x,0)=u_0(x)$ . Here $u$ denotes the scalar velocity field and $$ is the kinematic viscosity; throughout this work we fix $=10^-2$.
+
+The spatial domain is discretized into $N_ = 1024$ equispaced points with grid spacing $ x = 1/N_$. Central finite differences approximate the first and second derivatives:
+
+_x u & -u_j-12\, x, &
+_xx u & -2u_j+u_j-1 x^2,
+
+which, when substituted into~, yields the semi‑discrete right-hand side
+
+_j = -u_j\,-u_j-12\, x + \,-2u_j+u_j-1 x^2.
+
+Time integration is performed with an explicit fourth‑order Runge–Kutta (RK4) scheme. The CFL‑stable step size is chosen adaptively as
+
+ t = \!( _j |u_j| + 10^-12,\; 2), =0.4.
+
+The initial velocity field is synthesized as a random superposition of ten sine modes,
+
+ u_0(x) = _i=1^10 (2 k_i x + _i), k_i U(1,10),\; _i U(0,2),
+
+where $ U$ denotes the continuous uniform distribution. The RK4 solver is run until $T_=0.04$, producing a trajectory $
+2000$ snapshots of the HR field $u^(t) R^1024$. Low‑resolution data are obtained by uniform subsampling with factor $s=8$:
+
+ u^_j(t) = u^_8j(t), j = 0,,127.
+
+The resulting dataset dimensionalities are
+
+\ &\;(N_t, N_) = (2001,1024), &
+\ &\;(N_t, N_) = (2001,128).
+
+LR snapshots are further corrupted with additive Gaussian noise at signal‑to‑noise ratio of dB before being assimilated by the filter.
+
+Two‐Dimensional Navier–Stokes–Kraichnan Turbulence
+
+The evolution of the vorticity field $$ in 2D turbulence (see Fig. ) is governed by the incompressible Navier-Stokes equation in the vorticity-streamfunction formulation :
+
+ t + = ^2 + f(, t),
+ 
+
+where:
+
+ $ = $ is the vorticity field, with $$ being the velocity vector field.
+ $$ is the kinematic viscosity, controlling the dissipation of small-scale structures.
+ $f(, t)$ is an external forcing term, injecting energy into the system at specific scales.
+ $$ is related to the streamfunction $$ via:
+ 
+ = ^ = - y \\ x ,
+ 
+ where $^2 = -$ provides the relationship between the vorticity and streamfunction.
+
+The energy spectrum $E(k)$ quantifies the distribution of kinetic energy across wavenumbers $k$. In Kraichnan's 2D turbulence, the energy cascade results in:
+
+ Inverse Cascade: Energy is transferred to larger scales (lower $k$), leading to the formation of coherent structures.
+ Direct Cascade: Enstrophy (mean-square vorticity) is transferred to smaller scales (higher $k$), eventually dissipated by viscosity.
+
+Forcing is applied in the wavenumber range $k_f$, typically targeting intermediate scales to sustain turbulence. The energy input rate $$ is balanced by dissipation, ensuring statistical stationarity.
+
+The dataset used in this study was generated by numerically solving the vorticity equation with the following parameters:
+
+ Reynolds Number: $ = 16,000$, ensuring a highly turbulent regime.
+ Grid Resolution: $256 256$, providing sufficient resolution to capture multiscale dynamics.
+ Time Stepping: A small time step of $ t = 10^-4$ was used for numerical stability and accuracy.
+ Total Simulation Time: $T = 8$ seconds, corresponding to 80,000 timesteps.
+ Forcing Wavenumber Range: $k_f [4, 6]$, injecting energy at intermediate scales.
+ Boundary Conditions: Periodic in both spatial directions.
+
+The vorticity fields were saved at 800 equispaced timesteps, resulting in a dataset of shape $(800, 3, 256, 256)$, where the second dimension corresponds to velocity components $u$, $v$, and vorticity $$. 
+
+Low‐resolution (LR) counterparts $^_n R^6464$ are generated via bicubic interpolation preceded by an ideal low‐pass anti‐aliasing filter that removes wavenumbers $| k|>k_c=13 N_x$.
+
+Kuramoto–Sivashinsky Dataset
+
+The Kuramoto–Sivashinsky (KS) equation captures chaotic dynamics (see Fig. ) of flame fronts and thin liquid films . In one spatial dimension with periodic boundary conditions it reads
+
+ _t u + u\,_x u + _xxu + _xxxxu = 0, x [0, L],\; t>0.
+ 
+
+Here $L = 32$ is chosen to ensure fully developed spatio‑temporal chaos.
+
+ We employ the exponential time‑differencing fourth‑order Runge–Kutta (ETDRK4) algorithm. Let $k$ be the Fourier wavenumbers on an equispaced grid with $N_=512$ points; then writing $u(x,t) = _k(t)e^ikx$, equation~ becomes
+
+ _t _k = -(k^2+k^4)\,_k - 2\;_k,
+
+where the nonlinear term is evaluated pseudo‑spectrally. Pre‑computed ETDRK4 coefficients allow stable advancement with sub‑step $ t = 10^-5$.
+
+ Starting from small‑amplitude Gaussian noise, we discard an initial sub‑steps () as burn‑in to reach the chaotic attractor. We then integrate for an additional time units, recording a snapshot every $0.1$ units (every sub‑steps), yielding $T=1000$ high‑resolution states $u^(t) ^512$.
+
+ For data assimilation we construct coarse measurements by average‑pooling contiguous blocks of size four, resulting in $N_=128$‑point signals
+
+ u^(t)_[j] \,=\, 4_m=0^3 u^(t)_[4j+m], j = 0,,127.
+
+This mimics a sensor array with limited spatial fidelity while preserving large‑scale statistics.
+
+Methodology
+
+The methodology section opens with a high-level roadmap to guide readers through the pipeline. We first formalize the SR observation operator that maps coarse states onto the latent high-resolution grid. Next, we review the ensemble Kalman filter (EnKF) update and describe the spectral-space localization used to curb spurious long-range correlations. Finally, we detail the training strategy for the neural SR prior.
+
+Latent Dynamics Model
+ 
+State estimation is performed in a learned latent space of dimension $d_z$ (typically $d_z N_$) governed by a stochastic residual Euler discretization
+
+_t+1 = _t + t\,f_(_t) + _t, _t (,^2),
+
+where $f_\!:^d_z\!^d_z$ is a neural network parameterised by weights $$. Specifically, $f_$ is a two‑layer multilayer perceptron (MLP)
+
+ f_() = W_2\,(W_1+_1)+_2, W_1^h d_z,\;W_2^d_z h,
+
+with hidden dimension $h$ and ReLU activation. The process noise scale $$ is either fixed a priori or learned via back‑propagation by parameterising $=()$ with $. 
+Equation~ is differentiable with respect to both $_t$ and $$, enabling seamless integration with the ROAD‑EnKF update and end‑to‑end optimization of the latent dynamics alongside the decoder and observation operators.
+
+Decoder Architecture
+ 
+The super–resolution decoder maps a latent state $_t^d_z$ returned by the latent dynamics model (Section~) to a high–resolution physical field $_t ^N_$. It is conceptually divided into three stages: (i) a seed fully–connected projection, (ii) a Fourier positional–encoding concatenation, and (iii) a convolutional refinement stack.
+
+ A linear layer initialises a hidden feature map of width $C_h$:
+
+ 
+ _0 = W_\,_t + _\,^C_h.
+
+The vector $_0$ is broadcast along the spatial dimension to form a constant feature channel $_0(x)^C_h$ for every grid point $x[0,1]$.
+
+Following we enrich each spatial location with $F$ sinusoidal embeddings
+
+ 
+ (x) = [(2 kx),\, (2 kx)]_k=1^F\;^2F.
+
+Concatenating $(x)$ to $_0(x)$ yields the composite input tensor
+
+ _(x) = _0(x)\\ (x) ^C_h+2F.
+
+A stack of $L$ one–dimensional convolutions (kernel size~3, circular padding) incrementally mixes local and global information:
+
+ _+1(x) = \!(\,_(_())(x)),=0,,L-1,
+
+where $()$ denotes the ReLU activation. The final hidden map $_L(x)$ is projected to the physical field via a $11$ convolution (point–wise linear map):
+
+ _t(x) = _(_L())(x)\;.
+
+Unless stated otherwise we set $d_z=64$, $C_h=128$, $F=32$, and $L=4$. These values were selected to balance reconstruction accuracy and computational footprint. The overall decoder contains roughly $\,$ trainable parameters and contributes less than ms of wall–clock latency per forward pass when evaluated on an NVIDIA RTX~4090 GPU.
+
+Equation~ provides a global conditioning of the output on the latent code, while the sinusoidal basis~ injects multi–scale positional context akin to classical Fourier spectral methods. The convolutional stack then learns a residual mapping that blends these two sources of information, enabling the network to synthesise fine–scale structures consistent with both the learned dynamics and the observed low–resolution constraints.
+
+Latent Low Resolution Encoder
+ 
+Given a flattened LR observation vector $ y_ R^N_$ we infer an initial latent state $ z_0$ through a simple two--layer multilayer perceptron (MLP)
+
+ h &= (W_1\, y_ + b_1), && W_1 R^128 N_, \\[4pt]
+ z_0 &= W_2\, h + b_2, && W_2 R^d_z128,
+
+where $$ denotes the ReLU activation. Equations~-- define the deterministic encoder map $g_ R^N_ R^d_z$ with parameter set $=\W_1,W_2, b_1, b_2\$. The modest hidden width of 128 suffices because spatial correlations are largely removed during LR downsampling; the network's main duty is dimensionality reduction and feature extraction.
+
+For 2-D inputs we adopt a row-major flattening convention, i.e.\ $ y_ = (u_(x_i,y_j))$. Prior to encoding, LR snapshots are standardised to zero mean and unit variance across the training set.
+
+Ensemble Kalman Filter Assimilation
+ 
+Let
+\(
+ Z^ f = [ z^ f_1,, z^ f_N]
+ R^d_z N
+\)
+denote the forecast ensemble in latent space, where \(d_z\) is the
+latent dimension and \(N\) the ensemble size. 
+Each particle is decoded to a high-resolution state and projected to the
+sensor grid, yielding the forecast observation ensemble
+\(
+ Y^ f = [ y^ f_1,, y^ f_N]
+ R^d_y N
+\),
+with 
+\(
+ y^ f_i
+ = D\!( G( z^ f_i)),
+\)
+where \( G\) is the Fourier decoder
+(Sect.~) and \( D\) the bicubic
+down–sampling operator.
+
+Define ensemble means
+\(
+ =1N_i=1^N z^ f_i,
+ \;
+ =1N_i=1^N y^ f_i
+\),
+and anomaly matrices
+\[
+ A_z = Z^ f - 1_N^ T,
+ 
+ A_y = Y^ f - 1_N^ T.
+\]
+
+With diagonal sensor noise covariance
+\(R=(_1^2,,_d_y^2)\),
+the standard EnKF gain
+\(
+ K = C_zy\,C_yy^-1
+\)
+is written in sample form as
+\[
+ K
+ =N-1
+ (
+ N-1+R
+ )^\!-1.
+\]
+Because \(d_y N\), we avoid a large \(d_y d_y\) inverse by
+recasting the problem in the ensemble space using the Woodbury identity:
+\[
+ G \;=\;
+ (
+ I_N
+ + A_y^ TR^-1A_y/(N-1)
+ )^-1,
+ 
+ K \;=\;
+ R^-1GN-1.
+\]
+The \(N N\) matrix \(G\) is factorised via a Cholesky decomposition.
+
+Perturbed observations are formed as
+\(
+ _i
+ = y^ + _i,
+ \;
+ _i N(0,R).
+\)
+Each latent particle is then updated by
+\[
+ z^ a_i
+ \;=\;
+ z^ f_i
+ + K(_i - y^ f_i),
+ 
+ i=1,,N.
+\]
+The analysis ensemble
+\(Z^ a\) serves as the initial condition for the
+stochastic residual–Euler propagation described in
+Sect.~.
+
+The overall complexity scales as
+\( O\!(N^3 + d_zN^2)\),
+independent of the high-dimensional sensor space \(d_y\).
+For our experiments with \(N\!=\!32\) and \(d_z\!\!64\),
+the update step adds only milliseconds per assimilation window,
+making it negligible compared with the decoder’s forward pass.
+
+Training Strategy and Hyperparameters
+ 
+The ROAD-EnKF network is trained end-to-end with a
+sequential forecast–analysis loop that mimics on-line data
+assimilation. Each mini-batch contains $B$ trajectories of length
+$T_$ low-resolution (LR) snapshots
+$\ y^_t\_t=0^T_-1$
+together with their high-resolution (HR) references
+$\ u^_t\_t=0^T_-1$.
+
+The LR encoder (Sect.~) maps the first observation to an
+analysis latent state
+$
+ z_0
+ = E_\!( y^_0)
+$.
+An ensemble of $N$ particles is initialised as
+$
+ Z_0= z_0 1_N^ T
+ +_\,
+ ,\;
+ N(0,I),
+$
+and refined with a single EnKF update
+(Alg.~) against the first LR frame.
+
+For every time index $t$:
+
+ Prediction. 
+ The latent ensemble is advanced through the residual-Euler
+ model
+ $
+ Z^_t+1
+ = F_\!(Z^_t)
+ $
+ (Sect.~).
+ Assimilation. 
+ Every $s_\!=\!1$ step 
+ the forecast ensemble is assimilated with the new LR
+ observation to produce
+ $
+ Z^_t+1
+ $.
+ Between updates the filter runs purely in prediction mode.
+ Loss accumulation. 
+ The ensemble mean
+ $
+ _t+1 = 1N_i z^ a_t+1,i
+ $
+ is decoded to HR,
+ $
+ _t+1=D_(_t+1),
+ $
+ and down-sampled,
+ $
+ _t+1= D(_t+1).
+ $
+ We accumulate
+ \[
+ L_t
+ =
+ \|_t+1- y^_t+1\|_2^2
+ +_
+ \|_t+1- u^_t+1\|_2^2
+ +_
+ \|_t+1\|_2^2.
+ \]
+ Truncated BPTT. 
+ After $_=12T_$ steps the
+ latent gradient graph is detached to bound memory footprint.
+
+Weights $\,,\$ are updated with AdamW
+($_1\!=\!0.9,\;_2\!=\!0.999$) and initial
+learning-rate~$10^-3$.
+
+A scheduler halves
+($_$\,=\,0.5) the learning-rate after
+$p_$ epochs without improvement in the validation LR-MSE.
+Gradients are clipped to $ L_1.0$.
+Early stopping terminates after
+$p_$ non-improving epochs.
+
+Table~ summarises the values used in our experiments.
+
+[ht]
+
+Key hyperparameters used per dataset.
+lccccccc
+
+Dataset & $N$ & $T_$ & Epochs &
+$_^2$ &
+$_$ &
+$_$ &
+LR $\!$ HR ratio \\
+
+1-D Burgers equation & 16 & 10 & 200 & $10^-4$ & 8.0 & $10^-3$ & $128/1024$ \\
+2-D NSKT & 32 & 10 & 100 & $10^-2$ & 16.0 & $10^-3$ & $(6464)/(256256)$ \\
+KS equation & 100 & 50 & 200 & $10^-3$ & 4.0 & $10^-3$ & $128/512$ \\
+
+The weights
+$_$ and $_$
+were chosen through a small grid search to balance reconstruction
+fidelity and latent regularisation, while the observation-noise
+variance $_^2$ follows the empirical noise level
+present in each synthetic dataset.
+
+These strategies keep training stable even for the chaotic KS
+dynamics (\(T_=50\)) and allow the filter to generalise
+far beyond the observation window in the extrapolation tests reported
+in Sect.~.
+
+Experiments \& Results
+ 
+
+Figure~ juxtaposes the key stages of our
+$128\!\!1024$ super-resolution experiment for the 1-D viscous
+Burgers equation. 
+Each row corresponds to an increasing time index, the first three rows
+belonging to the assimilation window and the last two to the
+forecast horizon ($t+250\, t$). 
+The three columns read as follows:
+
+ LR observations --- sparsely sampled snapshots on the
+ $128$-point grid;
+ HR reconstructions / forecasts --- dashed blue lines
+ () plotted on top of the black ground-truth
+ profile;
+ Energy spectra $E(k)$ --- comparison of LR input,
+ SR-ROAD-EnKF output, and HR truth.
+
+The near-perfect overlap between the dashed blue and solid black curves
+confirms that the latent EnKF recovers the fine-scale structure lost in
+the LR input; most notably, the high-wavenumber tail of $E(k)$—
+completely absent in the LR spectrum—re-emerges in the reconstructed
+field. Forecast skill remains stable for all 250 extrapolated steps,
+indicating that the learned latent dynamics introduce negligible
+phase-shift or amplitude drift.
+
+Figure~ provides a quantitative, space–time
+view. The left contour panel stacks the HR reconstructions and
+forecasts for 500 consecutive time steps, the centre panel shows the HR
+reference solution, and the right panel maps the absolute error.
+Except for a slight rise near the end of the forecast window, the error
+remains indistinguishable from zero across the domain, underscoring the
+method’s long-horizon reliability.
+
+Kuramoto--Sivashinsky Equation
+
+For the chaotic Kuramoto–Sivashinsky (KS) system we perform
+$128\!\!512$ super-resolution under the same ROAD-EnKF pipeline.
+Figures~,
+~, and
+~ present results over three
+non-overlapping windows—initial, intermediate, and
+final. In every window we assimilate LR observations for
+$50\, t$ and then forecast an additional $50\, t$ without
+further updates.
+
+ Assimilation phase. 
+ As in the Burgers case, the blue dashed reconstructions are
+ visually indistinguishable from the black ground-truth profile
+ on all $512$ grid points; the corresponding energy spectra
+ match across the entire wavenumber range.
+ Forecast phase. 
+ Deviations appear sooner in the KS system because of its strong
+ spatio-temporal chaos. Small phase errors emerge within the
+ first two windows, whereas the final window shows markedly
+ better alignment—an indication that the latent EnKF has locked
+ onto a more stable attractor branch. In all three cases the
+ reconstructed spectra track the HR truth until the last $
+ 10$ forecast steps, at which point the high-$k$ tail begins to
+ diverge.
+
+Figure~ condenses the super–resolution results for
+the Kuramoto–Sivashinsky test case into three space–time slabs: 
+(a)~initial, (b)~intermediate, and (c)~final. 
+In each slab the left panel stacks the HR reconstruction plus
+$50$-step forecast, the centre panel shows the HR reference solution,
+and the right panel maps the point-wise absolute error.
+
+ Initial slab (0--100\,\( t\)). 
+ The error field is almost uniformly deep purple
+ (\(<\!0.05\)), confirming pixel-level agreement during the
+ assimilation window; a faint oblique band appears only after
+ $80\, t$, when forecasting begins.
+ Intermediate slab (500--600\,\( t\)). 
+ Error remains low in most of the domain but thin
+ streaks—aligned with steep phase gradients in the truth—rise to
+ \( O(1)\) as chaotic growth amplifies small latent
+ inaccuracies. Importantly, the error does not cascade
+ laterally, indicating that the latent EnKF keeps phase drift
+ localised.
+ Final slab (900--1000\,\( t\)). 
+ After two full Lyapunov times the filter still maintains
+ millimetre-scale fidelity: maximum error peaks at
+ \(2\) only in isolated regions, while the bulk of the field
+ stays below \(0.2\). The diagonal orientation of the streaks
+ matches the group velocity of the KS wave packets,
+ suggesting that discrepancies are dominated by slight
+ phase-speed mismatches rather than amplitude errors.
+
+Despite the intrinsic unpredictability of the KS dynamics, the
+ROAD-EnKF framework preserves fine-scale energy content and maintains
+forecast fidelity well beyond the $50$-step horizon that was never
+seen during training, underscoring its robustness on highly chaotic
+PDEs.
+
+The Navier–Stokes–Kraichnan Turbulence (NSKT) test pushes the pipeline to a
+two-dimensional, fully turbulent regime. 
+We upscale vorticity fields from a \(6464\) sensing grid to a
+\(256256\) target grid. 
+Figure~ organises the results over a
+\(100\, t\) interval—\(50\) assimilated frames followed by
+\(50\) forecast frames—into four columns:
+
+ LR observation (\(6464\)),
+ HR ground truth (\(256256\)),
+ SR-ROAD-EnKF reconstruction / forecast,
+ Kinetic-energy spectra \(E(k)\) for LR input,
+ SR output, and HR truth.
+
+Qualitatively, the reconstructed vorticity maps reproduce the filamentary
+and vortex-sheet structures of the HR reference at every time slice,
+demonstrating that latent assimilation effectively injects the missing
+fine-scale content. 
+Quantitatively, the LR spectrum under-predicts energy across the
+inertial range by more than an order of magnitude, whereas the SR
+spectrum overlays the HR curve almost perfectly—both during
+assimilation and throughout the 50-step forecast window. 
+The method therefore not only restores spatial resolution but also
+recovers the correct spectral energy distribution, a critical metric
+for turbulence fidelity.
+
+[ht!]
+[width=]results/nskt_results/obs_forecast_plots.png
+2D NSKT $256 256$ grid reconstructions. A time frame (50 forecasting steps) towards the end of the simulation is shown. 
+1st Column: The noisy low-resolution input fields, 
+2nd Column: The high-resolution ground truth, 
+3rd Column: The high-resolution reconstructions and forecasts, and 
+4th Column: the $E(k)$ comparison between the low-resolution, ground truth, and the reconstructed/forecasted fields.
+
+Discussion \& Conclusion
+
+This study introduced a super\-resolution Ensemble Kalman
+filter—dubbed —that couples a learned latent
+dynamics model with a Fourier-based decoder and a differentiable EnKF.
+The framework was tested on three increasingly challenging PDE systems:
+
+ 1-D Burgers ($128\!\!1024$). 
+ HR reconstructions are visually indistinguishable from the
+ ground truth; root-mean-square error (RMSE) falls below
+ $510^-3$ and remains stable over 250 forecast steps.
+ Kuramoto–Sivashinsky ($128\!\!512$). 
+ Despite strong chaos, the filter preserves high-wavenumber
+ energy and holds phase error to $ O(10^-2)$ for
+ 50-step forecasts.
+ 2-D NSKT ($6464\!\!256256$). 
+ The method restores the inertial-range spectrum with a mean
+ spectral error of $<3\
+ lost in the LR input.
+
+Across all cases, the ensemble spread tracks the true error envelope,
+indicating that uncertainty is well calibrated.
+
+Interpretation of Results
+
+The latent–space formulation succeeds for three complementary reasons:
+
+ Low-dimensional dynamics. 
+ The neural operator compresses high-frequency content into a
+ 32–64 dimensional manifold, making Kalman updates tractable.
+ Spectral decoder. 
+ One-shot Fourier features supply global context; subsequent
+ convolutions propagate local corrections without spatial
+ aliasing.
+ Differentiable EnKF. 
+ Back-propagation through the Kalman gain co-optimizes model and
+ filter, suppressing filter divergence typical in hybrid DA.
+
+The ROAD-EnKF layer plays a dual role: 
+it is both a Bayes estimator of the latent state and, when
+embedded in an optimization loop, a dynamic observer for closed-loop
+control. 
+Because the Kalman gain is learned jointly with the latent dynamics,
+the filter internalises model bias and sensor noise, turning the neural
+operator into a high-bandwidth observer that supplies HR state estimates
+at essentially zero latency. 
+In the Burgers and KS tests, these estimates feed directly into the
+next prediction step, implicitly realising the classic
+observer–predictor structure of a Linear Quadratic Regulator (LQR); in
+NSKT they deliver vortex-level details that are prerequisite for any
+turbo-machinery flow-control application. 
+The framework therefore bridges a long-standing gap between
+estimation (data assimilation) and control (decision
+making) in high-dimensional PDE systems.
+
+Limitations
+
+The main assumptions and limitations of our study can be summarized as follows:
+
+ Forecast horizon. 
+ In the KS case, phase errors grow after two Lyapunov times,
+ revealing the intrinsic limit of deterministic latent dynamics.
+ Observation operator. 
+ We assumed an ideal bicubic down-sampler; real sensors may
+ possess anisotropic blurring or missing data.
+ 2-D only. 
+ Although the decoder scales to 3-D in principle, training cost
+ will rise sharply without additional compression (e.g.\ D-FNO).
+
+Future Work
+
+Based on our work, several directions can be pursued as follow-up research. 
+
+ Bayesian neural operators. 
+ Integrate VB-DeepONet or ProbNO priors to capture epistemic
+ uncertainty, complementing the ensemble’s aleatoric spread.
+ Multi-grid latent hierarchies. 
+ Replace a single latent level with a HAMLET or D-FNO pyramid to
+ extend forecasts of highly chaotic flows.
+ Closed-loop optimal control. 
+ Combine the differentiable filter with adjoint-based gradient
+ signals (e.g.\ AONN) for real-time actuation in
+ drag-reduction or mixing problems.
+ 3-D extension and HPC scaling. 
+ Employ tensor decompositions (FouRA, PAL-FNO) and distributed
+ EnKF updates to tackle $512^3$ DNS data on multi-GPU
+ clusters.
+ Robust sensor modeling. 
+ Augment the observation operator with learnable blur,
+ occlusion, and noise models to mimic experimental PIV or remote
+ sensing.
+
+Concluding Remarks
+
+The proposed method demonstrates that
+latent-space data assimilation, when paired with a spectral
+decoder, can bridge a four-fold resolution gap while retaining physical
+fidelity and delivering calibrated uncertainty estimates. We tested the approach on three benchmarks: the 1-D viscous Burgers equation, the Kuramoto–Sivashinsky equation, and 2-D Navier–Stokes–Kraichnan turbulence at $=16,000$. Low-resolution inputs were generated by $4$–$8$ downsampling with added noise. The latent models remained stable beyond the observation window, accurately reproducing shock dynamics, chaotic statistics, and, in the turbulence case, preserving the kinetic-energy spectrum and enstrophy, indicating suitability for control tasks sensitive to fine-scale flow features. Our approach
+opens a path toward real-time, high-resolution forecasting and control
+in fluid dynamics and beyond. Future research will focus on extending this framework to more complex turbulent regimes and exploring its applicability across a broader class of dynamical systems.
+
+Acknowledgments
+
+This work was supported in part by the AFOSR Grant FA9550-24-1-0327.

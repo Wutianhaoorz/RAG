@@ -1,0 +1,128 @@
+[utf8]inputenc 
+[T1]fontenc 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ \\
+ Elie Hachem \\
+Mines Paris - PSL University\\
+ Centre for Material Forming (CEMEF) \\
+ CNRS \\
+ \\
+
+Graph neural networks (GNNs) have emerged as powerful surrogates for mesh-based computational fluid dynamics (CFD), but training them on high-resolution unstructured meshes with hundreds of thousands of nodes remains prohibitively expensive. We study a coarse-to-fine curriculum that accelerates convergence by first training on very coarse meshes and then progressively introducing medium and high resolutions (up to \(310^5\) nodes). Unlike multiscale GNN architectures, the model itself is unchanged; only the fidelity of the training data varies over time. We achieve comparable generalization accuracy while reducing total wall-clock time by up to 50\
+
+Introduction
+
+High-fidelity CFD solvers based on the Navier--Stokes equations underpin critical engineering pipelines, from aerodynamic shape design to climate modeling. Unfortunately, their computational cost scales steeply with mesh resolution, especially on complex three-dimensional geometries. Graph neural networks (GNNs) have recently been adopted as surrogates that operate directly on unstructured meshes and can predict flow fields orders of magnitude faster than traditional solvers . However, training these models on the same fine meshes used in production remains very challenging due to time and memory limitation.
+
+A natural strategy is to exploit the multiresolution structure of CFD datasets: coarse meshes capture large-scale flow features at a fraction of the cost. In contrast, fine meshes resolve small vortices and boundary layers. Inspired by curriculum learning and its recent incarnations in language modeling and computer vision via progressive image resizing , we investigate how a data-centric curriculum can ease training for mesh-based GNN surrogates. 
+
+Specifically, we keep the GNN architecture and optimizer intact but vary the fidelity of samples seen during training: the network is first exposed only to very coarse meshes, then to medium resolutions, and finally to the original high-resolution meshes, similarly to .
+
+This is distinct from multigrid or multiscale architectures that simultaneously process multiple graph resolutions , or approaches that interpolate fine resolution data to coarse ones . We aim to go further than previous studies from and compare different strategies in terms of computation time, FLOPs, minimal mesh size, and final accuracy.
+
+Datasets
+
+We perform our experiments on two different datasets. First, developed 101 semi-idealized geometries derived from patient-specific intracranial aneurysms, segmented from medical imaging data. They conducted CFD simulations of blood flow within these vessels, numerically solving the transient incompressible Navier-Stokes equation over a complete cardiac cycle. This leads to 101 trajectories, each of 79 time steps (with $ t = 0.01s$), where the meshes consist of roughly 300,000 nodes and 3 to 4 million edges. Second, we use the Cylinder benchmark in 2D from . We use 100 training trajectories of 600 time steps (with $ t = 0.01s$) where meshes consist roughly of 2,000 nodes and 4,000 edges. An overview of the datasets is available in .
+
+Coarsening methodology
+
+The aneurysm dataset was produced through an automated pipeline. Starting from the high-resolution CFD meshes with refined boundary layers, we first extracted the outer surfaces of each vascular geometry and re-meshed them using isotropic triangular elements. These surface meshes were then used to construct volumetric meshes of unstructured tetrahedral elements with uniform resolution, adopting average target element sizes of 0.3 mm for the first coarsening phase. To effectively reduce the number of elements while keeping a reasonable element size inside the domain, no boundary layer refinement was included in the lighter datasets. We repeat this operation three times in total to obtain three coarser datasets.
+
+Similarly, the Cylinder dataset meshes have refined boundary layers near the top and bottom walls and the cylinder, capturing accurate fluid velocity gradients while maintaining a no-slip wall condition. Since the size of these meshes is significantly smaller, we decided to retain their local refinements. To coarsen these anisotropic meshes, we augmented the minimum and maximum element sizes and increased the thickness of the boundary layers. This allowed us to generate meshes of coarse and medium resolutions while preserving the local refinement at the wall and cylinder boundaries. This operation is applied twice to obtain two coarser datasets.
+
+Flow fields were transferred onto these meshes by linearly interpolating velocity data from the high-resolution CFD simulations for both datasets. 
+
+Training protocol
+
+Model
+
+We introduce our transformer-based GNN, a 500k-parameter model with $L=10$ layers processing tokens in $^d=64$ from . Our model takes a graph $G_t$ as input and predicts $G_t+1$. Graphs only hold per-node features, such as the velocity, the acceleration, the node's position or its type. We ensure the boundary conditions on the vessels and aneurysm walls by setting the velocity field to 0 at those locations, and apply a similar strategy to the cylinder. 
+
+Our model follows an Encode-Process-Decode architecture with a Transformer processor. The architecture works by first encoding the node features in a latent space $ = (_1, _2,...,_N)^T ^N d = (G)$. We then process $$ through $L$ Transformer Blocks. Each block takes the latest latent representation $$ and the Adjacency Matrix $$ as input:
+
+ _l &= ((_l-1, ) + _l-1) && [1 L] \\
+ _l &= ((_l) + _l) && [1 L] 
+
+$$ is a Multi-Head attention operation masked by the Adjacency matrix:
+
+ () = (( ))V
+
+where $Q, K, V$ are linear projections of $$.
+
+$$ is a gated Multi-layer perceptron following the work of :
+
+ = W_f((W_l + b_l) (W_r + b_r)) + b_f
+
+and RMSNorm is a normalization layer .
+
+Finally, a decoder maps back $_L$ into a physical space $^3$ to predict the blood flow's velocity at the following time step (respectively $^2$ to predict the fluid velocity in the case of the cylinder dataset). Both the encoder and the decoder are 2-layer Multi-layer perceptrons, where the second layer's width (respectively the first layer for the decoder) is set to $d$. They also use an RMSNorm layer and a $$ activation function.
+
+Training
+
+We train our models using AdamW , with a warmup and cosine decay for the learning rate schedule (using an initial learning rate of $10^-3$). When switching a model to finer inputs, we compare two strategies:
+
+ not resetting the learning rate or scheduling a new warmup, we simply resume the training with the same learning rate schedule.
+ launching a new schedule for the remaining steps.
+
+During training and inference, inputs and outputs are normalized to zero-mean and unit variance. We use a Mean Squared Error (MSE) averaged on each node as a training loss for our model and add noise to our inputs to make it robust to error propagation over multiple time steps. We compare our models using a full auto-regressive prediction over the entire trajectories of the test set. 
+
+Our models are trained for 12 epochs on the Cylinder dataset on a single L4 GPU and 20 epochs on the Aneurysm dataset on a single A100 GPU. We use similar curriculum for both datasets, as described in , training for 50, 75 and 90\
+
+It is important to note that while our model achieves a strong All-Rollout RMSE on the Cylinder dataset by default, it is not the case on the Aneurysm dataset. Even on twice as many epochs (20 to 40), our model reaches a plateau that it cannot break without curriculum learning (or a larger number of parameters).
+
+Results
+
+Across both datasets, starting on coarse meshes and progressively increasing resolution markedly reduces the training cost for a fixed number of epochs, while maintaining and often improving the final accuracy on the fine mesh. More importantly, on the Aneurysm dataset, it allows the model to properly learn the underlying physics and break through a plateau (see ).
+
+We find that using curriculum learning, even in its simplest form (a single phase pretraining on a coarser dataset), can cut the training time by up to 50\
+
+On the Aneurysm dataset, we obtain the best results by pretraining on the coarsest dataset for 50\
+
+We also display the training loss for several training runs in . First, we can see that the coarser the mesh, the higher the training loss. This is expected, given that the task becomes increasingly complex as we remove granularity. Second, we see once again that the earlier the switch, the better the performance. For aneurysms, curriculum trainings not only descend faster early on, they also reach lower loss for the same number of epochs spent on the finest mesh, indicating that the coarse pretraining phase initializes the model in a region of parameter space from which the fine–mesh objective is easier to optimize. The cylinder curves show the same acceleration in the first few epochs after the switch.
+
+r0.545
+
+ 
+ c
+ [width=1]figures/LossCurriculum.pdf
+ 
+ 
+ 
+ 
+
+Ablation study
+
+We ablate the learning rate schedule when moving to a finer resolution in . Resetting the learning rate upon each switch improves the first few epochs of fine–tuning on both datasets (sharper loss drops right after the switch), with a more pronounced effect on the aneurysm task. In our main experiments, we constantly reset the learning rate when switching between datasets. 
+
+Holding the pretraining mesh fixed, increasing fine–tuning epochs on the finest dataset monotonically improves all–rollout RMSE on both aneurysm and cylinder (see : top–left and bottom–left panels). We also find that the smaller the difference between the coarse dataset and the default one, the less impact the number of finetuning steps has. 
+
+On the Cylinder dataset, we find that the mesh size does not make a significant difference (see : top–right and bottom–right panels). This suggests that for a default dataset that does not hold a large number of vertices, simply reducing the number of nodes by a factor of 2 is enough to speed up the training time without a loss of performance.
+
+On the Aneurysm dataset, however, we find that the larger the mesh size (i.e., the coarser the mesh), the better the performance, with increasing gains as the model is finetuned more. This suggests that on very refined datasets, aiming for a very coarse version of the meshes (even if they make less sense from a pure numerical simulation point of view) will allow for a significant speed-up in training with the same or even better performances.
+
+Overall, we find that no matter the mesh-based dataset used to train a GNN, it is always useful to split the training between the default dataset and a coarse version of it. Depending on the size of this default dataset, one can either: 
+
+ on small meshes (<10 thousand nodes): speed-up the training by up to 50\
+ on medium meshes (<50 thousand nodes): speed up the training by up to 50\
+ on large meshes (>50 thousand nodes and up to 300 thousand nodes): successfully train a model that would otherwise fail, either because the dataset is too difficult or because the training time would otherwise be too impractical. 
+
+Finally, a recipe could be summarized as follows: 
+
+ reset the learning rate schedule when switching between datasets
+ use a simple approach, such as pretraining on a coarse version before finetuning on the main dataset
+ the larger the main dataset, the coarser the dataset to pretrain on
+ aim for 50\
+
+Conclusion
+
+We have adapted and studied curriculum learning for GNN applied to mesh-based simulations. We find that, regardless of the approach, pretraining on coarse meshes yields similar or better results, while reducing the total training time by up to 50\
+
+Acknowledgements
+
+ The authors acknowledge the financial support from ERC grant no 2021-CoG-101045042, CURE. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Research Council. Neither the European Union nor the granting authority can be held responsible for them.

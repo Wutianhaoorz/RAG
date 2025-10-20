@@ -1,0 +1,98 @@
+[aps,prl,reprint,twocolumn,superscriptaddress]revtex4-2 
+
+[amssymb]SIunits
+
+[usenames,dvipsnames]xcolor
+
+[T1]fontenc
+[hidelinks, bookmarks=true]hyperref
+
+We present a combined experimental and numerical investigation of the transition from the classical to the ultimate regime of thermal turbulence in a supergravitational centrifugal convection system. 
+The transition is found to be robust, with the critical Rayleigh number decreasing systematically as the Froude number, defined as the ratio of centrifugal to Earth’s gravity, decreases, highlighting the effect of residual gravity. Once the Rayleigh number reaches the transition threshold, the Stewartson layer induced by residual Earth gravity becomes comparable in thickness to the viscous boundary layer, and their interaction results in a coupled flow that distorts the viscous boundary layer, triggering its transition from laminar to turbulent flow and leading to a sharp increase in heat transport. These findings demonstrate the key role of the Stewartson layer induced by residual gravity in facilitating the transition to the ultimate regime in supergravitational centrifugal thermal convection.
+
+Turbulent flows driven by thermal forcing are ubiquitous in nature and in industrial processes . A widely used model for investigating such flows is Rayleigh-Bénard convection (RBC), which consists of a fluid layer confined between two horizontal plates, heated from below and cooled from above . In geophysical and astrophysical systems, the driving strength of these flows reaches extremely high values that cannot be reproduced in laboratory experiments. To bridge this gap, asymptotic scaling laws are often employed to extrapolate laboratory findings to such extreme regimes.
+In particular, the relation between the Nusselt number $Nu$ (a dimensionless measure of convective heat transport) and the Rayleigh number $Ra$ (a dimensionless measure of buoyancy driving) provides a powerful framework for exploring these flows. The seminal work of first predicted that, at sufficiently large $Ra$, turbulent flow enters the so-called ultimate regime, in which the Nusselt number scales as $Nu Ra^1/2( Ra)^-3/2$. A recent model by for heat transfer in this regime incorporates the dependence on the Prandtl number ($Pr$) and satisfies the mathematically strict upper-bound condition, yielding the scaling relation $Nu Pr^1/2Ra^1/2( Ra)^-2$, with a negative exponent $(-1/2)$ for $Pr 1$ and a positive exponent $(+1/2)$ for $Pr 1$. Both models predict that the effective scaling exponent $$ in the relation $Nu Ra^$ exceeds $1/3$ in the ultimate regime—steeper than in the classical regime, where $ < 1/3$—and asymptotically approaches $1/2$ at very large $Ra$.
+
+Over the past 60 years, the existence of the ultimate regime has been the subject of intensive debate and extensive investigation in theory and in laboratory experiments (see Ref.~ for a review). However, in classical RBC systems, where Earth’s gravity is aligned with the temperature gradient, it remains challenging to reach extremely high $Ra$ and to obtain convincing evidence across a wide $Ra$ range . To address this limitation, introduced a supergravitational centrifugal convection (CC) system, in which centrifugal acceleration acts as an effective gravity parallel to the temperature gradient, while Earth’s gravity is perpendicular to it. This configuration enables access to much larger $Ra$ and has provided direct evidence for the existence of the ultimate regime over more than a decade in $Ra$.
+
+However, a key unresolved question concerns the nature of the transition from the classical to the ultimate regime in the CC system. Specifically, what physical mechanisms govern this transition, and why does it occur at a much lower threshold in the CC system ($Ra^* = (10^10)$) than in the classical RBC system ($Ra^* = (10^12-14)$) ?
+
+Recently, observed an evolution of the flow structure from gravity-dominated vertical convection to centrifugal-dominated RBC as centrifugal buoyancy increased. investigated the influence of Earth’s gravity on turbulent flow in the CC system and demonstrated that the Stewartson layers forming near the inner (cooled) and outer (heated) cylinders are induced by Earth’s gravity. 
+During the transition from the classical to the ultimate regime, the laminar-type Prandtl–Blasius boundary layer is expected to evolve into the turbulent-type Prandtl–von Kármán boundary layer through the non-normal–nonlinear mechanism . Therefore, in the CC system, the interaction between the Stewartson layers and the viscous boundary layers near the inner (cooled) and outer (heated) cylinders may play a critical role in this transition.
+
+In this work, we experimentally observe that the transition from the classical regime, characterized by an effective scaling of $Nu Ra^0.27$, to the ultimate regime, with a much steeper effective exponent $ = 0.46$, is robust in the CC system across a wide range of Froude numbers, which quantify the ratio of centrifugal to Earth’s gravity. Our results further show that the critical Rayleigh number for the onset of the ultimate regime decreases as the Froude number decreases, revealing the influence of residual gravity. By combining experiments and direct numerical simulations with theoretical models, we demonstrate the critical role of Stewartson layers induced by residual gravity in triggering the early onset of the ultimate regime in centrifugal convection, in contrast to the classical RBC system.
+
+Experimental setup$-$We adopt the same experimental setup used in previous studies . Since this experimental setup has already been described in detail in , here we only provide some main features. This experimental setup is a cylindrical annulus with a cooled inner wall and a heated outer wall under a solid-body rotation around its vertical axis. The outer (inner) radius of the cooled inner (heated outer) wall is $R_i=120$ mm ($R_o=240$ mm) and the height of the cylindrical annulus is $H=120$ mm, resulting in a gap of $L=R_o-R_i=120$ mm, a radius ratio of $=R_i/R_o=0.5$, and an aspect ratio of $=H/L=1$.
+
+The dimensionless governing equations and control parameters of CC system are presented in End Matter. To explore the effect of gravity, one can take the Froude number $Fr = ^2 R_m/g$ as another dimensionless parameter, which is a measure of the centrifugal acceleration compared to the gravitational acceleration. We use Silicone oil-1cs (Shin-Etsu Chemical Co., Ltd.) as the working fluid to investigate the critical Rayleigh number $Ra_r^*$ for the transition from the classical to the ultimate regime. The physical properties of Silicone oil-1cs at 25 $^$C are listed in Table~ in End Matter. 
+
+The parameter space explored in the $Fr$–$Ra_r$ and $Pr$–$Ra_r$ planes is shown in Fig.~(a) and (b), respectively. A total of 60 experiments were performed. The temperature difference $ T$ ranged from 2.77 K to 21.35 K, and the Oberbeck-Boussinesq conditions are well satisfied . The Rayleigh number $Ra_r$ spans $1.7610^9$ to $3.0410^11$, and the rotation rate ranges from 94 rpm to 528 rpm, corresponding to an effective gravity of 1.78 $g$ to 56.2 $g$.
+
+[htbp]
+[width=1.0]fig2
+(a) Measured Nusselt number $Nu$ as a function of Rayleigh number $Ra_r$ for different Froude number $Fr$. (b) The compensated plots of $Nu/Ra_r^1/3$ versus $Ra_r$. (c) The critical Rayleigh number $Ra_r^*$ for the transition from the classical regime to the ultimate regime as a function of Froude number $Fr$. (d) The normalised $Nu/Nu^*$ versus normalised $Ra_r/Ra_r^*$, in which the inset shows the normalised compensated plots. The solid red line in (a,b,d) represents $Nu Ra_r^0.27$ based on fitting; the solid blue line in (a,b) corresponds to $Nu Pr^-1/2Ra_r^1/2( Ra_r)^-2$; the solid pink line in (a,b) denotes $Nu Ra_r^1/2( Ra_r)^-3/2$; and the solid dark-green line in (d) represents $Nu Ra_r^0.46$ based on fitting. The dashed red line in (c) corresponds to $Ra_r^* Fr^2/3$.
+
+Measurement results$-$Fig.~(a) shows the measured $Nu$ as a function of $Ra_r$ for a wide range of $Fr$, from 1.78 to 56.2. In the low-$Ra_r$ regime, the data follow an effective scaling of $Nu Ra_r^0.27$ (solid red line), consistent with the previous study , indicating that the system is in the classical regime. In the high-$Ra_r$ regime, the data agree with the theoretical predictions for the ultimate regime, $Nu Pr^-1/2Ra_r^1/2( Ra_r)^-2$ (solid blue line) and $Nu Ra_r^1/2( Ra_r)^-3/2$ (solid pink line), exhibiting a steep effective scaling exponent within the current parameter range.
+
+For better visibility of the onset, Fig.~(b) shows the plots compensated by $Ra_r^1/3$, which correspond to the data in Fig.~(a). The transition from the classical to the ultimate regime is robust across all $Fr$, as evidenced by the change in the effective scaling exponent from $ < 1/3$ to $ > 1/3$. Interestingly, the critical Rayleigh number for this transition, $Ra_r^*$, varies with $Fr$. For example, $Ra_r^*$ is approximately $910^9$ for $Fr = 1.78$, while for $Fr = 56.2$, it is close to $810^10$. The exact onset of the steeper scaling, corresponding to the ultimate turbulence regime, depends on $Fr$, consistent with the view that the transition is of a non-normal–nonlinear nature and is sensitive to perturbations induced by Earth-gravity–driven flow in the current case.
+
+Fig.~(c) shows the critical $Ra_r^*$, obtained via spline interpolation using the transition (minimum) point together with its three nearest neighboring points (at least four points in total) on the $Nu/Ra_r^1/3 Ra_r$ curve in Fig.~(b), for the transition from the classical regime to the ultimate regime as a function of $Fr$. Interestingly, the critical $Ra_r^*$ increases with increasing $Fr$, following a power law $Ra_r^* Fr^2/3$. Fig.~(d) shows the results of normalizing the datasets in Fig.~(a) by the critical $Ra_r^*$ obtained from experiment and the corresponding $Nu^*$. Remarkably, the data for different $Fr$ now collapse onto two master curves: a scaling exponent of 0.27 for $Ra_r/Ra_r^* < 1$ and $Nu Ra_r^0.46$ for $Ra_r/Ra_r^* > 1$, clearly demonstrating the universal nature of the scaling relation. 
+
+Theoretical explanation$-$What is the unique aspect of CC compared to classical RBC? As shown in Fig.~, the presence of Earth’s gravitational force breaks the top–bottom symmetric structure for pure centrifugal convection without gravity. Subsequently, two elongated vortex structures develop along the inner (cooled) and outer (heated) cylinders, leading to Stewartson layers that form near the cold and hot walls in the $r-z$ plane, in addition to the viscous boundary layer in the $r-$ plane. The thickness of the viscous boundary layer, $_$, is determined from the mainstream azimuthal velocity component, whereas the thickness of the Stewartson layer, $_st$, is determined from the axial velocity component.
+
+The recent work by showed that the dimensionless thickness of the Stewartson layer in CC, $_st/L$, is governed by rotational effects, with $_st/L Ek^1/3$, consistent with results obtained in the rotating Rayleigh-Bénard convection (RRBC) system . Here, $Ek = /( H^2)$ is the Ekman number, which characterizes the influence of the Coriolis force. Owing to the development of the viscous boundary layers and the Stewartson layers near the inner (cooled) and outer (heated) cylinders, their interaction may trigger the transition earlier than expected. In the following, we evaluate the properties of these two boundary layers.
+
+First, the definition of $Ek$ and $Fr$ are
+
+Ek = H^2, Fr = g.
+
+As the parameters $, H, R_m, g$ are all constant in our experimental dataset of fixed $Pr$, both $Ek$ and $Fr$ only depend on $$; then we can obtain the practical relationship between $Ek$ and $Fr$ in the experiments:
+
+Ek Fr^-1/2.
+
+Hence, the thickness of the Stewartson layer $_st$ follows
+
+_st/L Ek^1/3 Fr^-1/6.
+
+Next, in the RBC or CC system, according to $Re Ra^1/2$, the thickness of the viscous boundary layer $_$ follows
+
+_/L Re^-1/2 Ra^-1/4.
+
+Finally, assuming that the transition from the classical regime to the ultimate regime occurs when the thicknesses of the viscous boundary layer $_$ and the Stewartson layer $_st$ are equal in scale, we have:
+
+_/L _st/L Ra^-1/4 Fr^-1/6 Ra^* Fr^2/3.
+
+which is in full agreement with the present experimental data as shown in Fig.~(c). 
+
+Physical mechanism$-$We now propose a plausible explanation. When the thicknesses of the Stewartson layer and the viscous boundary layer coincide, their velocity components strongly couple near the inner and outer cylinders, forming a coupled flow that can distort the viscous boundary layer and enhance the anisotropy of local velocity variations. This interaction can trigger flow instability, eventually leading to the breakdown of the laminar boundary layer into turbulence, characterized by a strong increase in heat transport.
+
+To verify the above explanation, we perform three-dimensional numerical simulations that incorporate gravity and no-slip top and bottom boundaries in a relatively low-$Ra_r$ regime. As an example, we compare the viscous boundary layer and the Stewartson layer near the inner (cooled) cylinder at a fixed $Fr = 10$, as shown in Fig.~. 
+Since $Fr$ is constant, $Ek$ is also fixed; consequently, the Stewartson layer thickness, $_st$, remains invariant and shows no dependence on $Ra_r$. In contrast, the viscous boundary layer thickness, $_$, decreases with increasing $Ra_r$, following a power law with a scaling exponent of $-0.26$, close to the theoretical prediction of $-1/4$ (e.g., Eq.). By extrapolating these classical-regime scalings to extremely high $Ra_r$, i.e., into the ultimate regime, we find that $_/L$ and $_st/L$ intersect at $Ra_r 10^11$. 
+Interestingly, this intersection, obtained by simple extrapolation from the classical regime, is of the same order of magnitude as the critical $Ra_r^*$ ($Fr = 10$) obtained from experiments. This supports our theoretical explanation: a coupled flow structure, arising from the interaction of the Stewartson and viscous boundary layers, introduces distortions to the boundary layer flow, which in turn promotes flow instability and triggers the transition to turbulence.
+
+Conclusion and outlook$-$We present a combined experimental and numerical study of the transition from the classical regime to the ultimate regime in a supergravitational centrifugal convection system. Across a wide range of Froude numbers, the heat transport exponent increases from $ = 0.27$ to $ = 0.46$, marking the transition from the classical regime to the ultimate regime. The corresponding critical Rayleigh number for the onset of the ultimate regime is found to decrease with decreasing Froude number, highlighting the effect of Earth's gravity on the transition.
+The underlying mechanism can be understood as follows: In the classical regime, the Stewartson layer induced by Earth's gravity is thinner than the viscous boundary layer, so the latter controls boundary-layer stability. Once $Ra_r$ reaches the critical Rayleigh number, i.e., in the ultimate regime, the Stewartson layer becomes comparable to the viscous boundary layer, and boundary-layer stability is then governed by their interaction. In this state, the velocity components are strongly coupled near the walls, potentially giving rise to a coupled flow that distorts the viscous boundary layer and enhances the anisotropy of local velocity variations, thereby triggering flow instability and causing the laminar layer to transition to turbulence, characterized by a sharp increase in heat transport.
+This interpretation is supported by extrapolated results from direct numerical simulations at relatively low $Ra_r$. Future work will need to directly measure and theoretically model the interaction of the boundary layers through experiments and simulations at the onset conditions, thereby providing direct evidence for this interpretation. Of course, the challenge for experiments is resolving the boundary layers at such high Rayleigh numbers, while for numerical simulations, it is reaching such high $Ra_r$, particularly in three-dimensional simulations to capture the additional effects of gravity. The current findings offer new insights into the transition from the classical to the ultimate regime in thermal turbulent convection.\\
+
+ Acknowledgements: We thank Detlef Lohse and Olga Shishkina for their insightful discussions, comments, and suggestions, and Yi-Bao Zhang, Feng Wang, and Zi-Hao Song for valuable discussions. This work is supported by the National Natural Science Foundation of China Excellence Research Group Program for ‘Multiscale Problems in Nonlinear Mechanics’ (No.~12588201), the National Natural Science Foundation of China (No.~12502254), the New Cornerstone Science Foundation through the New Cornerstone Investigator Program and the XPLORER PRIZE, the China Postdoctoral Science Foundation (No.~2025M771852), the Postdoctoral Fellowship Program of CPSF (No.~GZC20251278), and the Shuimu Tsinghua Scholar Program (No.~2024SM299).
+
+ End Matter\\
+
+Governing equations$-$Dimensionless governing equations following the Oberbeck-Boussinesq assumption in a rotating reference frame can be expressed as:
+
+=0,\\
+ t+(T)=^2T,\\
+
+ t+=- p-Ro^-1 +Ra_r^2\\
+-(1+)rT+Ra_rT,
+
+where $=(,,)$, $T$, $p$, $$ and $$ represent the velocity, temperature, pressure, unit vectors in the radial and axial directions, respectively.
+
+In these equations, there are four key control dimensionless parameters, namely the centrifugal Rayleigh number $Ra_r$, the gravitational Rayleigh number $Ra_g$, inverse Rossby number $Ro^-1$ and Prandtl number $Pr$:
+
+Ra_r = , Ra_g = ,\\
+Ro^-1 = 2[L]^-1/2, Pr = ,
+
+where $$, $$ and $$ represent thermal expansion, kinematic viscosity, and thermal diffusivity, respectively. Here, $$ is the angular speed, $R_m=(R_o+R_i)/2$ is the distance between the center of the cell and the rotational axis, $R_i$ and $R_o$ are the outer radius of the inner cylinder and the inner radius of the outer cylinder. $ T$ is the temperature difference between the inner and outer cylinders. $L=R_o-R_i$ is the gap between the inner and outer cylinders. $=R_i/R_o$ is the radius ratio.\\
+
+Working fluid (Silicone oil-1cs)$-$The advantage of using Silicone oil-1cs (denoted by open red squares, $Pr = 16.4$ at 25 $^$C) is that, for the same range of temperature difference $ T$, it can cover a wider range of $Ra_r$ around the critical $Ra_r^*$ from the classical to the ultimate regime than water (denoted by solid blue circles, $Pr=4.3$ at 40 $^$C) or Novec-7200 (denoted by solid pink triangles, $Pr=10.3$ at 25 $^$C) used in , as shown in Fig.~. Table~ lists the physical properties of Silicone oil-1cs at 25 $^$C.

@@ -1,0 +1,28 @@
+[]jfm-stripped
+
+[normalem]ulem
+
+[1]
+
+[Automated turbulence modelling]
+A proposal for automated turbulence modelling
+
+[M.~Castelletti, M.~Quadrio]
+Marco Castelletti and Maurizio Quadrio
+
+ Dipartimento di Scienze e Tecnologie Aerospaziali, Politecnico di Milano,
+via La Masa 34, 20156 Milano, Italy
+
+Solving the Reynolds-averaged Navier--Stokes equations (RANS) closed with an eddy viscosity computed through a turbulence model is still the leading approach for Computational Fluid Dynamics simulations. 
+Unfortunately, universal models with good predictive capabilities over a wide range of flows are not available. 
+In this work, we propose the use of machine learning to improve existing RANS models. The approach is not data-driven, and does not require high-fidelity training data.
+A convolutional neural network is used to identify and segment at runtime the flow field into different zones, each resembling one item of a predefined list of elementary flows. 
+The turbulence model applied in each zone is taken from an equally predefined set of classic models, each specifically tuned to work best for one elementary flow, free from the requirement of universality.
+The idea is first presented in general terms, and then demonstrated via a preliminary implementation, where only three elementary flows are considered, and three turbulence models are used. 
+Test cases show that, already in this oversimplified form, automated zonal modelling outperforms the baseline RANS models without computational overhead.
+
+turbulence modeling, machine learning, neural networks, turbulent ﬂows
+
+Acknowledgments
+
+Computational resources have been provided by CINECA via the ISCRA C project ETMNN. The authors acknowledge early discussions with prof. G.Boracchi and Dr A.Chiarini, who also helped in setting up the FreeFEM simulations. We are grateful for useful discussions on some aspects of this work with Profs. A.Abb\`a and G.Persico.

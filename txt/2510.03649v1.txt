@@ -1,0 +1,409 @@
+[12pt, letterpaper]elsarticle
+
+@pprintTitle
+ \@oddhead\@empty
+ \@evenhead\@empty
+ \@oddfoot\@empty
+ \@evenfoot\@empty
+
+ 
+
+[margin=1.2in]geometry
+
+[utf8]inputenc
+[T1]fontenc
+[english]babel
+
+[version=4]mhchem
+
+[retainorgcmds]IEEEtrantools
+
+,
+ detect-all,
+ list-units = single,
+ range-units = single,
+ range-phrase = --,
+ per-mode = symbol-or-fraction,
+ separate-uncertainty = true,
+ multi-part-units = single,
+ list-final-separator = , and 
+
+[hyphens]url
+[breaklinks=true, linkcolor=blue, citecolor=blue, colorlinks=true]hyperref
+
+[osu]Diba Behnoudfar
+[osu]Kyle E.~Niemeyer
+[osu]School of Mechanical, Industrial, and Manufacturing Engineering, Oregon State University, Corvallis, Oregon, USA
+
+Accurately simulating coupled physical processes under uncertainty is essential for reliable modeling and design in performance-critical applications such as combustion systems.
+Ablative heat shield design, as a specific example of this class, involves modeling multi-physics interactions between reacting flows and a porous material.
+Repeatedly evaluating these models to quantify parametric uncertainties would be prohibitively computationally expensive. 
+In this work, we combine physics-based modeling using a single-domain approach with data-driven reduced-order modeling to quantify uncertainty via the operator inference method.
+The detailed physics-based simulations reproduce the measured surface temperature of an object exposed to high-enthalpy flow in a plasma wind tunnel experiment within .
+We further use the model to demonstrate the effect of complex flow situations on the dynamic interactions between the porous heat shield material and the surrounding gas.
+
+The parametric reduced-order model, built on physics-based simulation data, successfully captures variations in quantities of interest resulting from changes in the permeability and heat transfer coefficient of the porous material in two separate studies: solid fuel combustion and emission of buoyant reacting plumes in quiescent air and ablation in a wind tunnel. 
+
+Uncertainty quantification Operator inference Porous media Reacting flows Reduced-order modeling
+
+Introduction
+
+Most physical processes can be represented by a set of governing equations in the form of parametrized partial differential equations (PDEs), where a set of design parameters such as physical properties, the boundary conditions or the geometry of the computational domain, control the model predictions.
+For applications such as uncertainty quantification or design optimization, a large number of parameters must be evaluated.
+Detailed simulations of large systems, particularly those involving coupled processes such as momentum and energy transfer, are typically resource-intensive, demanding substantial memory and significant computational time. 
+
+In the context of reacting flows, combustion simulations are affected by several sources of uncertainty, which degrade the reliability of model predictions . 
+For example, in the design of ablative thermal protection systems, determining the appropriate size of the heat shield is a crucial part of developing an atmospheric entry vehicle.
+During entry, the vehicle experiences intense aerodynamic heating due to the conversion of significant kinetic energy into heat . 
+An ablative thermal shield protects the vehicle through thermo-chemo-mechanical degradation processes.
+Initial design and performance evaluations rely on physics-based models to estimate the heat loads.
+These models can involve multiple uncertain parameters, including the transport properties of the porous heat shield material, which are generally difficult to estimate due to its complex geometry.
+Consequently, evaluating models' predictive capabilities becomes impossible without quantifying the uncertainty in predictions. 
+
+Traditional methods for quantifying uncertainty mainly revolve around Monte Carlo simulation by brute-force sampling of the input parameter distributions and propagating through the problem.
+This method of forward uncertainty quantification is straightforward but expensive, and it has a slow rate of convergence, meaning that a large sample size is required to ensure good accuracy .
+Given the computational expense of simulations, uncertainty quantification has relied heavily on surrogate models to approximate the original model .
+Among the most popular surrogate approaches in uncertainty quantification are polynomial chaos expansions , stochastic collocation , and Gaussian processes . 
+
+In combustion research, many studies have focused on propagating uncertainty in chemical kinetics through gas-phase models, often using polynomial chaos expansion (PCE) to build surrogate models—primarily with non-intrusive methods , though some used intrusive stochastic Galerkin approaches .
+The intrusive methods directly modify the governing equations of the model to incorporate uncertainty. This often requires access to and changes in the internal structure of the simulation code.
+Non-intrusive methods, on the other hand, treat the existing simulation model as a ``black box'' and do not require changes to the original code.
+In early studies, chemical kinetic uncertainty quantification was mostly applied to simple systems like homogeneous reactors and one-dimensional laminar flames.
+Mueller et al.~ advanced this by extending the analysis to turbulent non-premixed combustion, introducing a physics-informed dimension reduction method that mapped kinetic uncertainty onto flamelets and reduced the problem to a single parameter by assuming a correlation between temperature and scalar dissipation rate.
+Others later combined projection-based dimensionality reduction techniques such as principal component analysis (PCA) and active subspace with the surrogate modeling to mitigate the high dimensionality problem .
+In recent years, artificial neural networks have also been extensively used to construct surrogate models .
+Apart from reaction kinetics parameters, uncertainty propagation due to other input parameters such as boundary conditions and scalar mixing has also been investigated .
+The above-mentioned methods such as PCE and Gaussian processes struggle with transient problems as they not inherently adapt to evolving dynamics in time-dependent systems.
+As time progresses, the number of terms required in the PCE increases rapidly to maintain accuracy, leading to computational challenges .
+With Gaussian processes, specialized kernels or approximations are required.
+Furthermore, the inversion of the covariance matrix, which is central to Gaussian processes inference, has a computational complexity of $(n^3)$, where $n$ is the number of data points.
+This cubic scaling limits their applicability to small- to medium-sized datasets .
+
+Operator inference is a non-intrusive approach for reducing models of systems that exhibit polynomial nonlinearities.
+It is designed to learn the differential equations (or operators) that govern the evolution of a physical system---but in a reduced form.
+Similar to the aforementioned projection-based methods, the operator inference technique uses singular value decomposition to define a low-dimensional subspace (or coordinates) from the full-order model calculations.
+Compared to methods such as PCE, operator inference can handle large-scale, high-dimensional systems more effectively, especially when those systems have underlying low-dimensional dynamics .
+Polynomial chaos expansions become computationally prohibitive as the number of uncertain parameters increases due to the curse of dimensionality.
+In addition, operator inference is well-suited to capturing transient dynamics and time-evolving behavior of systems as it directly learns the operators governing system evolution.
+
+The structure of the reduced-order model (ROM) based on operator inference is guided by the known governing equations, and the ROM operators are determined by minimizing a data-driven residual within the reduced state space.
+The method has been used to build ROMs for control of combustion systems , among other applications
+in fluid dynamics, aeroelasticity, mechanical multi-body systems, atmospheric science, and geosciences~.
+
+Phenomena such as ablation under high-enthalpy flow conditions or fires in built or natural environments occur across multiple regions with strong coupling between the processes near the interface.
+Capturing this dynamic interaction involving surface chemistry, radiation, and fluid flow is essential for predictive modeling tools, especially in estimating heat fluxes in heat shield applications.
+Since new low-density ablative materials are highly porous , the flow at the interface between the surrounding gas and the porous material can exhibit a variety of behaviors, depending on the flow regime; for example, 
+
+under laminar regimes, the porous interface coupling and through-flow can lead to the formation of flow instabilities, whereas in turbulent flows, eddies may penetrate into the porous domain, promoting enhanced interfacial transport.
+Despite advancements in this field, the interaction between porous heat shields
+and the surrounding complex flow remains poorly understood .
+In a previous study , we demonstrated that a single-domain modeling approach is effective for capturing these interfacial processes in the problem of solid fuel combustion and near-field flow dynamics. In this approach, transport phenomena are captured through spatially averaged equations, enabling a uniform representation across the entire domain. 
+
+In this paper, we apply the single-domain approach to the ablation problem (serving as the full-order model) and use the resulting simulation data---along with data from a previous study ---to develop a parametric operator inference framework for quantifying uncertainty in solid fuel combustion simulations. 
+We first introduce the methods underlying the detailed physics-based simulations, then the reduced-order modeling framework. 
+Next, we apply the method to two separate studies: solid fuel combustion in quiescent air and ablation in a wind tunnel. 
+We select permeability and heat transfer coefficient in the porous region as uncertain parameters and showcase the model's applicability to uncertainty quantification for this class of problems. 
+
+Methodology
+
+Governing equations with a single domain approach 
+The processes in the porous region and the surrounding fluid are modeled using the single-domain approach, which uses a single set of transport equations for the fluid and solid in the entire domain, as described in more detail by Behnoudfar and Niemeyer~.
+For the fluid and solid phases, the model solves the following volume-averaged conservation equations:
+
+t ( ^f) + ( ^f u ) &= (1-)_j=1^N_g ^s_g,j ^s \;, \\
+
+t ( ^f Y_g,j ) + ( ^f Y_g,j u ) &= ( ^f D Y_g,j ) +\> ( ^f ) \\
+ &+ _g,j ^f + (1-) _g,j^s ^s \;, \\
+
+t ( ^f u ) + ( ^f u u ) + p &= - ( ^f ) +\> ^f g + f \;, \\
+
+t ( ^f h ) + ( ^f h u ) &= ( T ) + Q -\> ( ^f )\\
+ &-\> h_fs A_fs ( T - T^s ) + t \\
+ 
+&+\> (1-) _j=1^N_g h_g,j _g,j^s ^s + S^f,\> \;, \\
+
+t ((1-) ^s) &= (1-)_i=1^N_s ^s_s,i ^s \;, \\
+
+t ((1-) ^s Y_s,i ) &= (1-) ^s_s,i ^s \;, \\
+
+t ((1-) ^s h^s ) &= ( ^s T^s )
+-\> (1-) _i=1^N_s h^_s,i _s,i^s ^s \\
+&+\> h_fs A_fs ( T - T^s ) \\
+&-\> (1-) _j=1^N_g h_g,j _g,j^s ^s 
++ S^s,\> 
+
+where $u$ is the fluid velocity vector, $t$ is time, $T$ is fluid temperature, $T^s$ is solid temperature, $$ is the porosity, $Y_g,j$ is mass fraction of gas species $j$, $_g,j$ is volumetric mass change rate of gas species $j$ resulting from homogeneous reactions, $_g,j^s$ is volumetric mass change rate of gas species $j$ resulting from heterogeneous reactions, $p$ is fluid pressure, 
+$$ is density, $D$ is the fluid diffusion coefficient, 
+$h$ is the fluid's mixture-averaged enthalpy, $h_g,j$ is the enthalpy of gas species $j$, $$ is fluid thermal conductivity, $ Q = - _j=1^N_g _g,j ^f h^_g,j$ is the heat release rate due to gas-phase reactions, $N_g$ is the number of gas species, $ h^_g,j$ is the heat of formation of individual gas species $j$, $g$ is gravitational acceleration, and $S^f,\> $ is the heat exchanged through radiation for the gas phase, evaluated using a participating media approach.
+The symbols $ $, $ ^f$ and $ ^s$ denote volume averaging operators defined as $ = 1/ V_ V ()\,dV$; 
+for $ ^f$ and $ ^s$, the total averaging volume ($ V$) is replaced with $ V^f$ or $ V^s$, which are the volumes of the fluid and solid, respectively.
+$$, $$, and $_g,j$ are the fluctuating components of velocity, enthalpy, and mass fraction, respectively, due to averaging defined as $= u - $, $= h - h $ and $_g,j= Y_g,j - Y_g,j $.
+$$ is the stress tensor:
+
+ = ^*( +^T)-3( )I\;,
+
+where $^*$ is the effective viscosity ; in this work, we assume $^* = $ for simplicity.
+$f$ represents the drag force that the solid exerts on the fluid phase,
+$ f= V_ A(p+)\,dA \;,$ where $ A$ is the interfacial area between the fluid and solid phases in $ V$ and $n$ is the normal vector.
+This term is commonly modeled using the correlation form $f = - K^-1[I+_p F_0] $, where $$ is Darcy permeability tensor (which is a function of porosity), $_p = $ is pore Reynolds number where $d_p$ is the pore diameter and $F_0$ is the Forchheimer coefficient tensor.
+The other non-closed term, $( ^f )$, appears because velocity fluctuates inside the control volume and thus differs from its averaged value. 
+The quantity $_SGS=-( ^f )$ is a part of the sub-filter scale stress and, according to LES techniques, is commonly modeled as 
+
+$-( ^f )= _t( + ()^T)$ where $_t$ is turbulence eddy viscosity.
+The term $h_fs A_fs ( T - T^s )$ approximates spatially averaged convective heat transfer between the fluid and solid inside the porous region, where $h_fs$ is the heat transfer coefficient and $A_fs$ is the interfacial surface area between fluid and solid. 
+$N_s$ is the number of solid species, $_s,i^s$ is volumetric mass rate of change for solid species $i$ resulting from heterogeneous reactions, $Y_s,i$ is the mass fraction of solid species $i$, $h^s$ is the solid's mixture-averaged enthalpy, $ h^_s,j$ is the heat of formation of individual gas species $i$, $^s$ is the solid's mixture-averaged thermal conductivity, $$ is the anisotropy tensor of the solid matrix, and $S^s,\> $ is the heat exchanged through radiation for the solid phase.
+Using the unity Schmidt and Lewis number assumptions, diffusion coefficient and thermal conductivity are approximated from Sutherland's transport model for viscosity evaluation . 
+
+The advective terms in the momentum equation are discretized using a blend of central differencing (75\
+The solver in this work is based on the solver of OpenFOAM~, which uses a sequential splitting method in which the reactive terms are integrated separately. 
+We use an extrapolation-based stiff ordinary differential equation (ODE) solver (SEULEX)~ to integrate the solid-phase reactive terms and a L-stable, stiff embedded Rosenbrock ODE solver of order (2)3~ to integrate the gas-phase reactive terms. 
+Further details of the solution algorithm are discussed by Behnoudfar and Niemeyer~. 
+
+Operator inference for learning reduced order models
+
+The system of discretized partial differential equations described by Eqs.~-- can be written as
+
+ t = F(q; ),
+ 
+ 
+
+where $q ^dn_xy $ is the vector of concatenated $d$ state variables at $n_xy$ grid points
+\[
+( ) = 
+ \\ 
+ \\ 
+
+,
+\]
+
+ s_i = [ u_x \;\; u_y \;\; T \;\; T_s \;\; ^f \;\; Y_g,1 Y_g,N_g \;\; Y_s,1 Y_s,N_s]^T |_i, ^d,
+
+$F: ^dn_xy ^m ^dn_xy$ represents the spatial discretization of the system of equations and maps $q$ and $$ to time derivatives of $q$ and $ ^m$ is the vector of $m$ parameters non which the system depends. 
+Note that the left-hand-side of Eqs.~-- are given as functions of $ ^f Y $, $ ^f u_x $, $ ^f h $, etc., but the equations can be rewritten in terms of the above state variables ($s_i$) to allow for more flexibility and easier computations . In the following applications, we assume a two-dimensional model, though this can be extended to three dimensions.
+
+We consider the setting in which $F$ has a polynomial structure; many partial differential equations exhibit this structure or can be written in this form through a change of variables . Thus, the system represented by Eq.~ can be described in polynomial form as
+
+ t = A()q + B()(q q) + C()(q q q) + c + \;,
+ 
+
+where $A()q$ represents the terms in $F()$ that are linear in $q$, $B()(q q)$ represents the terms that are quadratic in $q$ (for example, $ ( ^f u )$ in Eq.~ is quadratic in states $ ^f$ and $ u $ ), $C()(q q q)$ represent the terms cubic in $q$, and $c$ are the constant terms, with $A ^dn_xy dn_xy$, $B ^dn_xy (dn_xy)^2$, $C ^dn_xy (dn_xy)^3$ and $c ^dn_xy$ as the respective operators.
+In addition $$ is the Kronecker product .
+
+For the terms with a non-polynomial structure, such as the reactive source terms, new auxiliary variables can be introduced through the process of ``lifting the equation'' , so that the governing equations become polynomial in the lifted states. A complete lifting that converts all equations to a polynomial form is possible but would require the introduction of a large number of auxiliary variables. As shown by Swischuk et al. , many terms in this system of equations take a polynomial form if the following variables are used:
+
+ s_L = [ u_x \;\; u_y \;\; T \;\; T_s \;\; ^f \;\; c_g,1 c_g,N_g \;\; Y_s,1 Y_s,N_s]^T,
+
+where $c_g,j = M_j$ are molar concentrations of gaseous species. We follow the same approach and use the above variables ($ s_L$) for model reduction. 
+We consider the reactive source terms to be represented by a cubic operator, though this is an approximation.
+
+A projection-based reduced-order model (ROM) approximates the full-order system (Eq.~) in a subspace with reduced
+dimensionality $r << dn_xy$, spanned by a collection of $r$ basis vectors $V = [v_1 \;\; v_2 \; v_r ] ^dn_xy r$. One widely used approach to construct the basis $V$ is proper orthogonal decomposition (POD) .
+
+For a collection of known state snapshots $q_j:= q(t_j), \;\; j= 1, 2, , k$, at $k$ time instances $t_1 < t_2 < < t_k$, organized as $Q=[q_1 \;\; q_2 \; \; q_k] ^dn_xy k$, POD computes the singular value decomposition $Q = W^T$, and uses the first $r$ columns of $$ as the $r$-dimensional reduced basis $V$.
+
+In classical projection-based model reduction, the reduced operators are obtained by projecting the full-order system
+onto the space spanned by the POD basis vectors via, e.g., Galerkin projection , with $q V $:
+
+ t = () + ()( ) + ()( ) + + .
+ 
+
+where $ = V^TA V ^r r$, $ = V^TB (V V) ^r r^2$, $ = V^TC (V V V) ^r r^3$ and $ = V^Tc ^r$ are ROM operators.
+The key feature of this technique is that the ROM preserves the polynomial structure of the full-order model (Eq.~).
+
+The data-driven operator inference method attempts to learn the reduced-order operators ($$, $$, $$, and $$) utilizing a regression problem to find the operators that best match the snapshot data in a minimum-residual sense.
+Such a non-intrusive approach eliminates the need for modifying the original governing equations or prior knowledge of the full-order model operators, which could be unfeasible for large systems of equations.
+
+In this method the state snapshot data are first projected onto the POD subspace:
+
+ =V^T Q = [() \;\; () \; \; ()] ^r k,
+
+The approximate time derivatives $ $ are computed from $$ using a five-point finite-difference stencil:
+
+ = [() \;\; () \; \; ()] ^r k,
+
+where
+
+_j = (-_j+2+8_j+1-8_j-1+_j-2)/(12 t) \;,
+
+$j$ indicates the temporal index, and $ t$ is the time-step size.
+Then, operator inference solves the least squares problem:
+
+ _, , , \ _j=1^k \| ()_j + ()(_j _j) + ()(_j _j _j) + () - _j \|^2_2 + \| [ \;\; \;\; \;\; ] \|^2_2 \
+
+ 
+
+We use an $L_2$ regularization that penalizes all elements of the operators with the regularization coefficient $$.
+
+For parametric studies with a distribution of uncertain parameters $$, the parametric dependence of the operators should also be specified.
+We assume that the operators exhibit the following affine decomposition with respect to $$:
+
+ c() &= _p=1^q_c _c^(p)() c^(p) \;, \\
+ A(, q) &= _p=1^q_A _A^(p)() A^(p)(q) \;, \\
+ B(, q) &= _p=1^q_B _B^(p)() B^(p)(q) \;, \\
+ C(, q) &= _p=1^q_C _C^(p)() C^(p)(q) \;,
+
+where $_c^(p), \; _A^(p), \; _B^(p), \; _C^(p)$ are known scalar-valued coefficient functions.
+The operators $c^(p), \; A^(p), \; B^(p), \; C^(p)$ are independent of $$. Such a structure may occur naturally in the governing equations.
+For example, the term $h_fs A_fs ( T - T^s )$ in Eq.~ exhibits this structure; in that case, $h_fs$ is a coefficient function that maps $h_fs$ to itself.
+
+To learn the above operators, the procedure in the previous sections is modified to include the affine parametric model.
+Supposing we can sample the solution of the full-order model at $M$ parameter values $\\_i=1^M $, the least squares problem then becomes:
+
+ _, , , \ _i=1^M_j=1^k \| (_i)_j + (_i)(_j _j) + (_i)(_j _j _j) + (_i) - _j(_i) \|^2_2 \\
+ + \| [ \;\; \;\; \;\; ] \|^2_2 \ \;,
+ 
+
+where $_j(_i)$ and the POD basis are derived from the updated state snapshot data matrix:
+
+ [Q(_1) \;\; Q(_2) \;\; Q(_M)] ^dn_xy Mk \;.
+
+Results and discussion
+
+This section presents the results of reduced-order modeling and uncertainty quantification for two applications: emission of buoyant reacting plumes from the surface of a heated solid and an ablation experiment under atmospheric entry and high-enthalpy flow conditions.
+For the latter problem, we first describe the results of the full-order model applied to the ablation experiment, followed by the reduced-order modeling outcomes.
+
+Solid-fuel combustion in quiescent air
+
+The formation of buoyant reacting plumes is a situation that can occur in the burning of solid fuels or natural fires when a porous layer is heated from below in the absence of a forced flow. Our previous work obtained two-dimensional simulations of this process using the full-order model described in Section~.
+We utilize those data to learn a cubic reduced-order model for the process using the following lifted state variables:
+
+ [ u_x \;\; u_y \;\; T \;\; T_s \;\; ^f \;\; c_CH_4 \;\; c_O_2\;\; c_CO_2\;\; c_CO \;\; c_H_2O \;\; c_N_2\;\; Y_ \;\; Y_] \;.
+
+The system involves three reactions: in the solid phase, wood decomposes into char and other gaseous species, and, in the gas phase, two oxidation reactions occur for and .
+To generate training data, we performed simulations for a time duration of $0.5$ seconds with $k=100$ time steps equal.
+The analysis is done using a portion of the simulated domain as shown in Figure~, resulting in a grid size of $n_xy=14400$.
+Due to the large differences in the variable scales, the data are pre-processed to scale each variable to the interval $[-1 \;\; 1]$.
+
+Figure~ shows the ROM performance over time for the permeability associated with the initial porosity of $ = 0.875$. The performance is measured by relative $^2$-norm error defined as
+
+ _j, = (t_j; ) - q(t_j; ) \|_2\| q(t_j; ) \|_2 \;.
+
+The error decreases with increasing basis size up to $r=20$, beyond which further increases yield little improvement, indicating that the reduced data contain sufficient information to represent the system.
+This corresponds to the residual energy of the order $10^-9$, i.e., $1-^r^2_n_n=1^dn_xy^2_n=2 10^-9$, where $_n$ are the singular values of the data matrix $Q$. 
+The initial spike in ROM error comes from two main reasons: the FOM fields show an abrupt rise right at the start that is hard for the ROM (trained on derivatives) to capture, and derivative data near time boundaries is less accurate due to one-sided differences.
+
+Figure~ compares the quantities of interest, including the gas temperature, mass fractions of $$ and $$, and vertical velocity, predicted by the ROM and full-order models at a point of monitoring at the center of the interface (specified in Figure~).
+The ROM predictions agree well with the training data; the results also demonstrate the ability of the model to extrapolate beyond the training data. Figure~ shows the non-parametric model predictions at the last time step of training data, demonstrating that the model successfully captures the spatial variations.
+
+Returning to the primary objective of this study, we construct a parametric model with an affine linear component to quantify the uncertainty in permeability ($$), where $K = (_0) I$ and $_0$ is initial porosity.
+The ROM has the same cubic form as in Eq.~, with the difference that $_A^(p)=$ while $_c^(p), \; _B^(p)$, and $_C^(p)$ are all equal to 1; this functional form of the linear operator aligns with the definition of drag force term ($f$) in Eq.~.
+To simplify the implementation, we choose to look at the variations of $_0$, as $$ is a function of $_0$.
+
+We generate data at each of the parameter realizations $ = (__0)$ for 
+
+ _0 \0.825,\;0.828,\;0.831,\;\;,0.875\ \;,
+
+with the range chosen based on previous observations~.
+
+Notably, a finer parameter grid does not necessarily yield a better learned ROM and may even degrade the model quality. Figure~ shows the result of an analysis on the sensitivity of the ROM to the number and location of parameter samples.
+We compare the performance of the built models using the parameter set sizes of $M=2$ and 3.
+For $M=3$, the mean model error ($_$), averaged over the evaluation points $ [1,\;_1]$, increases with the distance between the middle and the first parameter.
+The middle parameter location is defined as $_m=_1$, where $ = \_1,\; _2,\; _3\$.
+Here, $_1$ corresponds to $_0 = 0.825$.
+In a local sense, the model performs better as $_m$ becomes closer to the evaluation point.
+Thus, for $ > 1.31$, $_$ decreases with $_m$ while for $ < 1.26$, it increases with $_m$.
+Interestingly, the model built using two parameter samples ($M=2$) outperforms the models constructed with three parameter samples ($M=3$).
+If the middle data point is not informative---that is, if the dynamics are not sufficiently diverse---it can lead to rank deficiencies in the data matrix $D$.
+This is consistent with the larger condition numbers $(D)$ for $M=3$ cases as shown in Figure~.
+Doubling the number of time snapshots to $k=100$ increases the condition number by approximately an order of magnitude.
+
+Following the above observations, we construct a parametric ROM by combining two sub-models:
+
+ f__1(q;),\; _1 &= \__0=0.825,\; __0=0.85\: [__0=0.825,\; __0=0.85] \\
+ f__2(q;),\; _2 &= \__0=0.85,\; __0=0.875\: [__0=0.85,\; __0=0.875].
+
+For a Monte Carlo-like analysis, the model is sampled with a finite set of $\_i\_i=1^N$ values of uncertain parameters, drawn assuming a normal distribution,
+
+ ( + __0=0.8752, - __0=0.8256).
+
+Figure~ presents the resulting model error evaluated on the test data, which comprises 10 of the aforementioned parameter realizations, excluding those in $_1$ and $_2$.
+The error remains below 1\
+Figure~ shows the forward propagation of uncertainty through the system.
+Quantifying the uncertainty in the rate of combustion reactions could be an important outcome of such an analysis.
+As seen in Figure~, the rate of oxidation can vary up to 100\
+
+Ablation in plasma wind tunnel
+
+Here, we first report the results of the numerical analysis of the ablation experiment as conducted inside a plasmatron facility , using the physics-based model described in Section~.
+The following subsection discusses reduced-order modeling and uncertainty quantification based on operator inference. 
+
+In this experiment, a hemispherical sample is exposed to subsonic, high-enthalpy flow generated by an inductively coupled plasma torch in a nitrogen or air environment based on the work of Helber et al.~.
+Since the boundary conditions at the wind tunnel entrance were not provided in the original study, the simulation presented here uses predictions from a separate model at a certain distance from the sample, as the boundary conditions for the present calculations; therefore, an exact reproduction of the experiment is not possible.
+Physical experiments were conducted over a range of inlet pressures and temperatures, producing different inlet velocities. The results presented here correspond to a nitrogen environment at 1.5 and a Mach number of $ 0.1$.
+
+In the setup used here (shown in Figure~), flow enters the cylindrical tunnel with a temperature of , Reynolds number of 5.2 and composition of $Y_=0.388$ and $Y_=0.612$. Reynolds number is defined as $=(2R)$ where $U_$ is the inlet velocity.
+The maximum Courant number is set to 1 with an average of 0.6 to handle the initial unsteadiness, resulting adjustable time steps sizes in the order of seconds.
+Constant temperature () and no-slip boundary conditions are imposed at the tunnel walls and axial symmetry conditions and the centerline, and a constant pressure boundary condition is imposed at the exit.
+The domain is discretized using a uniform rectangular grid of $270 130$, refined near the object and other boundaries. 
+The grid spacing in the close vicinity of the sample is $0.05 R$, with $R=$ . 
+The sample is made of non-pyrolyzing porous carbon-bonded carbon fiber with an initial density and porosity of ^3 and 0.9, respectively.
+The dependence of permeability on porosity is modeled using the linear relationship proposed by Martin et al.~.
+Thermal and transport properties of the porous material are estimated based on the data and correlation provided by Lachaud et al.~ and Mori~.
+The nitridation chemistry is approximated by a single-step heterogeneous reaction : . Nitrogen recombination/dissociation is also considered using the model by Park et al.~; however, within the temperature range considered here, the rate of this reaction remains negligible.
+
+Looking at temperature and flow statistics in the physics-based simulations, Figure~ show the time-averaged gas temperature and the formed boundary layer.
+As the flow impinges on the object, waves of compression and expansion emerge, leading to periodic increases and decreases in pressure and temperature.
+These fluctuations originate from the rear of the object and extend toward the front, as seen in Figure~.
+Similar oscillations have been observed in previous studies of flow over bluff bodies , and have been linked to the quasi-periodic formation and bursting of a laminar separation bubble, which causes the flow to alternate between fully separated and reattached states .
+Here, the porous interface coupling and through-flow can add to the complexities of the problem and induce distinct flow instabilities.
+Figure~ shows evolution of normalized velocity fields, where part of the separated wake is absorbed into the porous medium by suction.
+This weakens the base-pressure recovery behind the body and alters the shear balance at the interface. Such conditions can trigger interfacial instabilities, such as Kelvin--Helmholtz, which, as they amplify, feed back into the wake, causing unsteady separation and reverse flow to extend upstream over the body surface.
+This phenomenon is closely tied to flow characteristics in the porous region near the interface, influenced by the dynamic pressure difference, and may only occur under certain experimental conditions within this class of problems.
+
+In the solid region, the predicted surface temperature and solid consumption rate vary according to the trend in Figure~, which fall within 5\
+In the absence of reaction heat, the temperature rise slows due to increased heat capacity and radiative losses.
+Although the mass loss rates at the early times are not reported in the above reference, the calculated mass loss rate at the end time of the simulation is within 12\
+
+$
+
+Similar to the procedure in Section~, we build a cubic ROM using the following lifted state variables:
+
+ [ u_x \;\; u_y \;\; T \;\; T_s \;\; \;\; ^f \;\; c_N \;\; c_N_2\;\; c_CN\;\; Y_C_s] \;.
+
+Training data are generated by running simulations over a time span of 0.5 seconds, using $k=500$.
+The simulations are performed at a pressure of , with the inlet conditions of and $ = 5.2+1.3 (100 t)$.
+The other boundary conditions are the same as those used in the previous section.
+A subsection of the simulation domain, defined by a $4.5 R 1.5R$ rectangular region surrounding the sample, is used for the analysis, yielding a spatial grid size of $n_xy=1400$.
+The data for the time period $t [0.3,\;0.4]$ are used to train the ROM.
+
+Figure~ compares the quantities of interest, including solid temperature, porosity, and gas temperature, predicted by the non-parametric ROM and FOM models at the tip of the object (specified in Figure~).
+The comparison shows that the ROM predictions agree well with the training data.
+The average CPU time to integrate the full-order model is $ 1066$ seconds.
+The parallelized task was executed using 10 CPU cores and 16 GB of memory on a system equipped with 20-core Intel Xeon E5 processors and 63 GB of RAM.
+In contrast, the ROMs of size $r = 25$ integrate in $ 2.8$ seconds, yielding a computational speedup factor of $ 380 $.
+
+To quantify changes due to the uncertainty in solid heat transfer coefficient, we construct a parametric model with the same structure as in Section~ and generate data at each of the 12 parameter realizations $ = (h_fs)$ for 
+
+ h_fs \0.07,\;0.08,\;0.085,\;0.09,\;\;,0.13\ \;,
+
+and by combining five sub-models:
+
+ f__1(q;h_fs),\; _1 &= \h_fs=0.07,\; h_fs=0.09\: h_fs [0.07,\;0.09], \\
+ f__2(q;h_fs),\; _2 &= \h_fs=0.09,\; h_fs=0.10\: h_fs [0.09,\;0.10],\\
+ f__3(q;h_fs),\; _3 &= \h_fs=0.10,\; h_fs=0.11\: h_fs [0.10,\;0.11],\\
+ f__4(q;h_fs),\; _4 &= \h_fs=0.11,\; h_fs=0.12\: h_fs [0.11,\;0.12],\\
+ f__5(q;h_fs),\; _5 &= \h_fs=0.12,\; h_fs=0.13\: h_fs [0.12,\;0.13].
+
+For a Monte Carlo-like analysis, we assume the following normal distribution for the uncertain parameter:
+
+ h_fs (2,6 ).
+
+Figure~ shows the resulting model error evaluated on the test data, which comprises six of the aforementioned parameter realizations, excluding those in $_1 \;\;_5$.
+The propagation of uncertainty through the system is shown in Figure~.
+Under the conditions of this problem, a variation of approximately $ 30\
+The solid consumption rate directly impacts the heat shield design and, based on the above results, is more sensitive to changes in model parameters than other variables.
+
+Conclusions
+
+This work demonstrates that the complex nonlinear system of PDEs---describing coupled processes in a porous solid and the surrounding reacting fluid---can be reduced to a lower-dimensional polynomial form with operators learned from full-order model simulation data.
+We also showed that the physics-based model using the single-domain approach is a promising tool for capturing the dynamic interactions at the interface during ablation under high-enthalpy flow conditions.
+While the cubic ROM form is an approximation for the reactive source terms, the numerical results indicate that the trained cubic ROM is capable of accurately predicting quantities of interest and preserving species conservation.
+However, similar to other data-driven methods, the accuracy of the inferred ROMs highly depends on the training dataset, and it is unrealistic to expect a data-driven ROM to replicate dynamic behaviors that significantly deviate from those seen in the training data.
+The lower-dimensional formulation for this problem reduces the system's degrees of freedom by approximately a factor of 360, resulting in a computational speed-up of about 380 times.
+The learned parametric ROM successfully captures variations in quantities of interest that come with changes in the permeability and heat transfer coefficient.
+The analysis on the effect of the number and location of parameter samples revealed that models built using two parameter samples perform best for this problem. Since the framework proposed here relies on an affine structure in the parametric dependence, future work should focus on extending it to non-affine parametric problems or to cases where the parametric structure is not known. 
+
+Availability of material
+
+The software implementations used here are available openly via GitHub under the GNU General Public License version 3 (GPL-3.0), and the version used here was archived on Zenodo~. 
+Output data and figures are also available openly under a CC-BY license~.

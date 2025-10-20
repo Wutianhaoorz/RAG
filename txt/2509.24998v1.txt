@@ -1,0 +1,578 @@
+[a4paper,10pt]article
+
+[paperheight=250mm,paperwidth=176mm,textheight=49pc,textwidth=136mm]geometry
+
+ rgb0.5 ,0 ,0 
+ rgb0 ,0.8 ,0 
+ rgb0 ,0 ,0.5 
+ rgb0 ,1 ,0.5 
+rgb0.1 ,0.9 ,0.6 
+ rgb0.1 ,0.4 ,0.1 
+ rgb0.72,0.27,1 
+ rgb1 ,0 ,1 
+ rgb0.9 ,0.6 ,0.1 
+ rgb1,0,0
+
+HTMLE36047
+HTMLD14133
+HTMLBB5C5B
+HTML8CBDDB
+HTML4D85BC
+HTML5880B3
+HTML64BC72
+HTML00682A
+
+ 
+
+ [baseline=-0.6ex][thick] (0,0)--(0.5,0);
+
+ [baseline=-0.6ex][thick,dash dot dot] (0,0)--(0.5,0);
+ [baseline=-0.6ex][thick,dash dot] (0,0)--(0.5,0);
+
+[3][0mm][0mm][0mm][l]*#1#3
+[3][0mm][0mm][0mm][l]*#1
+ [overlay]
+ #3
+ 
+
+[1]#1
+[1]#1
+[1]#1
+[1]#1
+
+[1]#1
+
+Lemma
+Corollary
+
+$, G. Arranz$^3$, M. Moriche$^4$, M. Guerrero-Hurtado$^1$, \\ M. García-Villalba$^4$ and O. Flores$^1,*$ \\[2ex]
+$^1$ Department of Aerospace Engineering \\ Universidad Carlos III de Madrid, Spain \\[1ex] 
+$^2$ Simulation Technology Department \\ ITP Aero, Alcobendas, Spain \\[1ex] 
+$^3$ California Institute of Technology, United States \\[1ex] 
+$^4$ Institute of Fluid Mechanics and Heat Transfer \\ TU Wien, Vienna, Austria \\[1ex]
+$^*$ Corresponding author: oflores@ing.uc3m.es \\ [1ex]
+
+ 
+
+ Keywords: Energy harvesting; bio-inspiration; fluid-structure-interaction; passive blade dynamics; low-Reynolds aerodynamics. 
+
+We present direct numerical simulations of a novel concept for a micro-scale wind turbine, inspired in the mechanics of the auto-rotation of winged seeds. 
+In this nature-inspired concept the turbine blades have two degrees of freedom: the pitch and the elevation (or coning) angles. 
+These allow the blade to vary its attitude with respect to the incoming velocity seen by the blade (i.e., the tip-speed ratio, $$). 
+
+In order to validate this new concept, we perform numerical simulations of the coupled fluid-solid problem, solving together the Navier-Stokes equations for the fluid and the Newton equations for the rigid body (i.e., the blade). 
+
+We characterize a preliminary nature-inspired single-blade rotor over a range of operational conditions (including both uniform and turbulent inflows), 
+demonstrating the ability of the novel rotor to extract power at a very low Reynolds number (i.e., $=240$ based on the blade's chord and the freestream velocity), significantly changing its attitude in response to different braking torques and tip-speed ratios. 
+
+The rotor achieves a peak power coefficient of $C_P, = 0.026$ at $ 2.0$. 
+
+This peak value is unchanged between uniform and turbulence-perturbed inflows, demonstrating the robustness of the nature-inspired design. 
+
+However, performance remains lower than that of fixed-blade configurations, showing that while the concept is feasible and stable, optimization of blade planform and mass distribution is essential to improve efficiency.
+
+Introduction
+ 
+
+The rapid growth of wireless sensor networks in industry, agriculture, and environmental monitoring is fueled by advances in the Internet of Things (IoT), the deployment of 5G connectivity, and the ongoing digitalization of society. 
+
+These networks rely on autonomous, long-lasting power sources to enable reliable real-time data collection and transmission .
+
+While solar cells are the most common solution, they are ineffective in many practical scenarios, such as in dusty or shaded environments, at night, or in enclosed spaces like ducts and caves. 
+
+To address these limitations, recent research has explored alternative micro-scale energy harvesters, including compact wind turbines capable of operating at extremely low wind speeds, on the order of a gentle breeze (i.e., $ 3$ m/s).
+
+ 
+Significant efforts have been devoted to improving the efficiency of micro-scale wind turbines with diameters below 10 cm. 
+
+These efforts have addressed both the aerodynamics of the micro-scale rotors 
+,
+and their integration with energy converters and control modules 
+.
+However, most aerodynamic studies have focused on steady-state performance, while only a few have examined the behavior of these devices under unsteady environments .
+
+Despite considerable research, the feasibility of compact wind turbines remains uncertain. 
+
+Current micro-scale rotors exhibit relatively low efficiencies, with power coefficients ($C_P$) in the range of 0.05--0.35 . 
+
+Typical $C_P$ values of large scale turbines are 0.35--0.50, and the theoretical maximum given by the Betz limit is $C_P, 0.59$ . 
+
+The main reason for this disparity lies in the aerodynamic limitations at small scales. 
+
+Centimeter-scale rotors usually operate at low tip-speed ratios ($ 0$--$2$), defined as the ratio of tip velocity to the free-stream velocity. 
+
+When $ = 1$, wake rotation can reduce $C_P,$ by up to 30\
+
+Moreover, the aerodynamic efficiency of the blade is also reduced by the thick boundary layers and laminar separation bubbles caused by the small relative wind speed, resulting in very low Reynolds numbers. 
+
+Finally, the reduced size and slow rotation rates make these devices highly susceptible to gusts and ambient turbulence, whose characteristic scales are often comparable to those of the rotor itself, leading to unsteady operating conditions.
+
+In this work, we propose to leverage the knowledge provided by nature and propose to investigate the feasibility of a micro-scale rotor based on the auto-rotational flight of winged seeds like samaras. 
+
+These seeds, consisting of a nut attached to a wing-like rigid membranous structure, exhibit high aerodynamic efficiency stemming from the tight coupling between its inertia and the aerodynamic forces , resulting in a passively regulated autorotation that is triggered at very small velocities.
+
+Similar to a helicopter, this rotation generates a lift force that counteracts the weight of the seed, reducing the descent speed and allowing larger dissemination by lateral winds.
+
+As a matter of fact, this parachuting effect is one of the main reasons why winged seeds have garnered significant interest from the scientific community over the past few decades . 
+
+Samaras are particularly interesting for the design of micro-scale wind turbines for several reasons. 
+First, their autorotation is highly robust, occurring across specimens with diverse shapes and sizes . 
+This robustness suggests that the underlying aerodynamic mechanism can be effectively emulated in engineered devices, a concept supported by previous work on samara-inspired aerial vehicles .
+Second, the autorotation is remarkably stable even in the presence of flow disturbances , with studies indicating that this stability is closely linked to the formation of a leading-edge vortex (LEV) over the wing 
+. 
+Third, the characteristic size and descent velocity of samaras are comparable to the dimensions and operating speeds targeted by micro-scale wind turbines, making them excellent candidates for nature-inspired design.
+
+From a mechanical perspective, the autorotation arises from the interplay between aerodynamic forces and moments generated by the wing and the inertial forces associated with the rotation of the seed. 
+Numerical simulations using simplified wing planforms and mass distributions have shown that the angular velocity and attitude of a samara (i.e., its pitching and coning angles) vary systematically with descent speed 
+. 
+This suggests that a micro-scale rotor with freely hinged blades could passively adjust its attitude in response to changes in wind speed, potentially improving the operating range of the rotor and the maximum power coefficient.
+The objective of the present study is to explore the feasibility of such nature-inspired rotor and evaluate its performance in uniform and turbulent free-stream conditions.
+
+ 
+
+The rest of the manuscript is structured as follows: section presents the methodology, focusing on the governing equations, the rotor model and the computational setup.
+
+Section presents first the simulation results for a single-blade rotor in a uniform freestream, discussing the rotor performance and the flow structures surrounding the blade. Then, the single-blade rotor is tested in a freestream with turbulence-like perturbations, and then compared with a fixed attitude rotor. 
+
+Finally, section draws some conclusions, describing the advantages and limitations of our novel concept of bioinspired micro wind turbine. 
+
+Methodology
+
+Numerical Methods
+
+We solve numerically the fluid-structure interaction problem between the rigid bioinspired rotor and a Newtonian fluid of constant density $$ and kinematic viscosity $$.
+
+The evolution of the fluid velocity $ u$ and pressure $p$ is governed by the Navier-Stokes equations for an incompressible flow:
+
+ 
+ u \, = & \, 0, \\
+ t + ( u ) u \, = & \, - p + ^2 u + f, 
+
+ 
+
+which have been nondimensionalized with the freestream flow velocity $U_$, the fluid density $$ and the maximum chord of the rotor's blade, $c$. 
+
+Hence, the Reynolds number is $=U_c/$.
+
+The volumetric force $ f$ in eq. is the direct forcing of the Immersed Boundary Method (IBM) used to impose the no-slip and impermeability boundary conditions on the rotor's surface . 
+
+The motion of the rotor is governed by the 
+Newton-Euler equations, which can be reduced to : 
+
+ ( q) + C( q, ) = + _a ,
+
+where $ q$ is the vector with the degrees of freedom of the rotor, 
+$ H( q)$ is the generalized inertia matrix or joint space, 
+$ C( q, )$ is a vector with the generalized bias force (i.e, Coriolis, centrifugal and gravity forces), 
+$ $ is the vector of generalized forces at the joints 
+and $ _a$ represents the vector of generalized aerodynamic forces. 
+
+Equations and are solved together using the algorithm described in . 
+The incompressible Navier-Stokes equations with the IBM are solved using a fractional-step method, employing a uniform cartesian grid and second order finite differences for the spatial discretization of the fluid variables. 
+
+The terms in eq. are computed using the recursive algorithms of . 
+
+The two system of equations are advanced in time using a 3-step semi-implicit Runge-Kutta scheme, that provides a weak coupling between eqs. and . 
+
+The solver is implemented in Python using Numba and Nvidia CUDA libraries to run on a GPU card. 
+
+More details regarding the algorithm and its implementation can be found in and , respectively. 
+
+Rotor model
+ 
+
+The rotor is composed by a single blade ($N_b = 1$) that rotates azimuthally with respect to an axis parallel to the incoming flow.
+
+The effects of other blades, structural elements (hub, tower, etc) and gravity are ignored, i.e. the blade is the only body interacting with the freestream flow.
+
+Power extraction is modelled with the application of a braking torque, as explained at the end of this section. 
+
+As discussed in the introduction, apart from the azimuthal rotation of the rotor ($$), the blade has two additional degrees of freedom: 
+the pitch angle $$ 
+and the coning (or elevation) angle $$. 
+
+These angles are shown in figure a, which includes the four
+reference frames used to define them. 
+The inertial laboratory frame is $_1$, center at $O$, with the incoming freestream velocity $U_$ parallel to the $z_1$-axis. 
+The azimuthal rotation of the rotor ($$) around the $z_1$-axis results in the second (non-inertial) reference frame, $_2$. 
+The plane of the rotor is then defined by either $(x_1,y_1)$ or $(x_2,y_2)$, and $z_1 z_2$ is the axis of rotation of the turbine. 
+The blade is articulated at point $J$, located in the 
+$y_2$-axis at a distance $d_J=0.3c$ from $O$. 
+The locus of point $J$ is a circle in the rotor plane, and its position is determined by $$. 
+We define two additional reference frames ($_3, _b$) centered at point $J$, which result from performing two consecutive rotations.
+The reference frame $_3$ is the result of a pitching rotation $$ around the $y_2$ axis. 
+Then, the body reference frame $_b$ is the result of a coning rotation $$ around the $x_3 x_b$-axis. 
+
+The chordwise and spanwise directions are $x_b$ and $y_b$, respectively. 
+
+The blade is designed following the idealized samara of . 
+It is a flat surface contained in the $z_b=0$ plane, with constant thickness ($h=0.0035c$), no camber and no geometric twist. 
+
+As shown in figure b, the blade's shape is defined by a quarter of a circle and three quarters of ellipse. 
+
+The radius of the circle is $r_b=0.3c$, where $c$ is the blade's chord. 
+The major and minor axis of the three ellipses can be defined in terms of $c$, $r_b$, the blade's span $b=2.2c$, and the spanwise distance to the trailing edge maximum $b_=0.54b=1.188c$.
+
+The blade's freedom to rotate at $J$ (pitch and coning) is the key ingredient of the nature-inspired micro-rotor's design, allowing the blade to adjust its attitude in response to changes in freestream velocity, rotation speed and/or braking torque. 
+
+This response is controlled by the mass distribution on the blade, which again, is similar to the idealized samara of :
+
+a uniform density on the flat plate $_b$, and two point masses to model the mass of the nut (point $P_1$ in figure b) and the mass of the leading edge nerve (point $P_2$). 
+
+The density ratio between the flat plate's material and the fluid is $_b/=300$, which corresponds to the density ratio of a low density composite in air.
+
+This yields a plate with a mass equal to $1.81 c^3$.
+
+The point $P_1$ is located at $(0, 0.2c, 0)$ in $_b$, with a mass of $20.36 c^3$. 
+It is the largest contributor to the total mass of the blade. 
+
+The point $P_2$ is located at $(-0.2c, 0.9c, 0)$ in $_b$, with a mass of $5 c^3$. 
+
+The total mass of the blade (flat plate plus point masses) is then $27.17 c^3$, with the center of mass at $(-0.00255c, 0.38709c,0)$ in $_b$ (see point G in figure b). 
+The tensor of inertia of the blade with respect to the center of mass is 
+
+_G = 
+
+3.4605 & 0.2720 & 0 \\
+0.2720 & 0.3543 & 0 \\
+0 & 0 & 3.8148
+
+ c^5,
+
+computed in the body reference frame $_b$ as well.
+
+To extract power, a braking torque $T_b= - U_ c^4 \, c_0 $ is applied to the rotor axis, $z_1$. 
+This torque is proportional to the rotor angular velocity ($ = d /dt$), with a dimensionless proportionality constant $c_0 > 0$. 
+
+When the rotor achieves a steady state, the braking torque and the torque produced by the aerodynamic forces on $z_1$ must be in equilibrium, i.e. $T_b + M_z,1 = 0$. 
+
+Hence, we define the non-dimensional power coefficient as
+
+ C_P = \, U_^3 \, A_,
+
+where $A_=(R_^2 - R_^2)$ is the maximum frontal area swept by the rotor, with $R_=2.5c$ and $R_=0.3c$.
+
+Note that this area is different from the actual instantaneous frontal area, that would be dependent on the coning angle $$. 
+
+However, this simplifies the comparison between the different cases, normalizing $C_P$ with the maximum available power in the freestream.
+
+Computational setup
+
+Given the similitude in geometry and configuration, the computational setup for the present micro-scale wind turbine is analogous to the one used in to simulate winged seeds in free fall. 
+
+The micro-scale rotor is placed in the Cartesian computational domain shown in figure .
+
+We chose an inflow-outflow configuration, with a uniform inlet velocity $U_$ imposed at $z_1 = -4c$, and an advective boundary condition applied at $z_1 = 8c$. The lateral boundary conditions are periodic, with a domain size $L_x = L_y = 8c$. 
+
+The computational domain is discretized with a uniform Cartesian grid with $384384576$ points, which corresponds to a grid spacing of 48 grid points per chord, $_x = c/48$ (same as ). This grid spacing has been verified for the present configuration with a grid refinement study (see Appendix ). 
+
+The same grid spacing is used to discretize the blade, as shown in figure b. Note that since the blade thickness ($h=0.0035c$) is much smaller than $_x$, we follow and model the blade as surface (i.e., a planar distribution of Lagrangian IBM points). 
+
+The time step is set to $ t 410^-4 c/U_$, ensuring that the maximum CFL number is $ 0.1$.
+
+For the simulations with turbulent perturbations in the freestream (see section ), we use the synthetic turbulence generator of . It consists of an additional volumetric force (to be added to the right hand side of eq. ) with the following form, 
+ 
+ _(x_1,y_1,z_1,t) = '(x_1,y_1,t)_0/U_ (-2 )^2_0^2 ),
+
+where $ u'$ is the perturbation velocity, $z_1,$ is the position of the injection plane and $_0$ is the integral length-scale of the velocity perturbations. 
+
+The velocity fluctuation vector $ u'$ is a function of the cross flow coordinates ($x_1,y_1$) and time, and it is characterized by its (turbulent) intensity, $TI = \| u' \|^2 ^1/2/U_$. 
+
+In this study, we generate $ u'$ using the digital filter approach of and . 
+
+As discussed in , this procedure introduces isotropic velocity perturbations in the flow with a narrow energy spectra peaking at wavelengths around $_0$ (see also ).
+These velocity fluctuations are advected downstream, transitioning into a flow analogous to the classic grid-induced turbulence in a relatively short development length (i.e., about 5-10$_0$). 
+
+Results
+ 
+
+We perform simulations of the single-blade nature-inspired rotor described in section , using the numerical methods described in section at a fixed Reynolds number $=U_ c / = 240$. 
+
+This Reynolds number is the same used in the idealized winged seeds of , and corresponds to a micro-scale wind turbine with $c=0.5$cm (i.e., $b=1.1$cm) in a freestream with velocity velocity of $U_ = 0.7$m/s and kinematic viscosity $ = 1.46 10^-5$ m$^2$s$^-1$ (i.e., air in standard sea level conditions). 
+
+Nature-inspired micro-rotor in a uniform freestream
+
+ 
+
+We consider first the nominal case of the nature-inspired, single-blade rotor extracting energy from a uniform freestream. 
+Figure shows the temporal evolution of the 3 degrees of freedom of the blade and the aerodynamic torque applied at the rotor's axis, $M_z,1$. The time span $0 < tU_/c < 75$ corresponds to the initialization of the rotor without braking torque, with $c_0=0$, for about 13 revolutions of the rotor. 
+
+The initial conditions at $t=0$ are $(, , ) = (0, 0, 0) $ and $( , , ) = (U_/c, 0, 0)$ for the blade's attitude and angular velocity, respectively. 
+
+Figure a shows that without braking torque the angular velocity of the blade increases from the initial condition to achieve a stable auto-rotation condition, in which the aerodynamic torque on the axis (and hence the power extracted by the turbine) is zero (see figure d). 
+
+The steady auto-rotation values for the coning (figure b) and pitching (figure c) angles are $ = 10.8^$ and $ = -15.3^$, 
+with an angular velocity $ = 1.28U_/c$ that yields a tip-speed ratio $ = R_ / U_ = 3.2$, where $R_ = d_J + b = 2.5c$ is the distance from the axis to the blade tip when $ = = 0$.
+
+These values are very similar to those reported by for the free-falling winged-seed used to design our blade, namely $ = 1.58 U_/c, = 10^$ and $ = -13^$. 
+
+This suggests that the restrictions to the blade attitude introduced by fixing $d_J 0$ and restricting the 2 degrees of freedom of the hinge at $J$ do not disturb significantly the dynamics of the winged seed in auto-rotation. 
+
+ 
+
+ 
+The flow (velocity and pressure) and the blade's state (attitude and angular velocity) in auto-rotation (namely, at $t=75c/U_$) are used as initial condition for the simulations of the blade with increasing values of the braking torque's proportionality constant, $c_0 =0.1,\, 0.2,\, 0.3,\, 0.4,\, 0.5,\, 0.6$ and 0.7. 
+
+These runs are shown in figure for $t>75c/U_$, using varying shades of blue. 
+
+For each value of $c_0$, the application of the braking torque results in a gradual decrease of $$ with time (see figure a), reaching a quasi-steady state for $t 150 c/U_$.
+
+Only the case with the lowest angular speed (i.e., the largest braking torque proportionality constant, $c_0 = 0.7$) fails to reach a quasi-steady state, showing significant drifts in $, , $ and $M_z,1$ (see lighter blue curves in figure ).
+
+Note that, as the blade decelerates (i.e., $$ decreases with time), the blade's attitude changes, 
+increasing $$ (coning angle, figure b) and $-$ (pitching angle, figure c). 
+
+As a result, the aerodynamic torque generated by the blade on the rotation axis increases (see figure d), eventually balancing the braking torque applied at the axis that represents the energy generated by the rotor. 
+
+It is interesting to note that, independently of the braking torque applied, the blade's attitude ($$ and $$) and the aerodynamic torque produced at the axis undergo high amplitude oscillations during a short transient, $75 < tU_/c 100$. 
+
+At the steady state (i.e., $t > 100 c/U_$) the remaining oscillations have a relatively high angular frequency ($ 4 $) and very low amplitude, specially for $, $ and $$. 
+
+The small steady-state oscillations can be marginally observed in the aerodynamic torque in figure d, where the curve appears thicker than it is. 
+
+Given their angular frequency, they are likely caused by the aerodynamic interference between periodic neighbors (recall that $x_1$- and $y_1$-directions are periodic). 
+
+The steady-state performance of the rotor is characterized using the time-averaged values of $$, $$, $$ and $M_z,1$ during the last revolution of the blade. The time-averaged values of $$ and $M_z,1$ allow computing the power coefficient $C_P$ using eq. . 
+
+These variables are plotted in figure as a function of the tip-speed ratio, $ = R_/U_$. 
+
+Figure a shows that the $C_p$ curve shows a shallow maximum, with a peak value of $C_P = 0.026$ when the tip-speed-ratio is $ = 2.3$. 
+
+The maximum torque at the axis is produced at a lower tip-speed-ratio, $ = 1.7$ (see figure b). 
+
+Note that the use of a braking torque proportional to $$ allows sampling the complete $C_P()$ curve. 
+
+Figure c and show how the blade transitions from the moderate values of $$ and $$ of auto-rotation (which correspond to an orientation close to perpendicular to the flow), to more extreme values at the lowest $$ (which corresponds to a blade that is becoming more parallel to the freestream).
+
+Compared to the power coefficient of standard micro wind turbines with fixed angles, the performance of the present nature-inspired wind turbine is modest.
+
+For example, 
+ report $C_P, = 0.18 - 0.33$ and $_ = 0.7 - 1.2$ for four-bladed micro wind turbines operating at Reynolds numbers in the range 1700-3400, 
+while the 
+three-bladed E62 micro wind turbine of achieves $C_P, = 0.2$ at $_ = 1$ with a larger $ 10^4$.
+
+Normalizing performance by the number of blades (while neglecting aerodynamic interference and other losses) yields $C_P, ^N_b=1 = 0.045 - 0.08$, which is about two to three times higher than the $C_P = 0.026$ reported in figure for the present design.
+
+However, this comparison requires some caution: the Reynolds number of our simulations ($=240$) is significantly lower -- by a factor of two to three -- than that of the fixed-angle micro wind turbines, and our nature-inspired design has not yet been optimized. 
+
+A one-to-one comparison between the nature-inspired rotor and fixed-angle rotors will be presented in section $$.
+
+In order to investigate the relationship between the blade's attitude and its performance in terms of $C_P$ and $M_z,1$, figure shows instantaneous flow visualizations of the flow around the blade for four characteristic braking torques: auto-rotation, maximum power, maximum torque, and minimum tip-speed ratio. 
+
+Iso-surfaces of the second invariant of the velocity gradient tensor ($Q$) are used to visualize vortices, and the streamlines generated by a distribution of points around the leading edge (i.e, near the hinge point $J$) are used to visualize the relative velocity field.
+
+Both velocity and $Q$ are computed in the non-inertial reference frame $_2$, that rotates around the rotor's axis at a relatively constant $$. 
+
+ 
+When the blade is in auto-rotation, figure a shows a strong vortex developing at the hub (yellow vortex wrapped in blue streamlines), a leading edge vortex (LEV, in yellow) covering a large fraction of the upper surface of the blade, and a shear layer emanating from the LEV (translucid green and blue isosurfaces) that rolls-up in a weak wing tip vortex at the outer edge. 
+
+These flow structures are qualitatively similar to the flow around the winged-seed that inspired the present blade design (compare figure a with figure 8 in ), although the wing tip vortices of the present blade seem to be slightly weaker. 
+
+Figures b-d show that the intensity of all vortical structures around the blade decreases when the tip-speed ratio decreases. 
+
+The decrease on the intensity of the vortical structures shown in figure suggests a decrease of the pressure forces acting on the blade. 
+
+This is evaluated in figure , which depicts the aerodynamic force normal to the surface $f_z,b = (x_b, y_b)$. Note that, even at the relatively low $$ considered here, the normal component of the aerodynamic forces is approximately equal to the pressure forces, much larger than the viscous normal forces. 
+
+Figures a-d show the distribution of $f_z,b$ on the blade's surface for the four representative cases considered before: auto-rotation, maximum power coefficient, maximum torque and minimum tip-speed ratio. 
+
+Figure e shows the spanwise distribution of the normal force per unit span, 
+ 
+F'_z,b(y_b) = _x_LE^x_TE f_z,b(x_b,y_b) dx_b, 
+
+where $x_LE(y_b)$ and $x_TE(y_b)$ denote the curves formed by the leading and trailing edges on the $(x_b,y_b)$ plane, respectively. 
+
+Figures a-d show that, independently of the tip-speed ratio, the maximum normal force is always concentrated near the leading edge of the blade. 
+
+In auto-rotation (figure~a) the sharp peak at the leading edge propagates into the blade's surface at spanwise positions 0.5 $ y_b/c 1.5$, consistent with the shape of the LEV shown in figure a, and producing a spanwise distribution of normal force peaking at $y_b/c 1$ (see dark blue line in figure e). 
+
+As $c_0$ increases and the tip-speed ratio decreases, figure e shows that the intensity of the pressure forces gradually decreases, while the spanwise location of the peak in $F'_z,b$ moves inboard, closer to point J. 
+
+The gradual decrease of $F'_z,b(y_b)$ observed in figure e is mostly due to the decrease of dynamic pressure associated with a lower tip-speed ratio. 
+
+Indeed, the angle of attack of the blade with respect to the incoming wind is fairly constant from auto-rotation to maximum torque, decreasing sharply for lower tip-speed ratios. 
+
+In order to prove this statement, figure presents the distributions of geometric angle of attack, $$ on the blades. 
+
+This angle is computed as the angle between the chordwise direction of the blade (i.e., unitary vector $_b$ in the blade's reference frame $_b$, see figure a) and the $(x_b, z_b)$ components of the velocity of the blade $ U_$ with respect to the incoming freestream. 
+
+The latter is computed subtracting the rotational velocity of the blade from the uniform freestream.
+
+In the steady state this yields 
+
+ 
+_(x_b^P,y_b^P) = U_ _1 - ( _1) , 
+
+where $_1$ is the unitary vector along the $z_1$-direction, and $$ is the vector from point O to point P on the surface of the blade (with coordinates $x_b^P,y_b^P$ in the body reference frame). 
+ 
+ 
+As before, figures a-d show the surface distribution of $$ for four representative tip-speed ratios, 
+and figure e shows the spanwise distribution of the chordwise-averaged value of $$ for all the braking torques considered here. 
+
+The distributions of $$ over the blade are very similar for auto-rotation (figure a), maximum power coefficient (figure b) and maximum torque (figure c). 
+
+For the latter we observe however a small region of negative $$ developing near the blades outboard tip ($y_b 2.5c$). 
+
+This negative-$$ region becomes larger for case with minimum tip-speed ratio (figure d), which exhibits also lower values of $$ near the hinge. 
+
+The trend is clearer in figure (e), which shows that as $$ decreases (i.e., $c_0$ increases) the changes in the blade's attitude $$ and $$ succeed in maintaining roughly the same distribution of $$ over most of the span, with a gradual reduction of $$ near the hinge J and near the tips. 
+
+For tip-speed ratios below that of maximum torque the scenario changes, and $$ decreases at all spanwise sections of the blade. 
+
+It is interesting to note that the reason why $C_P$ and $M_z,1$ increase as $$ decreases from auto-rotation (i.e., $C_P = M_z,1 = 0$) is the competition between two opposed mechanisms. 
+
+On the one hand, decreasing $$ results in lower dynamic pressure and lower aerodynamic forces (figure ), even if the angle of attack remains reasonable constant (figure ). 
+
+On the other hand, the change in the attitude of the blade, especially the change in the pitching angle (figure d), results on a larger projection of the aerodynamic force on the $(x_1,y_1)$ plane, increasing the torque at the axis (even if $F_z,b$ is reduced). 
+
+When $$ is too low, $$ and $$ render the blade's surface almost parallel to the incoming flow (figure d), resulting in a lower angle of attack (figure d) and an even lower normal force (figure d). 
+
+These two competing mechanisms (dynamic pressure and pressure forces decreasing with $$, and $-$ increasing with $$) determine the optimal tip-speed ratio for maximum torque and maximum power, as shown in figure . 
+ 
+
+Nature-inspired micro-rotor in a turbulent freestream
+
+Following the characterization of the single-blade nature-inspired rotor in a uniform freestream, next we turn our attention to the performance of the rotor when the incoming flow is non-uniform, as expected in operational conditions. 
+
+To that effect, the synthetic turbulence generator described in section is used to generate a free-stream of velocity $U)_$ with turbulence-like fluctuations. 
+
+These fluctuations are characterized by their turbulent intensity $TI = u'/U_ = 0.1$ and by their integral length scale $_0 = 0.5c$. 
+
+The influence region (i.e., where the $_st$ forcing of equation is active) is located upstream of the blade, at $z_i,st = -3c$. 
+
+This allows for the injected fluctuations to develop into decaying low-Reynolds turbulence before reaching the blade .
+
+Apart from the presence of the synthetic turbulence generator, the simulations are run analogously to the simulations presented in section : first the rotor is run with $c_0 = 0$ until a stable auto-rotation state is reached at $t=75c/U_$. This state is used as an initial condition to run the simulations of the rotor with values of the braking torque constant equal to $c_0 = 0.2, 0.4$ and $0.6$. 
+
+Figures a-c compare the time evolution of the blade's attitude for the cases with uniform freestream (in blue) and with turbulence-like perturbations (in green). 
+
+Overall, the agreement between both configurations is very good for the braking torques considered. 
+
+The cases with turbulence-like perturbations show small oscillations on $$ and $$ (see figure a and b, respectively), and slightly larger oscillations on the coning angle (figure c). 
+
+The fact that these oscillations are not enough to change the equilibrium position of the rotor suggests that the nature-inspired rotor's stability is robust. 
+
+The power coefficient averaged over the last three cycles, $C_P$, is shown in figure d, using blue triangles for the uniform freestreamcase and green circles for the perturbed freestreamcase. 
+
+Again, the agreement between both configurations is very good, further demonstrating the robustness of the performance of the nature-inspired rotor.
+
+Figure shows the instantaneous flow features around the blade for cases with turbulent-like perturbations on the freestream. Only two cases are shown, figure a in auto-rotation (i.e., $c_0=0$), and figure b around the maximum power coefficient (i.e., $c_0 = 0.4$). 
+
+Compared to the flow structures around the blade in a uniform freestream (see figure ), the simulations with freestream perturbations show a very similar structure of vortices, with a helicoidal vortex shed near the joint, a stable LEV on the blade's leading edge, and a weaker tip vortex. 
+
+Note that, even if the turbulent intensity is 10\
+
+This probably is the reason why the helicoidal vortex and the LEV are only slightly modified by the freestream turbulence, 
+and why the performance of the rotor is not.
+
+The results are consistent with the work of and . For instance, the latter shows that a flapping wing at $=U_ c/ = 1000$ subjected to a freestream with turbulent fluctuations virtually produces the same averaged forces as the wing in a uniform freestream. 
+
+Nature-inspired versus fixed-blade micro-rotor
+
+As mentioned in section , the nature-inspired rotor performance is worse than the performance of other fixed-angle micro-rotors found in the literature . 
+This comparison should be interpreted with caution, because the present simulations were conducted at a much lower Reynolds number ($ = 240$) and the current design has not been optimized. 
+Recall that the blade's planform and mass distribution determine how its attitude varies with the tip-speed ratio ($()$ and $()$ in figure ), which in turn governs the rotor's performance ($C_P()$).
+
+To isolate the effect of the nature-inspired versus a fixed-angle design on rotor performance, we conduct additional simulations using the same geometry and Reynolds number, but with the blade's pitching and coning angles held fixed. 
+The simulations are performed as before. 
+First, the blade is run in auto-rotation (i.e., $c_0=0$ and $C_P=0$) for $75c/U_$ convective time units ($ 13$ revolutions). 
+Then, a braking torque is applied (i.e., $c_0 0$), and the blade is allowed to reach a steady state. 
+The torque and angular velocity are averaged over the last simulated revolution to compute $C_P()$ for increasing values of $c_0$. 
+
+Three fixed-blade configurations are considered and shown with different colors in figure . 
+Each configuration (FA1, FA2, and FA3) uses values of $$ and $$ sampled from the nature-inspired single-blade rotor discussed in section . 
+Case FA2 (green) uses the blade attitude at $ = 2.3$, corresponding to peak $C_P$. 
+Cases FA1 (red) and FA3 (gray) correspond to lower and higher tip-speed ratios, $ = 1.6$ and $2.9$, respectively. 
+The coning and pitching angles of the fixed-angle cases are reported in table .
+
+ 
+
+Figure a compares power coefficient versus tip-speed ratio. 
+Configurations FA2 and FA3 achieve higher $C_P,$ than the nature-inspired rotor, while FA1 reaches a similar maximum but at lower $$. 
+Interestingly, the fixed-angle configurations reach their peak efficiency at smaller tip-speed ratios than the nature-inspired design, and all of them outperform it at the lowest $$. 
+This suggests that the free hinge in the nature-inspired rotor allows excessive blade twisting under the incoming wind. 
+Consistently, figure b shows that the fixed-angle cases develop much larger aerodynamic torque for $ 2$ than the nature-inspired rotor, with similar peak values of $M_z, 0.6 U_^2 c^3$ for FA1, FA2, and FA3.
+
+ 
+
+To explore why the fixed-angle configurations perform better, figure shows spanwise distributions of angle of attack and normal force at maximum power coefficient. 
+Figure a indicates that fixed-angle rotors operate at larger angles of attack than the nature-inspired case. 
+This generally produces stronger aerodynamic loads (figure b), though the effect is modulated by changes in dynamic pressure associated with tip-speed ratio. 
+Aerodynamic torque also depends on the pitching angle, which determines the projection of the normal force. 
+For example, FA1 (red) has larger $$ than the nature-inspired rotor (blue) but a lower normal force due to its reduced $$, while its larger $-$ increases torque. 
+The role of pitching angle is even clearer when comparing FA2 (green) and FA3 (gray): although FA3 develops larger angles of attack and normal forces than FA2, its smaller pitching angle leads to a less favorable torque projection. 
+As a result, FA2 and FA3 attain very similar values of $C_P,$ and $M_z,$ despite their different aerodynamic load distributions.
+
+Overall, the comparison between the nature-inspired and fixed-angle configurations highlights the critical role of blade attitude in determining rotor performance. 
+The free-hinging mechanism of the nature-inspired rotor allows for adaptive twisting, but in the current configuration it leads to suboptimal angles of attack and reduced torque at low tip-speed ratios. 
+This suggests that, although the novel nature-inspired concept for a micro wind turbine explored here offers potential advantages, a proper optimization of the planform and mass distribution of the blade is necessary to match the performance of state of the art micro-rotors. 
+
+Conclusions
+ 
+
+In this work we have investigated the aerodynamic performance of a novel nature-inspired micro-scale wind turbine concept, modeled after the auto-rotational flight of samara seeds. 
+
+The micro-rotor design allows two degrees of freedom on the blade attitude: the pitch and coning (or elevation) angles. 
+
+This enables the passive adaptation of blade attitude to the changes in the incoming flow or the rotor loading.
+
+Direct numerical simulations of the coupled fluid–solid problem were performed at very low Reynolds number ($ = 240$), which corresponds to a micro-rotor with a chord $c=0.5$ cm, a radius $b= 1.1$cm and a free-stream velocity $U_ = 0.7$ m/s. 
+
+The performance of the single-blade micro-rotor is characterized for both uniform and turbulent inflows.
+
+Our results demonstrate that the proposed micro-rotor is able to self-regulate its attitude and sustain stable autorotation even under perturbed free-stream conditions. 
+
+The robustness of this passive adaptation highlights the potential of our nature-inspired concept for a micro-scale wind energy harvesting, particularly in environments where ambient turbulence is unavoidable.
+
+The leading-edge vortex and associated flow structures observed in the simulations confirm the strong similarity between the dynamics of the engineered blade and those of natural samaras.
+
+In terms of energy harvesting performance, the present single-blade design exhibits a shallow power coefficient curve, with a maximum value of $C_P, = 0.026$ at a tip-speed ratio of $ = 2.3$. 
+
+When compared with fixed-blade configurations at the same Reynolds number, the nature-inspired rotor shows lower efficiency. 
+
+This reduction in performance is attributed to the unoptimized blade planform and mass distribution, which cause suboptimal angles of attack at low tip-speed ratios.
+
+Overall, the study establishes proof of concept: nature-inspired blades with free degrees of freedom can extract energy at centimeter scales and maintain stability in turbulent inflows. 
+
+However, to realize their full potential, further optimization of the blade geometry, planform, and inertial distribution will be necessary. 
+
+Future work will extend the present analysis to multi-blade configurations, higher Reynolds numbers, and design strategies that balance passive adaptability with improved aerodynamic efficiency.
+
+ Acknowledgments
+
+This work has benefited from fruitful discussions with Prof. C. G\"urkan about the design and performance of the nature-inspired rotor. Financial support has been provided by grant TED2021-131282B-I00 by MCIN/AEI/10.13039/501100011033 and European Union Next Generation EU/PRTR. 
+
+Grid convergence study
+
+In this section, we assess the influence of grid size by performing a grid convergence study.
+
+To this aim, we have selected a single-blade fixed-angle rotor, with pitching and coning angles $= -16^$ and $=12^$, at a constant angular speed $c/U_ = 1.2$. 
+These values are similar to those observed in our nature-inspired rotor in auto-rotation. 
+
+The size of the computational domain ($12c 8c 8c$), the nominal Reynolds number ($=240$) and the boundary conditions (inflow/outflow and periodic) are the same as in section .
+
+We have tested four values of the grid spacing $ x$, corresponding to 16, 32, 48, 64 points per chord $c$.
+
+This results in computational domains of $192 128 128$, $384 256 256$, $576 384 384$ and $768 512 512$ grid points, respectively.
+
+We have integrated the cases for $50c/U_$ ($ 10$ cycles, where each cycle has a period of $T=2/ 5.23c/U_$), selecting the time step $ t$ accordingly to keep the CFL nearly constant between the cases.
+
+Figures a,b show the averaged values of the non-dimensional axial and lateral forces, $F_x$ and $F_y$ respectively, over the last 4 cycles, while fig. c displays the variation of relative error with respect to the grid spacing.
+
+This relative error is calculated with respect to the highest resolution case ($ x=c/64$). For the axial force, it is computed as:
+
+_x = -| ,
+
+where the $()$ operator denotes averaging over the last 4 cycles.
+
+The same is done for the mean and mean peak lateral force.
+
+Figures a and b show that the aerodynamic forces converge as the grid spacing is decreased. 
+
+The convergence of the axial force (figure a) involves changes in the mean value and on the amplitude of the oscillations, while the convergence of the lateral force (figure b) only involves changes on the amplitude of the oscillations. 
+
+Figure c shows that the resolution $c/ x=32$ ensures a relative error in mean axial force around $2\
+
+In order to bring both errors below the $3\
+
+Note that the case employed for the grid convergence analysis is the most restrictive case of our study, since the angular speed will always be lower or equal to approximately $1.2 U_/c$.

@@ -1,0 +1,501 @@
+[capitalize]cleveref
+
+[1]
+
+ ,
+ Lukas Bentkamp, Gabriel B. Apolin\'ario, Michael Wilczek , Perry Johnson 
+ 
+
+Mechanical \& Aerospace Engineering, University of California Irvine.
+Theoretical Physics I, University of Bayreuth, Universitätsstraße 30, 95447 Bayreuth, Germany.
+
+Obtaining accurate field statistics continues to be one of the major challenges in turbulence theory and modeling. From the various existing modeling approaches, multifractal models have been successful in capturing intermittency in velocity gradient and increment distributions. On the other hand, superstatistical models from nonequilibrium statistical mechanics have shown the capacity to model PDFs of various statistical turbulent quantities as ensembles of simpler stochastic processes. Here, we present an approach that generates field statistics in the form of a characteristic functional by promoting a model for multifractal increment statistics to an ensemble of Gaussian fields. By carefully designing the correlation function and the corresponding weight of each subensemble, we are able to define a functional that exhibits multifractal two-point inertial-range and dissipation-range statistics, and that blends into realistic large-scale behavior. Additionally, the method is capable of producing multifractal statistics with any of the widely used singularity spectra. We characterize the fidelity of our approach through comparisons to literature results from direct numerical simulations. Overall, our framework thereby bridges between three different perspectives to turbulence: superstatistics, multifractals, and functional approaches to turbulence.
+
+Introduction
+
+Turbulence is characterized by velocity fluctuations whose statistics are strongly scale-dependent. Probability density functions (PDFs) of the velocity increments are approximately Gaussian at separation distances commensurate to and larger than the integral length scale, but display heavier tails as the separation length scale decreases through the inertial range and into the dissipative range of scales. This phenomenon, known as intermittency, presents a major challenge to creating accurate turbulence models. Over the years, a number of techniques have been developed to model intermittency, such as multifractals and superstatistics, which are reviewed in the following.
+
+In the language of multifractal theory, multiscale observables can be written as a statistical mixture of a continuum of H\"older exponents. Each exponent $h$ occupies a set of dimension $D(h)$ and this determines the contribution of each $h$ to the full statistics . Among the observables to which multifractal theory has been successfully applied are velocity gradients , Eulerian velocity increments , Lagrangian velocity increments , and Lagrangian acceleration . Crucially, it provides a connection between the asymptotic scaling of all of these observables in terms of a single $D(h)$ function. 
+
+At first glance, superstatistics represents a complementary approach to model intermittency based on a mixture distribution. Applied to nonequilibrium statistical mechanics, superstatistics describes a mixture of Boltzmann statistics with the temperature as the mixing parameter . In the context of turbulence, the mixing parameter may be, for instance, the energy dissipation.
+This description has been shown to capture non-Gaussian turbulence statistics both in the Eulerian and Lagrangian frames .
+
+It is also worth noting that the multifractal model can be formulated in a way akin to superstatistics. Specifically, considered a superposition of Gaussian increment statistics with a fluctuating variance. This indicates that intimate relations between the two approaches exist.
+
+Previous applications of the multifractal and superstatistical approaches have focused on the modeling of individual random variables, e.g., two-point statistics. While the multifractal language provides a connection between the universal properties of different observables , the interest in extending these approaches to modeling the statistics of entire random fields remains. 
+showed that a superposition of Gaussian characteristic functionals (i.e., a statistical ensemble of Gaussian fields) with a fluctuating correlation function is capable of producing non-Gaussianity and intermittency. 
+This naturally leads to the question whether a mixture model with realistic multifractal properties comprising entire field statistics can be developed. A first step into this direction was recently taken by , who developed a model for field statistics with classic K62 multifractal scaling~. The approach has been extended to enable a statistical refinement of sparse data sets by and has furthermore been applied to the stochastic modeling of turbulent wind fields .
+We mention as well a complementary approach to field statistics, where realizations of a random field are generated with properties compatible with multifractal theory, either in a static or dynamic way .
+
+In this paper, we establish a relation between existing multifractal models and the superstatistical Gaussian field ensemble approach.
+We construct an ensemble of Gaussian fields that features increment and gradient statistics complying with a given multifractal singularity spectrum, albeit only for its even moments. From a conceptual point of view this highlights close connections between the discussed previous approaches and lays the foundation for a future connection to statistical field theories based on the Navier-Stokes equation such as the functional approach .
+
+The content is arranged as follows.
+In , we review the multifractal modeling of and the ensemble of Gaussian fields of .
+In , we show how the multifractal description can be generalized to a superstatistical characteristic functional. demonstrates the approach with a simple example---the classic lognormal model. In , a more general model is considered, with an arbitrary singularity spectrum, and realistic large-scale and viscous-range behavior. Conclusions are drawn in Section .
+
+Theoretical background
+
+Gaussian mixtures for multifractal velocity increment PDFs
+
+In this section, we summarize the formulation of multifractals as Gaussian mixtures put forward by . 
+
+The paper considers velocity increments $v = _ u$ across a scale $$ in the inertial range, i.e.,~$ L$ where $$ denotes the Kolmogorov scale and $L$ the integral scale of the flow. The velocity increment, conditional on a given H\"older exponent $h$, is modeled as a zero-mean Gaussian random variable, 
+
+with PDF
+
+ g( v;S(;h) ) = [ -2 S(;h) ] \, .
+
+Notice that we have adopted a notation for the Gaussian PDF $g(x; ^2)$ where $^2$ is the variance. Here, $S(;h)$ is the second-order structure function conditional on a given H\"older exponent, and behaves as
+
+ 
+S(;h) = 2 _u^2 ( 1 + ()^2)^-h \, ,
+
+in the inertial and large-scale ranges. Compared to~, we have added a large-scale saturation. The large-scale root mean square velocity is denoted $_u$, and $S(,h)$ correctly asymptotes to $2 _u^2$ as $ $. Additionally, this function shows an $(/L)^2h$ scaling in the inertial range.
+In this framework, the PDF of velocity increments is given by 
+ 
+ f_v(v ; ) = h \, f_h(h;) \, g(v;S(;h)) \, ,
+
+where
+$f_h(h;)$ is the probability density of H\"older exponents at fixed scale $$.
+This mixture of Gaussian random variables with fluctuating variance naturally gives rise to non-Gaussian statistics.
+
+The mixture distribution $f_h(h;)$ provided by multifractal phenomenology, including the inertial and large-scale ranges, is given by
+
+ 
+ f_h(h; ) = 
+ Z() \,
+	( 1+ (L/)^2 )^-(1-D(h))/2,&h_ h h_\,, \\
+ 0, &
+
+where $D(h)$ is the multifractal singularity spectrum, $h_$ and $h_$ are bounds on the H\"older exponent (explained below), and $Z()$ is the normalization of the PDF.
+
+A key assumption of the multifractal model, relevant for the subsequent discussion, is that $D(h)$ is assumed to be independent of $$ over the inertial range of scales.
+
+With this formulation, the velocity increment displays multifractal scaling exponents, at least for its even moments,
+ 
+ v^n ^_n, \
+ \
+ _n = _h [ nh + 1 - D(h) ] ,
+
+as can be shown with a steepest descent approximation in the limit of vanishing scale separation~. Due to the use of Gaussians, all odd-order moments of the velocity increments are zero. We remark, however, that 
+addresses the skewness of the velocity increments by modifying the Gaussian base distribution. 
+
+There are several empirical models for $D(h)$ in the turbulence literature, and in we consider a change of variables where $D(h)$ can be freely specified.
+
+As explicit examples, we consider three representative models of singularity spectra: The lognormal, with a quadratic spectrum
+
+ D(h) = 1 - 2 _h^2
+ ;
+
+the She-L\'ev\^eque model , with spectrum
+
+ D(h)
+ = -1 + 3[ 2)(2) - 1 ](h - 9) - (2)(h - 9)(h-9);
+
+and the Sreenivasan-Yakhot model , defined by
+
+ D(h) = 1 - c - h + 2 .
+
+The free parameters of the lognormal model can be determined by fits to the statistics of direct numerical simulation (DNS) or experimental data. Typical values are $h_0 = 0.37$, $_h^2 = 0.025$ . For the Sreenivasan-Yakhot model, $ = 3c - 3$ and $c = 7.3$ are predicted by .
+
+The range of the H\"older exponents, $h_ h h_$, important for a complete description of the multifractal exponents, requires accurate statistical data at high Reynolds numbers to be reliably inferred. This topic has recently received attention, with numerical simulations done at increasing spatial resolution and novel techniques for measuring exponents at negative order .
+
+Estimates of $h_$ range from $-0.88$ to $0.15$ .
+For this study, we rely on simple estimates by choosing $h_$ and $h_$ as the solutions to $D(h)=0$.
+
+In the remainder of this paper we introduce a change of variables that allows to map the multifractal framework as outlined above to an ensemble of Gaussian fields. 
+
+Ensemble of Gaussian characteristic functionals for non-Gaussian field statistics
+
+While the statistics of velocity increments (and two-point statistics, more generally) have been a central focus for turbulence theory over the past century, they provide an incomplete characterization of turbulent fields.
+
+A complete description is provided, for instance, by the characteristic functional, satisfying a closed and infinite-dimensional dynamical equation (the Hopf equation, see ). This section reviews the approach of , where non-Gaussian and intermittent characteristic functionals are built as mixtures (ensembles) of Gaussian random fields (compare also~).
+While not able to describe skewness, this approach provides a simple and analytically tractable basis for capturing the statistics of turbulent fields. 
+
+In the following we consider one-dimensional fields for simplicity. When comparing theoretical results to data from experiments or DNS data, we interpret these fields cum grano salis as one-dimensional cuts through three-dimensional fields. An extension of the approach to three-dimensional vector fields is briefly outlined in Appendix .
+For a field $u(x)$, the two-point statistics are encapsulated in the following joint PDF,
+
+ f_2(u_1, u_2) = (u_1 - u(x_1)) (u_2 - u(x_2)),
+
+or alternatively in its Fourier transform, the two-point characteristic function,
+
+ _2(_1, _2) = [ ( _1 u(x_1) + _2 u(x_2) ) ] .
+
+Field statistics include the $N$-point statistics for any number of points $N$. This can be captured in a single object, the characteristic functional, given by the expression 
+
+ 
+ [] = [ _-^ x \, (x) u(x) ] .
+
+Here, the argument of $$ is the test function $(x)$. This characteristic functional contains complete information of the probability densities of observing any velocity field configuration $u(x)$.
+
+In particular, the characteristic functional of a zero-mean Gaussian field is
+
+ 
+ ^G[; ] = [ -2_-^ x_-^ x' (x) C(x-x';) (x') ],
+
+where $ C(x-x';)= u_(x)u_(x') $ denotes the two-point velocity covariance function. We have added $$ as a parametric dependence. We restrict ourselves to statistically homogeneous fields, such that the covariance function is an even function depending only on $x - x'$. 
+Note that the two-point covariance is sufficient to determine the entire field statistics of the Gaussian field.
+This provides a practical advantage in developing theories based on Gaussian field statistics, and non-Gaussianity may be recovered by superposing the statistics of an ensemble of Gaussian fields . In particular, the covariance function can be chosen to vary depending on a parameter $$, allowing for its interpretation as a conditional covariance function. In this way, the Gaussian fields become subensembles of the full model. The characteristic functional for the resulting ensemble statistics thus takes the form
+
+ [] = \, f_() \, ^G[;]
+ 
+
+where $f_()$ is the PDF of the parameter $$. This parameter could be related, for example, to a fluctuating length scale, the local dissipation rate or, as discussed below, the fluctuating H\"older exponent of a turbulent field. Note that, by restricting ourselves to zero-mean Gaussian fields, we do not capture odd-order moments. As a result, our model statistics lacks skewness. The possibility of addressing skewness within our framework, in analogy to the discussion in~, is left for future investigation.
+
+The apparent similarity between for expressing multifractal two-point statistics and for the superstatistics of random fields invites a closer inspection of the relationship between these two approaches.
+
+This is done in the next section, and for that we outline the statistics of velocity increments and gradients that we obtain from the functional description. The velocity increment statistics are obtained by choosing the test function 
+ 
+ (x) = [ (x - y - )- (x - y) ],
+
+which, inserted into , yields the characteristic function of the increment at scale $$
+ 
+ _v(;) = \, f_() \, ( -2 S(;) ^2 ),
+
+with the conditional structure function
+ 
+ S(;) = 2 [ C (0;) - C (;) ].
+ 
+The Fourier transform of this characteristic function produces the increment PDF
+ 
+ f_v(v;) = \, f_() \, g(v; S(; )) .
+
+Furthermore, the gradient statistics can be found in a similar way, by choosing the test function 
+
+ 
+ (x) = - x (x - y).
+
+Using integration by parts before evaluating the delta function, one obtains the characteristic function of the gradient $A = _x u$
+
+ _A() = \, f_() \, ( 2 C''(0;) ^2 ) = \, f_() \, ( - 4 S''(0;) ^2 ),
+
+where primes denote derivatives with respect to $$. A Fourier transform returns the PDF of the velocity gradient,
+
+ 
+ f_A(A) = f_() \, g(A;2 S''(0; )) \, .
+
+Connecting multifractal mixtures and Gaussian ensembles
+
+We may now build a connection between the multifractal formulation of and the ensemble of Gaussian fields of . Let us start with the multifractal formulation, in particular which we repeat:
+ 
+ f_v(v;) = h \, f_h(h;) \, g(v;S(; h)).
+
+For this distribution, $h$ is the mixing parameter. 
+On the other hand, notice that , obtained from the ensemble of Gaussians, is also a mixture, this time with the scale-independent mixing distribution $f_$:
+ 
+ f_v(v;) = \, f_() \, g(v; S(; )).
+
+In , the scale dependence of $f_h$ is a requirement of multifractal phenomenology, while in , its absence in $f_$ is necessary for the functional formulation: As can seen in , the mixing distribution $f_()$ cannot depend on the scale of the observable, which only comes in through the test function and thus becomes an argument of the subensemble structure function $$.
+
+In order to write an ensemble of Gaussian fields that is compatible with the multifractal formulation of , we introduce a change of variables which connects $$ and $h$.
+
+Let us introduce the cumulative distribution functions (CDFs)
+
+F_h(h;) &= _-^h h' \, f_h(h';), \ \\
+F_() &= _-^ ' \, f_(') \, .
+
+We claim that, given the PDFs $f_()$ and $f_h(h;)$, as well as a structure function $S(; h)$, both superpositions are equivalent, i.e.,
+
+ f_v(v;) = \, f_() \, g(v; S(; ) ) = \, f_h(h;) \, g(v;S(; h)), 
+
+given that
+
+	 S(; ) = S(; F_h^-1(F_();) ) \, .
+
+To show this, we choose the following $$-dependent substitution that maps $$ to $h$:
+ 
+ h(;) = F_h^-1(F_();),
+
+such that
+ 
+ F_h(h(;);) = F_() \, .
+
+A derivative with respect to $$ results in
+
+ d F_h(h(;);) = d h d = f_h(h;) d = d = f_(),
+
+and thus the usual change of probability measures
+
+f_h(h;) \, dh = f_() \, d \, .
+
+Applying this substitution to the integral, we can write
+
+ \, f_() \, g(v; S(; ) ) &= \, f_() \, g(v; S(; F_h^-1(F_();) ) ) \\
+&= \, f_h(h;) \, g(v;S(; h)),
+
+which concludes the argument.
+This means that the increment statistics from an $h$ ensemble with any scale-dependent PDF $f_h$ can be reproduced by a $$ ensemble with a scale-independent PDF $f_$, subject to an appropriate change of the structure function. Note that only the transformed structure function $ S$ is fixed by the transform, whereas the parameter distribution $f_()$ can be chosen freely in advance.
+
+Therefore, we can transform a multifractal model for velocity increment PDFs with arbitrary singularity spectrum into a Gaussian mixture increment PDF with scale-independent mixing distribution. The latter expression can then be generalized to a mixture (ensemble) of characteristic functionals. The resulting functional reproduces the increment statistics of the original multifractal model. Furthermore, it is capable of producing multifractal velocity gradient statistics as well. In , in comparison, velocity gradient statistics are constructed through a compatibility argument between random variables at different scales.
+
+We illustrate the change of variables with various examples in the following sections.
+
+Example: Lognormal model
+
+As a first example to illustrate the mapping from the multifractal formulation to the ensemble of Gaussian fields, we choose a quadratic singularity spectrum, $D(h) = 1 - 2_h^2$ (Eq.~), the lognormal multifractal model, without bounds on $h$ ($h_=-$, $h_=$). 
+According to , the resulting PDF $f_h$ is Gaussian,
+
+ f_h(h;) = Z()[ - ( 1 + ()^2 ) 4_h^2 ] = g(h - h_0; ^2())\,,
+
+where $Z()$ is the appropriate normalization, and
+
+ ^2() &= ( 1 + ()^2 )
+
+is the $$-dependent variance.
+
+Its CDF reads
+
+ F_h(h;) = _-^h \, h' f_h(h';) = G(())\,,
+
+where $G(x)$ is the CDF of a standard Gaussian. As laid out in the previous section, we want to express the increment PDFs given by as a superposition with a scale-independent mixing parameter $$ (). Since we can freely choose the distribution of $$, we set it to be a standard Gaussian, with PDF $f_() = g(;1)$ and CDF $F_() = G()$. The mapping is given by :
+
+ h(; ) &= F_h^-1(F_(); )
+ = h_0 + () G^-1(G())
+ = h_0 + () \,.
+
+For the superposition, , we also need the structure function conditional on $$, $ S$.
+To this end, we choose the $h$-dependent structure function $S(,h)$ according to the multifractal formulation ,
+
+from which we compute the $$-dependent structure function by~:
+
+ 
+
+ S(; ) &= S(; h(; )) \\
+ &= 2_u^2 ( 1 + ()^2)^-h(; ) \\
+ &= 2_u^2 ( 1 + ()^2)^-h_0 - (1+(L/)^2)\,.
+
+Through~, this translates into the $$-dependent covariance function
+
+ C(; ) = _u^2 - _u^2 ( 1 + ()^2)^-h_0 - (1+(L/)^2)\,.
+
+which can be used to construct the full ensemble of Gaussian fields, . Therefore, we have defined a fully explicit characteristic functional, comprehensively describing field statistics, including lognormal multifractal increment statistics.
+
+While analytically simple, the model allows for arbitrarily negative H\"older exponents, which are unphysical. This issue can be fixed by adding bounds $h_ h h_$, as discussed in . The corresponding PDF of H\"older exponents, , then becomes a truncated Gaussian,
+ f_h(h;) = Z()[ - ( 1 + ()^2 ) 4_h^2 ], &h_ h h_\,, \\
+ 0, &
+
+where $Z()$ is a new appropriate normalization. Its CDF is
+
+ F_h(h;) = _-^h \, h' f_h(h';) = ()) - G(-h_0())G(-h_0()) - G(-h_0())\,, h_ h h_\,,
+
+with which we compute a new mapping,
+
+ h(; ) &= F_h^-1(F_(); ) \\
+ &= h_0 + () \, G^-1(G(-h_0()) + G() (G(-h_0()) - G(-h_0())))\,.
+
+This expression can be used in for an improved version of the Gaussian ensemble with lognormal statistics.
+
+Recently, a Gaussian ensemble with lognormal statistics was introduced by . This approach relies on the combination of a fractional Ornstein-Uhlenbeck process with a rescaling of space depending on a lognormal, scale-independent random parameter. It can be shown that the specific transformation in to construct the ensemble of characteristic functionals corresponds to the lognormal case of the general transform method presented here, but with the scale-dependent parameter being the coarse-grained dissipation rate $_$ instead of the H\"older exponent $h$.
+More details are provided in .
+
+General multifractal Gaussian ensemble
+ 
+
+The mapping is applicable to general H\"older exponent PDFs $f_h(h;)$ and structure functions $S(;h)$. In this section, we apply this mapping to a multifractal model with an arbitrary spectrum of exponents. We include bounds for the H\"older exponent, as in the previous section, and add a realistic viscous-range cut-off to the formulation. The main goal of this section is to demonstrate the capacity of the model to reproduce the features of general multifractal models for the increment and gradient statistics of turbulence. For the sake of presentation, we make particular choices for the form of $f_h$, $S$, and various parameters, to be able to evaluate the model numerically and compare to DNS data.
+
+In general, various modeling choices for $S(;h)$ and $f_h(h ;)$ are possible as long as they have certain asymptotic scalings in the dissipation, inertial, and large-scale ranges. The onset of the dissipation range is built into the multifractal formalism by local Kolmogorov scales $(h) L$ that are functions of the H\"older exponent. They depend on the Reynolds number in the following way :
+
+ (h) = L R^-1+h \, ,
+
+where $R = /_*$, with $$ the large-scale Reynolds number and $_*$ a tuning coefficient. A general H\"older exponent PDF $f_h(h;)$, for $h_ h h_$, must have the asymptotic scaling:
+ 
+ f_h(h;) 
+ 
+ ( L)^1-D(h)\,,& (h)\,, 
+
+ \\ (L )^1-D(h)\,,& (h) L\,,
+ 
+ \\1\,,& L \,.
+ 
+ 
+
+Additionally, a general $S(;h)$ must have the asymptotic scaling:
+ 
+ 2 _u^2 
+ 
+ ((h) )^2 (L )^2h \,,& (h)\,, 
+
+ \\ (L )^2h\,,& (h) L\,,
+ 
+ 
+ \\1& L \,.
+ 
+ 
+
+Using the general transformation outlined in~, any such choice of $f_h$ and $S$ can be used to construct a Gaussian ensemble with multifractal scaling. In the dissipative range, if the conditional structure function, $S(;h)$,
+
+matches , then it shows smooth behavior for a fixed H\"older exponent. 
+Therefore, the gradient variance of each subensemble is then readily computed as
+ 
+ _A^2 = _ 0 ^2 = 2 L^2 R^ 1+h \, .
+
+For the subsequent discussion, let us specify particular forms of $f_h$, $S$, and the distribution of $$. For the conditional structure function, we choose the following extension to :
+ 
+		S(;h) = 2 _u^2 (1+((h)/)^2 )^(1-h)/ \, ,
+
+which is essentially how dissipation range statistics are included in~. 
+
+The additional parameter $$ is a tuning coefficient that controls the onset of the dissipation range.
+
+Analogous to , we also add a viscous-range cut-off to the distribution of H\"older exponents:
+ 
+	f_h(h;) = Z() \, )^(1-D(h))/2( 1+ (L/)^2 )^(1-D(h))/2\,,&h_ h h_\,, \\
+ 0, &
+
+where $Z()$ is the normalization of this PDF. The unfixed model parameters $_*$ and $$ are chosen in by matching our model with the DNS results in Fig. for the case $n = 2$.
+
+Since the distribution of the scale-independent parameter $$ can be freely chosen, for simplicity, we opt here for a uniform distribution between $0$ and $1$. As a result, the ensemble of functionals~ can be written as
+
+ 
+ [] = _0^1 \, _G[; ]\,.
+
+Recognizing that the CDF of $$ is $F_() = $ (for $$ between $0$ and $1$),~ tells us that $$ is equal to the CDF of the H\"older exponent,
+
+(h; ) = F_h(h;) = _-^h h' f_h(h' ;).
+
+Visualizing the transform
+
+This transform, , is used to map from the multifractal to the functional formulation, as outlined in~. illustrates its behavior, by showing the structure functions $S(;h)$ (top row), the scale-dependent transform between $h$ and $$ (middle row), and the transformed structure functions $(; )$ (bottom row), for the case of the She-L\'ev\^eque singularity spectrum.
+
+Each column corresponds to a different Reynolds number. The transform (middle row) is given by the CDF of the H\"older exponents , which depends on the length scale $$. At large scales, the CDF is flatter, corresponding to a broad distribution of $h$. Due to the large-scale cut-off, the CDFs ultimately converge to a single curve (dark red). At small scales, the CDFs are steeper, corresponding to a narrower $h$-distribution, also converging to a single curve due to the viscous cut-off (dark blue). Each value of $$ corresponds to a single subensemble in our ensemble of Gaussian fields, but maps to a range of H\"older exponents seen by the different curves for each length scale. At one point in the center, corresponding to the most likely value of $h$, the dependence of the transform on the length is weak. For $$-values further away from this center, the corresponding $h$-values change with length scale, as visualized by the differently colored curves.
+
+The upper and lower rows show how the $h$-dependent structure functions are transformed into the $$-dependent structure functions according to~. This transformation is computed by numerically inverting~. For the larger Reynolds number, the $h$-dependent structure functions (b) show clear inertial-range power-law scaling, built in~. The transformed structure functions (f) are still strongly reminiscent of this, even though their exponents change with length scale. (compare with ).
+
+Another way of looking at our transform is to consider the different $h$-values that a single $$-value maps to across length scales. This is shown in~ for two different Reynolds numbers. While $$-values around $0.4$ correspond to almost constant $h$-values, other $$-curves cover a wider range of $h$-values. It is this length dependence in the transform that allows us to encode multifractal statistics using a single distribution for $$ (in this case, the uniform distribution between $0$ and $1$). shows that the variation with $$ becomes more pronounced as the Reynolds number increases, since the transform has to accommodate very wide (at large scales) and very narrow (at small scales) $h$-distributions.
+
+Inertial-range statistics
+
+To illustrate how our ensemble of Gaussian fields exhibits multifractal features resembling the statistics of turbulence, we compute increment statistics by numerically evaluating . 
+
+Longitudinal increment PDFs and structure functions from the model are compared to DNS data in~ (we used the dataset from the Johns Hopkins Turbulence Database (JHTDB), see ).
+a shows that the model reproduces quantitatively the transition from close-to-Gaussian statistics at large scales to the heavy-tailed distributions characterizing the small scales.
+
+The corresponding structure functions are shown in~b. Note that these are the unconditional structure functions predicted by the model, not to be confused with the $h$- and $$-dependent second-order functions $S(; h)$ and $(; )$ used to construct the model. Model parameters in were chosen to visually fit the $ |v|^2 /|_u|^2$ curve in~b: Their values are $ = 2$, $_* = 82$ and $ L = 0.67 L_D$, where $L_D$ is the integral length scale as reported in the dataset. In~b we observe clear power law scaling in the inertial range matching the DNS data, as well as the proper asymptotic behavior in the viscous and large scale cut-offs.
+
+By multiplying~ with powers of the increments and integrating analytically, we get
+
+ v^n = (n-1)!! _0^1 \, (; )^n/2\,, 
+
+for even $n$, which allows us to compute structure functions of any order directly from the second-order subensemble structure functions $(; )$. 
+With our change of variables, , one can show that the corresponding scaling exponents agree with .
+In order to check this numerically, we measure the scaling of the structure functions in in the limit $ $. To this end, we choose an interval of length scales much smaller than $L$. Then the best linear fit to a double logarithmic plot of is used to compute $_n$. In~, we compare the exponents computed from the model's structure functions (data points) to the exponents expected by the Legendre transform (dashed lines), which agree reasonably well. This confirms that the ensemble of Gaussian fields constructed here is capable of reproducing the velocity increment scaling of various multifractal models. 
+
+Gradient statistics
+
+Based on the full multi-scale description we introduced at the beginning of~, our model is able to predict gradient statistics as well. The tuning parameters ($$, $_*$, and $L$) are set by matching the second-order structure function to data (see~). The gradient PDF, obtained from the functional with the right choice of the test function (), is given by a superposition of Gaussian PDFs,~. The PDF of the absolute value of the gradient is shown at different Reynolds numbers in a, standardized by its variance, the average of .
+
+Analogous to the increment moments, gradient moments can be computed by multiplying~ with powers of the gradient and integrating analytically. As a result, gradient moments can be written as
+ 
+ A^n = (n-1)!!_0^1 \, ( 2 ''(0;) )^n/2.
+
+Again, this allows us to compute moments directly from the subensemble structure functions $(; )$. We show the standardized moments,
+
+ M_n = A^2 ^n/2\,,
+
+as a function of Reynolds number in~b and compare them to a corresponding calculation made with an ensemble of H\"older exponents to demonstrate the validity of the model. They are expected to scale as a power of the Reynolds number:
+
+ M_n ^_n\,.
+
+To check their scaling, we compute the exponents as linear best fits to the double logarithmic plot in b. The result is shown in~, and compared to data from a few different DNS and to the exponents obtained from multifractal theory~,
+
+ 
+ _n - _h 1+h,
+ 
+ _n = _n - 2_2 \,.
+
+The comparison with the expected exponents in~ shows that they agree reasonably well. 
+Again, this confirms that the Gaussian ensemble can reproduce multifractal statistics, also in the case of velocity gradients and their scaling with Reynolds number.
+
+Conclusion
+ 
+
+The central contribution of this work is that it establishes a connection between multifractal models and functional approaches to turbulence based on ensembles of Gaussian fields. We developed an approach that promotes a multifractal model for increment statistics to a model for entire fields. This is accomplished by a change of variables that transforms a scale-dependent distribution of fluctuating H\"older exponents to a scale-independent distribution over the new parameter $$. This allows for the superposition of Gaussian characteristic functionals parameterized on $$, which then enables the computation of arbitrary field statistics, involving velocity, gradients or increments, for instance. 
+
+In the current work, we first demonstrated an analytically-tractable instance of the transformation procedure that reproduces velocity increment statistics consistent with the lognormal model. After that we introduced a more general form of the transformation that can encode multifractal increment and gradient statistics for any singularity spectrum $D(h)$. The resulting characteristic functional can be used to model data from direct numerical simulations (or experiments). 
+
+Beyond the present work, the hope is that characteristic functionals as constructed here could also be helpful in the context of functional approaches to turbulence such as the Hopf equation , which is an elegant way to encode the field statistics of turbulence.
+A major open question towards this goal is the inclusion of skewness into the current framework, which is crucial to model the effects of self-advection and energy transfer across scales.
+
+Another topic for future investigation is the prediction of multiscale correlations of velocity increments by the characteristic functional models constructed in this work.
+
+[Acknowledgements]We thank Jan Friedrich for helping us to establish the connection of our transform to their work. Additionally, we thank Mostafa Kamal for his simulation data used for the velocity gradient scaling exponent comparisons.
+
+[Funding] 
+This project has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (Grant agreement No.\ 101001081).
+
+Connection to the ensemble by Friedrich et al. (2021)
+
+In their work on the explicit construction of joint multipoint statistics, constructed an ensemble of characteristic functionals exhibiting statistics of the Kolmogorov-Obukhov model~(K62; ; ). The K62 model is formulated in terms of $_$, the energy dissipation rate coarse-grained over scale $$. For simplicity, we focus on the inertial range, $ L$, with $$ the classic Kolmogorov dissipative scale, independent of $h$. Increment statistics in K62 can be implemented as a superposition of Gaussian distributions~,
+
+ f_v(v; ) &= _\, f_(_; ) g(v; S(; _))\,,
+
+with
+
+ S(; _) &= U^2 ()^2/3 (L)^2/3\,.
+
+The distribution of $_$ is assumed to be a scale-dependent lognormal distribution
+ 
+ f_(_; ) = _ (-2^2())
+
+with location parameter
+
+ M() = () - 2
+
+and scale parameter 
+
+ ^2() = ()\,.
+
+The K62 model is equivalent to a multifractal model with quadratic singularity spectrum~ and without bounds on $h$. The difference is that $_$ is used as a fluctuating parameter instead of $h$. The equivalence can be seen by applying the transformation $_ = (/L)^3h-1$ to~, , and and setting $h_0 = 1/3 + /6$ and $_h^2 = /9$ while taking the inertial range limit.
+
+With this in mind, we can apply the methodology outlined in to the K62 model, while replacing each instance of $h$ by $_$. Contrary to , we choose a unit lognormal distribution for $$, whose CDF is
+
+ F_() = G(())\,.
+
+The CDF of the fluctuating parameter $_$ with scale-dependent PDF~ reads
+
+ F__(_; ) = G(())\,.
+
+Then, the structure functions of the $$-ensemble can be computed by~ as
+
+ (; ) &= S(; F__^-1(F_(); )) \\
+ &= U^2 ()^-2/3-/3 ^23 ) 
+
+This turns out to be the same inertial-range form of the structure function as proposed in . As the basis for their model, they use fractional Ornstein-Uhlenbeck processes with H\"older exponent $H=1/3$. These are Gaussian processes with a specific, analytically known correlation function. For our considerations, it is only important to know that the corresponding structure function scales as
+ 
+ S_() ^2H = ^2/3
+
+for $ L$, which is K41 scaling~. Then, the subensemble structure functions~, which we obtained by application of our method to the K62 model, can also be obtained by applying the following length-scale transform to the K41 structure functions~:
+
+ ^ ) ()^-/2 \,.
+
+This is very close to the transform proposed in~[eq. (10)]friedrich2021jpc for a fluctuating parameter $ $.
+Overall, this means that the length scale transform proposed by~ can be considered a special case of the more general transform presented here. However, choices regarding the small- and large-scale cut-off were made differently.
+
+Generalization to vector fields
+
+Our ensemble approach can be straightforwardly generalized to vector fields. To illustrate that, consider a three-dimensional incompressible velocity field $ u( x)$. Analogous to 
+the characteristic functional generalizes to
+
+ 
+ [ ; ] = [ _-^ dx \, _i(x) u_i(x) ] 
+
+where summation over repeated indices is implied and $ ( x)$ is a three-dimensional test function. If $ u( x)$ is an incompressible statistically homogeneous Gaussian vector field with zero mean, its characteristic functional takes the form
+
+ ^G[ ] = [ -2_-^ x_-^ x' _i( x) C_ij( x- x';) _j( x') ],
+
+analogous to . Assuming statistical isotropy and incompressibility, the covariance tensor $ C_ij( x- x';) = u_i( x) u_j( x') $ can be written as~
+
+ _ij( r;) = 
+ _u^2
+ ( [ f(r; ) + 2 r f'(r;) ]_ij - 2 r f'(r;) \, r_i r_j )
+
+where $ f(r;)$ is the longitudinal velocity autocorrelation function, prime indicates a derivative with respect to $r$; $$ denotes the unit vector in the direction of $ r$.
+
+As a next step, we can relate the longitudinal autocorrelation function to the conditional structure function
+
+ f(r;) = 1 - 2 _u^2 S(r;)
+
+which then allows to establish the relationship between a multifractal model for the increment PDFs as outlined in . Once the covariance tensor is determined this way, the Gaussian ensemble straightforwardly generalizes.
+
+Quite obviously, addressing the question of how to include skewness into this framework is even more relevant for the generalization to vectorial statistics. This is, however, beyond the scope of the current work.

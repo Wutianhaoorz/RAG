@@ -1,0 +1,39 @@
+[a4paper,
+11pt
+]article
+
+[english]babel
+
+[a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]geometry
+
+[colorlinks=true, urlcolor=blue]hyperref 
+
+[ruled,vlined]algorithm2e
+
+ 
+[dvipsnames]xcolor
+ 
+
+ 
+
+[square,numbers]natbib
+
+ 
+
+[1]Harshith~Gowrachari
+[3]Mattia~Giuseppe~Barra
+[2]Giovanni~Stabile
+[3]Gianluca~Bazzaro
+[1]Gianluigi~Rozza
+
+[1] Mathematics Area, mathLab, International School for Advanced Studies\\
+
+Via Bonomea 265, 34136, Trieste, Italy.
+
+[2] Biorobotics Institute, Sant’Anna School of Advanced Studies\\
+
+V.le R. Piaggio 34, 56025, Pontedera, Pisa, Italy.
+
+[3] Danieli Research Center, Danieli $\&$ C. S.p.A., Via Nazionale 41, 33042\\
+
+Buttrio, Province of Udine, Italy.

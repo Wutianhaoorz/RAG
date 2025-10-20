@@ -1,0 +1,400 @@
+[aps,physrev,groupedaddress]revtex4-2
+
+[utf8]inputenc
+[margin=1.0in]geometry
+
+-10pt
+0.4
+[usestackEOL]stackengine
+
+,
+ pdfpagemode=FullScreen,
+ 
+
+[1] 1.5mu 1.5mu
+
+[1]#1
+u_
+
+[1]
+
+[3]
+ [fill=white, fill opacity=0.8, text opacity=1,
+ 
+ rounded corners=1pt, inner sep=3pt,
+ font=, #1] at (#2) #3;
+
+rgen R. Aarnes$^$$^*$
+. Ellingsen$^$
+
+Near-surface turbulent flows beneath a free surface are reconstructed from sparse measurements of the surface height variation, by a novel neural network algorithm known as the SHallow REcurrent Decoder (SHRED). 
+The reconstruction of turbulent flow fields from limited, partial, or indirect measurements remains a grand challenge in science and engineering. The central goal in such applications is to leverage easy-to-measure proxy variables in order to estimate 
+quantities which have not been, and perhaps cannot in practice be, measured. 
+Specifically, in the application considered here, the aim is to use a sparse number of surface height point measurements of a flow field, or drone video footage of surface features, in order to infer the turbulent flow field beneath the surface. 
+
+SHRED is a deep learning architecture that learns a delay-coordinate embedding from a few surface height (point) sensors and maps it, via a shallow decoder trained in a compressed basis, to full subsurface fields, enabling fast, robust training from minimal data. 
+We demonstrate the SHRED sensing architecture on both fully resolved DNS data and PIV laboratory data from a turbulent water tank. SHRED is capable of robustly mapping surface height fluctuations to full-state flow fields up to about two integral length scales deep, with as few as three surface measurements. 
+
+Introduction
+
+The surface of a gently flowing river is not flat, but is comprised of features that are characteristic imprints of the turbulent flow beneath it. A qualitative taxonomy groups the coherent, long-lived structures into `dimples', `boils', and `scars' . These structures are imprints of surface-attached vortices, upwelling events, and strong surface-tangential vortices , respectively. Recent investigations have shown that features of the turbulent free surface elevation which are easily distinguished with computer vision are closely correlated to the turbulent velocity field , which is otherwise impractical to measure outside the laboratory. Obtaining estimates of the turbulent velocity field at or close beneath the free surface is of high practical interest. For instance, near-surface turbulence controls the rate at which heat and gas are transferred between water and air , and the total greenhouse gas discharge from rivers, where these characteristic imprints may be seen, is similar in magnitude to the total gas flux through the ocean surface . In-situ measurements are slow, expensive, and provide data for a single point or trajectory at a time, whereas observations of the surface, for instance using airborne drones, can cover larger areas comparatively quickly and at low cost. Such a technique, however, is still at a conceptual stage and will remain so until quantitative predictions of subsurface flow, and concomitant processes such as gas flux, can be made from surface observations only. We propose a neural network scheme to directly map surface height variations to the underlying flow fields beneath the surface, thus helping close the gap in practice for using drone sensing.
+
+Data-driven methods have gained traction in turbulence research. Applications include spatial super-resolution or reconstruction from sparse measurements, using shallow networks , convolutional neural networks (CNNs) , and Generative adversarial networks (GANs) , as well as physics-informed neural networks (PINNs) as means to reduce non-physical deviations as accumulated by the preceding networks . Furthermore, temporal enhancement of sparse data, or reconstruction of turbulence has been attempted using shallow multilayer perceptron (MLP) , recurrent neural networks (RNN) and long short-term memory networks (LSTM). In recent years, RNNs, and particularly LSTM networks, have shown strong performance in handling the nonlinear time dynamics of turbulent flows .
+LSTM is a subclass of RNN, designed to learn long-range dependencies in time series, and improves upon instabilities that may occur in general RNNs due to vanishing gradients in the training optimization.
+The resulting nonlinear network is powerful in handling sequential datasets, such as time series, and particularly useful for capturing or forecasting nonlinear temporal dynamics . Traditional linear methods such as Proper Orthogonal Decomposition (POD), Linear Stochastic Estimation (LSE), and linear neural networks are far outperformed by nonlinear networks in most turbulence cases, as pointed out in several papers over the last few decades . Nonlinear methods are more generalizable across different turbulent cases, whereas traditional linear methods are often limited by restrictive assumptions . LSTM networks have also shown good reconstruction performance with sparse turbulence data . 
+
+A particular application for which data-driven methods have yielded recent progress is the detailed reconstruction of turbulent flows near interfaces, where measurements at the interface give input to the learning algorithm. Such cases include reconstructing the bottom topography and full subsurface velocity fields from free surface measurements, and reconstructing wall-bounded turbulence from wall measurements only. The latter using CNNs for large-scale reconstruction , CNN-based variational autoencoders , or GANs , yielding great reconstruction performance compared to linear methods. 
+
+For the reconstruction of subsurface flow fields from free surface data, Xuan \& Shen (2023) applied a CNN on data from DNS, using surface elevation and the surface velocity field as input. The results are promising and outperform previous linear reconstruction models, indicating that turbulent flow fields in, say, a river or lake, may indeed be inferred from the water surface only. In this case, however, the CNN is applied image-by-image for reconstruction, hence independent of temporal dynamics. Moreover, it is pointed out that CNN methods may underestimate the fluctuating amplitudes of large-scale structures. Beyond these issues, CNN-based approaches often prove to be computationally expensive and either require dense surface fields or struggle with noisy experimental data , leaving a gap for a lightweight model that can operate on sparse field data and generalize across simulation and laboratory flows. 
+
+A more general issue with "sensing" turbulent flow fields from interface measurements is the fall in accuracy with increased distance from the measured interface, due to less correlation of the flow and interface far from the latter. 
+Hence, closing the gaps of both efficiency and accuracy is essential to take subsurface flow sensing 
+to a level of practical utility, i.e., for practical remote sensing of river turbulence and subsequent gas‑exchange estimation. 
+
+A recently developed method, the SHallow REcurrent Decoder (SHRED), takes inspiration from recent data-driven networks to reconstruct spatiotemporal fields from sparse sensor measurements of a single quantity . It is based on the principle of separation of variables, where the temporal dynamics is learned separately with an LSTM encoder, while spatial structures are recovered with a shallow decoder network (SDN), see illustration in Fig. . More specifically, time series of sparse sensor measurements of a single quantity field (e.g. pressure, surface elevation, velocity) are given as input to the LSTM. It then constructs a latent space representation of the time dynamics of the field that the SDN is trained to map onto all correlated fields of interest, or their compressed representations~. This is possible because of Takens' embedding theorem, which states that as long as each time series is treated as a delay coordinate embedding, the underlying flow dynamics attractor is contained in the embedding . Hence, this enables the decoder to learn a smooth mapping to the full spatial field. The compressive training is critically enabling as it allows for rapid and robust training on laptop-level computing for a variety of high-dimensional, multi-physics systems such as plasma Hall thrusters
+~, nuclear reactors , circulating fuel reactors , and reduced order models~. For the first two applications, the models featured 14 and 21 coupled PDEs, respectively, with only a single field measured with three randomly placed sensors. SHRED can also be used with mobile sensors~, and can even be combined with the sparse identification of nonlinear dynamics (SINDy) or Koopman methods for model identification from sensing alone . The ability to infer and sense fields distinct from the one being measured makes SHRED a suitable candidate in the quest for remote sensing of subsurface flows, as in rivers and oceans. Hence, SHRED is a promising new addition to the landscape of data-driven methods for fluid flow sensing. It is therefore of great interest to apply SHRED in the context of free-surface turbulence and subsurface reconstruction. 
+
+ 
+This paper presents a case study of SHRED deployed to flow data from turbulent free-surface flow, obtained from two separate sources: direct numerical simulations and experiments. In both cases, isotropic, homogeneous turbulence is created well below the surface whence it naturally diffuses towards the surface. Fig. ~ exhibits the SHRED algorithm in relation to our mapping of surface measurements to subsurface flows.
+
+The present flow case is well documented in the turbulence literature, both experimentally and numerically , and can be considered fundamental to our understanding of free-surface turbulence dynamics. The relevance to a number of naturally occurring flows is immediate, such as the near-surface flow of a river or the upper layer of the ocean when the free-surface shear stress due to wind is negligible.
+We present the performance of SHRED on data from this flow case as a proof-of-concept of data-driven sensing of subsurface flows from surface measurements only, in a highly challenging turbulent environment characterized by large intermittent structures and absence of periodic features. 
+In stress testing SHRED for different Reynolds numbers from DNS and laboratory experiments, we aim at connecting the SHRED performance to real non-ideal flows as typically found in real-life cases of rivers and oceans. Moreover, our results highlight the significant experimental gain of reconstruction of subsurface flows from surface-only measurements, as a step towards more accurate non-intrusive measurement techniques.
+
+The paper is organized as follows: In \, we introduce the reconstruction model SHRED and in \, we provide details on the simulations and experiments from which our training data and reconstruction data sets are gathered, as well as data compression and performance metrics used. We present our results in \, , among them a set of error metrics which discloses how the performance of SHRED varies with distance from the reconstructed plane to the free surface. Lastly, we draw conclusions in \, and include an appendix with details on parameter tuning thereafter.
+
+SHRED: SHallow REcurrent Decoder
+
+SHRED is a generalization of the separation of variables methods for solving partial differential equations (PDEs)~. Separation of variables is also the underlying technique used for many spectral integration methods for solving PDEs~. The method assumes that a solution can be separated into a product of time and space functions $u(x,t)= T(t) X(x)$. The solution reduces the PDE into an ordinary differential equation for time $T(t)$ and a boundary value problem for space $X(x)$.
+
+To demonstrate the method, consider the constant coefficient linear PDE 
+
+ = L (_x, ^2_x, ) u
+ 
+
+where $u(x,t)$ specifies the spatiotemporal field of interest subject to the physics imposed by the operator $ L$. Example initial conditions (IC) and boundary conditions (BCs) are given by
+
+&& u(x,0)=u_0(x) \\
+&& _1 u (0,t) +_1 u_x(0,t) = g_1(t) \,\, \\ && _2 u(L,t) + _2 u_x(L,t) = g_2(t).
+
+This may be generalized to systems of several spatial variables, a system with no time dependence, or a coupled system of equations. The linear operator $ L$ specifies the spatial derivatives, which in turn model the underlying physics of the system. Simple examples of $ L$ include $ L= c _x$ (the one-way wave equation) and $ L= ^2_x$ (the heat equation)~. 
+
+The earliest solutions of linear PDEs assumed separation of variables whereby $u(x,t)=( t) X(x)$ was a product of a temporal (exponential) function multiplied by a spatial function. The parameter $$ is in general complex and specifies the eigenfunction solution
+
+ u(x,t) = _n=1^N a_n (_n t) _n(x)
+ 
+
+where $_n(x)$ are the eigenfunctions of the linear operator and $_n$ are its eigenvalues ($ L_n(x) = _n _n(x)$). Here a finite dimensional approximation $N$ is assumed, which is standard in practice for numerical evaluation. The solution of Eq. () is a general solution which models all possible solutions. To specify a unique solution, initial conditions $u(x,0)=u_0(x)$ are typically imposed in order to uniquely determine the coefficients $a_n$. Specifically, at time $t=0$, Eq. () becomes
+
+ u_0(x) = _n=1^N a_n _n(x) .
+
+Taking the inner product of both sides with respect to $_m(x)$ and making use of orthogonality gives
+
+ a_n = u_0(x), _n(x) .
+
+As an alternative to specifying the initial data at all spatial points, SHRED instead specifies measurements at a single spatial (sensor) location $x_s$, but with a temporal history. Multiple point measurements can be used as well without loss of generality. Thus if SHRED has $N$ temporal trajectory points, this gives at each time point of the measurement a constraint:
+
+ u(x_s, t_j) = _n=1^N a_n 
+ (_n t_j) _n(x_s) 
+ \,\,\,\,\,\, \,\,\, j=1,2, N .
+
+This results in $N$ equations for the $N$ unknowns $a_n$. Specifically, the $N N$ system of equations $ A x = b$ is prescribed by the vector components $x_k=a_k$ and $b_k = u(x_s,t_k)$ and matrix components $(a_kj) = (_k t_j) _k(x_s)$. As with the initial condition (a), the time trajectory of measurements at a single location uniquely prescribes the solution. This analysis can easily be generalized to include multiple sensor measurements at a single time point. Thus if there are two measurements at a given time $t_j$, then only $N/2$ trajectory points are needed to uniquely determine the solution. Likewise, three sensor measurements at a given time requires on $N/3$ trajectory points.
+
+In addition to stationary sensors measurements, one can also consider mobile sensors whereby the measurement of the system is a different locations over time~: $x_s = x_s(t_j)$. The above arguments are easily modified so that the vector component $b_k = u(x_s(t_j),t_k)$ and matrix components $(a_kj) = (_k t_j) _k(x_s(t_j))$.
+
+Thus temporal trajectory information at a single spatial location, or with a moving sensor, is equivalent to knowing the entire initial condition. SHRED provides a generalization to separation of variables $u(x,t) = T(t)X(x)$ by encoding time with a time sequence model such as an LSTM model and a decoder model for full-state reconstruction of space. Rigorous theoretical bounds of SHRED are difficult to achieve, much like analytic and numerical solutions are difficult to rigorously bound in computational PDE settings. But in the linear limit, the above arguments show explicitly why SHRED is guaranteed to work and recover the full spatiotemporal field exactly.
+
+Nonlinear PDEs
+
+ 
+For nonlinear PDEs of the form
+
+ = N (u, u_x, u_xx, ), 
+ 
+
+numerical methods are commonly used to generate solutions subject to the initial and boundary conditions~(). Consider a spectral solution technique~ whereby numerical solutions are approximated by a spectral basis
+
+ u(x,t) = _n=1^N a_n (t) _n(x) .
+ 
+
+Typical examples of spectral techniques include using Fourier modes or Chebychev polynomial for $_n(x)$. This spectral decomposition turns the PDE into a systems of $N$ coupled ordinary differential equations for $a_n(t)$:
+
+ dt=f_n (a_1, a_2, , a_N) \,\,\,\,\,\, \,\,\, n=1, 2, N 
+ 
+
+The solution of the $N$-dimensional differential equation has $N$ unknown constants of integration that are typically uniquely determined by applying initial conditions and orthogonality in Eq. ()
+
+ a_n(0)= u_0(x), _n(x) . 
+
+As with the separation of variables solution, we can instead assume that we can construct a general solution for Eq. 
+() which has $N$ constants of integration. The constants of integration can be determined by requiring the solution to satisfy $N$ temporal trajectory points, giving at each time point of the measurement:
+
+ u(x_s,t_j)=_n=1^N a_n(t_j)_n(x_s) \,\,\,\,\,\, \,\,\, j=1,2, N .
+
+This gives $N$ constraints for the $N$ unknown constants of integration, thus uniquely determining the evolution of the $a_n$ in Eq. (). Mobile sensors can also be used to enforce the constraints required for a unique solution.\\
+
+Coupled PDEs
+
+In the system considered here, coupled PDEs are of interest. Consider the coupled, constant coefficient linear PDEs of the form
+
+ = L_1 u
+ + L_2 v\\
+ = L_3 u
+ + L_4 v
+ 
+
+where $u(x,t)$ and $v(x,t)$ specifies the spatiotemporal fields of interest. The PDEs can instead be written in the form
+
+ = L_1 
+ + L_2 L_3 u
+ + L_2 L_4 (
+ L_2^-1 ( - L_1 u)
+ )
+
+where Eq. (a) is differentiated with respect to time and Eq. (b) is used in order to write the PDEs as a function of $u(x,t)$ alone. Thus, knowledge of the field $u(x,t)$ alone is capable of constructing the solution fields $u(x,t)$ and $v(x,t)$. For this second-order (in time) PDE, both an initial condition $u(x,0)$ and an initial velocity $(x,0)$ require specification in order to uniquely determine the solution. As with the previous arguments, a time trajectory embedding of $2N$ measurements can be used to uniquely determine the solution.
+ 
+
+Data generation, collection, and evaluation
+
+DNS and experiments
+
+We deploy SHRED to four different data sets, two sets of data from direct numerical simulations and two from experimental data which which utilizes a combination of PIV and profilometry to capture both the surface displacement and the subsurface dynamics. 
+The data has been thoroughly documented 
+elsewhere and only a brief outline is repeated here. Details on the simulation parameters, numerical schemes, and grid resolution criteria based on grid independence studies can be found in and , with specifics related to the data set in use given in . Details of the data capture method in the experiment and the experimental setup can be found in and
+, respectively.
+
+The simulations mimic experiments of free-surface homogeneous turbulence where turbulence is generated far beneath the water surface and diffuses towards the surface through self-interaction of turbulence vortices and viscous diffusion, with turbulence generated by an oscillating grid [see, e.g.,][]Thompson1975, brumley1987, herlina_experiments_2008,Lacassagne2017 or jets with zero net flow [e.g.][]Variano2013,Jamin2024, ruth2024, babiker2025.
+In the simulations, the non-dimensional, incompressible Navier--Stokes equations and continuity equation are solved on a three-dimensional domain, with periodic boundary conditions in horizontal directions, a free-slip boundary at the bottom, and a free surface boundary on the top. The latter is enforced by the dynamic and kinematic boundary conditions and tracked by a surface-adhering grid that undulates in the vertical direction as the surface elevation varies. Turbulence is generated in the center region of the domain by random linear forcing , modulated by a depth-dependent function which is strongest in the center of the domain and drops to zero well below the surface-influenced region (see Fig. a). The top region, denoted the `free region', is free from random forcing. Only data from the free region is used in the analysis. Surface tension is neglected in the simulations, which has little effect on the degree of correlation between surface and bulk as long as the flow is in the high-Weber-number regime (see extensive discussion in ).
+
+In the experiments, turbulence is generated by randomly actuated water jets below the water surface in a rectangular tank (see Fig. (b); note that only the two bottom rows of the jets are active, see ). By a novel data collection technique that combines surface profilometry with particle image velocimetry (PIV), the surface displacement and velocity in a subsurface horizontal plane are captured simultaneously (see ; for alternative methods of measuring the surface and the subsurface simultaneously, see ]). Unlike in the simulations, only a single velocity plane is resolved at each time step. The laser sheet in use is varied between four different levels between ensembles to get estimates for depth dependency. During characterization of the experiment, a vertical laser sheet is used and, hence, well resolved root-mean-square measures of the velocity are obtained. The experiments measured surface profilometry with each corresponding PIV velocity field at 20 intervals, or ensemble cases, each with a 1 minute duration. In order for the cases to be independent, there was a minute pause in between ensemble cases. Due to noise and issues in the profilometry for a few cases, only $14$ ensemble cases are considered usable data for the SHRED analysis. 
+
+Case details for the four data sets are listed in Table . There, two additional dimensionless numbers are included alongside the Reynolds number. These are the Forude number and the Weber number. While the Reynolds number expresses the ratio of inertial to viscous forces, the Froude number takes into account the gravitational acceleration, $g$, and the Weber number expresses the influence of inertial forces to forces due to surface tension, $$. Take note that directly comparing DNS data and data from experiments is not trivial (see extensive discussion in ). With non-dimensional DNS data the closest we get to a direct comparison is the turbulent Reynolds number and the Taylor Reynolds number. Yet even here, alternatives in how to compute length scales introduce discrepancies. Consider, for example, how computing integral length scales from dissipation and characteristic velocity (used in the DNS data) or by structure functions (used in the experimental data) introduce a difference in the length scale, and thus also in the Reynolds number of turbulence, $Re = 2L_/$, where $$ is the representative velocity (i.e., the root-mean-square velocity, see ), $L_$ is the integral scale and $$ is the kinematic viscosity. Details on how these quantities are calculated in practice can be found in refs.\ . 
+
+For brevity, we limit our scope to reconstructing one component of the velocity field, a horizontal velocity component denoted $u$. Since the turbulence is horizontally isotropic, the choice of horizontal axis is without consequence. 
+In our analysis, we refer to the root-mean-square velocity as a representative quantity, which we define as
+
+ = (1mn_x=1^m _y=1^n u_x,y^2 )^12 \, .
+
+Since we always consider only the single velocity component $u$, $^2$ should not be confused with twice the kinetic energy density. Here the indices $x$ and $y$ denote the positions in the horizontal plane, referring to the discrete data matrices in the DNS and PIV data grids, respectively, of dimension $m n$.
+Thus, $$ varies as a function of depth, $z$, and time, $t$.
+
+Compression
+
+When reconstructing subsurface flows, data compression is necessary for good reconstruction, but is also justified by the nature of turbulence. We use singular value decomposition (SVD) to evaluate the relevant modes and scales for the compression of the high-dimensional data to a low-rank representation capturing the essential dynamics. 
+
+The DNS and experimental datasets contain turbulence data with a wide range of spatial scales. From turbulence theory, it is well known that energy is injected at the largest scales, before cascading to smaller and smaller scales in the inertial $k^-5/3$ range, and dissipating to heat at the Kolmogorov length scale. The majority of the turbulent kinetic energy is carried by the largest structures, which dominate the transport of heat, momentum, and mass in the flow. When we use SHRED to reconstruct the turbulent free-surface flow from surface measurements, we aim to accurately capture the large scales and avoid overfitting to the intermittent and unpredictable small scales of the turbulent spectrum. We achieve this by compressing the data by singular value decomposition (SVD), keeping only a small amount of the decomposed data. In addition to increased accuracy, using SHRED with rank-reduced data has the advantage of a very significant speed-up of training, validation, and reconstruction. (For details on the SVD algorithm, see, e.g., .)
+
+Figs. and show the SVD modes and turbulence power spectra for cases S2 (DNS) and E2 (experiment), respectively. Through SVD the flow data is decomposed in matrices that contain spatial ($$), temporal ($$), and energy ($$) information (strictly speaking, the latter matrix contains the singular values, $_i$, which can be considered as a measure of energy for the flow patterns in $$ and $$). Decomposing a dataset of $n$ timesteps results in $n$ modes. For example, case S2 has $12500$ modes; E2 has $900$. The modes are ordered by energy/singular-value, hence $_1 _2 _n$. After decomposition, the exact flow data set can be reconstructed by matrix multiplication of $, $ and $^*$.
+Spatial and temporal coefficients of eight modes for a velocity field near the surface are shown in the upper and middle panels of the figs.\ and . We observe that the large-scale spatial modes have large singular values, meaning the majority of the energy content is found in these modes -- as expected from our knowledge of the turbulent flow. Likewise, modes of higher order (smaller singular value/lower energy) are related to smaller structures, as seen from comparing, e.g., $u_2, _2$ to $u_50, _50$ in Fig.\ . Moreover, we observe a more rapid variation in the temporal coefficients as the order is increased. This is as expected for small compared to large scales in the turbulence, yet it may also be a result of noise, which typically shows up in small-scale data, another argument for using a compressed rather than a full data set with SHRED.
+
+The choice of rank (i.e., the range of modes to retain) for the low-rank representation of the data is done on the basis of 1) the observance of the spatial and temporal modes and their scales and variance, 2) the rapid decline of singular values per rank number, 3) from the turbulence energy spectra dependency on the rank number, and 4) post-result evaluation of optimal values for best SHRED performance. 
+From a computational perspective (points 1 \& 2), the optimal low-rank representation contains the relevant modes and covers most of the cumulative sum of the singular values. From a fluid mechanics perspective (point 3), we want to choose a rank truncation that matches the original spectrum well into the upper part of the inertial range.
+The results in Figs. and suggest that rank 250 is sufficient for the S2 case, and rank 100 is sufficient for E2. This corresponds to a cutoff at normalized wavenumber $k_cL_ 6$. Hence, all scales down to a sixth of the integral length scale are resolved. A parametric study of SHRED performance for different rank truncations is included in the appendix . We find that the performance of SHRED decreases past a certain rank value, with the exact value depending on the flow case. Taking this into account, we choose the low-rank representation of the data to be truncated as listed in Table . We note that for experimental cases, we choose a rather low rank, with only a cumulative sum of singular values of $45$ to $50$ percent. This is because the noise present in the experimental data makes it significantly harder to handle higher-rank data in these cases than in the data from the DNS. 
+
+Training, validation and testing
+
+We deploy SHRED on datasets consisting of simultaneous velocities and free-surface elevation resolved in space and time, from the two DNS cases and two experimental cases according to the principles laid out in Fig.\ . We input time series of surface elevation from three randomly placed surface sensor points into a two-layer LSTM. The LSTM encodes these input sequences into a latent representation of their temporal dynamics. This latent vector is then passed to a shallow decoder network (SDN), which maps it onto the velocity fields across depth. We do this in compressed space, by feeding into the SDN the compressed $$ matrices of the SVD decomposition for the surface elevation and the subsurface velocity fields. These fields are used in training and validation not to learn the subsurface time dynamics but only to learn the mapping of the surface time dynamics onto the subsurface fields. This is an essential detail in the context of remote sensing. To output the full spatiotemporal fields, we save the compressed $$ and $$ matrices from the training data, and matrix multiplication with $^*$ then yields the reconstruction fields. This is computationally cheaper than feeding in the full spatiotemporal fields, although that is also possible. 
+
+Each SHRED model is independently trained on one continuous dataset at a time, that is, no cross-case or cross-domain training is used. For each case, we randomly split the data into 80\
+
+SHRED uses a two-layer LSTM encoder and a two-layer SDN decoder (with no dropout). We use the Adam optimizer with an initial learning rate of $10^-3$, and train on mini-batches of 64 time snapshots. The loss function is the mean squared error (MSE), computed between reconstructed and true velocity fields in the compressed domain. Details can be found in the GitHub code repository. 
+
+Fig. shows a typical validation MSE loss curve for cases S2 and E2. We observe a steep drop in validation after around $40$ epochs for case S2, and around $200$ epochs for case E2, and a convergence typically occurs after a few hundred epochs. Running on GPU, a full SHRED run of surface paired with a single velocity plane, takes 1-2 minutes on a regular desktop computer. A simultaneous run with all planes (only possible with the datasets in cases S1 and S2) takes up to 10 minutes. 
+
+Performance metrics
+
+When evaluating SHRED performance, we choose a set of metrics that capture different aspects of reconstruction error. We choose to measure every metric relative to the full-rank ground truth velocity fields, rather than the compressed data, as the former are the fields of interest for reconstruction in practice. 
+
+The time-averaged velocity profile of a free-surface turbulent flow gives a sense of the effect of the upper boundary on the subsurface flow. It is essentially a measure of the root-mean-square velocity component(s) averaged over all snapshots, computed for component $u$ by
+
+ = (1mn_x=1^m _y=1^n u_x,y^2 )^12 \, ,
+ 
+
+where $$ denotes averaging in time (i.e., over all snapshots) and spatial averaging is performed as detailed in connection with Eq.\ . Unlike the metrics presented below, the time-averaged velocity profile is not a performance metric per se, but computing and comparing such profiles for ground truth data and reconstructed data enables a straightforward assessment of reconstruction performance.
+
+Normalized mean squared error (NMSE) is one of the simplest and most widely used metrics for reconstruction accuracy. We use the normalized form:
+
+ = ^m _y=1^n | u_x,y - u_x,y|^2 > < _x=1^m _y=1^n u_x,y^2 > \, ,
+ 
+
+where $ u$ is the reconstruction field and $u$ is the ground truth.
+Hence, the MSE is calculated as the spatial (over each plane) and temporal mean of the square of the difference between the ground truth and reconstruction, and normalized by the mean square of the ground truth. The MSE is a simple measure of the error in the values themselves, either at a single point or, as in this case, the averaged error of data points over a plane. The MSE captures the loss in amplitudes in the reconstruction. However, it has drawbacks such as not taking into account the sign of the signal, disregarding spatial structures, and treating each data point as equally important as we discuss further below.
+
+A common description of turbulence is to regard the power spectral density (PSD). Given snapshots $u(x,y,t_n)$, we define the 1-D PSD along $x$, averaged over $y$ and time, as
+
+ E(k)
+ \;=\;
+ N_t\,N_y_n=1^N_t_j=1^N_y
+ |\;_x\![w(x)\,u(x,y_j,t_n)](k)\;|^2,
+ 
+
+where $_x$ denotes the discrete Fourier transform in $x$, $N_t$ and $N_y$ are the number of time steps and grid points in y direction respectively, and the Hanning window function is denoted by $w(x)$.
+
+To compare the different flow cases, a normalized PSD (NPSD) is used, which we define as 
+
+ (k)
+ \;=\;
+ _k\,E(k)\,,
+
+i.e. spectra are normalized by the maximum of the ground truth spectrum for that case. The PSD provides a measure of how energy is distributed across spatial length scales.
+
+In order to evaluate the energy spectrum of the reconstructed turbulent velocity field as compared to ground truth, we introduce the power spectral density error (PSDE) as the relative error in integrated spectral energy up to a cutoff wavenumber $k_c$, defined as
+
+ 
+ \;=\;
+ ^k_c\! (k)\,k
+ \;-\;_0^k_c\!E(k)\,k|
+ _0^k_c\!E(k)\,k\, ,
+ 
+ 
+where $(k)$ and $E(k)$ are the PSDs for the reconstruction and ground truth spectra respectively, given by Eq. . In the discrete implementation we use Simpson’s rule on the FFT wavenumber bins $k_i$ with weights $w_i$, and the PSDE thus becomes
+
+ 
+ \;=\;
+ ^i_c w_i\,_i \;-\; _i=0^i_c w_i\,E_i|
+ _i=0^i_c w_i\,E_i\,,
+
+where $i_c$ is the index for the wavenumber bin $k_c$. 
+
+We choose $k_c$ to exclude scales that are not reliably represented by the low-rank data used in
+training. Operationally, $k_c$ is set near the onset where the rank-truncated SVD spectrum begins to
+depart noticeably ($10\
+intermediate (inertial-range) wavenumbers for all datasets. The same $k_c$ is used for ground truth
+and reconstructions within a given case. By setting these integration limits, rather than using the full spectrum, we neglect the major contribution in the error (as compared to the full-rank ground truth) the low-rank SVD truncation process itself would produce. Therefore, it is only relevant to compare the spectral power of the SHRED reconstruction and full rank ground truth down to the low-rank SVD-resolved spatial scales. For the experimental data, this corresponds to a wavelength resolution of $_c = 2 /k_c = 1.5$ cm, which is about 25\
+
+The Structural Similarity Index Measure (SSIM) is a metric often used to compare image quality in terms of visual perception . While MSE captures the point-by-point local mismatch of the average amplitude of an image, SSIM also emphasizes structural correlation and contrast, outperforming MSE and PSNR (see below) in evaluating for visual similarity as described, e.g., by Wang \& Bovik . It is designed to be more aligned with human visual perception, and is therefore often used in computer vision and deep learning.
+
+The SSIM we use is defined as
+
+ = l( u,u) c( u,u) s( u,u),
+ 
+
+where $ u$ is our reconstruction image, $u$ is the full-rank ground truth, $l( u,u)$ is the luminance similarity factor, $c( u,u)$ the contrast similarity factor, and $s( u,u)$ is the structure similarity factor, all defined and discussed in . 
+The SSIM can take values between $-1$ (anti-correlated) and $1$ (structurally identical), with $0$ indicating no similarity. 
+
+The peak signal-to-noise ratio (PSNR) is a measure of image resolution widely used in computer vision and reconstruction tasks.
+Essentially, it quantifies how much of the signal in an image is relevant compared to irrelevant noise. It is inversely related to the MSE metric, and is defined as
+
+ = 10 _10( ),
+ 
+
+where $_j$ is the maximum pixel bit value of image $j$, and $$ is given as in Eq.\ (). Generally, the more noisy and distorted the image, the lower the PSNR value. The metric is usually given in decibels (dB), and typical values for moderate quality images are 20-30, while exceptionally good quality images will show values of 30-50 . Although it is closely related to the MSE, we include PSNR as a metric because it accounts for the maximal value in an image, creating a reference point for the signal-to-noise ratio. 
+
+Results and discussion
+
+In what follows, we present and discuss the results of reconstructing subsurface turbulent velocity fields from sparse measurements of the free surface only, by applying the SHRED algorithm to our turbulence data from the DNS and experimental cases. We first show and discuss the field reconstructions for shallow and deep horizontal planes, and compare these to the original and compressed fields. Secondly, we present a detailed analysis of the depth-dependent performance of SHRED, using the set of error metrics presented in Section . Third, we demonstrate the capabilities of SHRED in temporal dynamics by looking at the RMS velocity time series of reconstructed fields. Finally, we show that the reconstructed fields yield reasonable turbulent power spectra for the relevant spatial scales, as compared to the compressed and ground-truth fields. 
+
+Reconstruction of surface elevation and velocity fields
+
+To illustrate the performance of SHRED qualitatively, we present a side-by-side comparison of the surface elevation and a component of the horizontal velocity field: the original uncompressed data, their low-rank SVD approximations, and the SHRED reconstructions, for the S2 DNS case in Fig.\ and the experimental case E2 in Fig.\ . 
+The immediate eyeball observation is that the fields lose some sharpness in the SVD compression step, whereas the compressed and reconstructed fields are only distinguishable by eye upon careful inspection. 
+
+From Fig.\ one might get the impression that errors in the final reconstruction of the fields (right-hand column) occur during compression before training while the subsequent steps reproduce the compressed fields near-perfectly. To some extent this is correct. However, increasing the number of SVD modes in compression beyond the ranks chosen, does not necessarily improve the reconstruction. As we detail in Appendix , training SHRED using the original uncompressed data set or with very little compression leads to considerable overfitting and far poorer results as well as higher computational expense.
+
+Inspecting the surface elevation for DNS case S2 in the top row of Fig.\ , we notice a sharp, dark, depression curve --- referred to as a ``scar'' --- and brighter areas which are ``boils'' which signify upwelling of fluid to the surface. These features are successfully reconstructed, although the amplitudes can be seen to have been somewhat dampened. Scars also manifest in the surface velocity field of case S2, (middle row) as areas of fast flow. As with the surface elevation, the reconstruction looks visually indistinguishable from the low-rank approximation and the ground truth. Moreover, as demonstrated in the bottom row in Fig. , SHRED is capable of reconstructing the velocity field in the bulk flow, that is, at depths below the surface-influenced layer (depth $ 1.5L_$ for case S2; details on the surface-influenced layer in ).
+
+Similarly, for the experimental case E2, Fig.\ shows visually good reconstruction performances across several planes. It is a considerably more challenging task to reconstruct planes in the experimental cases, due to noise and the much greater disparity of time and length scales at the far higher turbulent Reynolds numbers. However, we observe that even in this case, SHRED is capable of reconstructing from the time series of surface elevation in only three points, large and strong features such as scars at the surface elevation and medium-sized structures in the velocity fields as far down as $10$\,cm ($ 1.4 L_$) below the surface, although smaller features are somewhat blurred. More clearly than in the DNS case, velocity amplitudes are generally diminished in the reconstruction (right column) compared to the compressed training data (middle column).
+
+As an eyeball metric, Figs.\ and illustrate that SHRED is capable of reconstructing flow fields from sparse height measurements at the free surface in free-surface flows in both DNS simulations and experimental cases. SHRED's performance is somewhat weaker in the experimental case, which is to be expected due to the presence of noise, greater range of turbulent scales, and significantly less data available for training compared to the long, continuous DNS datasets. In light of this we find it remarkable that SHRED reconstructs features of centimeter size $10$\,cm beneath the surface, well outside the ``blockage layer'' where the free surface directly influences the velocity field .
+
+Depth-dependent performance
+
+To quantify the performance of SHRED beyond simple comparisons, we use the five metrics discussed in section to evaluate different aspects of SHRED's reconstruction of the horizontal velocity field $u$. 
+In addition to the averages taken in horizontal space and time we perform ensemble averaging over $25$ individual reconstructions for each flow case, where every ensemble case is constructed by a random distribution of the full data set into training, validation, and testing. 
+The results are displayed with depth $z$ scaled by the integral length scale on the ordinate axis. Note that we adopt the convention from Aarnes et al.~ of using an average measure for `horizontal' grid plane depth for the DNS data, to allow for straightforward comparison of flow variables at a grid plane on the undulating grid without interpolation (details in ).
+
+Because the error metrics are averaged over time and ensembles, which could potentially conceal the direct performance error image-by-image, we include instantaneous profiles of $(z,t)$ Fig. , comparing reconstructions (dashed lines) to the uncompressed ground-truth values (solid lines) at three different arbitrarily chosen time instants. 
+
+Note that for the two experimental cases, the measurements taken at different values of $z$ are not taken at the same time since different planes were measured separately.
+
+Generally, the reconstruction profiles match the ground truth profiles in shape but for a drop in magnitude, different for different depths and instants. There is a tendency for rapid changes in the measured profiles to be smoothed out in the reconstructed ones, particularly visible here for case S1 at instant 1. Such rapid changes are typically caused by intermittent turbulent events which are difficult for a neural network to learn, in particular for time-series-based networks such as the LSTM method used in SHRED. Strikingly, in all examples the accuracy of reconstruction deteriorates only very slightly with increasing depth.
+
+Shifting our attention to time-averaged results, the corresponding time-averaged quantities, $(z,t)$, are plotted in panels (a) and (b) of Fig.\ for DNS and experimental data, respectively, after averaging over an ensemble of 25 individual SHRED reconstructions each using a different set of three randomly chosen surface points as their sparse input.
+By normalizing the depth coordinate by the integral scale $L_$ for each case, the profiles can be compared side-by-side. 
+
+Again the solid lines represent the original data (i.e., ground truth) and color-matching dashed lines mark their reconstructed counterparts; the standard deviation of the ensemble is shown as shading (panel a) or error bars (panel b). 
+
+As was observed at individual instants in Fig.\ , the trends of the profiles are retained by the reconstruction, but consistently offset to lower values, corresponding to a loss of energy in the reconstruction. This can only partly be explained by the compression which truncates the number of SVD modes; the offset is larger than 
+expected by a rank reduction alone, as using a moderate truncation value for $r$ has a small impact on the large, energy-carrying scales of the flow (as seen in Fig.\ ). 
+
+The depth-variations of the Normalized Mean Squared Error (NMSE) of Eq.\ ()
+
+are shown 
+in Fig.\ (c). For the DNS cases, we notice a low MSE of about $6-7$\
+
+ We observe that the PSD error metric (PSDE) follows similar trends as the NMSE.
+ 
+ The errors are generally in the range of $15$-$30\
+ in the large-to-intermediate length scales. The reconstructions of the DNS data show similar power spectral energy errors, although the high Re case S2 performs slightly better by this metric. The experimental case E1 shows lower errors than the DNS cases, which is also reflected in the PSD spectra of Fig.\ . This is, perhaps, unexpected because the data are generally noisier and harder to reconstruct, as highlighted by the other metrics. 
+ 
+In contrast, the second experimental case, case E2, has the largest PSD error.
+
+ We shall see below that, for all cases, the PSD error is always associated with a loss in turbulent kinetic energy in the reconstructions, at all lengthscales. Other turbulence-sensing reconstructions find similar losses in turbulent kinetic energy (see ), although these are hard to compare directly with our results due to different flow cases and selection of error metrics.
+
+The SSIM results are presented in (e). The SSIM metric differs from the other error metrics that we use, as it targets structure, luminosity, and contrast, while the physical interpretation of the metric is not as obvious.
+
+The SSIM results reflect the qualitative observations made from Figs.\ and , that there is an indisputable visual similarity between reconstructed fields and ground truth when the larger structures of the turbulent fields are considered.
+The DNS reconstructions yield SSIM values between $0.7$ and $0.8$ near the surface, falling to between $0.55$ and $0.65$ two integral length scales below the surface. For the experimental cases, peak values are found near the surface at around $0.47$ to $0.52$, falling to around $0.4$ to $0.45$ in the deepest planes. While the latter might be considered a weak result in general image reconstruction schemes, not so in a turbulence context, considering that it is based on the time dynamics of three surface points only, after training. 
+
+The SSIM likely emphasizes small-scale structures of the full-rank ground truth which are no longer present in the compressed training data (or, if they were, would be subject to overfitting; see Appendix ). This is particularly prominent for the SSIM results for experimental data.
+For the DNS data, the reconstruction SSIM of almost $0.8$ near the surface based on very sparse measurements, can be compared to super-resolution schemes for reconstructing full-state space from a coarse-grained and sparse field. The results of super-resolution reconstructions differ from case to case, but a case study on a turbulent LES found many methods to produce values of $0.8$-$0.9$ . In this regard, SHRED is close to matching this performance 
+
+while also 
+producing acceptable SSIM results for planes far from the surface. 
+
+For the SHRED reconstructions, it is clear that the PSNR values, as seen in panel (f) of Fig.\ , are within acceptable values (above 20 dB) for all cases. 
+
+We are not aware of other sufficiently similar reconstruction studies to which the values can be directly compared, yet one might note that 
+super-resolution reconstructions of turbulent DNS data have found similar PSNR values
+
+. The performance is matched, even with planes as deep as $1.5 L_$ or further from the surface, with PSNR values of 22.5-25.5 dB. The DNS cases show higher values than the experimental ones, whereas the more turbulent ones show lower values. As expected, the PSNR generally decreases with depth, with the largest decrease occurring near the surface in all cases, where the flow changes rapidly due to surface viscous and blockage effects from the surface .
+
+Overall, the depth-dependent error metrics indicate that even 2-2.5 integral length scales from the surface, large-to-intermediate-scale turbulence can be reconstructed well enough for many practical purposes from just three measurement points of the surface elevation only, within the time range of training data. As a proof-of-concept study these results demonstrate the potential of SHRED for remote sensing applications, where only 
+observations at the surface, and not beneath it, 
+
+are available. The ability to reconstruct bulk flow structures using just three surface points demonstrates a key step toward remote sensing of subsurface turbulence. However, we emphasize that although the timesteps where reconstruction is performed are not part of the actual training set, they lie within the same time range used in training. 
+Future work will explore the capability of SHRED to make reconstructions of previously unseen flow regimes or truly independent test cases, which is crucial for real-world deployment.
+
+Temporal analysis of planar Root-Mean-Square velocity
+
+As an illustration of the SHRED reconstruction capabilities of temporal dynamics, we show the time series of the planar RMS values for a single SHRED reconstruction case, in Fig.\ . The planes chosen are relatively close to the surface, 1~cm depth for the experimental cases ($0.21 L_$ for E1 and $0.14\,L_$ for E2), and planes at $0.2\,L_$ depths for DNS cases S1 and S2. 
+We observe a close correlation between the time series of the ground truth and the reconstruction. The normalized cross-correlation values with zero lag, are above $0.94$ for all cases except case E2, in which the correlation value is $0.89$. The values of $$ are generally lower for the reconstructed fields than the ground truth, indicating some loss of turbulent kinetic energy. Notably the error in $$ does not noticeably increase when intermittent high-intensity turbulent events occur, corresponding to sudden peaks in the RMS velocity.
+
+Spectral analysis
+
+In this section, we investigate how the power density spectra of SHRED-reconstructed fields perform compared to ground truth and the low-rank SVD truncation. An example is shown in Fig.\ , for a SHRED case at depths of $1.5 L_-2.0 L_$. The 1-D power density spectrum in the $x$-direction, averaged over time and spatially in the $y$ direction, is calculated for each case. The purple dotted vertical line indicates the cutoff wavenumber for the low-rank truncation, i.e., the wavenumber at which the compressed spectrum deviates from ground truth by about $10$\
+
+Conclusions
+
+In this study, we demonstrated a proof-of-concept application of the SHallow REcurrent Decoder (SHRED) for reconstructing subsurface turbulence fields from sparse surface measurements in free-surface flows. Using only three arbitrarily placed sensors measuring surface elevation as input, SHRED was able to infer the dominant large- and intermediate-scale structures below the surface across four different turbulent cases, two based on simulation data and two on experimental data.
+The differences between the data sets in terms of Reynolds number, sparsity, and noise demonstrate the flexibility of SHRED in handling different turbulence regimes.
+
+The results show that SHRED preserves important flow features such as spatial structure and spectral content, and performs particularly well near the surface, even in noisy experimental data. While reconstruction accuracy decreases with depth, SHRED still provides meaningful results as deep as two integral length scales below the surface. Importantly, this was achieved without access to any subsurface measurements at inference time, highlighting the potential of SHRED as a tool for remote sensing of subsurface turbulence.
+
+This work addresses the central challenge of estimating near-surface turbulence in rivers and oceans from surface observations alone. Such capability is crucial for quantifying gas and heat fluxes at the water-air interface, where in-situ measurements are impractical at scale. The demonstrated ability of SHRED to learn nonlinear mappings from sparse input to high-dimensional turbulent states marks a step forward toward scalable, non-intrusive field sensing.
+
+Future work should aim to improve generalization across flow regimes, as the current validation setup is limited to data drawn from the same underlying datasets. Pairing SHRED with other methods, like SINDy for sparse identification of nonlinear dynamics, could potentially improve the reconstruction accuracy outside of the training time domain and could help make the model generalizable to real-world flows. Other possible steps towards remote sensing could be to extend the model to reconstruct derived quantities such as energy fluxes or gas exchange rates. Ultimately, SHRED offers a foundation for machine learning-based frameworks for remote sensing, and opens a path toward real-world applications in oceanography, river monitoring, and environmental sensing.
+
+Code and data availability
+
+All code used in producing these results, are included and thoroughly presented in the following GitHub repository: . 
+The DNS data and supporting codes are available from .
+Due to size constraints, raw PIV data is not hosted in the repo; download instructions are included in the GitHub
+README. 
+
+Acknowledgements
+
+DNS data was generously shared with us by Prof.\ Lian Shen and Dr.\ Anxing Xuan at the University of Minnesota. 
+The work of JRA, KSM and S E was co-funded by the Research Council of Norway (iMOD, grant 325114) and the European Union (ERC CoG, WaTurSheD, grant 101045299). 
+Views and opinions expressed are however those of the authors only and do not necessarily reflect those of the European Union or the European Research Council. Neither the European Union nor the granting authority can be held responsible for them.
+The work of JNK was supported in part by the US National Science Foundation (NSF) AI Institute for Dynamical Systems (dynamicsai.org), grant 2112085. JNK further acknowledges support from the Air Force Office of Scientific Research (FA9550-24-1-0141).
+
+Parametric study of optimal rank value
+
+When compressing the input velocity field and surface height, only the $r$ most energetic modes of the SVD are used. In order to study the performance of SHRED in simulation and experimental data, it is of interest to first find a suitable rank value $r$ for the SVD. If too low, relevant small-scale turbulence might be lost. If too high, too much noise might be included, with a risk of overfitting. One way to find an optimal rank $r$ is to test a range of different values, run SHRED, and compare the reconstructed fields with the original uncompressed fields. The best value would be that which results in a reconstruction as close as possible to the ground truth, as measured by the chosen error metrics. 
+
+From Fig.\ we observe that the PSD spectra for the SHRED-reconstructed fields (full colored lines) generally deviates from both the compressed (dashed-star lines) and the ground truth (black solid line) for a range of chosen rank. Specifically, in the energy-containing region at low wavenumbers, the compressed spectra follow ground truth closely, whereas the reconstructed field spectra appear to be more reduced with higher rank truncation. We take this as an indication that it is SHRED itself, not the SVD compression, that contributes the most to the spectral error of reconstructed fields for the large-to-intermediate scales. 
+
+To quantify error as a function of rank number, the selected error metrics are averaged depthwise, and calculated for a range of rank truncation numbers. Fig.\ shows the rank-dependency of the SHRED error metrics for all four cases. The metrics are normalized by their largest value for scaling and comparison purposes. The chosen rank truncation number for all of the SHRED analysis in Section , are marked by the dashed black lines. The range of the rank analysis is different between simulation and experimental cases, due to the difference in total number of modes (equal to number of time steps). For example, the full rank of the experiments is $r=900$. while for the DNS cases it is $10900$ for S1 and $12500$ for S2. 
+
+The error metrics indicate that the PSNR and SSIM values increase up until a certain rank number, while PSD and MSE generally decreases to a minimal error. This indicates that for too low rank numbers, there is a significant lack of information left in the low-rank representation, such that although SHRED might perform better in reconstructing the compressed input fields, the SVD itself has left out a significant amount of information. Hence, the fields lack structure and contrast for high SSIM values, and amplitudes and energy content of the largest modes are low, making MSE and PSD errors high. On the other hand, the error metrics generally show that SHRED performance decreases if the rank number is too high. In this case, the low-rank representation includes more fine details, including some noise. The temporal dynamics of the structures on these scales is highly intermittent and random, hence notably harder to reconstruct, especially from surface dynamics only. This decrease of performance for higher rank numbers, is caused by SHRED, not by the SVD truncation. In between these two regimes, there is a range of rank numbers where the error metrics are minimal. This sweet spot is where one finds optimal rank truncations that balances between having enough SVD modes included, while not over-saturating SHRED with noise and unpredictable small-scale turbulence.

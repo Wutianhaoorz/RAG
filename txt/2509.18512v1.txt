@@ -1,0 +1,916 @@
+[
+
+ amsmath,amssymb,
+ aps,
+
+]revtex4-2
+
+ 
+ 
+
+, Perry L. Johnson
+ 
+
+ 
+
+ 
+
+In Navier-Stokes turbulence, a bottleneck effect in the energy cascade near the viscous cutoff causes an overshoot in the energy spectrum, or spectral bump, relative to Komogorov's -5/3 power-law scaling. A similar spectral overshoot occurs in large-eddy simulations (LES) when an eddy viscosity model is used. It is not a viscous phenomenon, but rather is caused by error in the residual stress model. This artificial bottleneck effect in LES leads to an over-prediction of kinetic energy even if a reliable dynamic procedure is used to accurately capture the spectral decay at the cutoff length scale.
+Recently, Johnson [2022, J. Fluid Mech., 934, A30] introduced a physics-inspired generalization of the concept of spatial filtering that provides a dynamic procedure that does not require a test filter calculation.
+In this paper, this method of Stokes flow regularization (SFR) is used alongside fundamental considerations related to kinetic energy to generate a range of LES models 
+to explore the artificial bottleneck effect in more detail.
+The coefficients for each dynamic model are determined locally, without the need of averaging over homogeneous directions.
+The theory directly provides stabilizing elements such as local averaging of coefficients.
+
+A posteriori tests of the models in isotropic turbulence are reported, 
+
+demonstrating the robustness of the SFR-based dynamic procedure for a range of model forms and providing a framework for fair comparisons between them in terms of their impact on the bottleneck effect. An effective means of mitigating the bottleneck effect is to introduce a nonlinear gradient component in the residual stress closure, forming a dynamic mixed model. One primary reason for the efficacy of this approach is that the nonlinear gradient model is able to accurately capture aspects of the local structure of the residual stresses, leading to a better representation of energy cascade efficiencies.
+
+ 
+
+Introduction
+
+Direct numerical simulation (DNS) of turbulent flows at moderate and high Reynolds numbers is often impractical or even impossible for many turbulent flow applications in science and engineering. 
+This situation is likely to continue for the foreseeable future.
+Large-eddy simulation (LES) offers a more tractable alternative for computing turbulent flows with the use of a coarser grid and larger time step than required for DNS. However, LES inevitably involves non-negligible modeling error due to the net force of unresolved fluctuations.
+
+The earliest LES model is the eddy viscosity model of Smagorinsky and Lilly .
+Leonard introduced the use of a spatial filtering integral operator as the basis for the LES equations, which was later elaborated by Germano .
+While sufficient to dissipate resolved kinetic energy and stabilize coarse grid solutions, it is well-known that eddy viscosity models do not accurately represent the effects of unresolved fluctuations near the grid scale .
+In spite of this, the popularity of eddy viscosity models is entrenched, because the accuracy of grid-scale statistics and flow topologies are often not paramount when simulating simpler flow regimes (e.g., single-phase, unbounded, non-reacting).
+This has motivated the development and use of implicit LES (ILES) models, which tailor the numerical discretization to provide the necessary dissipation while forgoing any explicit calculation of a residual stress tensor .
+Indeed, dissipative schemes (based on eddy viscosity or numerical dissipation) can seem effective when the main physical phenomenon to be represented is simply the energy cascade .
+The challenges of using LES to simulate complex flow physics (including wall-bounded, multi-phase, and/or reacting flows), continues to motivate work toward more accurate representations of grid-scale turbulence, where there is still much that can be learned even from simpler flows.
+
+For example, the interaction between the kinetic energy cascade and viscous dissipation is not trivial even for Navier-Stokes turbulence (e.g., DNS). The energy spectrum typically exhibits a characteristic spectral bump between the inertial and viscous range of wavenumbers, where the energy spectrum exceeds the inertial range value. This spectral bump, near $0.1 < k < 0.2$, is observed across different Reynolds numbers. It is shown in Ref.\ that the location of the bump is independent of $Re_$, and the height of the bump decreases with increasing $Re_$.
+This phenomenon is widely recognized and often linked to a bottleneck effect in the energy cascade as it approaches the viscous cutoff scale ($ = ^3/4 ^-1/4$). Additionally, it has been noted that the width of the bottleneck seems to remain constant regardless of the Reynolds number, suggesting that the bottleneck's origin is likely due to a viscous effect rather than an effect from the inertial range.
+
+A number of physical explanations for the spectral bump have been put forward. The bottleneck phenomenon is commonly thought to be linked with the diminishing presence of nonlinearities as this range is approached . Ref.\ demonstrated that the EDQNM closure produces a spectral bump associated with the bottleneck effect and suggested a possible link to an incomplete thermalization process.
+The connection between the bottleneck effect and incomplete thermalization was demonstrated for Navier-Stokes in Ref.\ .
+Another explanation provided in Ref.\ attributes the bottleneck effect to helicity dynamics. These dynamics slow down the cascade of both energy and helicity, which are the two conserved quantities in turbulence. In a more recent study, Ref.\ proposes an alternative mechanism for energy transfer, attributing it to vortex thinning in the inverse cascade process observed in two dimensions. Understanding this phenomenon remains challenging, even in simple flows such as homogeneous isotropic turbulence (HIT) with a Newtonian viscous stress tensor. However, little research has been conducted on the bottleneck effect within the context of LES, where (eddy) viscosity-based stress tensors are common. A spectral bump or bottleneck effect in LES would presumably hinder the prediction of residual kinetic energy, motivating possible alternatives to algebraic eddy viscosity models. 
+
+The spatial filtering theory of LES can be used to derive alternatives to the eddy viscosity assumption, including the scale-similarity model and the nonlinear gradient model .
+In a priori tests (i.e., directly testing the accuracy of the model expression by applying a spatial filter to DNS data), such models provide a stark improvement in accuracy over eddy viscosity models .
+However, the scale-similarity or nonlinear gradient models tend to perform poorly in a posteriori tests (i.e., applying the model within an LES calculation and evaluating the simulation result) due to insufficient dissipation .
+
+Additionally, deconvolution methods have been used to derive closure forms by assuming the filter to be invertible . While these models exhibit realistic results in a priori testing, they tend to produce nonphysical behavior in a posteriori tests due to the fact that they often do not provide enough dissipation.
+The result is that structural models tend to require an extra dissipation term, either an explicit model component such as an eddy viscosity or an implicit dissipation via truncation error in the numerical scheme.
+
+Broadly speaking, such mixed models can offer an attractive trade-off, with structural models providing more accuracy in the representation of fluctuations near the grid scale while the dissipative component can bring stability and robustness.
+In fact, Johnson demonstrated that an eddy viscosity approximation more accurately represents multi-scale interactions, and thus a mixed model consisting of a nonlinear gradient model together with an eddy viscosity has a strong basis in turbulence physics.
+
+ 
+Another application of spatial filtering theory to improve the accuracy of LES modeling is the Germano identity , which offers a robust procedure for determining unknown model coefficients. 
+A particularly popular instance of this approach uses the Smagorinsky-Lilly eddy viscosity model with dimensionless coefficient determined on the fly by the Germano-Lilly dynamic procedure . 
+Such dynamic procedures for obtaining coefficients from the resolved fluctuations often generate negative coefficients and instabilities, introducing the need for ad hoc clipping or averaging.
+One robust, physically-motivated stabilization is the use of Lagrangian averaging .
+Other options exist for stabilizing dynamic models, such as choosing a model form based on the full velocity gradient tensor rather than the strain-rate tensor . 
+In that case, the model does not conform to the need for a symmetric tensor to describe the residual stress, with side-effects such as the loss of global conservation of angular momentum .
+
+Given the lack of timescale separation between the smallest resolved scales and the largest unresolved scales, it is expected that memory effects could be important for an accurate representation . 
+The Lagrangian-averaged dynamic procedure encodes some history, but other options exist. 
+Li et al. introduced a matrix exponential stress closure based on recent Lagrangian history, and Johnson demonstrated that the nonlinear gradient model naturally encapsulates some important aspects of Lagrangian physics.
+Flow history effects can also be incorporated by solving additional transport equations, most commonly for the residual kinetic energy .
+
+A more systematic approach to LES modeling can consider the ideal properties that a residual stress model should fulfill .
+This often can lead to more elaborate eddy viscosity models , but also models with properties similar to the nonlinear gradient model .
+Indeed, from the perspective of continuum mechanics, a tensorial approach can be useful to identify a set of coefficients that can be tuned by a traditional dynamic procedure , or more novel ones .
+Alternatively, machine learning techniques such as neural networks could be deployed to learn coefficients for tensor-basis expansions . 
+Desirable invariance properties could also be encoded into neural-network based models by training in the strain-rate eigenframe .
+The future development of data-driven LES models depends, in part, on the effectiveness of the spatial filtering framework itself, or potential alternatives , including machine learning approaches that altogether circumvent the use of explicit filtering for sub-grid stress modeling .
+
+The spatially-filtered Navier-Stokes equation commonly cited as a basis for LES is not without its shortcomings, however.
+For example, it is not clear how to conceive of a filter in the near-wall region, where a standard filtering operation would require information outside of the domain .
+More generally, filters blur out discontinuities (e.g. two-phase interfaces) and generate `spurious parasitic contributions' that complicate the modeling task when specific numerical methods may instead fully-resolve the sharp interface (e.g., sharp interface methods for two-phase flows), albeit with smaller-scale curvature features unresolved.
+A more widely recognized difficulty with spatial filtering is the lack of commutativity between filtering and spatial differentiation with the filter size is spatially non-uniform .
+This appears to be a relatively practical concern, given the need for non-uniform computational grids for most practical flow simulations.
+Indeed, there as been some effort to treat commutator effects , but such commutator errors are generally neglected for convenience in practice.
+
+Johnson proposed an extension of (integral-based) spatial filtering theory based on a differential representation of flow coarsening.
+In fact, Germano briefly introduced (elliptic) differential filters decades ago .
+The physics-inspired approach of Johnson introduced the use of the Stokes equation as a means of artificially coarsening turbulent flows. This Stokes Flow Regularization (SFR) technique is equivalent to spatial filtering with a Gaussian kernel for single-phase unbounded flows with uniform resolution.
+However, SFR provides a promising approach to generalize filter-based LES theory to more complex flows.
+For example, SFR provides governing equations for a non-uniformly coarsened velocity field that are free of commutator errors.
+This paper expands on the preliminary ideas of Ref.\ and uses SFR to generate a range of LES models that are subsequently tested, with an eye toward future extension to more complex flows.
+For example, Ref.\ introduced the use of diffusion equations to coarsen multi-phase flows while preserving sharp interfaces.
+
+In this paper, the interaction between residual stress models and the energy cascade near the resolution scale is studied by considering the extent of an artificial bottleneck effect and associated spectral bump in LES predictions. To facilitate a fair comparison, the Stokes Flow Regularization (SFR) is extended beyond the results of Ref.\ as follows.
+
+Ref.\ utilized (global) spatial averaging over homogeneous directions to stabilize SFR-based dynamic coefficients. In this paper, it will be shown that practical stabilization techniques arise from SFR theory itself, without the need to invent any ad hoc strategies. It will be shown that this theory-based stabilization is equally applicable to models which depart from the eddy viscosity assumption, such as mixed models. Also, SFR theory is herein extended to produce one-equation LES stress models based on a transport equation for residual kinetic energy. The one-equation models provide the ability to capture basic Lagrangian history effects and energetic flow physics that can be particularly useful for future extentions to more complex flows. The result of these extensions is a deeper dive into SFR theory and its implications for LES modeling with an eye towards addressing the artificial bottleneck effect by connecting it to kinetic energy dynamics near the resolution scale.
+
+A preliminary demonstration of the artificial bottleneck effect is given in Section . Then, Section reviews and extends the Stokes Flow Regularization (SFR) theory with detailed attention to resolved and residual kinetic energy. Section uses SFR theory to derive a range of models to facilitate a fair comparison of how the form of a model effects the artificial bottleneck effect. Results of LES of isotropic turbulence are shown in Section , and conclusions are drawn in Section .
+
+The artificial Bottleneck effect in LES
+
+Figure (a) demonstrates the spectral bump observed in DNS of homogeneous isotropic turbulence (HIT) at three different Reynolds numbers, shown most visibly in the premultiplied spectrum plotted on a linear scale (see inset). The spectral bump occurs at a fixed range of wavenumbers normalized by the Kolmogorov length scale. For comparison, energy spectra from LES using a dynamic Smagorinsky (dSmag) model are shown in Figure (b). Here, a Gaussian test filter is used with a test filter scale $2$, which supplies the proper amount of energy dissipation to cause the resulting energy spectra to drop off in an accurate manner near the resolution scale. A similar spectral bump is observed at scales slightly larger than the filter scale. The spectral bump is observed both for simulations in which the coefficient is clipped (dSmag.clip) and when the coefficient is globally averaged (dSmag.avg). The artificial overshoot in the LES spectra results in an over-prediction of the resolved kinetic energy compared to filtered DNS (fDNS) by about $10\
+
+The existence of an artificial bottleneck effect in LES with the dynamic Smagorinski model is not surprising, because it is similar to Navier-Stokes turbulence in its use of a Newtonian viscous stress constitutive law with the local stress tensor proportional to the local strain-rate tensor. This is expected to be a feature of eddy viscosity models more generally. The spectral bump in Navier-Stokes turbulence at high Reynolds number makes a negligible contribution to the total kinetic energy, because the overshoot is associated with length scales near the viscous cutoff. In LES, however, the grid or filter cutoff is generally much closer to the energetic range of scales, so that the artificial bottleneck effect demonstrated in Figure can be important for simulating high Reynolds number flows. This motivates further investigation into understanding how the form of the residual stress model, grid resolution, filter scale and Reynolds number affect this behaviour. Our paper focuses on analyzing the energy spectrum, turbulent kinetic energy, dissipation, and related statistical parameters such as skewness and flatness. To understand the ability of LES models to accruately represent the details of the energy cascade, the grid scale flow structure is explored by looking at the efficiency of vortex stretching and strain rate self amplification .
+
+Background \& Theory
+
+This section outline the theoretical framework that will guide our investigation into the artificial bottleneck effect. Our focus centers on using the Stokes Flow Regularization (SFR), which serves as a foundational tool for constructing a range of residual stress models using a consistent dynamic procedure that does not require the use of a test filter. First, the background theory of SFR from previous work , followed by a detailed examination of kinetic energy and the cascade through the lens of SFR that extends the results of Ref.\ . Then the SFR-based dynamic procedure for (LES) modeling is introduced.
+
+Stokes Flow Regularization: the Basics
+
+The main concept of Stokes flow regularization (SFR) is sketched in Figure . A resolved velocity field, 
+$(, t, )$, is introduced as a function of both physical time, $t$, and a new time-like variable that measures the extent to which small-scale features are removed from the representation of the flow: the pseudo-time, $$.
+
+When $ = 0$, the resolved velocity field must be equivalent to the physical velocity field,
+
+ 
+ (, t; 0)
+ = (, t).
+ 
+
+This grounds the basis of SFR in physical reality. The physical velocity field obeys the fundamental laws of mass, momentum, and energy conservation. For incompressible Newtonian flows,
+
+ t + u_j x_j = - x_i + ^2 u_i + f_i,
+ 
+ x_j = 0,
+ 
+
+where $p(, t)$ is the pressure (divided by density, $$) and $(, t)$ denotes any additional solenoidal body forces, e.g., from gravity or artificial stirring. The kinematic viscosity is $ = /$. For incompressible flows, the pressure is responsible for enforcing the divergence-free condition during the evolution of the velocity field in (physical) time. Using the divergence of Eq. , the pressure may be found as the solution of a Poisson equation,
+
+ ^2 p = - x_j x_i. 
+ 
+
+Equations and are considered sufficient to describe the observed velocity field, $(, t)$, of low-Mach turbulent flows. The implied evolution of kinetic energy is,
+
+ t (2u_iu_i )
+ + x_j (
+ 2u_i u_i u_j + u_i p - 2 u_i s_ij
+ )
+ =
+ - 2 s_ij s_ij
+ + u_i f_i
+ 
+
+where $s_ij = 2 ( x_j + x_i )$ is the rate-of-strain tensor.
+
+In practice, however, it is desirable to have the capability to solve for the dynamics of a coarse-grained representation of the flow. Dating back to Ref.\ , the basis of LES has been conceived as the solution for the spatially-filtered velocity field,
+
+ _i^(, t)
+ =
+ G_() u_i(+, t) d
+ 
+
+with a suitable normalized filter kernal, $G$. The SFR concept generalizes the spatial filtering approach. More generally, a turbulent flow snapshot may be coarsened by deploying the physical equations with the energy cascade mechanism removed, namely, the nonlinear inertia term in Eq.\ , $u_j ~ u_i/ x_j$. The result is the Stokes equation, which is physically valid only for low Reynolds number flows, but is useful here in a different way: as an artificial coarsening procedure. Thus, the Stokes equation describes the evolution of the generalized velocity in pseudo-time (at a fixed physical time),
+
+ = - x_i + x_j( 2 S_ij ),
+ 
+ x_j = 0,
+ 
+
+where $S_ij =2 ( x_j + x_i )$ is the generalized strain-rate tensor. The orange lines in Fig.~ represent Eq.\ . A pseudo-viscosity, $$, introduced to accomplish the coarsening during pseudo-time, may be made into a anisotropic tensorial pseudo-viscosity for anisotropic grid resolution and may be made a function of space to accomodate spatially non-uniform grid resolution. 
+Note that the pseudo-viscosity is an element of the coarsening procedure that generalized spatial filtering. 
+It is different than the physical viscosity, and it is not the same as an eddy viscosity commonly used in turbulence modeling.
+The pseudo-pressure, $$, is responsible for enforcing the divergence free condition during pseudo-time evolution, and may be found by solution of a Poisson equation resulting from the divergence of Eq.\ . 
+The local resolution of the generalized velocity field at pseudo-time $$ may be estimates as $ $.
+
+According to Eq.\ , the dynamics of the resolved velocity at zero pseudo-time, $(, t; 0)$, must adhere to the incompressible Navier-Stokes dynamics of Eqs.\ and during their evolution in physical time for $ = 0$. The corresponds to the green arrow in Fig.\ . However, the physical time evolution at a non-zero pseudo-time must inevitably differ from the Navier-Stokes equation. Thus, a residual force, $(, t; )$, is introduced to create a generalized Navier-Stokes equation capable of describing resolved flow dynamics at a finite pseudo-time,
+
+ t
+ + U_j x_j
+ =
+ - x_i
+ + ^2 U_i
+ + F_i
+ + _i,
+ 
+ x_j = 0.
+ 
+
+Equation represents the effective evolution of a coarse-grained representation of the velocity field, and must reduce to the Navier-Stokes equation, Eq.\ , in the limit $ 0$.
+The generalized (resolved) pressure, $P(, t; )$, enforces the divergence-free condition during physical time evolution at finite pseudo-time; it can be found using a Poisson equation generated by taking the divergence of Eq.\ . Therefore, the reduction of Eq.\ to Eq.\ in the limit $ 0$ requires,
+
+ P(, t; 0) = p(, t).
+ 
+
+The generalized body force, $(, t; )$, likewise represents the effective body force at coarse resolution, thus,
+
+ F_i(, t; 0) = f_i(, t).
+ 
+
+Finally, the residual force, $(, t; )$, represents the residual error of the Navier-Stokes equation applied at coarse resolution (finite pseudo-time), therefore,
+
+ _i(, t; 0) = 0.
+ 
+
+In general, this residual force may be specified by enforcing the equality of mixed partial derivatives in the $t$-$$ phase space shown in Fig. ,
+
+ t( )
+ =
+ ( t ).
+ 
+
+A Special Case: Uniform Resolution of Unbounded Flows
+
+For demonstration purposes, let us proceed with the derivation assuming uniform, isotropic resolution of a flow on an unbounded domain. Therefore, the Stokes equation, Eq.\ with initial condition given by Eq.\ , simplifies to a diffusion equation,
+
+ = ^2 U_i,
+ 
+ U_i(, t; 0) = u_i(, t). 
+ 
+
+In this case, the solution to the diffusion equation is straightforward,
+
+ U_i(, t; )
+ =
+ G(; ) u_i(+, t) d,
+ 
+ 
+ 
+ G(; ) = ( 4 )^3/2 ( -|^24 ),
+ 
+
+which is equivalent to a Gaussian spatial filter with $^2 = 2 $. This establishes a formal mathematical equivalence between SFR and spatial filtering in the special case of unbounded flows with uniform resolution.
+
+Equations and may be substituted in Eq. on the left and right hand side, respectively, and further simplifications and substitutions lead to,
+
+ = 
+ ^2 _i
+ + x_j[ 
+ - 2 A_ik A_jk
+ + ( - ^2 P ) _ij 
+ ]
+ - ( - ^2 F_i ),
+ 
+
+where $A_ij(, t; ) = x_j$ is the resolved velocity gradient tensor at pseudo-time $$. It is most natural to separate the body force from the residual force by choosing,
+
+ = ^2 F_i,
+ 
+ F_i(, t; 0) = f_i(, t)
+ 
+
+where the initial condition comes from Eq.\ . Similarly, the generalized (resolved) pressure can absorb the isotropic part of the velocity gradient product to form,
+
+ = ^2 P + 3 A_ik A_ik,
+ 
+ P(, t; 0) = p(, t)
+ 
+
+This equation is a linear force diffusion equation, and the solution can be written via superposition as $P = P^(1) + P^(2)$ where
+
+ = ^2 P^(1),
+ 
+ 
+ P^(1)(, t; 0) = p(, t),
+ 
+
+ = ^2 P^(2)
+ + 3 A_ik A_ik,
+ 
+ P^(2)(, t; 0) = 0,
+ 
+
+The first component, $P^(1)$, is the Gaussian-filtered pressure while the second component, $P^(2)$, relates to the portion of residual kinetic energy that may be lumped into the effective pressure for incompressible flows.
+
+With this choice for the generalized (resolved) body force and pressure, the remaining source term in the forced diffusion equation for the residual force, Eq.\ , is inside of a divergence. It follows that the residual force must be a divergence of a residual stress,
+
+ _i = - x_j
+ 
+
+Physically, this must be true because the Stokes equation globally conserves momentum during pseudo-time evolution, so the residual force it gives rise to must likewise globally conserve momentum. The result is a generalized Navier-Stokes equation for the resolved velocity dynamics,
+
+ t 
+ + U_j x_j 
+ = 
+ - x_i 
+ + ^2 U_i
+ - x_j 
+ + F_i,
+ 
+ x_j = 0,
+ 
+
+where $$ represents the coarsened body force and the resolved pressure, $P$, may be found by enforcing the divergence-free condition using a Poisson equation. Enforcing Eqs. , , and , then Eq.\ becomes, 
+
+ x_j ( 
+ - ^2 _ij 
+ - 2 (A_ik A_jk)^(d) )
+ = 0,
+ 
+ x_j(, t; 0) = 0,
+ 
+
+where the superscript $^(d)$ denotes the deviatoric component of a tensor.
+While any $_ij$ satisfying Eq.\ is sufficient, it can simplify the modeling process to consider a more strict criterion, namely, that the residual stress tensor is defined as the solution to a forced diffusion equation,
+
+ 
+ = ^2 _ij 
+ + 2 (A_ik A_jk)^(d),
+ 
+ _ij(, t; 0) = 0.
+ 
+
+The ability to add (or subtract) divergence-free tensor fields to the residual stress tensor has been discussed in detail by Ref.\ . 
+ The formal solution for unbounded flow with uniform resolution is,
+
+ _ij(, t; ) = 2 
+ _0^
+ ( (A_ik A_jk)^(d)(+, t; ^) G(, -^) d )
+ d^,
+ 
+
+where the function $G(, )$ is the same as used in Eq.\ . Thus, the residual stress at scale $ = $ arises from velocity gradients at all scales $0 ^ $.
+
+Kinetic Energy in Stokes Flow Regularization
+
+Turbulent flows are famous for their rapid mixing capability, driven by an enhanced ability to dissipate kinetic energy. 
+The enhanced dissipation in turbulence is understood as the outcome of a chaotic cascading processes in which small-scale fluctuations are rapidly energized from large-scale excitation by the inherent nonlinearity of high Reynolds number fluid dynamics.
+The kinetic energy cascade is one of the hallmark concepts in turbulence theory, dating at least back to Richardson's rhyming description of the interaction between ``big whirls,'' ``little whirls,'' and ``lesser whirls.'' 
+In a footnote of Kolmogorov's seminal paper introducing his hypotheses about locally homogeneous and isotropic turbulence, a similar description is given in terms of a hierarchy of ``pulsations'' . 
+Around the same time, Taylor studied the dynamics of turbulence generated behind a grid in a wind tunnel and concluded that ``the stretching of vortex filaments must be regarded as the principal mechanical cause of the high rate of dissipation which is associated with turbulent motion'' .
+Onsager coined the terminology of ``cascade'' and tied it to the vortex stretching mechanism of Taylor.
+Thus, a common understanding that emerged from these early works on turbulence theory was that the energy cascade is driven by multiscale vortex stretching .
+
+More recent studies have highlighted a second cascade mechanism at work: strain-rate self-amplification . Carbone \& Bragg used the dynamical equations for velocity increments to estimate that strain-rate self-amplification is responsible for $75\
+
+Although SFR was introduced for LES as a ``physics-inspired coarsening'' technique in Ref. , the use of similar techniques for theoretical fluid mechanics predates this recent work. In unpublished notes, Onsager appears to have considered Stokes flow as a natural basis for analysis and modeling of turbulent channel flow . Isett and Oh used a ``geometric heat flow'' regularization for proofs about the nature of weak Euler solutions on a more general class of Riemannian manifolds. Johnson demonstrated the use of SFR for analyzing the physics of the energy cascade in terms of vortex stretching and strain-rate self-amplification, which is summarized here before returning to the application of SFR to LES modeling. To do so, the transport equations for kinetic energy within the SFR framework are developed.
+
+The Stokes flow regularization, Eq.\ , removes kinetic energy as pseudo-time increases,
+
+ = ^2 E - A_ij A_ij,
+ 
+ E(, t; =0) = 2 u_i u_i (, t),
+ 
+
+where $E = 2 U_i U_i$ is the kinetic energy of the resolved velocity field at any pseudo-time. It represents the kinetic energy of fluid motions larger than the resolution scale $ = $. From observation of Eq.\ , a residual (or small-scale) kinetic energy can be defined as $e = 2P^(2)$, so that,
+
+ = ^2 e + A_ij A_ij,
+ 
+ e(, t; =0) = 0,
+ 
+
+such that the sum of these two energies, $T = E + e$, is globally conserved in pseudo-time,
+
+ = ^2 T,
+ 
+ T(, t; =0) = 2 u_i u_i (, t).
+ 
+
+In this way SFR provides a convenient separation of kinetic energy into large- and small-scale components, $E$ and $e$, respectively. Equations and show how the energy is being removed from resolved scales to unresolved scales by the term $ A_ij A_ij$ in pseudo time. 
+
+The evolution of large-scale kinetic energy, $E$, in physical time (at fixed pseudo-time) can be directly inferred from the resolved dynamics, Eq.\ ,
+
+ t (2U_i U_i )
+ + x_j (
+ 2U_i U_i U_j 
+ + U_j P
+ - 2 U_i S_ij
+ + U_i _ij
+ )
+ =
+ _ij S_ij
+ - 2 S_ij S_ij
+ + U_i F_i
+ 
+
+The evolution of total energy, $T = E + e$, in physical time may be found using a similar procedure as for the momentum. The total kinetic energy must equal the physical kinetic energy when $ = 0$, so its evolution equation can be written as the physical kinetic energy transport equation, Eq.\ , plus a to-be-determined residual error ($W$), 
+
+ t
+ + x_j (
+ 2U_i U_i U_j + U_j P^(1) - 2 U_i S_ij
+ )
+ =
+ - 2 S_ij S_ij
+ + U_i F_i
+ + W.
+ 
+
+The residual work, $W$, can be specified by requiring the equality of mixed partial derivatives, following Eq.\ ,
+
+ t( )
+ =
+ ( t ).
+ 
+
+After substitution of Eqs.\ and into Eq.\ , with further manipulation, a superposition solution for the residual work may be written, where
+
+ W = - x_j( q_j^(1) + q_j^(2) + q_j^(3) ) + W^(4) + W^(5)
+ 
+
+ 
+ =
+ ^2 q_j^(1)
+ + 2 x_k x_k
+ + 2 x_k x_k
+ 
+
+ 
+ =
+ ^2 q_j^(2)
+ + 2 x_k x_k
+ 
+
+ q_j^(3) = - x_j
+
+ ^(4) 
+ =
+ ^2 W^(4)
+ - 2 x_k x_k
+
+ ^(5) 
+ =
+ ^2 W^(5)
+ + 2 x_k x_k
+
+The first residual flux, $^(1)$, represents the flux of residual kinetic energy by unresolved turbulent velocity fluctuations. The second residual flux, $^(2)$, represents the flux of residual kinetic energy by unresolved pressure-velocity coupling. The third flux, $^(3)$, is the viscous diffusion of residual kinetic energy (this term is closed and requires no modeling). The first residual work, $W^(4)$, represents viscous dissipation of residual kinetic energy. Finally, the remaining residual work term, $W^(5)$, includes the direct production of residual kinetic energy by unresolved body forces.
+
+A transport equation for residual kinetic energy may be obtained by subtracting the transport equation for large-scale kinetic energy, Eq.\ , from the total kinetic energy transport equation, Eq.\ . Then, using the decomposition of residual work, Eq.\ , it is obtained that,
+
+ t
+ + x_j(
+ U_j e
+ - x_j
+ + q_j^(1)
+ + q_j^(2)
+ )
+ =
+ - _ij S_ij
+ + W^(4)
+ + W^(5)
+ 
+
+Comparing Eq.\ with Eq.\ , it is evident that $ = - _ij S_ij$ represents the rate at which large-scale kinetic energy is converted into small-scale kinetic energy. This may be thought of as the rate at which large-scale motions do work on small-scale motions . Invoking Onsager's ``cascade'' imagery, the quantity $(, t; )$ represents the kinetic energy cascade rate across scale $ = $ at any location and time in the flow. 
+
+Using the formal solution for the residual stress tensor, Eq.\ , it can be seen that
+
+ (, t; ) =
+ 
+ 2 (_0^
+ -A_ik (+, t; ^) A_jk(+, t; ^) S_ij(, t; )
+ d^ )
+ G(, -^) d 
+
+Thus, the kinetic energy cascade rate across scale $ = $ is formally connected to the interaction between the strain-rate at scale $$ and the velocity gradients at all scales $0 ^ $, where $^ = ^$, within the neighborhood of the larger-scale strain-rate. More specifically, a small-scale velocity gradient may be defined as,
+
+ A_ik^ A_jk^ (, t; ; , ^) =
+ A_ik A_jk (+, t; ^)
+ - A_ik A_jk(, t; )
+
+so that $ = _1 + _2$, where,
+
+ _1(, t; ) = - ^2 A_ik A_jk S_ij (, t; ),
+ 
+
+ 
+ 
+ _2(, t; ) =
+ 
+ 2 (_0^
+ -A_ik^ A_jk^ (+, t; ; , ^) S_ij(, t; )
+ d^ )
+ G(, -^) d.
+ 
+
+The first term, $_1$, represents the kinetic energy cascade rate driven by single-scale velocity gradient interactions at scale $ = $, whereas the second term, $_2$, represents the kinetic energy cascade rate due to two-scale interactions between the strain-rate at scale $ = $ and the smaller-scale velocity gradient fluctuations at scale $^ = ^$, where $0 ^ $.
+
+This result answers the question of how vortex stretching and strain-rate self-amplification relate to the energy cascade. Further decomposing the velocity gradient tensor into its symmetric and anti-symmetric components, $A_ij = S_ij - 2 _ijk _k$, where $$ is the resolved vorticity vector. Inserting this decomposition, $_1 = _s1 + _ 1$ and $_2 = _s2 + _ 2 + _c 2$, where,
+
+ _s1 = - ^2 S_ij S_jk S_ki,
+ 
+ _ 1 = 4 ^2 _i S_ij _j,
+ 
+
+ _s2 = 
+ 2 (_0^
+ -S_ik^ S_kj^ (+, t; ; , ^) S_ij(, t; )
+ d^ )
+ G(, -^) d,
+
+ _ 2 = 
+ 2 (_0^
+ _i^ _j^ (+, t; ; , ^) S_ij(, t; )
+ d^ )
+ G(, -^) d,
+
+ _c 2 = 
+ 2 (_0^
+ ( S_ik^ R_kj^ - R_ik^ S_kj^) (+, t; ; , ^) S_ij(, t; )
+ d^ )
+ G(, -^) d,
+
+where $R_ij = - 2 _ijk _k$ is the resolved rotation-rate tensor.
+
+The two single-scale terms, $_s1$ and $_ 1$, represent the strain-rate self-amplification and vortex stretching contributions to the cascade rate. The Betchov relation for the third invariant of the velocity gradient tensor (at any scale), requires that $ _s1 = 3 _ 1 $, so that $75\
+
+The first two multiscale terms, $_s2$ and $_ 2$, represent smaller-scale strain-rate amplification and vortex stretching interactions by larger-scale strain rates. Johnson observed that the average values of these two terms were nearly equal in the inertial range of homogeneous isotropic turbulence using direct numerical simulation at $Re_ 400$. Moreover, the final term, $_c2$, represents vortex thinning and its average values was found to be very small compared with the other four terms .
+
+The average cascade rate was found to be evenly distributed between $ _1 $ and $ _2 $ in the inertial range of scales. Therefore, on the whole, strain-rate amplification, $ _s1 + _s2 $ accounts for approximately $8$ of the average energy cascade rate in the inertial range and vortex stretching, $ _ 1 + _ 2 $, supplies the remaining $8$. Considering that $ = _s1 + _ 1 + _s2 + _ 2 + _c 2$ is a point-wise exact relationship for the energy cascade rate, thus SFR provides basic insight into the physics of the energy cascade.
+
+Stokes Flow Regularization as a Basis for LES Modeling
+
+Equation describes the physical-time evolution of the resolved velocity field, $(, t; )$, at any fixed pseudo-time, $$. As such, beyond its use for physics inquiry exemplified above, SFR provides a basis for numerical solution of a coarse-grained representation of a flow (i.e., LES) with numerical grid resolution proportional to $ = $. Equation , together with its formal solution in Eq.\ , defines the residual stress tensor. The stress tensor requires modeling, because an exact solution of Eqs. or requires knowledge of the flow field at equivalent resolution to DNS to accurately specify the velocity gradient down to scale $ = 0$.
+
+Any proposed model form may be substituted into Eq.\ to form an equation to determine model coefficients. For example, an eddy viscosity model may be assumed, with K41 scaling for the eddy viscosity,
+
+ _ij = - 2 _T S_ij
+ 
+ 
+ 
+ _T = c_T ^4/3.
+ 
+
+In this case, with substitution, neglecting the spatial variation of the coefficient $c_T$ (i.e., $^2 c_T 0$), the following equation is obtained,
+
+ 3 c_T (2 )^-1/3 S_ij
+ =
+ - 2 (A_ik A_jk)^(d).
+
+The proposed model form has a single scalar coefficient, $c_T$, yet is required to satisfy a tensor equation. Thus, a least-squares fit can minimize the error in the proposed model, resulting in
+
+ 
+ 
+ _T 
+ = 4 \| \|^2,
+ 
+ 
+ _ij = - 2 _T S_ij.
+ 
+ 
+
+where $_1$ is given by Eq.\ .
+The steps used to generate this model resemble those of the dynamic procedure of Germano and Lilly that has become quite popular. However, the current SFR-based dynamic procedure uses Eq. in place of the Germano identity . The advantage of the current approach is that the model coefficient, $3/4$, can be determined analytically using pen-and-paper and does not require the calculation of a test filter. In this case, with the K41-scaled eddy viscosity assumption, the resulting model resembles the minimum dissipation model , except that the current model includes both strain-rate self-amplification and vortex stretching. A straightforward extension to anisotropic grids can be accomplished with a tensorial pseudo-viscosity having eigenvectors and eigenvalues corresponding to the grid orientation and aspect ratio, respectively. The resulting SFR-based dynamic model would resemble the anisotropic minimum dissipation model , but with an additional inclusion of vorticity stretching. 
+
+A New Class of SFR-Based Stress Models Using Residual Kinetic Energy
+
+Johnson proposed and validated the performance of Eq.\ in HIT using (global) spatial averaging over homogeneous directions, as sometimes done with Germano-based dynamic models. The results confirmed that the analytical dynamic coefficient, $3/4$, provided an accurate dissipation rate with the resolved kinetic energy spectrum closely matching that of Gaussian-filtered DNS, see Eq.\ . In this section, the SFR theory for LES modeling is extended to incorporate kinetic energy considerations, thereby eliminating the need for global spatial averaging. This is achieved by introducing theory-based stabilization for a range of SFR-based dynamic models, including a new one-equation model with an SFR-based transport equation for residual kinetic energy. These advancements, relative to Ref. , will enable a careful and detailed study of the artificial bottleneck effect in LES.
+
+Eddy Viscosity Model via Local Equilibrium of Residual Kinetic Energy
+
+The scaling of the eddy viscosity in Eq.\ results from dimensional analysis on the residual stress tensor assuming dependence on the resolution length scale consistent with Kolmogorov's 1941 theory with local equilibrium and scale-independent dissipation rate of (resolved) kinetic energy. Another possibility is to consider the eddy viscosity as a function of the residual kinetic energy, $e$, whose evolution in pseudo-time and physical time is given by Eqs.\ and , respectively. Assuming $_T = _T(, e)$, dimensional analysis leads to,
+
+ _T = c_ .
+ 
+
+Substituting this form into Eq.\ , 
+
+and applying least-squares minimization, the following model is obtained,
+
+ 
+ 
+ 
+ 
+
+ c_
+ = ( e + 2 ^2 \| \|^2 ) ( ^2 c_ - A_jkS_ij\| \|^2 ),
+
+ _ij = -2 _T S_ij.
+ 
+ 
+
+In Equation , the spatial variation of the coefficient $c_$ is retained (i.e., $^2 c_$).
+
+The local value of the residual kinetic energy, $e$, may be determined by solving its transport equation, Eq.\ , with appropriate models for unclosed terms. Alternatively, a local equilibrium of residual kinetic energy may be assumed.
+
+A local equilibrium of residual kinetic energy implies a local balance of sources and sinks in Eq.\ . If direct forcing at unresolved scales may be neglected, $W^(5) = 0$, local equilibrium implies
+
+ = .
+ 
+
+Where $ = -_ij S_ij$ is the modeled production rate of residual kinetic energy and $ = W^(4)$ is the viscous dissipation rate of residual kinetic energy. In this approximation, spatio-temporal variation of $e$ is neglected. Likewise neglecting spatial variation of $e$ in the pseudo-time equation for residual kinetic energy, Eq.\ , results in
+
+ = A_ij A_ij,
+ 
+ e_(, t; =0) = 0.
+ 
+
+Now, the local equilibrium assumption itself leads to scaling arguments via dimensional analysis and Kolmogorov's similarity hypotheses, thus,
+
+ e_ = c_e ^2/3.
+ 
+
+Substitution of Eq.\ into Eq.\ , with $^2 = 2 $ leads to,
+
+ e_ = 2 ^2 \| \|^2.
+ 
+
+Then, substitution of this equilibrium residual kinetic energy, Eq.\ , into Eq.\ yields,
+
+ _T
+ = 4 ( ^2 ^2 _T+ \| \|^2 ).
+ 
+ 
+ 
+ 
+
+This result agrees with the previous K41 approximation, Eq. . The only difference is the retention of an additional term proportional to $^2 _T$, which creates an elliptic differential equation for the eddy viscosity coefficient that acts as a local averaging operator on the viscosity. Such localized averaging (on the scale of $$) acts as a stabilizing feature of the model that directly emerges from the SFR theory. (Note that, since we are here dealing with sufficiently inaccurate models, the substitution of a more computationally efficient local averaging method is appropriate and unlikely to significantly affect the model's performance.)
+
+From the perspective of energy equilibrium, another consideration emerges. At locations where $_T < 0$, the viscosity is negative and the modeled production rate of residual kinetic energy $ $ is negative. While this should occur at a strong minority of points in the domain, it should be appreciated that the above model is constructed with a pointwise assumption of equilibrium via $ = $, Eq.\ . Where $_T < 0$, this is only possible if $ = = 0$, because $$ is a non-negative quantity by definition. At such points in the modeled flow, the local equilibrium energy is thus $e_ = 0$.
+That is, the local equilibrium assumption precludes the possibility of local backscatter, $ < 0$, because that would lead to a unbalanced sink on the right-hand side of the residual kinetic energy transport equation, Eq.\ . Therefore, following a consistent assumption of local equilibrium,
+
+ e_ = 2 ^2 \| \|^2 ~(_T).
+ 
+
+Where $$ denotes the Heaviside step function,
+
+ (x) =
+ 
+ l l
+ 1 & ~ x > 0\\
+ 0 & 
+ 
+ ..
+ 
+
+Thus, an eddy viscosity model with consistent application of a local equilibrium (K41) assumption is,
+
+ _ij = - 2 (_T) _T S_ij,
+ 
+ 
+ =2 _T \| \|^2.
+ 
+
+In effect, this implements a clipping of the dynamic viscosity, $_T$, which is a common trick used to stabilize a Germano-based dynamic eddy viscosity model. However, we are arguing here that the clipping in Eqs.\ and arises naturally as a consequence of local equilibrium, $e_ = 0$. The stabilization of the above SFR-based equilibrium eddy viscosity model is a consequence of the theory itself, not an ad hoc imposition.
+
+Eddy Viscosity Model via Transport Equation for Residual Kinetic Energy
+
+If it is desirable to capture departures of residual kinetic energy from local equilibrium and potentially capture local backscatter events, an additional transport equation can be considered to determine a non-equilibrium value of $e$ to be used with Eq.\ . To do this, a transport equation for residual kinetic energy is solved in the LES, from Eq.\ ,
+
+ t
+ + x_j(
+ U_j e
+ - x_j
+ + q_j
+ )
+ =
+ - .
+ 
+ 
+
+Where direct forcing of small-scale energy, $W^(5)$ is assumed negligible. The production rate, $ = - _ij S_ij$, does not require additional closure beyond what is needed for the resolved momentum equation, Eq. . Thus, two new modeling approximations are needed . First, the residual flux, $$, must be modeled. In most existing kinetic energy transport models, a gradient diffusion hypothesis is applied. This would certainly be commensurate with the use of an eddy viscosity model for the residual stress tensor, $$. 
+
+Second, a model for the viscous dissipation rate is required. The dissipation rate can be modeled as,
+
+ = C_ ,
+ 
+
+Then enforcing $ = $ for $e = e_eq$ at equilibrium leads to,
+
+ = ( e_eq)^3/2 _eq.
+
+Where $_eq$ represents the modeled production rate of residual kinetic energy at equilibrium, Eq.\ . The modeled dissipation rate may be thought as a nonlinear relaxation toward equilibrium that follows standard dissipation scaling. Furthermore, the residual flux $$ is evaluated via a gradient diffusion hypothesis, 
+
+ q_j = - _T x_j
+ ,
+
+Where $_T$ is the eddy diffusivity, modeled as,
+
+ _T = c_ .
+ 
+
+Then adding Eq.\ and Eq.\ leads to,
+
+ ^2 =
+ 2 ^2 q_j
+ + x_k ( x_k+ x_k )
+ + x_k x_k ,
+ 
+
+Substitution of Eq.\ and Eq.\ into Eq.\ with further simplifications and applying least-squares minimization, the following $_T$ model is obtained,
+
+ c_= ( e + 2 ^2 \| \|^2 ) 
+ ( ^2 c_ - 2 x_j S_ij x_k 
+ \| \|^2 )
+ 
+
+where $- x_j S_ij x_k$ depends on how the strain rate is aligned with the unresolved energy gradient vector, which is conceptually similar to the strain-rate self-amplification and vortex stretching, Eq. .
+The negative sign accounts for the fact that scalar gradients preferentially align with compressive strain-rate eigenvectors , so that the diffusivity given by Eq.\ will be predominantly positive throughout the simulated flow.
+
+ 
+ 
+ 
+ 
+ 
+
+Mixed Model via Local Equilibrium of Residual Kinetic Energy
+
+Mixed models are built by combining a structure-based nonlinear model and a functional eddy viscosity model to provide better alignment with the actual stress tensor as proved via filtered DNS (a priori testing),
+
+_ij=^(1)_ij+ ^(2)_ij= ^2 (A_ik A_jk)^(d) -2 _T S_ij,
+ 
+ 
+ 
+ 
+ 
+
+The first component, $^(1)$, comes from the resolved part of the formal solution to Eq.\ , see Eq.\ . The eddy viscosity component, $^(2)$, models the unresolved portion; see Eq. .
+From dimensional analysis, $_T = _T(, e)$ following Eq.\ .
+Substituting this form into Eq.\ , 
+and applying least-squares minimization, the eddy viscosity is obtained,
+
+ _T = 
+ e+2^4 \| \|^2 ( ^2 _T -^2 B_nklS_mn\| \|^2 ).
+ 
+
+Where $B_ijk =^2 U_i/ x_j x_k$ is the Hessian of the resolved velocity. (The appearance of second derivatives is mathematically similar to the test filter calculation mentioned in Ref. where a small scale activity sensor is constructed by evaluating the ratio of the test-filtered to grid-filtered velocity gradient tensor. If the two filters are close together, the leading-order term in Taylor series expansion would contains second derivatives of the velocity field. On a related note, in the previous two eddy viscosity models in section and , a scale-dependent eddy viscosity coefficient could be sought instead of the scale similarity assumptions; this would also lead to second-derivatives.) The residual kinetic energy can be expressed as the energy contribution of each model separately,
+
+e = e^(1)+e^(2)= 2 ^2 \| \|^2 + e^(2).
+
+Where $e^(1)= 2 ^2 \| \|^2$ is the residual kinetic energy due to the resolved part of the formal solution to Eq.\ , i.e., the energy related to the nonlinear gradient stress component, and $e^(2)$ is associated with the eddy viscosity component. The scale-wise derivative of $e^(1)$ is,
+
+ ^2 = 2 \| \|^2 +2 ( 2 ^2 \| \|^2 - B_ijkB_ijk ).
+ 
+
+To find $e^(2)$, we refer back to Eq. , and using Eq. leads to,
+
+ ^2 = 2 ^2 e^(2) + 2 ^2 B_ijkB_ijk.
+ 
+
+The equilibrium argument for $e^(2)$ follows the same K41 scaling as Eq. , yields to,
+
+ e^(2)_ = 2 ^4 \| \|^2,
+ 
+
+Thus, substitution of Eq. , into Eq. leads to,
+
+ _T = 
+ 4( ^2 _T -^2 B_nklS_mn\| \|^2 ),
+ 
+ _ij
+ = ^2 (A_ik A_jk)^(d) - 2 (_T) _T S_ij
+ 
+ 
+
+The modeled production rate of residual kinetic energy is obtained from Eq. ,
+
+ = - _ij S_ij
+ = ^2 A_ik A_jk S_ij+2 _T \| \|^2 =_1 +_2
+ 
+
+Local equilibrium for $e^(2)$ implies,
+
+ _2 = _2,
+ 
+
+At locations where $_T < 0$, $_2 $ is negative, and according to the local equilibrium argument Eq. , this requires clipping of $e^(2)$ via $_2 = _2 = 0$, inline with Section . The local equilibrium value at such points is thus $e^(2)_ = 0$.
+
+Results
+
+In this section, the artificial bottleneck effect that leads to a spectral overshoot is inspected in a posteriori LES results. The numerical methods utilized are briefly described before a detailed comparison of various residual stress models. Then, the effect of filter width, grid resolution, and Reynolds number arepresented.
+
+Numerical Methods
+
+Direct Numerical Simulations (DNS) of homogeneous isotropic turbulence (HIT) are carried out to provide baseline results for comparison with SFR-based models. The incompressible Navier-Stokes equation, Eq.\ , is solved using a pseudo-spectral method in a triply-periodic domain of size $(2)^3$. 
+The pressure maintains a divergence-free velocity field as a projection tensor applied to the other right-hand side terms in the Navier-Stokes equation. 
+Time advancement is accomplished with a second-order Adams-Bashforth scheme. 
+The non-linear terms are dealiased using the $2/3$ rule with phase-shifting.
+
+The body force is activated for only the first two wave-shells are forced at each time step with magnitude linearly proportional to the velocity. The coefficient of proportionality is determined at each time step to maintain constant kinetic energy spectrum for the first two wave-shells.
+In this case the initial velocity field is chosen using a random number generator to create one instance from a Gaussian random field ensemble satisfying the divergence-free condition.
+The initial velocity field is set to have a model energy spectrum, 
+and the simulation is allowed to run for $6$ large-eddy turnover times to allow for the solution to become statistically representative of fully developed turbulence before statistics are recorded for $6$ more turnover times.
+For this paper, DNS at $Re_ 400$ (scale separation of $L / 460$, where $L$ is the integral length scale) is used with grid resolution $_ = 1.4$ using $1024^3$ collocation points. Important parameters for the DNS simulation are given in Table .
+
+The Large-Eddy Simulations (LES) are computed for HIT with the same numerical approach as above with a few modifications. Of course, the residual stress models are activated for LES according to the equations laid out in Section . Moreover, the non-linear terms both in the momentum and subgrid equations are dealiased using the $2/3$ rule (instead of phase-shift dealiasing). The LES averages are computed over $ 20$ large-eddy turnover times. The DNS results are filtered with a Gaussian kernel for direct comparison with the LES results from each model.
+
+The Artificial Bottleneck Effect at $Re_ = 400$ and $/ = 24$
+
+First, an a posteriori comparison of the artificial bottleneck effect in SFR-based dynamic LES models in forced isotropic turbulence at $Re_ 400$ is carried out with a filter width $ / =24$, which is at the small-scale end of the inertial range identified in the a priori tests .
+The SFR-based models tested are: (i) equilibrium eddy viscosity (eq.dvisc), Eq.\ , (ii) equilibrium mixed model (eq.dmix), Eq.\ , and (iii) non-equilibrium eddy viscosity (noneq.dvisc), Eqs.\ \& .
+Using a numerical resolution of $_max =3.0$ for the LES models, Figure (a) compares the energy spectra from DNS, Gaussian-filtered DNS, and the SFR-based models introduced in this paper. 
+The models shown here are all SFR-based dynamic models, meaning that the model coefficients are determined from an identical dynamic procedure using Stokes flow regularization (SFR) instead of the well known Germano dynamic procedure . 
+It is emphasized that the SFR-based dynamic procedure provides a pen-and-paper derivation of the dynamic coefficient and does not require a test filter. Additionally, the coefficients are calculated locally without requiring averaging along homogeneous directions. The difference in computational cost for these models is briefly explored in Appendix A. 
+
+Figure (a) demonstrates that the SFR-based dynamic models produce LES spectra that roll off at the correct wavenumber, indicating the success of the dynamic procedure in determining an accurate model coefficient for each model.
+To further emphasize the success of the SFR-based dynamic procedure in this regard, Figure (b) shows that changing the SFR-based dynamic eddy viscosity coefficient $3/4$ in Eq. to $(0.5 3/4= 3/8)$ and $(2 3/4= 3/2)$, which shifts the roll-off to the right and left. That is, increasing the coefficient above the SFR-based value introduces too much dissipation into the LES model and causes the spectrum to roll off at a lower wavenumber. On the other hand, decreasing the coefficient below its SFR-based value reduces the dissipation and causes the roll-off of the spectrum to occur at a higher wavenumber. This demonstrates that the SFR-based dynamic procedure produces a coefficient that provides an accurate amount of dissipation to the LES.
+
+The inset of Figure (a) shows the pre-multiplied energy spectra of the SFR models. The observed spectral overshoot produced by the SFR-based eddy viscosity models is with a wavenumber and amplitude similar to that produced by the dynamic Smagorinsky model based on Germano-Lilly dynamic procedure in the inset of Figure (b). 
+It is thus evident that the artificial bottleneck effect is not caused by a deficiency in the dynamic procedure for the model coefficient, nor by under- or over-prediction of the energy dissipation rate.
+
+The introduction of history/memory effects through the residual kinetic energy tranport equation does not impact the artificial bottleneck effect, as observed in the results of the non-equilibrium dynamic eddy viscosity model.
+However, the height of the spectral bump is reduced in the dynamic mixed model results compared to the eddy viscosity models. The observation suggests that the introduction of a nonlinear gradient component in the residual stress closure improves the interaction between the residual stress model and the resolved energy cascade in LES.
+
+The nonlinear gradient component, $^2 A_ik A_jk$, of the dynamic mixed model, Eq.\ , represents the direct calculation of the resolved single-scale component of the energy cascade in Eq.\ , $_1 = _s1 + _ 1$.
+To understand the relative success of the dynamic mixed model in reducing the magnitude of the spectral overshoot, the SFR-based LES models are compared with filtered DNS in terms of the following two quantities: 
+
+ s^=- S_ij S_jk S_ki (S_mnS_mn)^3/2 = |_s1,|, 
+ ^= _i S_ij _j 2 _k _k (S_mnS_mn)^1/2 = |_1,|.
+ 
+
+The $s^$ parameter quantifies the efficiency of the single-scale strain-rate self-amplification contribution to the energy cascade, $ -1 s^ 1 $, based on the ratio of the three strain-rate eigenvalues. The most efficient flow structure, $s^* = 1$, is given by two equal positive (stretching) eigenvalues and one negative (compressing) eigenvalue with twice the magnitude. Note that $s^*$ is equivalent to the Lund-Rogers parameter applied to the resolved strain-rate tensor.
+The $^$ parameter indicates the efficiency of the single-scale vorticity stretching contribution to the cascade, $ -1 ^ 1$, based on the alignment of the vorticity vector with the three strain-rate eigenvectors (and their associated eigenvalues). The most efficient flow structure for the vorticity stretching, $^* = 1$, is given by parallel alignment of the vorticity vector with the strain-rate eigenvector corresponding to one positive eigenvalue, with the other two strain-rate eigenvalues being equal with half the magnitude of the first. Further discussion of cascade efficiencies can be found in Refs.\ .
+
+Figure compares the PDFs of $s^$ and $^$ produced by the SFR-based LES models compared with DNS and filtered DNS results.
+The DNS and filtered DNS provide qualitatively similar distributions of $s^*$ and $^*$ because the same restricted Euler dynamics (coming from nonlinear self-advection) are active in both cases. 
+Turbulence tends to favor positive values (forward cascade) for both, but the vortex stretching process tends to favor less efficient flow topologies (based on alignment of vorticity with the strain-rate eigenvectors).
+
+However, there are noticeable quantitative differences in the PDFs, particular for $^*$.
+As one might expect, the eddy viscosity models (both equilibrium and non-equilibrium) produce flow topology statistics similar to those seen in DNS. The interaction of an eddy viscosity in LES with the resolved energy cascade is evidently similar to the interaction of the cascade with viscous dissipation in DNS, even if the LES models do allow for spatial variation of the viscosity.
+In contrast, the mixed model is in better agreement with filtered DNS distributions of $s^*$ and $^*$, presumably due to its ability to more accurately represent the tensorial structure of the residual stress.
+Thus, the reduction in the spectral overshoot by the dynamic mixed model in Fig. (a) can be explained by its ability to more faithfully represent the structural details of the energy cascade, especially near the resolution scale $$.
+
+Table provides a quantitative comparison of the models in terms of common statistics of interest for homogeneous isotropic turbulence (HIT). In addition to the SFR-based models, a class of traditional LES models are tested and shown alongside the newly proposed models for comparison: (i) The constant Smagorinsky model (Smag), (ii) The dynamic Smagorinsky model with clipping (dSmag.clip), and (iii) the dynamic Smagorinsky model with global averaging (dSmag.avg). The coefficient for the static Smagorinsky model (Smag) is tuned to match the wavenumber at which the filtered DNS spectra rolls off, to simulate a ``perfect'' dynamic Smagorinsky model (with global coefficient) while the coefficient for dSmag.clip and dSmag.avg are obtained through a dynamic procedure . Also included are the SFR-based models with globally averaged coefficients . 
+
+The first column of the table compares the normalized resolved dissipation rate, $ S_ij S_ij _^2$, which is over-predicted by all the eddy viscosity models compared to the filtered DNS results due to the artificial bottleneck effect. 
+Given that the resolved dissipation rate can be calculated by integrating the spectrum weighted by $^2$, the nature of these over-predictions can be inferred from the energy spectra.
+As expected, the mixed model provides a better prediction.
+The next two columns compare the LES prediction of resolved strain-rate self-amplification ($_s1$) and resolved vortex stretching ($_ 1$), as defined in Eq.\ , as a fraction of the total energy cascade rate. 
+All the eddy viscosity models show a significant over-prediction of these quantities, with a larger percent error compared with the aforementioned $ S_ij S_ij $ over-prediction, attributable to the fact that the energy cascade rates are a triple product of velocity gradients.
+Together, these first three columns demonstrate that the eddy viscosity models tend to over-predict the magnitude of velocity gradients in the resolved field despite their accurate prediction of the roll-off wavenumber, Fig.\ . This observation underscores some of the consequences of the artificial bottleneck effect in addition to the $ 10\
+
+The final three columns compare LES predictions for skewness and flatness values of longitudinal and transverse filtered velocity gradient components. Recall that the skewness and flatness of a Gaussian random variable are $0$ and $3$, respectively, and the skewness of tranverse velocity gradients is zero by symmetry arguments, i.e., $ A_12^3 = 0$. The filtering at $ = 24 $ significantly reduces the non-Gaussianity of the DNS results (here, at $Re_ 400$).
+Most LES models generally produce realistic skewness and flatness values for the filtered velocity gradient, except for the eddy viscosity model with globally averaged coefficient (dvisc.avg) . This suggests that the spatial variation of the eddy viscosity is important for reproducing the correct amount of intermittency in the resolved scales. The development of SFR-based dynamic model stabilization in Section to enable local determination of the eddy viscosity shows important advantages in this respect.
+
+Effect of Filter Width
+
+The a posteriori LES results in the previous section were shown at a filter width of $ = 24 $ with a grid resolution of $_ = 3.0$ for isotropic turbulence at $Re_ = 400$. To further test the SFR-based models, results at different filter scales are discussed in this section. Figure shows the energy spectra comparison at $_max =3.0$ for the equilibrium eddy viscosity and mixed models at different filter scales, $$, compared with the DNS energy spectrum filtered at $$. 
+The non-equilibrium eddy viscosity model was also compared in this way (not shown), and its results were very similar to the equilibrium eddy viscosity model shown here.
+As expected, the SFR-based models successfully capture the change in roll-off wavenumber as the filter scale is varied. 
+The spectral overshoot is observed for the eddy viscosity results in Figure (a) for $ = 12$ and less-so for $ = 48$. The mixed model reduces the magnitude of the spectral overshoot for all filter widths. This is explored quantitatively in Table .
+
+First, the resolved dissipation rate, $ S_ij S_ij $, is over-predicted by all models tested at all filter widths shown in Table . The middle column for $ = 24 $ is the same data from Table , renormalized in terms of the inertial range timescale $_ = ^-1/3 ^2/3$.
+
+The model predictions generally improve with decreasing filter width, except for the constant Smagorinsky model (Smag) where the coefficient was tuned to match the spectrum roll off. The improvement in the models, particularly for $ = 12$, appears to stem from potential cancellation effects in the prediction of the energy spectrum, Fig.\ . That is, the LES spectra at $ = 12 $ show alternative over-prediction and under-prediction compared with the filtered DNS results. 
+
+Upon closer inspection of Figure , it is possible to detect a slight change in the model performance as $$ becomes closer to $$ (and further from $L$) and enters the viscous range of scales. Namely, the model results show a spectrum that falls off at a wavenumber that is slightly below the filtered DNS for $ = 12$. This indicates that the self-similar (inertial range) scaling assumptions used to derive the dynamic model coefficients are less accurate if $$ is not sufficiently large compared to $$. One way to address this shortcoming could be to introduce scale-dependence into the dynamic coefficient calculation, which for the Germano-based filtering approach requires a second test filter . In the SFR formulation, this would require the use of higher-order derivatives of the velocity field (e.g., second derivatives of the velocity for the equilibrium eddy viscosity model).
+
+Perhaps more so than the magnitude of velocity gradient fluctuations, the prediction of kinetic energy is an important criteria in a posteriori testing of LES models. Of course, both the kinetic energy and the resolved dissipation rate can be calculated as integrals of the energy spectrum with different weighting, so an error in one metric may in principle show up as an error in the other.
+Thus, just as the artificial spectral bump leads to an over-prediction of the resolved dissipation rate, so also the LES models over-predict the resolved kinetic energy, $ E$, as seen in Table .
+For applications, of course, it is more important for LES to accurately predict the total kinetic energy, $ T = E + e $, than any filtered quantity.
+Therefore, Table shows each of these three quantities (total, resolved, and residual kinetic energy) for the LES results compared with filtered DNS.
+Of course, the total kinetic energy, $ T = 0.73$, is established by unfiltered DNS and does not depend on the filter.
+The table shows that the over-prediction in resolved kinetic energy leads to a similar over-prediction of residual kinetic energy (due to the model's assumption of equilibrium and inertial range scaling) and thus an over-prediction of the total kinetic energy in the flow.
+This is particularly true for the eddy viscosity models, although it should be noted that Smagorinsky models make no prediction of the residual kinetic energy unless supplemented with, e.g., a Yoshizawa model. One benefit of SFR theory is that it naturally provides a prediction of the residual kinetic energy, even for algebraic (equilibrium) models, e.g., Eq.\ for the dynamic eddy viscosity model.
+
+The over-prediction of kinetic energy in the eddy viscosity models is relatively similar at $ = 12$ and $ = 24 $. At $ = 48 $, there is less over-prediction in the eddy viscosity models, which can be attributed to a smaller magnitude of the spectral overshoot, see Fig. (a). At this coarsest filter width, only about $70\
+
+These over-predictions of kinetic energy may be traced, thus, to the artificial bottleneck effect seen in Fig.\ .
+As expected, the mixed model shows a smaller over-prediction of kinetic energy that improves (slightly) as the filter scale decreases.
+
+Note that the kinetic energy over-prediction in the eddy viscosity models grows as $$ decreases while the resolved dissipation rate over-prediction decreases. 
+This is because there is cancellation of errors at $ = 12 $ where the bottleneck causes over-prediction of energy at lower wavenumbers but the spectrum rolls off too soon so there is under-prediction of energy at higher wavenumbers, but the energy at such high wavenumbes is too low, so the cancellation of errors will not be important, see Figure . However, the cancellation of errors plays a role in the resolved dissipation rate calculated via $_0^_ ^2 E() d$ where the energy discrepancy at higher wavenumber is more influential compared to the energy calculation.
+
+In summary, the artificial bottleneck in LES leads to an over-prediction of the resolved turbulent kinetic energy by $ 10\
+
+Effect of Numerical Resolution
+
+Next, the numerical resolution relative to the filter width $_max $ is varied for the LES models. Figure shows the energy spectra for the SFR-based equilibrium eddy viscosity model at different $_max $ for under-resolved LES ($_max = 1.5$) and over-resolved LES ($_max = 6.0$). 
+When under-resolved, the models continue to produce reasonable results but do not capture the roll-off of the spectrum.
+The spectral overshoot is observed at all resolutions, highlighting the fact that it is a feature of modeling errors in the residual stress, not numerical discretization errors.
+
+The over-resolved LES simulation captures very low energy modes deep into the roll-off of the spectrum. 
+There is some additional error in the shape of the spectral roll-off that becomes more apparent (compared with the Gaussian-filtered DNS) at these high wavenumbers, but it is relatively insignificant because the energy content at this region is too low. 
+The non-equilibrium eddy viscosity and equilibrium mixed models show an energy pile-up for the over-resolved case ($_max = 6.0$), which can be mitigated by increasing the local averaging coefficient (i.e., the coefficient in front of the Laplacian term) in Eq. and Eq. (not shown).
+
+When considering the effect of grid resolution at a fixed filter width, it is interesting to document a minimum recommended resolution. For DNS, a resolution of $_ $ between $1$ and $2$ is generally considered minimally sufficient for capturing the viscous energy dissipation (though perhaps not higher-order moments of the velocity gradient). 
+The above results suggest a grid resolution of $_ 3.0$.
+To explore this further, an ideal infinite-Re spectrum can be filtered at a length scale $ = c_ $ and compared with the (unfiltered) DNS spectrum.
+The filtered ideal infinite-Re spectrum is given as,
+
+()=1.6 \; ^3 ^-3 (-^2 ^2).
+
+Figure shows different filtered K41 spectrum (fk41) at different choices of filter width $c_$. In terms of matching the roll-off wavenumber of the spectrum, the best agreement with the DNS occurs at $c_ 2$. Using this result, the LES resolution of $k_max = 3.0$ is comparable to a DNS resolution of $_max 1.5$, which is a typical value. Note that a resolution of $_ = 3.0$, when using 2/3-rule dealiasing, translates to a grid spacing (i.e., distance between collocation points) of $ x = 0.71 $. Note that our SFR-based definition of the filter scale ($$) differs from the traditional filter width (e.g. Ref.\ ) by a factor of $ = $, so our finding corresponds to $ x = 0.16 $. The traditional filter width definition ($$) is based on the width of a tophat filter with second moment equal to that of the Gaussian filter, but SFR theory defines the filter width ($$) directly based on the second moment of the Gaussian (i.e., variance of a Gaussian PDF). At coarser grid resolutions (relative to the filter width), numerical errors will play a significant role in determining model performance.
+
+ Visualization of Vortical Structures
+
+Figure illustrates the out-of-plane vorticity on a 2D slice, comparing the SFR-based LES models (the equilibrium eddy viscosity model and the mixed model) against the Gaussian-filtered DNS with a filter width $=24 $ at $Re_=400$ and DNS at a lower Reynolds number ($Re_=65$). The vorticity field has been renormalized using the inertial range timescale $_ = ^-1/3 ^2/3$. Figure (b) shows that the mixed model produces flow structures (e.g., vortex tubes) with strong qualitative similarity to those of the filtered DNS, Figure (d). In contrast, the eddy viscosity model produces a significantly different flow structure containing more shear layer-like structures (i.e., vortex sheets rather than vortex tubes). The flow structures from the eddy viscosity LES seen in Figure (a) closely resemble those observed in a lower Reynolds number DNS in Figure (c) inline with the observation in Figure , both of which differ substantially from the filtered DNS.
+The flow structures seen in simulations using the other eddy viscosity models such as the classical dynamic Smagorinsky and the non-equilibrium SFR-based are very similar to those in Figure (a).
+
+ 
+
+The shear layers produced by the eddy viscosity models are potentially associated with the inverse cascade vortex thinning mechanism in 2D turbulence, suggesting a possible connection between the (artificial) bottleneck effect in 3D turbulence and the inverse cascade in 2D turbulence . In combination with Figure , these visualizations provide further evidence that the mixed model is able to diminish the artificial bottleneck effect because of its more accurate representation of flow structure and energy cascade dynamics near the filter scale.
+While the a priori advantages of mixed models are well-known, these results suggest that mixed models can also provide significant a posteriori advantages which should be considered, particularly as one moves to more complex flow regimes. 
+
+Infinite Reynolds number simulations
+
+At $Re_ = 400$, the trends in LES predictions with respect to changing the filter width may be caused by two potential effects. First, as $ / L$ decreases, and a larger percent of the kinetic energy is resolved. On the other hand, as $ / $ decreases, viscous effects become resolved and the self-similar (inertial range) scaling assumptions built into the dynamic procedure for the SFR-based models become inaccurate. To distinguish between these two effects, it is useful to run the LES models at infinite Reynolds number.
+While it precludes a direct comparison with (filtered) DNS, it can be useful to test the SFR-based LES models at infinite $Re$ ($ = 0$) to check the models performance at $/L 1$ together with $ / = $, in an inertial range where the flow is approximately independent of large scale forcing and there are no viscous effects.
+
+Figure shows the comparison between the ideal infinite-Re filtered spectrum and the LES models at different filter width $$.
+The grid resolution in each LES case is set to $_ = 3.0$.
+
+The spectral bump stemming from an artificial bottleneck effect is similar to the finite-Re case and is especially noticeable in the eddy viscosity models.
+The mixed model continues to show a significantly reduced bottle neck effect.
+
+This confirms that the molecular viscosity ($$) is not involved in causing the observed spectral bump.
+The spectral bump shifts to larger wavenumbers when the filter scale is reduced, suggesting that it happens at particular wavenumbers normalized by the filter width, $ $.
+
+Comparing Figure with Figure , it may be observed that the roll-off wavenumber is slightly over-predicted by the LES models when run at infinite Reynolds number. This shows that the results in Figure are slightly influenced by the viscosity, most notably for $ = 12 $.
+The SFR-based dynamic coefficients appear to be slightly under-dissipative based on the infinite Re results.
+The authors have observed that the dynamic Smagorinsky model also shows a similar under-dissipative behavior (data not shown).
+
+Furthermore, a statistical comparison of the normalized resolved dissipation rate $ S_ij S_ij _^2$ at infinite $Re$ is shown in Table . Table demonstrates that the resolved dissipation rate over-prediction decreases as $$ decreases in line with the finite $Re$ results in Figure and Table . The model predictions generally improve with decreasing filter width, though this trend is not as strong as in the finite Reynolds number case in Table which had the benefit of error cancellation effects at different wavenumbers.
+
+In the comparison between the tuned Smagorinsky model and the eddy viscosity models, the Smagorinsky model gives more accurate predictions across all scales. This advantage stems from the fact that the coefficient of the Smagorinsky model has been meticulously tuned, through trial and error, to match the wavenumber at which the ideal filtered spectrum rolls off. Conversely, the dynamic eddy viscosity models display a slight tendency towards under-dissipation across all filter scales. This disparity underscores the effectiveness of the finely-tuned coefficient in the Smagorinsky model, and a slight under-prediction of the coefficient by the SFR-based dynamic procedure.
+
+Conclusions
+
+This paper investigates the artificial bottleneck effect in large-eddy simulations (LES) of turbulent flows. In Navier-Stokes turbulence, the bottleneck effect is a well-known physical phenomenon related to the interaction of the kinetic energy cascade and viscous dissipation, leading to a pile up of energy at scales slightly larger than the Kolmogorov scale. The same effect is observed to occur in LES when an eddy viscosity model is used, leading to $ 10\
+
+Stokes Flow Regularization (SFR), a physics-inspired coarsening technique originally introduced to analyze the kinetic energy cascade , is herein extended to incorporate detailed considerations related to the residual kinetic energy, leading to the development of stabilization techniques that emerge directly from the SFR theory and allow for the local determination of dynamic coefficients.
+
+This also leads to the introduction of a one-equation model based on residual kinetic energy transport using SFR theory, which captures some backscatter and other non-equilibrium effects.
+The present extention of SFR theory for LES modeling facilitates a fair comparison between different model types with respect to the artificial bottleneck effect and over-prediction of kinetic energy.
+
+A posteriori tests of eddy viscosity and mixed models in homogeneous isotropic turbulence at $Re_ = 400$ indicate that the mixed model significantly reduces the artificial bottleneck effect by providing an improved representation of grid-scale topology and resolved energy cascade efficiencies compared to the eddy viscosity models. The study also examined the effects of filter width, numerical resolution, and Reynolds number. Tests at infinite Reynolds number suggest that the bottleneck effect arises from modeling errors in the residual stress tensor rather than viscous effects or numerical discretization errors.
+
+Even in the simple case of isotropic turbulence, the interaction between the resolved energy cascade and residual stress modeling errors is not straightforward. This type of effect is expected to be more important for more complex flows, where errors in closure approximations play an even more central role in the accuracy of the LES prediction. This motivates further research expanding SFR theory to include boundary effects and wall models, particle-laden and multi-phase flows, and density-stratified flows, for example.
+
+A Comparison of Computational Cost for SFR-based and Traditional LES Models
+
+ 
+We conducted a computational cost analysis comparing SFR models to traditional LES models like the dynamic Smagorinsky model and reported the time required to run $1000 t$ in Table . The time is normalized by the the time needed to calculate LES using the constant Smagorinsky model, which serves as the fastest model for reference.
+As expected, the test filter calculation in the dynamic Smagorinsky model is more computationally expensive than our SFR eddy viscosity models. However, the mixed model proves to be the most expensive due to the additional tensor contractions of second derivatives. It is important to note that this comparison is specific to the pseudo-spectral method used, and the relative computational cost may be quite different for finite-difference, finite-volume, and finite-element codes. Pseudo-spectral methods typically incur lower computational costs for the enforcement of the zero-divergence condition on the velocity field while calculating more accurate spatial derivatives compared to physical-domain solvers. However, the calculation of nonlinear products in a pseudo-spectral method requires a fast Fourier transform and dealiasing, which will generally require additional computational cost compared with physical-domain methods.

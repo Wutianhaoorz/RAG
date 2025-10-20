@@ -1,0 +1,203 @@
+[12pt]article
+
+ 0 true cm 
+ 0 true cm 
+ 21 true cm 
+ 14 true cm
+ 0.6cm
+0 
+1
+
+[2] #2
+[1] 10^#1
+
+definition
+theorem
+
+-0.5cm 
+-0.5cm
+0cm 
+230mm
+173mm 
+6pt
+0.5cm 
+4.3mm
+
+1.0
+
+\3
+
+`\"=
+"'177
+
+ Ultra-chaotic property of Navier-Stokes turbulence
+
+Shijie Qin$^1,2$, Kun Xu$^1$ and Shijun Liao$^2,3 *$
+
+$^1$Dept. of Mathematics, Hong Kong University of Science and Technology, Hong Kong, China\\
+
+$^2$State Key Laboratory of Ocean Engineering, Shanghai 200240, China\\
+
+$^3$School of Ocean and Civil Engineering, Shanghai Jiao Tong University, Shanghai 200240, China\\
+
+$^*$Corresponding author: sjliao@sjtu.edu.cn
+
+ Abstract 
+ A chaotic system is called ultra-chaos when its statistics have sensitivity dependence on initial condition and/or other small disturbances. In this paper, using two-dimensional turbulent Kolmogorov flow as an example, we illustrate that tiny variation of initial condition of Navier-Stokes equations can lead to huge differences not only in spatiotemporal trajectory but also in flow symmetry and its statistics. Here, in order to avoid the influence of artificial numerical noise, we apply ``clean numerical simulation'' (CNS) which can guarantee that the numerical noise can be reduced to such a desired low level that they are negligible in a time interval long enough for calculating statistics. This discovery highly suggests that the Navier-Stokes turbulence (i.e. turbulence governed by the Navier-Stokes equations) might be an ultra-chaos, say, small disturbances must be considered even from viewpoint of statistics. This however leads to a paradox in logic, since small disturbances, which are unavoidable in practice, are unfortunately neglected by the Navier-Stokes turbulence. Some fundamental characteristics of turbulence model are discussed and suggested in general meanings. 
+
+ Keywords Navier-Stokes turbulence, ultra-chaos, clean numerical simulation
+
+Introduction
+
+The Navier-Stokes (NS) equations are widely used as a mathematical model to describe turbulent flows. This model is so important in physics and engineering that it has been listed as one of the seven Millennium Prize Problem . Many researchers, such as Deissler~, Bffetta \& Musacchio~, and Berera \& Ho~, reported that spatiotemporal trajectories of the NS equations have sensitivity dependence on initial conditions, corresponding to ``trajectory instability''. In 2023, Ge, Rolland and Vassilicos~ pointed out that the uncertainty of a three-dimensional NS turbulence (i.e. turbulent flow governed by the NS equations) grows exponentially. All of these provide us rigorous evidences that the NS turbulence is chaotic, say, all tiny (natural/artificial) stochastic disturbances increase exponentially to a macroscopic level of spatiotemporal trajectories due to the famous ``butterfly-effect'' of chaos . 
+
+It is well known that, for turbulent flows, statistical results are more important than spatio-temporal trajectories. Normally, although the trajectory of a chaotic system is sensitive to small disturbance, its statistic results are stable. Such kind of chaos is called ``normal-chaos''. However, statistical results of some chaotic systems are even sensitive to small disturbances, corresponding to ``statistic instability'', called ``ultra-chaos'' . Obviously, ultra-chaos has higher disorder than normal-chaos. 
+
+In this paper, using the two-dimensional (2D) turbulent Kolmogorov flow as an example, we illustrate in ~3 that the Navier-Stokes turbulence might be ultra-chaos, say, even its statistic results might have sensitivity dependence on initial condition. It means that small disturbances cannot be neglected for the Navier-Stokes turbulence even from viewpoint of statistics. But unfortunately, tiny stochastic disturbances are in fact indeed neglected in the Navier-Stokes equations. This certainly leads to a serious paradox in logic. Some fundamental characteristics of a turbulence model in general are discussed in ~4. 
+
+Mathematical model of Navier-Stokes turbulence
+
+Consider the 2D incompressible Kolmogorov flow in a square domain $[0, L]^2$ with the periodic boundary condition in space, under the so-called Kolmogorov forcing that is stationary, monochromatic, and periodically varying in space with an integer $n_K$ describing the forcing scale and $$ the forcing amplitude per unit mass of fluid, respectively. Using the length scale $L/2$ and the time scale $$, the governing equation of this 2D Kolmogorov flow, say, the non-dimensional Navier-Stokes equation in the form of stream function, reads 
+
+ t(^2)+)(x,y)-Re^4+n_K(n_Ky)=0, 
+
+subject to the periodic boundary condition
+
+(x, y, t)=(x+2, y, t)=(x, y+2, t), 
+
+where 
+\[
+Re=(2)^2 
+\]
+is the Reynolds number, $$ denotes the kinematic viscosity, $$ is the stream function defined by 
+\[
+u=- y, v= x,
+\]
+$u$ and $v$ represent horizontal and vertical velocities, $t$ denotes the time, $x,y[0,2]$ are horizontal and vertical coordinates, $^2$ is the Laplace operator, $^4=^2^2$, and 
+\[
+ (x,y)= x y- x y 
+\]
+is the Jacobi operator, respectively. In order to investigate a relatively strong state of turbulent flow, we choose $n_K=16$ and $Re=2000$ for all cases considered in this paper. 
+
+To investigate its sensitivity dependence on initial condition, let us consider the following three different initial conditions:
+
+ _1,0(x,y)=(x,y,0) & = & -2[(4x+4y) + (4x-4y) + (4x+4y)] \\&+& 10^-10[(x+y) + (x-y)], \\
+ _2,0(x,y)= (x,y,0) & = & -2[(4x+4y) + (4x-4y) + (4x+4y)] \\&+& 10^-10[(2x+y) + (2x-y)], \\
+ _3,0(x,y)= (x,y,0) & = & -2[(4x+4y) + (4x-4y) + (4x+4y)] \\&+& 10^-10[(4x+y) + (4x-y)], 
+
+corresponding to three turbulent Kolmogorov flows with different spatial symmetries, as described below. Note that the deviations between these three initial conditions $_1,0(x,y)$, $_2,0(x,y)$, and $_3,0(x,y)$ are quite small over the whole field, i.e. 
+ 
+|_m,0(x,y)-_n,0(x,y) | 4 10^-10, x,y [0,2 ], 
+
+where $m, n = 1,2,3$ but $m n$. The spatiotemporal evolutions of such kind of tiny deviations are neglected by some traditional numerical algorithms (even including the direct numerical simulation, i.e. DNS), but can be accurately obtained by clean numerical simulation (CNS) , which will be briefly described in ~3. 
+
+It should be emphasized that the initial condition $ _1,0(x,y)$ given by () has the spatial translation symmetry~A: 
+
+S(x,y) = S(x+,y+), 
+
+ the initial condition $ _2,0(x,y)$ given by () has the spatial translation symmetry~B: 
+
+S(x,y) =S(x+/2,y+), 
+
+and the initial condition $ _3,0(x,y)$ given by () has the spatial translation symmetry~C:
+
+S(x, y)=S(x+/2, y), 
+
+respectively. It should be emphasized that the above-mentioned three spatial symmetries are quite different. Note that the vorticity $=^2$ retains the same spatial symmetry as the stream function $$.
+ 
+
+Ultra-chaotic property of Navier-Stokes turbulence
+
+As pointed out by many researchers , Navier-Stokes turbulence (i.e. turbulent flows governed by NS equations) are chaotic. Note that numerical noises are avoidable for all algorithms including DNS. So, due to the butterfly-effect of chaos , spatiotemporal trajectories given by traditional numerical algorithms including DNS are quickly polluted by numerical noises, i.e. far away from the true solution of NS turbulence. To obtian an accurate enough spatiotemporal trajectory of the NS turbulence, whose numerical noise is much smaller than that of the true solution and thus is negligible in a long enough interval of time, we use the CNS to solve Eq.~() subject to the periodic boundary condition () and one initial condition among ( )-(). The three CNS results are named by Flow~CNS-1 corresponding to (), Flow~CNS-2 corresponding to (), and Flow~CNS-3 corresponding to (), respectively. 
+
+For the sake of simplicity, the basic ideas of the CNS are briefly described here. Firstly, to decrease the spatial truncation error to a small enough level, we use an uniform mesh $N^2 = 1024^2$ and adopt the Fourier pseudo-spectral method for spatial approximation with the $3/2$ rule for dealiasing. In this way, the corresponding spatial resolution is fine enough for the considered three kinds of turbulent Kolmogorov flows: the grid spacing is less than the averaged Kolmogorov scale and enstrophy dissipative scale, according to Pope~ and Boffetta \& Ecke~, which is carefully checked and confirmed in this paper. 
+But unlike DNS, in order to decrease the temporal truncation error to a small enough level, we use the $M$th-order Taylor expansion with the time step $ t = 10^-3$. Especially, we use multiple-precision with $N_s$ significant digits for all physical/numerical variables and parameters so as to decrease the round-off error to a small enough level. In addition, another CNS result is given by the same CNS algorithm but with even smaller numerical noise, i.e. using even larger $M$ and $N_s$ than those mentioned above, which guarantees (by comparison) that the numerical noise of the former CNS result is rigorously negligible throughout the whole time interval $t[0,300]$ so that it can be used as a ``clean'' benchmark solution of the NS turbulence. It is found that we need to adopt $M=60$ \& $N_s=110$ for Flow~CNS-1, $M=100$ \& $N_s=230$ for Flow~CNS-2, and $M=120$ \& $N_s=430$ for Flow~CNS-3 in the same time interval $t[0,300]$, respectively, because the three different turbulent flows have different noise-growing exponents so that different values of $M$ and $N_s$ in the frame of CNS are necessary to decrease their respective numerical noises to the corresponding small enough levels. Note that the self-adaptive strategy and parallel computing are adopted to dramatically increase the computational efficiency of the CNS algorithm. For further details about the CNS algorithm mentioned above, please refer to Qin et al.~ and the Liao's book . 
+The detailed comparisons of spatial symmetry and statistical results between the three different turbulent flows, i.e. Flow~CNS-1, Flow~CNS-2, and Flow~CNS-3 are described below. 
+ 
+
+ 
+
+Firstly, let us compare the spatial symmetry of the flow field. It is found that the vorticity field $$ of Flow~CNS-1 remains the same spatial translation symmetry () as its initial condition () throughout the whole time interval $t[0,300]$, for example at $t=100$ as shown in figure~(a). Similarly, the vorticity field $$ of Flow~CNS-2 remains the same spatial translation symmetry () as the initial condition () throughout the whole time interval $t[0,300]$, and the vorticity field $$ of Flow~CNS-3 remains the same spatial translation symmetry () as the initial condition () throughout the whole time interval $t[0,300]$, for examples at $t=100$ as shown in figures~(b) and (c), respectively. Here, we had to emphasize that, as shown by (), the deviations between the three initial conditions ()-() are quite small, which however lead to three completely distinct turbulent flows with different spatial symmetries. This clearly illustrates that the spatial symmetry of the Navier-Stokes turbulence has sensitivity dependence on the initial condition. 
+ 
+
+Secondly, let us compare some statistic results. Figure~ compares the time histories of the spatially averaged enstrophy dissipation rate $ D__A$ given by Flow~CNS-1, Flow~CNS-2, and Flow~CNS-3. It is found that the obvious deviations between these time histories appear at $t10$ when the tiny disturbances caused by $10^-10[(x+y) + (x-y)]$ in the initial condition (), $10^-10[(2x+y) + (2x-y)]$ in the initial condition (), and $10^-10[(4x+y) + (4x-y)]$ in the initial condition () just increase to the macro level.
+Because of the different spatial symmetries of the three turbulent flows, there are obvious deviations between the probability density functions (PDFs) of the kinetic energy $E(x,y,t)$, enstrophy $(x,y,t)$, kinetic energy dissipation $D(x,y,t)$, and enstrophy dissipation rate $D_(x,y,t)$, as illustrated in figures~(a) to (d), respectively.
+Besides, as shown in figures~(a) and (b), the spatiotemporally averaged kinetic energy dissipation rate $ D_x,t(y)$ and enstrophy dissipation rate $ D__x,t(y)$ of Flow~CNS-1, Flow~CNS-2, and Flow~CNS-3 are also quite different. 
+Moreover, as illustrated in figures~(a) to (d), there exist the significant deviations between the results of Flow~CNS-1, Flow~CNS-2, and Flow~CNS-3 for the spatiotemporally averaged horizontal velocity $ u_x,t(y)$ and Reynolds-stress associated terms $ u'u'_x,t(y)$, $ v'v'_x,t(y)$, and $ u'v'_x,t(y)$, which are of great significance in turbulence modeling. 
+Here, the definitions of $ \; _x,t$ and other statistic operators are given in Appendix. 
+
+ 
+
+The above-mentioned deviations can be confirmed once again by comparing the temporal averaged kinetic energy spectra $ E_k _t$ of Flow~CNS-1, Flow~CNS-2, Flow~CNS-3, as shown in figure~: the three turbulent flows have different kinetic energy spectra, say, different distributions of kinetic energy.
+It is very interesting that Flow~CNS-3 contains more kinetic energy than Flow~CNS-2, and Flow~CNS-2 contains more kinetic energy than Flow~CNS-1, although all of the three turbulent flows satisfy the -5/3 power law of Kolmogorov. 
+
+Here we must emphasize that the deviations between the three initial conditions considered in this investigation are rather tiny, as shown by (), which are several orders of magnitude smaller than natural/artificial stochastic disturbances. However, these tiny deviations can lead to macroscopic, obvious differences in the spatial symmetries and statistic results of the corresponding turbulent flows given by CNS, whose numerical noises are negligible compared with their true solutions throughout a long enough interval of time $t[0,300]$. 
+
+All of these results provide us rigorous evidence that the corresponding Navier-Stokes turbulences of the 2D Kolmogorov flows are ultra-chaotic, say, their small disturbances cannot be neglected even from the viewpoint of statistics. 
+
+Concluding remarks and discussions
+
+In this paper, using the 2D turbulent Kolmogorov flow as an example, we illustrate that the Navier-Stokes turbulence (i.e. a turbulent flow governed by Navier-Stokes equations subject to initial/boundary conditions) is ultra-chaotic, say, not only its spatiotemporal trajectory but also its statistical results have sensitivity dependence on initial condition. Obviously, ultra-chaos has higher disorder than normal-chaos. This also reveals one of the reasons why turbulence is so difficult to understand. 
+
+Before the following discussions, we should emphasize here that the ``real turbulence'' in practice is one thing, the ``Navier-Stokes turbulence'' given by Navier-Stokes equations (i.e. a mathematical model of turbulence) is a completely different thing. More importantly, due to the butterfly-effect of chaos, the ``exact'' solution of the Navier-Stokes turbulence is one thing, unfortunately its ``numerical simulation'' might be a completely different thing. It seems that, as long as we human being investigate turbulent flows by numerical methods, we artificially add a non-negligible influence on them. Whether or not a mathematical model of turbulence can well describe a real turbulence needs a lots of mathematical, numerical and experimental evidences. 
+ 
+The discovery that the Navier-Stokes turbulence might be ultra-chaotic has important meanings in theory. From mathematical viewpoint, the situation of Navier-Stokes turbulence at an arbitrary time $t=>0$ can be regarded as a new starting point. Thus, for the ultra-chaotic Navier-Stokes turbulence, its statistic results should be sensitive to small disturbances at all time $t 0$, therefore all of the natural and/or artificial, small stochastic noises should be considered. But unfortunately, the model of Navier-Stokes turbulence indeed neglects all stochastic disturbances for $t>0$. This certainly leads to a serious paradox in logic. From physical viewpoint, tiny stochastic (and unsmooth) natural/artificial noises are unavoidable in practice. Therefore, it is unreasonable to neglect the influences of small stochastic (and unsmooth) disturbances on the Navier-Stokes turbulence. 
+
+What fundamental characteristics should a reasonable model of turbulence in general have? This is an important question that we had to answer, since the Navier-Stokes turbulence as a mathematical model is now even among one of the seven Millennium Prize Problem which has attracted the attention of many mathematicians. According to the ultra-chaotic property of the Navier-Stokes turbulence illustrated in this paper, we suggest that a reasonable turbulence model in general should have the following three fundamental characteristics:
+
+[(A)] physical laws of conservation should be satisfied; 
+
+[(B)] small stochastic natural/artificial disturbances should be considered;
+
+[(C)] solution should be non-differentiable. 
+
+Note that the so-called Landau-Lifshitz-Navier-Stokes (LLNS) equations , which include the influences of stochastic thermal fluctuation, have these three fundamental characteristics. The stochastic differential equations (such as LLNS equations) are fundamentally different from the Navier-Stokes equations: solution of the former one is continue but unsmooth, and solution of the latter one is smooth and differentiable. So, the LLNS equations might be a more reasonable model of turbulence in physics than the Navier-Stokes equations.
+
+Recently, a multiscale approach, wave-particle turbulence simulation (WPTS) method , is developed for the numerical simulation of turbulent flows. A uniform framework of laminar and turbulence flow can be achieved through wave-particle decomposition and the coupled evolution, where the wave stands for the cell-resolved large-scale flow structure, while the unresolved turbulent dynamics under the employed coarse grid is modeled by the stochastic particles, carrying the evolution of turbulent kinetic energy during their movement. Of course, this approach needs and is worth further investigation. Nonetheless, it satisfies the forgoing three fundamental characteristics without doubt.
+
+Different from turbulence, laminar flows are not chaotic, i.e. spatiotemporal trajectories of laminar flows are not sensitive to small stochastic disturbances, so that it can be well described by differentiable functions. Thus, the Navier-Stokes equations as a mathematic model can well predict laminar flows, and can neglect all small physical/artificial disturbances. 
+
+Certainly, more mathematical, physical and experimental investigations should be done in the future to give more evidences to support and/or modify our above-mentioned viewpoints. 
+ 
+
+ Appendix\\ Some definitions and measures 
+
+For the sake of simplicity, the definitions of some statistic operators are briefly described below.
+The spatial average is defined by
+
+& \,\,_A=4^2^2_0^2_0 dxdy, 
+
+the temporal average is defined by
+
+& \,\,_t=T_2-T_1^T_2_T_1 dt, 
+
+the spatiotemporal average (along the $x$ direction) is defined by
+
+& \, \,_x,t=2 (T_2-T_1)^2_0^T_2_T_1 \, x t, 
+
+and the overall spatiotemporal average is defined by
+
+& \,\,=4^2 (T_2-T_1)^2_0^2_0^T_2_T_1 dxdydt. 
+
+For an interval of time corresponding to the relatively stable state of turbulence, $T_1=100$ and $T_2=300$ are chosen in this paper.
+
+The stream function can be expanded as the Fourier series
+
+& (x,y,t)^ N/3 _\,m=- N/3 ^ N/3 _\,n=- N/3 _m,n(t) (\,mx)(\,ny), 
+
+where $m$, $n$ are integers, $\,\,$ stands for a floor function, $=$ denotes the imaginary unit, and for dealiasing $_m,n=0$ is imposed for wavenumbers outside the above domain $$. Note that for the real number $$, $_-m,-n=^*_m,n$ must be satisfied, where $^*_m,n$ is the conjugate of $_m,n$.
+Therefore, the kinetic energy spectrum is defined as
+
+& E_k(t)=_k-1/2 < k+1/22\,(m^2+n^2) _m,n(t) ^2, 
+
+where the wave number $k$ is a non-negative integer.
+
+By Reynolds decomposition, the velocity $=(u, v)$ is divided into mean and fluctuating quantities
+
+& =\, \,_x,t+', 
+
+considering the homogeneity in $x$ direction because of the form of external force, which also leads to $\, v \,_x,t=0$.
+
+Acknowledgements
+
+The calculations were performed on ``Tianhe New Generation Supercomputer'', National Supercomputer Center in Tianjing, China. This work is partly supported by National Natural Science Foundation of China (No. 12302288 \& 91752104), State Key Laboratory of Ocean Engineering, and Dept. of Mathematics, Hong Kong University of Science and Technology.

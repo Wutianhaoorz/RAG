@@ -1,0 +1,965 @@
+Lemma
+Corollary
+[1]
+
+, J\'ulia Domingues Lemos, Wandrille Ruffenach, 
+Micka\"el Bourgoin, Charles-Edouard Br\'ehier, Laurent Chevillard , Ilias Sibgatullin, Romain Volk
+
+Univ Lyon, Ens de Lyon, Univ Claude Bernard, CNRS, Laboratoire de Physique, 46 all\'ee d’Italie F-69342 Lyon, France\\
+ Universite de Pau et des Pays de l’Adour, E2S UPPA, CNRS, LMAP, Pau, France\\
+CNRS, ICJ UMR5208, Ecole Centrale de Lyon, INSA Lyon, Universite Claude Bernard Lyon 1, Université Jean Monnet, 69622 Villeurbanne, France\\
+
+We develop, simulate and extend an initial proposition by concerning a random incompressible vector field able to reproduce key ingredients of three-dimensional turbulence in both space and time. In this first article, we focus on the important underlying Gaussian structure that will be generalized in a second article to account for higher-order statistics. Presently, the statistical spatial structure of this velocity field is consistent with a divergence-free fractional Gaussian vector field that encodes all known properties of homogeneous and isotropic fluid turbulence at a given finite Reynolds number, up to second-order statistics. This includes the velocity power spectral density (PSD), with a given regularization at low wave-vectors allowing to introduce the integral length scale in the picture, and an exponential-like dissipative behavior taking place around a viscous-dependent appropriate length scale. The temporal structure of the velocity field is introduced through a stochastic evolution of the respective Fourier modes. In the simplest picture, Fourier modes evolve according to an Ornstein-Uhlenbeck process, where the characteristic time scale depends on the wave-vector amplitude. For consistency with direct numerical simulations (DNSs) of the Navier-Stokes equations, this time scale is inversely proportional to the wave vector amplitude. As a consequence, the characteristic velocity that governs the eddies is independent of their size and is related to the velocity standard deviation, which is consistent with some features of the so-called sweeping effect. To ensure differentiability in time while respecting the causal nature of the evolution, we use the methodology developed by to propose a fully consistent stochastic picture, predicting in particular proper temporal covariance of the Fourier modes. We finally derive analytically all statistical quantities in a continuous setup and develop precise and efficient numerical schemes of the corresponding periodic framework. Both exact predictions and numerical estimations of the model are compared to DNSs provided by the Johns Hopkins database. 
+
+Homogeneous turbulence, Isotropic turbulence, stochastic models for turbulence.
+ 
+
+Introduction
+
+Fully developed fluid turbulence is emblematic of fluid mechanics and out-of-equilibrium statistical physics. It is usually observed in various natural flows and studied, in simpler situations than those of geophysical flows, in laboratory experiments and numerical simulations of the forced Navier-Stokes equations. An ancient tradition of measurements and observations has allowed the development of a very precise and self-consistent phenomenology capable of describing its statistical structure with few free parameters . From the theoretical side, the velocity of a turbulent fluid can be seen as the vanishing viscosity limit of the statistically stationary, isotropic, and homogeneous solution of the incompressible Navier-Stokes equations sustained by a random , possibly deterministic , force. Because of the interplay between non-linear and non-local aspects of this dynamics, with non-trivial influence of viscosity, the rigorous study of these solutions remains a fantastic mathematical challenge. The main purpose of this article is the presentation, extension, and simulation of a spatio-temporal turbulent velocity field that evolves according to a Markovian dynamics in the simplest situation, to a causal one in a more sophisticated version, able to reproduce several key statistical signatures. This stochastic model encompasses the spatial multi-scale nature of the observed turbulent velocity field, and a random evolution in time, which will be shown to obey a causal dynamics. In the infinite Reynolds number limit and when the analysis is restricted to second-order statistical laws, as captured in particular by a Gaussian framework, and assuming the model to evolve according to a Markovian dynamics, the present approach becomes equivalent to that proposed by . As far as we know, such models are unrelated to Navier-Stokes solutions, and we will therefore consider them as being synthetic, although they reflect important aspects of fluid turbulence.
+
+Before presenting the proposition of , let us mention that synthetic turbulence has a long tradition in the literature, probably starting with fractional Brownian motions , known to have been initially proposed by to describe the expected irregular nature of the velocity field, and later formulated in terms of spatial fields by . Such fields, called fractional Gaussian fields, are at the core of turbulent phenomenology and give a precise random picture of the spatial structure of a turbulent velocity field, including in particular the famous power-law behavior of the power spectral density ``$k^-5/3$'', which is reminiscent of the asymptotic fractional regularity of the velocity field. Soon after proposing such random fields, proposed a time-evolving version in which the time is included in the phase of the respective (spatial) Fourier modes. Such fields, referred to as Kinematic Simulations, have then been popularized in a series of articles mostly devoted to the study of the dispersion of particle pairs. At the cost of introducing several free parameters that have yet to be physically interpreted, were able to reproduce in a realistic fashion several important aspects of the time evolution observed in direct numerical simulations (DNSs) of the Navier-Stokes equations while introducing a fluctuating nature in the dispersion relation relating wave numbers and frequencies. However, kinematic simulations have been acknowledged to be limited for certain aspects of particle dispersion , and, moreover, a precise dynamical formulation of this approach is still elusive. 
+
+The purpose of the present article is to propose a random incompressible field that evolves according to a causal dynamics consistent with the temporal structure of turbulence, which has been repeatedly observed, mostly in DNSs . It is more difficult to observe this phenomenon experimental measurements because it requires the absence of a mean flow, which is present in wind tunnels and jets. However, have conducted measurements of the temporal evolution of a flow stirred by magnetic particles able to generate turbulence without a mean flow, and temporal statistics were found to be similar to those observed in aforementioned numerical simulations. The temporal spectrum, defined as the variance of the temporal Fourier modes at a given frequency $$, behaves in a universal fashion as a power-law ``$^-5/3$'', with thus a similar exponent as observed on the spatial spectrum. Although understood and predicted by , this power-law decay can be seen as counterintuitive and differs drastically from similarity arguments which would predict a much faster decrease, i.e. with a $-2$ power-law exponent, as has been observed in the Lagrangian framework, i.e. following fluid particles along their trajectory . Temporal regularity of the velocity field is imposed by this power-law, which is thus the same as the spatial one, and turns out to have important consequences. In fact, the characteristic velocity of eddies of a given size is independent of that scale and turns out to be the one at large scale: this is the so-called sweeping effect. From a statistical viewpoint, both this power-law decay of the temporal PSD and the scale-independent characteristic velocity of eddies can be included in the model by setting a decorrelation time scale $T_$ of Fourier modes proportional to the inverse wave-vector amplitude and whose multiplicative constant is inversely proportional to the velocity standard deviation allowing a consistent physical picture and proper dimension. This time scale dependent on $k$ is at the core of the random picture of .
+
+The proposed random velocity field of , see also earlier propositions of and , encodes all the aforementioned spatial and temporal statistical structures. The associated temporal kernel has a pure exponential shape, and its characteristic correlation time scale is $T_$. This is reminiscent of a dynamics for Fourier modes similar to the one of a Ornstein-Uhlenbeck process, as early recognized by and . We intend to model the turbulent velocity field, up to second-order statistics, in the asymptotic regime of infinite Reynolds numbers. In a Gaussian framework, a given spatio-temporal covariance function of velocity components can be achieved by a stochastic process stirred by Gaussian space-time white noise. The very purpose of the present article is the formulation and simulation of such an incompressible random velocity field, where viscous corrections will be furthermore included in order to be compared to experimental measurements and DNSs of the Navier-Stokes equations. To do so, we not only need to impose viscous corrections to the spatial formulation, but also come up with a proper temporal dynamics that would ensure a consistent evolution of Fourier modes, giving rise to a smooth behavior at any wave vector, while respecting the causal nature of the underlying time marching. This will be achieved using the multi-layered evolution proposed by . Also, each step of the formulation will be compared to DNSs data, in both space and time. The numerical data provided by the Johns Hopkins Turbulence Database allow such a comparison. Preliminary analysis of this DNS database has been performed by , and we will reproduce them here for convenience and completeness.
+
+As already mentioned, the purpose of the present article is the formulation and simulation of a Gaussian stochastic representation of the spatio-temporal structure of turbulence, which corresponds to the reproduction of the second-order statistical signatures that already encompass several key properties. Nonetheless, it is well known that the turbulent velocity field is non-Gaussian, as can be seen by the behavior through scales of higher-order statistical quantities, such as third-order moment of velocity increments that quantifies the asymmetry of Probability density Functions (PDFs) and energy transfers, and the fourth-order one which focuses on the heavy-tail nature of these PDFs . These non-Gaussian features of the velocity field are referred to as the intermittency phenomenon which has a strong connection to multifractality. Several spatial random fields have been already proposed in the literature that are able to reproduce many aspects of this phenomenon, in particular the distributional nature of the dissipation field , and their extension to the velocity field , with generalizations towards structures and turbulent magnetic fields . Let us mention that these aforementioned models are usually time-independent and they are meant to give a stochastic representation of statistically stationary solution of the Navier-Stokes equations. Recent works provide some generalization of these random fields with a given time evolution . We keep the generalization of the present spatio-temporal random field for future works, which will be presented in a second article (in preparation).
+
+This article is organized as follows. In Chapter , we recall several important ingredients of the phenomenology of fluid turbulence based on second-order statistical quantities. Focusing on the spatial structure, we present in Section basic statistical properties such as the viscous independence of velocity variance and dissipation per unit of mass, the wave-vector dependence of the power spectral density and the respective scale dependence of the spatial structure functions. This allows us to define with precision several key parameters of the formulation, such as the mean H\"older exponent $H=1/3$, the Kolmogorov universal constant $C_2$ and the dissipative length scale $_K$. These predictions are reformulated for a Gaussian model and compared with a DNS in Section . We then discuss in Section the behavior of characteristic time scales. In particular, we explore the implication of the sweeping effect, which has for statistical consequence that the characteristic turnover time scale of eddies of a given size is independent of the scale and coincides with the large integral time scale. Following these observations, we deduce the implied statistical structure of the velocity field based on the second-order temporal structure function and the associated temporal PSD in Section . We then present our spatio-temporal model in Chapter . In Section , we begin by reformulating former considerations with periodic boundary conditions, allowing to unambiguously consider Fourier modes since they are well defined in this context (unlike the former continuous formulation in full space). We formulate the model in full generality, for any H\"older exponent $0<H<1$ and for abitrary dependence of the characteristic time $T_$ on the wave-vector amplitude $||$. In order to achieve the statistical temporal structure for the description of turbulence, we propose in Section a causal stochastic evolution capable of generating such a field starting from any initial conditions. To do so, we first need to define the Fourier transform of a white noise, a formulation that we provide in subsection . This eventually allows us to define in subsection a Gaussian random field that mimics the spatial structure depicted in Sections and , which can be seen as a fractional Gaussian vector field. In subsection , we recall the associated stochastic dynamics of , and generalize it to a smooth and causal context, even toward an infinitely differentiable setup, in subsection . An effective numerical schemes is proposed in Chapter . We gather conclusions and perspectives in Chapter . Throughout the presentation of the model, we provide a precise comparison between the theoretical predictions of the model with both its numerical representations and the DNS data extracted from the Johns Hopkins turbulence database . These comparisons concern both the spatial and temporal structure of velocity fields. We also provide key technical developments in the appendices.
+
+The spatio-temporal statistical structure of a turbulent velocity field, and its continuous formulation on the whole space
+
+Basic ingredients of the phenomenology of fluid turbulence and the implied statistical spatial structure
+
+Let us consider the velocity vector field $^(t,)^3$ for $^3$ and $t 0$, which reads component-wise $^=(u_i^)_1 i 3$, a solution of the Navier-Stokes equations, for incompressible fluids of unit density,
+
+ t+(^ ) ^ = - p^+ ^ +,
+
+where $$ is the kinematic viscosity, $p^ (t,)$ the pressure field obtained by the Poisson equation using the incompressibility constraint $ ^=0$, and $(t,)$ a forcing vector assumed to be divergence-free, smooth in space, correlated on a characteristic length scale $L$ of the order of the integral length scale and independent of viscosity. We will denote the velocity gradient $_j u_i^$ of the component $u_i^$ along $x_j$. 
+
+For quite a general form of the forcing field $$, observations suggest that the velocity field $^$ reaches a statistically homogeneous and stationary regime, in which the velocity variance and average dissipation depend very weakly on viscosity, such that 
+
+^2= _ 0 _t [|^(t,)|^2],
+
+and 
+
+=_ 0 _t _ij [( _j u^_i )^2],
+
+are positive numbers. Starting from the randomly forced Navier-Stokes equations , the expectations in and are taken over the the forcing realisations. From a practical point of view, we will assume that expectations can be accurately replaced by empirical averages over space and/or time, which is in particular guaranteed by the statistical homogeneity and stationarity observed in DNSs and experiments. In the asymptotic limit of infinite Reynolds numbers, i.e. in the vanishing viscosity limit $ 0$, the finite quantities $$ and $$ are expected to be related according to the dimensional prediction
+
+ L.
+
+The independence of the velocity variance on viscosity is far from being obvious and is at the heart of the phenomenology of fluid turbulence. Recall that energy is injected into the fluid in a statistically stationary way through the forcing term $$ . In order to maintain a velocity variance that becomes independent of viscosity as $ 0$, the fluid develops small scales by populating Fourier modes located at higher wave numbers than those excited by the forcing. 
+
+To characterize this behavior, usually referred to as the cascade phenomenon, the power spectral density (PSD) $E_^()$ has been measured and estimated in many studies. This quantity is defined to be the Fourier transform of the trace of the covariance tensor of the velocity vector field, that is - using Einstein’s summation convention over repeated indices -
+
+E_^() = _^3 e^-2i [ u^_i(t,)u^_i(t,+) ] .
+
+Note that the correlation $ [ u_i(t,)u_i(t,+) ]$ is independent of both position $$ and of time $t$ due to statistical homogeneity and stationarity respectively. Furthermore, by virtue of statistical isotropy, $E_^()=E_^(||)$, i.e. the PSD is a function of the norm $||$ only, and is independent of the direction of $$. Note that the upper letter $^$ indicates that $E_^()$ is a genuinely spatial, i.e. Eulerian, quantity. As shown by , the PSD $E_^()$ defined in fully determines the covariance function of the velocity field owing to the identity:
+
+ [ u^_i(t,)u^_j(t,+) ] = 2_^3 e^2i E_^(||) _ij( )\ ,
+
+where Leray’s projector on divergence-free vector fields $ _ij( )$ has been used and is defined by
+
+ _ij( ) = _ij - ||^2,
+
+with $_ij $ the Kronecker delta symbol.
+
+Although being accessible in Direct Numerical Simulations (DNSs) of the Navier-Stokes equations, the 3$d$ power spectral density $E_^()$ is difficult to obtain from experimental measurements. Instead, one-dimensional longitudinal power spectral density has traditionally been estimated. By virtue of statistical isotropy, this quantity is defined as the one-dimensional Fourier transform of the correlation function of one of the component of velocity, say $u_1$, along the direction $_1$, that is: 
+E_^(k) = _ e^-2i k [ u^_1(t,)u^_1(t,+ _1) ].
+
+Ìt can be checked that $E_^(k)$ is a positive and even function of $k$. The three-dimensional PSD $E_^()$ , which is a function of the norm $k = ||$ of the wave vector $$, and the one-dimensional longitudinal PSD $E_^(k)$ are related as follows: 
+
+E_^(k) = 2 k(k(k) k ).
+
+The above identity is a consequence of incompressibility and statistical isotropy. A complete proof of the relation is provided by .
+
+Going back to the aforementioned phenomenological aspects of fluid turbulence, a manifestation of the underlying cascading process of energy can be read on the PSD, which will follow, in the limit of infinite Reynolds numbers, a power-law behavior at large wave numbers. This is known as the Kolmogorov ``$k^-5/3$'' spectrum . At a given finite Reynolds number, a realistic parameterization of the longitudinal PSD $E_^(k)$ would require a regularization at small wave numbers of order $1/L$, i.e. around the inverse integral length scale stemming from the forcing term, and a dissipative cut-off at large wave numbers $1/_K$, where $_K = O((^3/)^1/4)$ is known as Kolmogorov's dissipative length scale. Sophisticated models that do so have been proposed in the literature . For the sake of simplicity, we will be working with the following simple but realistic parameterization:
+
+E_^(k) =D_2 |k|_1/L^-5/3 e^-_d k,
+
+where we have introduced a regularized norm $|k|_1/L = $, a multiplicative constant $D_2>0$ which is related to velocity variance according to the identity
+
+D_2 = 3L^2/3(1/3),
+
+and
+
+_d = 2 ( (1/3))^3/4()^1/4,
+
+which is of order of the Kolmogorov dissipative length scale $_K$. $ z$ denotes here the gamma function. The expression of the pre-factor in the definition of $_d$ is derived below. The so-called Kolmogorov constant $C_2$ has been estimated on experimental data and is close to $C_2 2$, see . From the proposed expressionl for $E_^(k)$ , we deduce from the identity the expression of the three-dimensional PSD $E_^(k)$ , which has a particularly simple expression in the vanishing viscosity limit, i.e.
+
+E^(k) =_ 0E_^(k) = 29 D_2 k^2 ||_1/L^-17/3.
+
+Note that the proportionality constant appearing in the expression of $D_2$ ensures that the velocity variance $^2$ is given by the integral of the PSD . We therefore have the identity
+
+_^2=_t [|^(t,)|^2]=_^3 E_^() =3_k E_^(k) \ k .
+
+Consequently, using the limiting value of $_^2$ as $ 0$ as expressed in and the parameterization of the longitudinal PSD provided in and recalling that $_d$ vanishes as $ 0$ , one obtains:
+
+^2=_ 0_^2=6D_2_k=0^ ||_1/L^-5/3 \ ,
+
+where $D_2$ is given by . Also, as claimed above, the regularization parameter $L$ appearing in the expression of the longitudinal PSD can be interpreted as the correlation length scale of the longitudinal component. More precisely, $L$ can be related to the so-called integral length scale $L_$, i.e. the integral of the correlation function, as follows:
+
+L__>0^2 [ u^_1(t,)u^_1(t,+ _1) ]d = 2^2E_^(0) = 2(1/3)L.
+
+Concerning the average dissipation $_$, by making use of the isotropy condition, we have
+
+_=15 [( _1 u_1 )^2]&=15_k (2)^2k^2E_^(k) k\\
+&=30(2)^2D_2_d^-4/3_k=0^ k^2|k|__d/L^-5/3 e^-k k\\
+&_ 0^30(2)^2D_2_d^-4/3(4/3).
+
+Taking into account the expressions of $D_2$ and $_d$ , we then obtain
+
+=_ 0_ = 2 ( C_2)^3/2L.
+
+In the vanishing viscosity limit, a Gaussian random field which possesses a PSD that decays as a power-law of the type proposed in is known in the literature as a fractional Gaussian field of H\"older (or Hurst) parameter $H=1/3$. In particular, such a field is continuous and its variance is finite , but it is nowhere differentiable, and must be regarded as being H\"older-continuous. To characterize the H\"older-continuity, instead of using gradients that are expected to be infinite, one needs to consider velocity increments that are well-posed. Precisely, the longitudinal velocity increment $_^ ^$ is defined by
+
+_^ ^(t,) = (^(t,+) - ^(t,)) || \ ,
+
+for all $ 0$. The variance of the longitudinal increment is known as the longitudinal second-order structure function, and is given by
+
+S_2,^()= [ (_^ ^)^2].
+
+In the vanishing viscosity limit, one obtains
+
+S_2^() &= _ 0 [ (_^ ^)^2] \\
+&= 2_k ( 1-e^2i k||) E^(k) k = 4D_2_k=0^ ( 1-(2 k||)) |k|_1/L^-5/3 k\\
+&_|| 0^ 4D_2||^2/3_k=0^ ( 1-(2 k)) k^-5/3 k=3D_2(2)^2/3(1/3)||^2/3.
+
+As can be seen from the behavior of $S_2^()$ on small scales $|| 0$, the second-order structure function exhibits a power-law behavior with respect to the scale $$ with the exponent $2/3$. Using then the expression of $D_2$ , and expressing the remaining multiplicative constant in units of the average dissipation $$ , we finally get
+
+S_2^() _|| 0^ C_2| |^2/3,
+
+that justifies the introduction of the Kolmogorov constant $C_2$ in the definition of the dissipative cutoff $_d$ .
+
+More generally, let us go back to the full vector field. Its covariance is provided in . Let us introduce the increment of a given velocity component $u_i^$
+
+_u_i^ (t,) = u_i^ (t,+)-u_i^ (t,),
+
+and the respective second-order structure function
+
+S_2,ij() = _ 0[_u_i^ (t,) _u_j^ (t,) ].
+
+Then, under the assumption of statistical isotropy and incompressibility, from , one obtains 
+
+S_2,ij() _|| 0^ C_2| |^2/3[-3||^2+3_ij ].
+
+As a consequence, one has 
+
+S_2() S_2,ii() = _ 0 [ |_ ^|^2] &= 2_^3 ( 1-e^2i ) E^(||) \\
+&_|| 0^3C_2| |^2/3.
+
+Firstly taking the limit $ 0$, and secondly the limit $_d 0$ (or equivalently $ 0$), we obtain then the power-law behavior
+
+ [ (_^ ^)^2] _|| 0^ 2||^2_k (2 k||)^2 E^_(k) k_ 0^ 15 ||^2,
+
+where the expression of $_$ is given in . The power-law is associated with differentiable velocity fields instead of being H\"older continuous with fractional exponent $H=1/3$.
+
+A first comparison concerning the spatial structure of DNS and the Gaussian model
+
+We show in Fig. a comparison between the velocity field $^,(t,)$ (Fig. (a)) extracted from a direct numerical simulations (DNSs) of the forced Navier-Stokes equations and a Gaussian model (Fig. (b)). Concerning the DNS, it is provided by the Johns Hopkins turbulence database . The data set concerns a simulation of the Navier-Stokes equations in a homogeneous and isotropic situation, using a pseudo-spectral method fully de-aliased with $N=1024$ nodes in each direction, over 5028 timesteps, corresponding to roughly speaking ten turnover time scales. The Taylor-based Reynolds number is estimated to be 433, corresponding to a fully developed turbulent state. Detailed properties of the simulation are provided on their website. For our purpose, we have downloaded the three velocity components over three spatial slices : $(0,y,z)$, $(x,0,z)$ and $(x,y,0)$, at all available times. The Gaussian model $^,()$ corresponds to a fractional Gaussian vector field, in a periodic setting, presented in subsection . At this stage, it is enough to state that this is the unique statistically homogeneous, isotropic and incompressible Gaussian vector field consistent with the longitudinal PSD 
+$E_^(k)$ provided in . Note that the three-dimensional PSD $E_^(k)$ appearing in the expression of the Gaussian fractional velocity field is obtained from the longitudinal one using the equality provided in . . Following a suitable truncation of the Fourier modes, as described in Section , we have similarly performed a simulation of this Gaussian vector field on a periodic box of size $L_=2$ using $N=1024$ nodes in each direction, with the remaining free parameters entering in chosen to match the DNS dataset. This corresponds to $D_2 = 0.021$, $L= L_ $ and $_d = 0.085$. The results of our comparison are collected in Fig. . 
+
+We begin by displaying in Fig. (a) a snapshot of the norm of the DNS velocity field $|^,(t = 0,x,y=0,z)|$ in the plane defined by the Cartesian coordinates $y=0$ at the initial time of the dataset, which has been chosen in the statistically stationary regime. Similarly, in Fig. (b) we display for comparison the same snapshot but for the model $|^(t=0,x,y=0,z)|$. The colorbars are the same in both panels, dark corresponding to the lowest values and light corresponding to the highest values of the norm. We observe similar trends concerning amplitude of the fluctuations, and also the statistical symmetries, i.e. homogeneity and isotropy. However, it appears that, while $^,(t,)$ exhibits filamentary structures, the Gaussian field looks more patchy. Despite their different appearances, we will show that these two vector fields have consistent second-order statistics.
+
+The statistical analysis of these two vector fields is shown in panels (c) and (d). The respective longitudinal PSDs $E_^(k)$ are shown in (c). Concerning the DNS, it is obtained as the variance of the respective Fourier modes obtained by performing one-dimensional discrete Fourier transforms of the longitudinal components, say, for instance, the $x$ component of velocity along the direction $x$. The statistical sample is averaged over the three longitudinal components, spatially over the slices, and over time. Results of our estimation are displayed with an orange solid line (light gray). The estimation of the Gaussian model statistics is also performed by averaging over the three components, over space and time, as has been done for the DNS. We display the result of our estimation using a solid blue line (dark gray). As we can observe, both longitudinal PSDs superimpose in a very satisfactory manner, showing that, based on the variance of Fourier modes, these two fields are statistically indiscernible. We mention that we could have, instead of the estimate on the Gaussian model, displayed the theoretical functional form provided in without noticeable difference, as expected. The result of our statistical estimation of the longitudinal structure function $S_2,^()$ is displayed in Fig. (d), using an orange line (light gray) for DNS and a blue line (dark gray) for the Gaussian model, averages have been taken on the same statistical sample as the one considered for Fig. (c). The three ranges of scales, including decorrelation length scales of order of the size of the box $L_$, inertial and dissipative length scales, are reproduced in a very satisfactory manner by the model, as expected from the behaviors of the PSDs of Fig. (c).
+
+We conclude this section noting that, whereas it is clear that instantaneous snapshots of DNS and spatial representations of the model, as they are displayed in Figs. (a) and (b), exhibit differences regarding in particular filamentary structures, they are nonetheless barely indiscernible from a second-order statistical point of view. For this reason, we claim that a model based on a Gaussian approximation is a fairly good starting point. We are planning to improve this in future investigations.
+
+The statistical temporal structure of the turbulent velocity field and the sweeping effect
+
+Fluctuations in time of turbulent velocity can be considered counter-intuitive from a dimensional point of view . In particular, the sweeping effect that can be seen, loosely speaking, as the advection of small scales by large scales, has been investigated and defined in very different ways by several groups . We should bear in mind that such a mechanism should not be confused with Taylor's hypothesis related to the presence of a mean flow . As far as we are concerned, let us discuss this phenomenon in the spirit of which focuses on the dimensional aspects of this phenomenon and its statistical signature.
+
+From the statistical spatial structure of the velocity field formerly presented, in large part given by the scaling relation provided in and , let us infer the statistical temporal structure of the velocity field $^$ in the asymptotic limit $ 0$. The H\"older regularity pinpointed in and suggests that eddies of characteristic length scale $||$ have a characteristic turnover time scale $_(||)$ given by
+
+_(||) _|| 0^ ^1/3.
+
+The square-root of the structure function $$ can be interpreted as the typical velocity of eddies of size $||$. The characteristic turnover time $_(||)$ of eddies of typical size $$ would then follow a power-law with exponent $2/3$ as a function of the length scale $||$. One may wonder whether this prediction is correct. The proposed definition of the time scale $_(||)$ clearly depends solely on the spatial structure of the velocity field and is independent of the temporal structure of the velocity field. In order to take into account the temporal structure, let us thus define a characteristic time scale $_c(| |)$ which is based on the correlation in time of the spatial increment given by
+
+_(||) S_2() _ 0 _0^ [_ ^(t,) _ ^(t+,) ] .
+
+As it will be argued below, we could also define a similar time scale as $_(||)$ to characterize the turnover time scale of an eddy of size $$ using instead the temporal structure of the velocity Fourier modes at a given wave vector $k$. This indicates that one assimilates in a loose sense the length scale $||$ to $||^-1$. This must be treated with great care since we have assumed in this Chapter that the spatial domain is infinite, i.e. $^3$, and thus Fourier modes must be considered as distributions. Nevertheless, we would define in a formal way the following time scale 
+
+_(k) ``_ 0 [|^(t,)|^2]_0^ [^(t,) ^(t+,) ] ",
+
+where $^(t,)$ is the Fourier transform of the velocity field $^(t,)$, and $$ standing for the complex conjugation. The definition of the time scale $_(k)$ is for the time being put in quotes because, as we will see, the Fourier transform over all space
+has a distributional nature, and necessitates the formulation of the model in a periodic setting. 
+
+ Note that the time scale $_(k)$ is expected to depend solely on the norm $k$ of the wave vector $$ by statistical isotropy and can be interpreted as the typical correlation duration at a given wave number. The two time scales $_(||)$ and $_(k)$ are related according to
+
+_(||) =``[ 1-( 2 )]_(k) [|(t,)|^2]_^3[ 1-( 2 )][ |(t,)|^2]",
+
+where we have denoted $[ |(t,)|^2]$ the limit as $ 0$ of the PSD $[ |^(t,)|^2]$. Once again, we recall that expressions such as should be taken in a formal way. Only the consideration of periodic boundary conditions gives a proper meaning to such quantities.
+
+With its definition , the characteristic time scale $_(k)$ has been estimated in DNS by several groups while assuming periodic boundary conditions instead of the full space $^3$, leading to well defined Fourier modes. The numerical investigations from the articles quoted above show, in a consistent manner with the dimensional analysis of , that
+
+_(k) _k^ k.
+
+The behavior of the time scale $_(k)$ at large wave numbers as $k^-1$ suggests, based on the dimensional ground, that the typical velocity entering in the motion of eddies of size $k^-1$ is the standard deviation of the velocity $$, i.e. the characteristic velocity of large scales. To see this more clearly, let us see the implications of this behavior on the time scale $_(||)$ . To do so, consider the identity displayed in and rescale the dummy integration variable $$ by $||$, then one obtains
+
+_(||) &=``[ 1-( 2 ||)]_(||/||) [|(t,/||)|^2]_^3[ 1-( 2 ||)][ |(t,/||)|^2]"\\
+&_|| 0^[ 1-( 2 )]^-8/3 _ 0,[0,][ 1-( 2 )]^-5/3 ,
+
+where we have used the asymptotic behaviors of $_(k)$ and of the PSD $ [|(t,)|^2] ||^-11/3$ at large argument. Notice that the remaining ratio of double integrals entering in can be shown to be finite (an exact expression can even be obtained using a symbolic calculation software). The relevant result given in is the fact that, as a consequence of the observation that $_(k)$ becomes inversely proportional to $k$ at large $k$ , the genuine characteristic time scale $_(||)$ of eddies of typical size $||$ becomes proportional to $||$ . Consequently, the relevant characteristic velocity appearing in is $$, i.e., the characteristic velocity of the largest eddies, while it may have been more natural to obtain their typical velocity $$ as in the expression of $_(||)$: this is the phenomenon of advection of the small scales by the large eddies, referred to here and in the turbulence literature as the sweeping effect.
+
+Implications for of the spatio-temporal covariance matrix of the velocity field
+
+Let us now present the general form of the covariance structure in time and space of the velocity field that encompasses both the spatial structure detailed in Paragraph and the very peculiar temporal structure which is governed by the sweeping effect, as is in the former discussion .
+To do so, let us begin by defining the relevant spatio-temporal covariance of the velocity field $ C_ij^(,)$ as
+
+ C_ij^(,) = [ u_i^(t,)u_j^(t+,+)].
+
+Again, $ C_ij^(,)$ is independent of position $$ and time $t$ by statistical homogeneity and stationarity, respectively. We mention that, moreover, the spatiotemporal covariance function is an even function of the temporal argument $$, $ C_ij^(-,) = C_ij^(,)$. In the following, we will also assume statistical isotropy and explore the consequences of this assumption on the structure of the covariance function. The natural extension of the spatial covariance matrix to a spatio-temporal framework $ C_ij^(,)$ can be conveniently written in Fourier space as 
+
+ C_ij^(,) = 2 _ ^3 e^2i F(/T_) E_^() _ij( )\ ,
+
+where $F$ encodes the temporal dependence, assumed to be an integrable function normalized such that $F(0)=1$, $T_$ a time scale that depends on the wave vector $$, $ E_^() $ is the PSD of the velocity field studied above, and $_ij( )$ the Leray projector on divergence-free vector fields . The covariance structure was initially proposed by when $F$ is chosen such that $F()=(-||)$. As it will be explained below, this choice leads to a Markovian evolution for the Fourier modes, as early noticed by .
+
+As we have already mentioned, it is clear from that the PSD $E_^(k)$ corresponds to the Fourier transform of $ C_ii^(0,)$. As a consequence, we recover from the scaling behaviors of the second-order structure functions and . To make a connection with the discussion developed in Section , let us establish the link between the characteristic time scale $_(||)$ and the $k$-dependent time scale $T_k$ entering in $ C_ij^(,)$ . We have
+
+_(||) &= ^[ C_ii^(,0)- C_ii^(,)] C_ii^(0,0)- C_ii^(0,)\\
+&= (1-e^2i )T_ E^(||) _ ^3 (1-e^2i ) E^(||) _0^ F(s) s.
+
+As suggested, in a formal manner, by the dependence on the wave number $k$ of the characteristic time scale $_(k)$ , let us similarly assume, as has been done by , that 
+
+T_k_k^D_3 k,
+
+where $D_3$ is a free parameter of the description that has the dimension of a velocity. Similarly to the derivation of the relationship between $_(||) $ and $_(k)$ obtained in , using the scaling behavior obtained in and the behavior of the PSD in the same limit , we get from , while performing the remaining ratio of integrals expressed in spherical variables,
+
+_(||) &_|| 0^D_3 ^2(1/6)15 (11/6)_0^ F(s) s.
+
+The asymptotic behavior in , assuming the asymptotic behavior of $T_k$ is consistent with the expected behavior given in . This suggests that the free parameter $D_3$ can be expressed in units of the velocity standard-deviation $$ .
+
+Although physically insightful, the behavior of the characteristic time scale $_(||)$ with the eddy's size $||$ is not traditionally estimated in experiments and numerical simulations. Instead, the temporal second-order structure function and the time spectrum are usually studied. 
+
+Concerning the temporal second-order structure function $S_2^()$, let us define the velocity time increment, i.e. the variation of velocity in time at a fixed position $$,
+
+_ ^(t,)=^(t+,)-^(t,).
+
+Using the covariance structure of the velocity field , we obtain
+
+S_2^() _ 0[ |_ ^|^2]&=2[ C_ii(0,0) - C_ii(,0) ]\\
+&=2_ ^3 [1-F(/T_) ]E^(||) \\
+&= 2_ ^3 [1-F(/T_/) ]E^(||/) /^3,
+
+such that, in the limit of vanishing time scales $ 0^+$, using the asymptotic behaviors of $T_$ and $E^(||)$ at large wave vector amplitude, one obtains
+
+S_2^()&_ 0^+^ 49D_2 D_3^2/3^2/3 _0^ [1-F() ]^-5/3 .
+
+The integral in the right-hand side of is finite as long as $1-F()$ goes to 0 as $^a$ with $a>2/3$, which will be the case in all future situations. Expressing $D_2$ in units of the average dissipation $$ (compare, for instance, the expressions provided in and ) and $D_3$ in units of velocity standard-deviation $$, the scaling behavior obtained for the temporal second-order structure function can be alternatively written as 
+
+S_2^()&_ 0^+^ ^2/3 ( )^2/3,
+
+which coincides with the dimensional prediction of .
+
+Similarly, let us consider the corresponding temporal (or frequency) spectrum $E_^()$ defined by
+
+E_^() &= _e^-2i [ ^(t,) ^(t+,)] = _e^-2i C_ii^(,0) \\
+&= _ ^3 _ e^-2i F(/T_) E_^() \ \\
+&= _ ^3 T_( T_) E_^() \\
+&= _ ^3 T_ ( T_ ) E_^( ||) ^3 \ ,
+
+where $$ is the Fourier transform of the function $F$. Once again, using the expressions of $T_$ and $E^(||)$ at large wave vector amplitude, we obtain
+
+_ 0E_^() &= _ ^3 T_ ( T_ ) E^( ||) ^2\\
+&_^29D_2D_3^2/3^-5/3_0^ (^-1) ^-8/3 .
+
+The integral in the right-hand side of will be shown to be finite for the classes of functions $F$ considered below. After being reformulated in units of $$ and $$, similarly to what has been done in , the frequency dependence of the time spectrum is given by
+
+_ 0E_^() _ ^ ^2/3 ^2/3^-5/3,
+
+which is consistent with the dimensional predictions of .
+
+Gaussian random velocity vector, and its causal evolution
+
+Formulation of the model with periodic boundary conditions: statistical structure of Fourier modes
+
+For practical and numerical reasons, we formulate a version of the Gaussian model described in the former section on the three dimensional torus of size $$: the set $[-/2\ ;\ /2]^3$ with periodic boundary conditions as has been done in DNS. The model is Gaussian, it is thus fully determined in the statistically homogeneous and stationary regime by its covariance function .
+ The respective velocity field will thus thus $L_$-periodic $u^_i(t,)=u^_i(t,+L__p)$ in any Cartesian direction $p=1$, $2$ or $3$. Let us mention that future simulations will be performed using $L_= 2$ in order to be consistent with the DNS. A fundamental consequence of considering a periodic setting is the possibility to expand the velocity field using a Fourier series, i.e.
+
+u^_i(t,) = L^3__^3 e^2i _ ^_i(t,_),
+
+with Fourier modes $^_i(t,_)$, depending on $_ = /L_$ for $=(n_1,n_2,n_3)^3$. The Fourier modes are defined by
+
+^_i(t,_) = _[-L_/2\ ;\ L_/2]^3e^-2i_ u^_i(t,) . 
+
+It can be checked that the variance of the Fourier modes is finite. This solves the issue exhibited in the former Section, where Fourier modes in the whole space need to be interpreted in a distributional sense. Since the velocity field $^$ is real-valued, Fourier modes are hermitian symmetric, i.e.
+
+^_i(t,_) = ^_i(t,-_)= ^_i(t,_-).
+
+This implies that the Fourier mode for $=(0,0,0)$ is real-valued. 
+
+The purpose of this Section is the formulation in a periodic setting of the statistical quantities defined in the whole space in Section . To do so, let us begin by defining the spatio-temporal covariance of the velocity field $ C_ij^(,)$ as
+
+ C_ij^(,) = [ u_i^(t,)u_j^(t+,+)].
+
+The definition is identical to which is very similar to , however $ C_ij^(,) $ given in is periodic. If it is furthermore required that $ C_ij^$ characterizes a statistically homogeneous and stationary incompressible velocity field, the right-hand side of is thus independent on the position $$ and time $t$. The covariance structure of the Fourier modes is then written as
+
+ [ _i^(t,_)_j^(t+,_)] = 2F(/T_k_) E_^(k_)_ij(_)_,-^(3),
+
+where $_ij(_)$ is the Leray projector at the discrete wave vector $_$ (whose norm is $k_$ and also corresponds to $k_n$ in virtue of isotropy), $_,^(3)=_i_n_i,m_i$ the three-dimensional Kronecker delta function over the indices $$ and $$, scalar functions $F$ and $T_k_$ encoding the temporal structure similarly to what we have seen in Section , and the respective PSD defined as the expectation of the norm square of the Fourier mode, i.e.
+
+ [|^(t,_)|^2]= L^3_E_^(k_).
+
+This allows to write the covariance of the velocity field as
+
+ C_ij^(,) = 2L^3__ ^3 e^2i_ F(/T_k_) E_^(k_)_ij(_),
+
+which is obtained from .
+
+For the sake of generality, let us consider an expression of the uni-dimensional PSD $E_^(k)$ , which we recall to deal asymptotically with H\"older-continuous functions of parameter $H=1/3$, as observed in fluid turbulence, to any parameter $0<H<1$. For these regularities, the expected PSD would also exhibit a power-law behavior as in , but with an exponent that would depend on $H$, of the form
+
+E_^(k) =D_2 |k|_1/L^-(2H+1) e^-_d k,
+
+where the dissipative cut-off $_d$ would become proportional to the Kolmogorov dissipative length scale $_K = O((^3/)^1/4)$ only when $H=1/3$ . In the following, we will consider the length scale $_d$ as a free parameter. As we have seen in Section , imposing a given PSD in the longitudinal case $E_^(k)$ implies for statistical isotropic reasons a form of the PSD $E_^(k)$ in dimension $d=3$ through the relation provided in , giving a particular simple form in the asymptotic limit of vanishing viscosity $E^(k)$ . Using any $0<H<1$, instead of the particular value $H=1/3$, the one-dimensional spectrum leads to, through the relation ,
+
+_ 0E_^(k) = 2(1+2H)(3+2H) D_2 k^2 |k|_1/L^-(2H+5),
+
+which is consistent with for $H=1/3$. Also, for the sake of generality, and to make a connection with , the time scale $T_k$ will be chosen to be 
+
+T_k = D_3 |k|_1/L^2,
+
+where $$ is an additional new free parameter of the model, which takes the particular value $=1/2$ to ensure the asymptotic behavior observed in turbulence . The remaining free parameter $D_3$ isexpected to be proportional to the velocity standard deviation only in the case $ =1/2$ and $H=1/3$. 
+
+In the limit of an infinitely large periodic box $L_$, we obtain the correspondence for any appropriate function $f$
+
+_L_ L^3__ ^3 f(_)=_^3f()\ ,
+
+such that in particular the velocity covariance function tends to its continuous counterpart . As a consequence, all relevant statistical quantities such as variance predictions and average dissipation 
+remain valid in the periodic setting for $H=1/3$, and can easily be generalized for any $0<H<1$. 
+
+Let us also explore the statistical structure of the spatial structure functions at small scales implied by the power-law behavior of the PSD given in . Concerning the variance of the longitudinal velocity increment , instead of , we obtain
+
+S_2^() &= _L_ _ 0 [ (_^ ^)^2]= 2_k ( 1-e^2i k||) E^(k) k\\
+&_|| 0^ 4D_2||^2H_k=0^ ( 1-(2 k)) k^-(2H+1) k\\
+&=2D_2(2 )^2 H ( H) H(1-2H)||^2H.
+
+Using the well-known relation $(z+1)=z(z)$, one checks that when $H=1/3$, the prediction coincides with . Concerning the increment of a velocity component and the second-order structure function ,
+we derive under the assumption of statistical isotropy and incompressibility a generalization of : one has 
+
+S_2,ij() _|| 0^ S_2^(||)( -H||^2+(1+H)_ij),
+
+with the consequence that 
+
+S_2() S_2,ii() = _L_ _ 0 [ |_ ^|^2] &= 2_^3 ( 1-e^2i ) E^(||) \\
+&_|| 0^(3+2H)S_2^(||).
+
+Correspondingly, the characteristic time scale $_(||)$ reads, using the expression provided in with the generalized forms of $ E^(||)$ and $T_$ , and for any appropriate function $F$, in the limit of an infinitely large periodic box allowing to use the correspondance depicted in , 
+
+_L__(||) &= (1-e^2i )T_ E^(||)_ ^3 (1-e^2i ) E^(||)_0^ F(s) s.
+
+At small scales, the characteristic time scale $_(||)$ undergoes a transition depending on the values of $H$ and $$, following the behaviors
+
+_L__(||) _|| 0^D_3 (1-2 )^-2H-1-2 _0 (1-2 )^-2H-1_0^ F(s) s H<1-,
+
+and
+
+_L_&_(||) \\
+&_|| 0^3D_3 ^6^-2H-5-2 _0 (1-2 )^-2H-1 _0^ F(s) s H>1-.
+
+Expressions provided in and could be further written in an explicit way with the help of a symbolic calculation software.
+
+Causal evolution of the Fourier modes
+
+Let us now discuss the time evolution of the Fourier modes $^_i(t,_)$ , such that the correlation structure is given by , leading to the expected covariance structure $ C_ij^(,) $ given in . This cannot be done in full generality for any function $F$ since we are asking for a causal evolution. Actually, very few choices for $F$ can be achieved for a given causal evolution, and we will only explore a very limited set of them. As far as we are concerned, we will present choices of $F$ which give a causal evolution.
+
+Before proceeding, we define a Gaussian white noise which is the building block of Gaussian stochastic processes and its Fourier series. A Gaussian white noise, and more precisely a periodic Gaussian white vector over $[-L_/2 \ ; \ L_/2]^3$, will be denoted ``$ W()$'', which is put in quotes because it has no meaning locally at a given position $$, and needs to be properly defined, to be integrated against a deterministic test function as defined in . Component-wise, a Gaussian white vector $ W_i()$ for $i=1,2$ or $3$ is a Gaussian random distribution which is characterized by, for arbitrary and appropriate deterministic functions $f$ and $g$, the average
+
+ [ _ [-L_/2\ ;\ L_/2]^3f() W_i()]=0
+
+and its covariance
+
+ [ _ [-L_/2\ ;\ L_/2]^3f() W_i(). &. _ [-L_/2\ ;\ L_/2]^3g() W_j()] \\
+&= _ij_ [-L_/2\ ;\ L_/2]^3f()g() .
+
+ Fourier modes of the vector white noise will be denoted by $(_)$ and are defined by
+
+_i(_) =_[-L_/2\ ;\ L_/2]^3e^-2i_ W_i(). 
+
+Interestingly, whereas the white noise in the physical space has a distributional nature, its Fourier modes can be understood in a classical sense. They are complex Gaussian random variables, Hermitian symmetric, fully characterized by their average, which turns out to be zero, and their covariance structure, which reads
+
+[_i(_)_j(_) ]=L^3__i,j_,-^(3),
+
+and
+
+[_i(_)_j(_) ]=L^3__i,j_,^(3).
+
+As far as we are concerned, we furthermore have to add a temporal dependence to this white noise and define the space-time vector white noise ``$ W_i(t,)$", which furthermore includes independent in time instances, which again have to be considered in a distributional manner, i.e., it has to be integrated against test functions, in a similar fashion as has been done in and . The respective Fourier mode of the vector white noise will be denoted ``$_i(t,_)$'' as
+
+``_i(t,_)" =_[-L_/2\ ;\ L_/2]^3e^-2i_ W_i(t,). 
+
+Once again, the quotes refer to its distributional nature in time. Because the Fourier mode is a linear operation, ``$_i(t,_)$'' remains a zero-average Gaussian distribution, but it is complex-valued and Hermitian symmetric. For the sake of simplicity, we write in a formal manner
+
+[_i(t,_)_j(t',_) ]=L^3__i,j_,-^(3)(t-t')\ t\ t',
+
+and
+
+[_i(t,_)_j(t',_) ]=L^3__i,j_,^(3)(t-t')\ t \ t',
+
+where $(t)$ stands for the Dirac-delta distribution.
+
+ The stochastic evolutions that are proposed below are designed such that their statistically stationary solutions are well defined, of finite variance and all coincide with a so-called fractional Gaussian vector (fGv) field, that we will denote $^,()$. The corresponding Fourier modes are denoted by $^,(_)$.
+
+Considering the spatial white noise ``$ W()$'', with statistical structure provided in and , and its Fourier modes $(_)$ with covariance and , the real random field $^,()$ is fully defined by its Fourier mode, and is given, component-wise, by
+
+^,_i(_) = (k_)2_ip(_)_p(_).
+
+The covariance coincides with when $=0$, i.e.
+
+ [^,_i(_)^,_j(_)] = 2 E_^(k_)_ij(_)_,-^(3).
+
+The first natural evolution for Fourier modes, which coincides with the proposition of , as early recognized by , is of Ornstein-Uhlenbeck type, genuinely Markovian, and reads as the stochastic differential equation
+
+d^(1),_i(t,) = -T_^(1),_i(t,) t+()T__ip()_p(t,),
+
+for a given discrete wave vector $=_$. $T_$ is the characteristic time of the Fourier mode $$ defined in , $_ij( )$ Leray projector ensuring the incompressibility defined in and $E_^(k)$ is the previously defined 3D-PSD obtained from using the isotropic relation . The superscript $^(1)$ appearing in the notation of the resulting velocity field $^(1),_i(t,)$ illustrates that it is obtained using a single evolution with respect to the white noise. The justification for this notation will become clear in the next paragraph. The random contribution to the evolution is provided by the stochastic vector term $_p(t,)$ characterized by the covariances and . 
+
+The unique solution of the stochastic dynamics proposed in reads
+
+^(1),_i(t,) = ^(1),_i(0,)e^-T_ + ()T__ip()_s=0^t e^-T__p(s,),
+
+for a given initial condition $^(1),_i(0,)$. It is well known that the Ornstein-Uhlenbeck dynamics proposed in eventually reaches a statistically stationary regime at large time. Moreover, the solution $^_i(t,)$ will get independent of the initial condition at large time, as it can be seen from its expression provided in where the initial condition $^(1),_i(0,)$ is weighted by an exponentially decreasing factor. 
+
+It turns out that, by choosing the particular complex Gaussian initial condition $^(1),(0,)$ to coincide with a fractional Gaussian vector $^,(_)$ as depicted in subsection , then, it the initial condition is fully characterized by the following covariances
+
+[^(1),_i(0,_)^(1),_j(0,_) ]=2E_^(k_)_ij(_)_,-^(3),
+
+and
+
+[^(1),_i(0,_)^(1),_j(0,_) ]=2E_^(k_)_ij(_)_,^(3),
+
+which can be written as
+
+^(1),_i(0,_) = (k_)T___ip(_)_s=-^0 e^T___p(s,_),
+
+allows us to write the unique statistically stationary solution of as
+
+^(1),_i(t,_) = (k_)T___ip(_)_s=-^t e^-T___p(s,_).
+
+From the former expression , it is then straightforward to derive the covariance structure of the velocity Fourier modes that are Hermitian symmetric, and characterized by their covariance
+
+ [ _i^(1),(t,_)_j^(1),(t+,_)] = 2e^-||/T__ E_^(k_)_ij(_)_,-^(3),
+
+showing that, when compared to the general model provided in , the temporal structure is given by the function 
+
+F^(1)()=e^-||,
+
+where once again the superscript $^(1)$ entering in the particular notation $F^(1)$ will become clear next paragraph.
+
+Let us now explore the consequences of the particular temporal kernel $F^(1)$ given in on the regularity in time of the corresponding velocity field, and more precisely on the scaling behavior of the respective temporal structure function $S_2^(1),()$, i.e. the variance of the velocity time increment $_ ^(1),$ . Recall that we found the expression , that reads, using the generalized forms of $ E^(||)$ and $T_$, 
+
+S_2^(1),()&=_L__ 0[ |_ ^(1),|^2]\\
+&= (1+2H)(3+2H) D_2 _ ^3 [1-e^-D_3||_1/L^2|| ]||^2 ||_1/L^-(2H+5) \ .
+
+Similarly to the characteristic time scale $_(||)$ , the temporal structure function $S_2^(1),()$ undergoes a transition at small scales depending on the values of $H$ and $$. We have, while rescaling the dummy integration variable $$ by the appropriate power of the time scale $$ for $H<$:
+
+S_2^(1),()&= (1+2H)(3+2H) D_2 ||^H/_ ^3 [1-e^-D_3||_||^2/L^2 ]||^2 ||_||^2/L^-(2H+5) \\
+&_|| 0^4(1+2H)(3+2H) D_2 |D_3|^H/_=0^ [1-e^-^2 ]^-(2H+1) H<.
+
+Note that when $H=1/3$ and $=1/2$, one retrieves from the general formulation . For $H>$, one has
+
+S_2^(1),()_|| 0^4(1+2H)(3+2H) D_2 |D_3|_=0^ ^4^2-(2H+5) H>.
+
+The scaling behaviors derived in and pertain to the inertial range. We would also like to explore the behavior of the structure function in the dissipative range, first by taking the limit of vanishing scales $ 0$, and secondly the limit of vanishing viscosity $ 0$. When the viscosity $$ is not zero, instead of , we have
+
+S_2,^(1),()&=_L_[ |_ ^(1),|^2]= 2 _ ^3 [1-e^-D_3||_1/L^2|| ] E_^() \ ,
+
+which will clearly behave proportionally to $||$ for any couple of values of $H$ and $$ due to the behavior of $1-F^(1)(/T_)=||/T_ + o()$ in the vicinity of $=0$. In this regard, the spatio-temporal velocity field $^(t,)$ is not smooth in time and thus does not provide the expected temporal dissipative range scaling in $^2$. This is related to the non-differentiability of the temporal Fourier mode correlation function at zero. Thus, we have to improve the model while proposing another temporal kernel in addition to the simple Markovian model of which has exponential temporal correlation .
+
+Let us close this paragraph by exploring the corresponding temporal spectrum $E_^(1),()$. As already considered in , of the resulting velocity field $^(1),$, one has
+
+E_^(1),() &= _L__e^-2i [ ^(1),(t,) ^(1),(t+,)] \\
+&= _ ^3 T_^(1)( T_) E_^() \ ,
+
+where the one-dimensional Fourier transform $^(1)$ of the temporal kernel $F^(1)$ is given by
+
+^(1)()= 1+4^2^2.
+
+Similarly to the structure function $S_2^(1),()$ , the temporal spectrum $E_^(1),()$ also undergoes a transition depending on the values of $H$ and $$. For $H<$, rescaling the dummy wavenumber $k$ by the appropriate power of the frequency $$, and looking for the equivalent at high frequencies $$, we obtain for $H<$
+
+E^(1),&() _ 0 E_^(1),()= _ ^3 T_^2 ^(1)( T_^2 ) E^(^2 ||) ^2 \ ,\\
+&_ ^2(1+2H)(3+2H) D_2D_3^H/^-(1+H/)_0^ ^-(2+2H+1 )^(1)(^-2) H<,
+
+which coincides with when $H=1/3$ and $=1/2$. For $H>$ however, we obtain 
+
+E^(1),() &_ ^4^3 (1+2H)(3+2H) D_2D_3^-2_^3 ||^2||_1/L^2-(2H+5) H>.
+
+Both these asymptotic behaviors and are consistent with the non-differentiability in time of the velocity field. In the first case , the regularity in time is determined by the value of $H/$, whereas in the second scenario , this temporal regularity coincides with the one of a Brownian motion, independently of the parameters $H$ and $$.
+
+ 
+
+In the Section above, we have described the statistical properties in time of the Markovian model of which can be seen as an Ornstein-Uhlenbeck type of evolution for Fourier modes . Fourier modes of the velocity field $^(1),_i(t,)$ at a given wave number $$ are not differentiable in time because they solve a first-order evolution equation driven by a noise which is white-in-time. As a consequence, the temporal paths of $^(1),_i(t,)$ share the same regularity as the Brownian motion and are only H\"older continuous. This non-differentiable nature of Fourier modes has a counterpart in the physical space: the corresponding velocity field $u^(1),_i(t,)$ is not differentiable in time. This is consistent with the behavior of the temporal second-order structure functions $S_2,^(1),()$, which behaves proportionally to the time scale $$ , even for a finite viscosity $>0$. If the velocity field were differentiable, we would expect instead a quadratic behavior, i.e. $S_2,^(1),()=O_(^2)$ where $O_(^2)$ stands for a term of order $^2$ with a viscous dependent multiplicative factor. The necessity of proposing a dynamic capable of achieving this goal in a causal way is of tremendous importance. To do so, we will exploit an idea first proposed by and then generalized to an infinitely differentiable framework by that consists of replacing the white noise entering in the dynamics by a continuous random force, which is itself of Ornstein-Uhlenbeck type and/or itself governed by a dynamics stirred by a continuous random force, which would ensure the finiteness of the first and/or subsequent time derivatives.
+
+We are now in position to introduce the evolution for the Fourier mode $^(N),_i(t,)$.
+Given an integer $N 2$, we consider the following set of $N$ embedded evolution equations:
+
+ 
+ ^(N),_i(t,) t &= -T_^(N),_i(t,)+^(N-1)_i(t,)\;\\
+ 
+ ^(N-1)_i(t,) t &= -T_^(N-1)_i(t,)+^(N-2)_i(t,)\;\\
+ &\\ 
+ ^(2)_i(t,) t &= -T_^(2)_i(t,)+ ^(1)_i(t,)\;\\
+ ^(1)_i(t,)&= -T_^(1)_i(t,) t + E_^()_ip()_p(t,)\;,
+
+where we introduce in the right-hand side of the parameter $q^(N)$ defined by
+ 
+q^(N)&=2 _ R[1+^2N^2]^N d(T_^2)^N =2 (N) (N-1/2)(T_^2)^N.
+
+We show in Appendix that, in the statistically stationary regime, one has
+
+ 
+_t [^(N),_i(t,_)^(N),_j(t+,_)]= 2F^(N)(/T__)E_^(k_)_ij(_)^(3)_,-,
+
+where the temporal correlation function $F^(N)$ is defined by
+ 
+ F^(N)() = |^N-1/2
+ K_N-1/2( 2||)(N-1/2).
+ 
+In , $K_n(x)$ is the modified Bessel function of the second kind. We recall that the expression of $F^(N)$ should be considered for $N 2$. In particular, considering $F^(N)$ for $N=1$ does not coincide with the expression $F^(1)$ given in . In this situation, the Fourier mode $^(N),_i(t,_)$ is differentiable $(N-1)$-times, and we provide the expression of the variance of the $p$-derivatives , which is finite as long as $p N-1$.
+
+Moreover, in the limit of an infinite number of embedded layers $N$, one has
+
+ F^()()= _NF^(N)() = e^-^2.
+ 
+As a consequence, one obtains
+ 
+_N_t [^(N),_i(t,_)^(N),_j(t+,_)]=2e^-(/T__)^2E_^(k_)_ij(_)^(3)_,-.
+
+ 
+Let us now explore the consequences of the particular temporal kernel $F^(N)$ given in (resp. $F^()$ given in ) on the regularity in time of the corresponding velocity field $u^(N),_i(t,)$ (resp. $^(),_i(t,)$) obtained via its Fourier series . This will be illustrated with the scaling behavior of the temporal structure function, i.e. the variance of the velocity time increment . Using the generalized forms of $ E^(k)$ and $T_k$, , the expression reads 
+
+S_2^(N),()&=_L__ 0[ |_ ^(N),|^2]\\
+&= (1+2H)(3+2H) D_2 _ ^3 [1-F^(N)(D_3||_1/L^2||) ]||^2 ||_1/L^-(2H+5) \ ,
+
+and when $N$
+
+S_2^(),()&=_L__ 0[ |_ ^(),|^2]\\
+&= (1+2H)(3+2H) D_2 _ ^3 [1-F^()(D_3||_1/L^2||) ]||^2 ||_1/L^-(2H+5) \ .
+
+Similarly to the temporal structure function associated with the exponential kernel , $S_2^(N),()$ and $S_2^(),()$ eventually undergo a transition at small scales, but for a different range of values of $H$ and $$. We indeed obtain, 
+
+S_2^(N),&()_|| 0^\\
+&4(1+2H)(3+2H) D_2 |D_3|^H/_=0^ [1-F^(N)(^2) ]^-(2H+1) H<2.
+
+Similarly for $S_2^(),()$, replacing $F^(N)$ by $F^()$ in and computing the remaining integral using the Gaussian correlation function , one obtains
+ 
+S_2^(),()&_|| 0^4(1+2H)(3+2H) D_2 |D_3|^H/2)2H H<2.
+
+Note that, for a given $$, the range of accessible spatial regularity $H$ is wider (i.e. $H<2$) in and than what was found (i.e. $H<$) in . This is a consequence of the behavior of $1-F^(N)(x)$ and $1-F^()(x)$ near the origin which go to zero as $x^2$, while the exponential kernel predicts a much slower decay (i.e. as $x$). This is shown in .
+
+For a given $$, when $H$ gets large, one obtains the trivial scaling associated to a differential field, using the expansion of the function $F^(N)$ provided in :
+
+S_2^(N),&()_|| 0^ \\
+&(1+2H)(3+2H) D_2 | D_3|^2N-3/2_ ^3||^2 ||_1/L^4-(2H+5) H>2.
+
+A similar result is satisfied for $S_2^(),()$ as a consequence of when $N$.
+
+The scaling behaviors derived in and pertain to the inertial range, for which the viscosity has been set to 0 before considering any limiting behavior. We now explore the behavior of the structure function taking first the limit of vanishing scales $ 0$, and second the limit of vanishing viscosity $ 0$. When the viscosity $$ is not taken to zero, instead of , we have
+
+S_2,^(N),()=_L_[ |_ ^(N),|^2]&= 2 _ ^3 [1-F^(N)(D_3||_1/L^2||) ] E_^() \\
+&_|| 0^ 2| D_3|^2N-3/2_ ^3||_1/L^4E_^() \ ,
+
+which behaves proportionally to $^2$ for any pair of values of $H$ and $$. This is very different from the behavior obtained for the simple exponential kernel : the obtained velocity field $^(N),(t,)$ is now smooth in time as long as $>0$ and $N 2$.
+
+In the case $H<2$, we also observe a transition in the power-law exponent of the temporal structure function, taking value $S_2^(N),() ||^H/$ in the inertial range , and then $S_2,^(N),() ||^2$ in the dissipative range . This transition takes place at a dissipative time scale $_d$ defined as the very characteristic time scale at which the asymptotic expansions of both $S_2^(N),$ (obtained from ) and $S_2,^(N),$ (obtained from ) coincide. Then it is clear that $_d$ is fully determined by viscosity and can be shown to be related to a certain power (depending on $$) of the dissipative length scale $_d$ defined in the longitudinal PSD .
+
+Let us now study the temporal spectrum $E_^(N),()$ (resp. $E_^(),()$) of the resulting velocity field $^(N),$ (resp. $^(),$) in a similar way as we did before for $^(1),$. We have
+
+E_^(N),() &= _L__e^-2i [ ^(N),(t,) ^(N),(t+,)] \\
+&= _ ^3 T_^(N)( T_) E_^() \ ,
+
+where $^(N)$ is the Fourier transform of the temporal kernel $F^(N)$ . A simple expression is obtained directly from :
+
+^(N)()= (N)(N-1/2)( 1+N)^N.
+
+In the limit $N$, a similar expression for $E_^(),()$ could be obtained, by replacing $^(N)$ in by the Fourier transform $^()$ of the temporal kernel $F^()$ , which is given by 
+
+^()()= e^-^2^2,
+
+eventually leading to after computing the inverse Fourier transform. 
+
+We show in Fig. (b) the convergence of the 1D Fourier modes to the Gaussian correlation function. Details are explained in the Appendices and 
+Letting first viscosity vanish ($ 0$), and considering the large frequencies $$ (secondly), we obtain for $H<(2N-1)$
+
+E^(N),() & _ 0 E_^(N),()= _ ^3 T_^2 ^(N)( T_^2 ) E^(^2 ||) ^2 \ ,\\
+&_ ^2(1+2H)(3+2H) D_2D_3^H/^-(1+H/)_0^ ^-(2+2H+1 )^(N)(^-2) .
+
+with the exact expression as $N $, without any constraints on the set of parameters $H$ and $$ as long as they are positive,
+
+E^(),() & _ 0 E_^(),()_ ^2(1+2H)(3+2H) D_2D_3^H/()^-(1+H/) (2 + 2).
+
+It is worth noting that, when $N$ is finite, for $H>(2N-1)$, one has
+
+E^(N),() &_ ^
+2^2N+1/2 (1+2H)(3+2H) D_2D_3^2N-1N^N-1/2(N-1/2)^-2N\\
+& _^3 ||^2||_1/L^2(2N-1)-(2H+5)\ .
+
+Equations and show that, when $H<2$, even if we let the number of layers $N$ tends to infinity, the field is not differentiable in time, as it is expected in the limit of vanishing viscosity. This range of possible values of the parameter $H$ setting the regularity in time is only accessible when $N 2$. Depending on the values of $N$ and $$, the present approach allows to consider Hurst parameters $H$ bigger that unity, that gives rise to fields at least once differentiable in time, although physically not really realistic in a turbulent context. When $H$ gets really large, and larger than $(2N-1)$, the equivalent provided in says that the field is differentiable $(N-1)$-times, the derivatives of order $N-1$ having the regularity of the Brownian motion.
+
+A second comparison concerning the temporal structure of DNS and the Gaussian model
+
+In Section , we compared have the spatial structure of the model velocity field $^(t,)$ with the spatial structure of the DNS velocity field $^,(t,)$. In this section, we would like to compare the temporal structure of these velocity fields. Once again, the DNS data are obtained from the Johns Hopkins turbulence database, where 5028 time steps are stored among the evolution in a statistically stationary regime. We have downloaded the three velocity components of $^,(t,)$ in a limited region of space defined by three planes of coordinates $x=0$, $y=0$ and $z=0$. 
+
+We begin by estimating on the DNS field the time correlation of Fourier modes $^,(t,_)$ for several values of the wave vector $_$, as it has been already done by . To be more precise, and because we have downloaded data only in a limited region of space, we will be focusing on the correlation in time of the one-dimensional longitudinal Fourier modes. We derive in Appendix the precise relationship between the time-correlation structure on the one-dimensional longitudinal Fourier modes 
+
+C_^(N),(,k_n) = _^(N),(t,k_n)_^(N),(t+,-k_n)] [ |_^(N),(t,k_n)|^2] F^(N)_,k_n(),
+
+and its corresponding three-dimensional counterpart that is fully characterized by the temporal kernel $F$ entering in . By virtue of statistical homogeneity and isotropy, the one-dimensional longitudinal Fourier mode $_^(N),(t,k_n)$ can be defined as
+
+_^(N),(t,k_n)= _[-L_/2\ ;\ L_/2]e^-2i k_n xu^(N),_1(t,x,0,0) x. 
+
+The solid lines of Fig. (b) are the theoretical predictions of $F^(N)_,k_n()$ for the above mentioned $k_n$, computed in Appendix 
+
+F_, k_n^(N)() = L_ _0^+ k_n^2+^2_2 F^(N) T_\ 2\ \ .
+
+In the case of $F^()$ and for $ = 1/2$, it can be written as
+
+F^()_,k_n = L_ e^-^2 D_3^2 k_n^2 + L^-2 _0^+ ^2+k_n^2 2e^-D_3^2 ^2 ^2 \ 2 \ \ .
+
+To estimate $D_3$ from the DNS, we therefore assume the integral to vary slowly with $k_n$ and fit $F^()_,k_n $ with a Gaussian function. This assumption may be verified by noting that all curves in (b) collapse while rescaling by $T_k$. Following this method, the estimated value of $D_3$ is then $D_3 = 3.62$.
+
+We show in Fig. (a) the results of our numerical estimation of the time correlation function $C_^(N),(,k_n)$ for several wave-number amplitudes $k_n$ and as a function of the time-lag $$. At vanishing time lag $=0$, all curves coincide with unity by construction, and then decrease toward 0 (they decorrelate) as $$ increases. The characteristic time scale $T_k_$ of decorrelation is thus clearly a decreasing function of the wave number $k_n$. As has been observed by , the very shape of the correlation function is close to a Gaussian function, and so, to estimate the characteristic time scale $T_k_n$, we perform a similar Gaussian fit as by . In a straightforward manner, for each accessible $1/L_<k_n<512/L_$, we find the best possible $T_k_n$ such that the temporal correlation function $C_^(N),(,k_n)$ resembles the explicit Gaussian function $(-(/T_k_n)^2)$ and reproduce the result of this fitting procedure in Fig. (c) using an orange line. We can indeed observe that $T_k_n$ is a decreasing function of the wave number $k_n$, and follows a power-law, as has clearly been evidenced by the linear trends in this doubly logarithmic representation. We can also identify two ranges, below and above $k_nL_ 10$. This transition has already been observed in several studies and remains unexplained, as far as we know. We believe that at large scales, i.e. at low wave numbers, the flow is sensitive to boundary conditions and thus cannot be considered universal. At higher wave numbers $k_n L_$ greater than 10, the power decrease is consistent with the expected behavior given in with $=1/2$ (governing the power-law exponent) and $D_3 = 3.62$. We superimpose with a dashed black line the proposed function dependence of $T_k_n$ with these aforementioned free parameters and clearly reproduce the decreasing behavior. To check whether such a parameterization of the characteristic time scale reproduces the behaviors of Fourier modes time correlation functions, we add in the inset of Fig. (a) a representation of $C_^(N),(,k_n)$ as a function of the re-scaled time variable in the limit of large $k_n$ $/T_k_n D_3k_n$, and observe that all correlation functions collapse in a satisfactory manner on a single curve that reads $(- D_3 k_n^2)$.
+
+For comparison against our modeling approach, we consider the Gaussian velocity field $u^(2),_i(t,)$, i.e. for $N=2$. It is fully characterized in the statistically stationary regime by the covariance structure of its Fourier modes $^(2),_i(t,_)$ which is provided in . We have considered an evolution based on two layers $N=2$ that ensures a smooth behavior in time for a finite viscosity, as it is shown in . This choice is dictated by the necessity of ensuring smooth behavior in time of the velocity field, corresponding to bounded velocity time-derivatives (in this case, $_t u^(2),_i(t,)$ have a finite variance), as is observed in DNS. The case of two embedded layers $N=2$ allows this and is computationally more treatable. As we explain in Chapter , each layer needs to be stored in memory, which can become prohibitive given the size of the boxes, which corresponds to three-components of size $1024^3$ collocation points for each layer. Besides considering $H=1/3$, the free parameters $D_2$, $L$ and $_d$ entering in the functional form of the longitudinal PSD have the same values as the ones chosen to describe the spatial structure of the velocity field, as they are given in Section . The remaining free parameters $D_3$ and $$ that appear in the characteristic correlation time scale $T_k$ of Fourier modes are the ones that we have estimated before, corresponding to $=1/2$ and $D_3 = 3.62$. We would like to recall that the value of $D_3$ is not universal because it is related, when $=1/2$, to the standard deviation of the velocity. An efficient and exact in distribution numerical scheme is proposed in Section in order to give instances in space and time of the model field $u^(2),_i(t,)$. 
+
+As we did for the DNS velocity field, we display in Fig. (b) the temporal longitudinal correlation functions $C_^(N),(,k_n)$ for the modeled Gaussian velocity field $u^(2),_i(t,)$. Although being known to be different from the DNS in a theoretical point of view and provided in (once recasted into the longitudinal context ), the estimations of $C_^(N),(,k_n)$ for various wave numbers $k_n$ displays similar trends as for the DNS. In this case, the collapse is not perfect because we are considering only the longitudinal correlation functions, which necessitate a transformation given in 
+) when going from the three dimensional formulation to the one dimensional setting. We display in Fig. (c) the time $T_k$ as a function of $k$, for the model for which Fourier mode temporal correlation is prescribed using blue symbols, and the measured Fourier mode correlation time for DNS in orange. We observe a very satisfactory collapse of the estimations of $T_k$ from DNS and the model. We also superimpose the asymptotical limit $D_3 k_n$ using the form provided in the inset, we display the re-scaled correlation functions by the asymptotic behavior of the imposed characteristic time scale $D_3 k_n$ . 
+
+ 
+
+We now present in Fig. instances of the time evolution of both DNS and Gaussian model velocity fields, with the statistical estimation of the respective temporal spectra and structure functions. We begin in Fig. (a) by displaying the time evolution of the velocity norm $|^,(t,)|$, along the line $([-,],0,0)$ and across time $t[0,5028 t]$, where the time stepping $ t$ is provided by the Hopkins database. We compare with a similar representation in (b) of the same quantity but for the model $|^(2),(t,)|$. The same colorbar has been used in both cases. Although the spatial structures of these two velocity fields are very similar, up to some filamentary structures that are not reproduced by the model (see the discussion in Section and Figure ), the spatio-temporal representation of the velocity norm exhibits a key difference between DNS and the model: for the DNS, we can observe that large scale structures of typical size the integral length scale are swept by the flow, whereas it is not the case in the model. Although not clearly evidenced in this representation, we expect the absence of this sweeping property to be true for eddies at any scale. Thus, while the statistical correlation structures of Fourier modes are well reproduced by the model, as evidenced in Fig. , the model misses one of the important aspects of the sweeping phenomenon, which is the advection of the large scales, as observed in DNS. We invite the reader to the conclusion where this necessary modeling step is proposed as a perspective.
+
+Our statistical estimation of the temporal power spectrum density $E_^()$ defined in is shown in Fig. (c). To do so, we performed a discrete one-dimensional Fourier transform in time of the profile of the scalar product of velocity fields at a fixed position in space, as required in the definition . The obtained evolution in time is not periodic, and in doing so we introduce a spurious discontinuity in the picture. We have checked that windowing this profile aimed at minimizing the consequences of this discontinuity is not altering the observed behaviors in the inertial range of scales, but is slightly changing the results in the respective dissipative range (data not shown). As a result, the temporal spectra correspond to the variance of the (temporal) Fourier modes at each accessible frequency. The variances of the (temporal) Fourier modes of the velocity fields $^,(t,)$ and $^(2),(t,)$, obtained of the same statistical sample previously described, as functions of the frequency, are displayed doubly logarithmically in Fig. (c). We can see that with previously given free parameters, the temporal spectra superimpose in a very satisfactory manner in the inertial range, and follow a typical $^-5/3$ power-law decrease. Concerning the model, we observe nevertheless a slight delay before reaching the dissipative range. Let us recall we have two sets of parameters, one entering in the functional form of the longitudinal PSD and the remaining free entering in $T_k$ . When these parameters are chosen, the temporal PSD shown in Fig. (c) is fully determined. We believe that this delay could be weakened while choosing a slightly larger value of the parameter $_d$ entering in , whose value depends on the simplistic exponential decay used in the present version of the model and/or increasing the number of layers $N$.
+
+We finish with the estimation of the second-order temporal structure function $S_2^,():= [ ^ t+, - ^ t, ^2]$, as defined in in the vanishing viscosity limit, and display our results in Fig. (d). The trends are consistent with the observations made for the temporal spectra. Both DNS and model velocity fields exhibit a power-law behavior in the inertial range, with a typical power-law dependence $^2/3$. To see this, we superimpose the prediction made in with a black dashed line. Note that in the inertial range of scales, predictions depend only weakly on the value of the number of layers N to define the model. Once again, we observe a slight delay of the model to predict the beginning of the dissipative range, for the same reason as the one mentioned in the discussion of the temporal PSDs.
+
+To conclude this comparison, we can say that while the statistical structure of the DNS is fairly satisfactory (at least up to the aforementioned second-order statistical characterization), our model does not capture in a fully appropriate way the advection of the eddies by some large scale flow, as it is clear from the inspection of Fig. (a) and Fig. (b). To our knowledge, there is no model capable of doing this except some recent propositions by , where the temporal structure of the advecting velocity field, although simplistic in terms of regularity, is defined recursively through scales using an inverse Lagrangian flow map at each scale of the construction. We will return to these possible perspectives in the final Section. 
+
+Numerical method
+
+Remarks concerning the Discrete Fourier Transform (DFT)
+
+In all simulations, we consider a finite number of Fourier modes, and thus, we need to truncate in an appropriate manner the Fourier series and perform an associated Discrete Fourier Transform (DFT). For full benefit of the Fast Fourier Transform (FFT) algorithm, we will be considering an even number of modes $N_x$ in each direction, which will furthermore be taken as a power of 2, i.e. $N_x=2^p$, with $p$ being a given integer. In this spirit, over the grid $_= L_/N_x$ with $\ -N_x/2 \ ;\ N_x/2-1\ ^3$, here and further, we define the DFT as, for $_=/L_$ with $\ -N_x/2 \ ;\ N_x/2-1\ ^3$,
+
+^_i(t,_) = (N_x)^3_ \ -N_x/2 \ ;\ N_x/2-1\ ^3 e^-2i _ _n u^_i(t,_n),
+
+with corresponding inverse DFT
+
+u^_i(t,_) = L^3__\ -N_x/2 \ ;\ N_x/2-1\ ^3 e^2i _ _ ^_i(t,_).
+
+Numerical schemes
+
+Consider first the \ given by , and recall that in the \ its solution is given by . The derivation of a numerical scheme is based on a generalization of the expression of the solution $^(1),_i(t,)$ at time $t$, depending on its initial value $^(1),_i(0,)$ at time $0$: for any nonnegative integer $m$, the solution at time $t_m+1=t_m+ t$ is expressed depending on the solution at time $t_m$ as
+
+^(1),_i(t_m+1,) = e^-T_^(1),_i(t_m,) + (k)T__ip()_s=t_m^t_m+1 e^--sT__p(s,).
+
+The two terms on the right-hand side of are independent Gaussian random variables, therefore the values of $^(1),_i(t_m,)$ can be computed recursively if one is able to sample the sequence of independent Gaussian random variables $(_s=t_m^t_m+1 e^--sT__p(s,))_m 0$. It suffices to compute the expected value 
+\[
+[_s=t_m^t_m+1 e^--sT__p(s,)]=0
+\]
+and, using , the second-order moments
+\[
+[|_s=t_m^t_m+1 e^--sT__p(s,)|^2]=L^3__s=t_m^t_m+1 e^--s)T_ ds=T_(1-e^-T_)2.
+\]
+For any $m$, consider a Gaussian white noise vector $_p,m()$ and define the associated Fourier modes $_p,m()$ following , i.e. set
+\[
+_p,m()=_[-L_/2\ ;\ L_/2]^3e^-2i _p,m() \ .
+\]
+As a consequence of and , one has the equality in distribution
+
+_s=t_m^t_m+1 e^--sT__p(s,)=T_)2_p,m+1(),
+
+meaning that the random variables on the left and the on the right-hand sides of the identity above are Gaussian, centered, and have the same covariance structure.
+
+This suggests to introduce the numerical scheme defined by
+
+^(1),_i,m+1() = e^-T_^(1),_i,m() + ()(1-e^-T_)2_ip()_p,m+1(),
+
+which can be simulated in practice by sampling a new Gaussian white noise vector and its Fourier modes at each iteration. This means that the numerical approximation defines a discrete time Markov process.
+
+If the initial value $^(1),_i,0()$ is equal in distribution to the initial value $^(1),_i(0,)$ of , then for all $m 0$ one has $^(1),_i,m()=^(1),_i(t_m,)$ in distribution. As a result, the proposed numerical scheme solves exactly in distribution the Ornstein--Uhlenbeck dynamics (at grid times $t_m=m t$).
+
+A stationary version of the numerical approximation is obtained by choosing the initial value $^(1),_i,0()$ distributed as the fractional Gaussian vector field studied in subsection , which can be sampled following as
+
+^(1),_i,0()=()2_ip()_p,0().
+
+It is then straightforward to check that by construction the distribution of $^(1),_i,m()$ is independent of $m$.
+
+Applying a numerical scheme which is exact in distribution for the Ornstein--Uhlenbeck dynamics naturally preserves its stationary Gaussian distribution, this is fundamental to obtain numerical simulations which exhibit the correct spatial regularity and statistical properties.
+
+The objective of this section is to propose a scheme for the process studied in for arbitrary $N 2$. Like in the case $N=1$ the aim is to define a sequence of random variables $(_i,m^(N),())_m 0$ such that one has the equality in distribution $_i,m^(N),()=_i^(N),(t_m,)$ for any nonnegative integer $m 0$. The construction is more involved since the dynamics is only causal when $N 2$.
+
+A Markovian formulation of the dynamics is obtained by considering the unknown
+
+_i^(N),(t,)=
+
+_i^(N),(t,)\\
+_i^(N-1),(t,)\\
+\\
+_i^(2),(t,)\\
+_i^(1),(t,)
+ \ .
+
+Introducing the square matrix $^(N)()$ defined by
+
+^(N)(k)=
+-T_k
+
+1 & 0 & & 0 & 0 \\
+0 & 1 & & & 0 \\
+ & & & & \\
+0 & & & 1 & 0 \\
+0 & 0 & & 0 & 1
+
++
+
+0 & 1 & & 0 & 0 \\
+0 & 0 & & & 0 \\
+ & & & & \\
+0 & & & 0 & 1 \\
+0 & 0 & & 0 & 0
+
+and the row vector
+
+^(N)=
+
+0\\
+\\
+0\\
+1
+,
+
+the vector-valued unknown $_i^(N),(t,)$ can be interpreted as the solution to the multi-dimensional Ornstein--Uhlenbeck dynamics
+
+_i^(N),(t,)=^(N)()_i^(N),(t,) t+E_(k)_ip()^(N)_p(t,).
+
+Considering the matrix exponential $e^t^(N)(k)$ for all $t 0$, the variation of constants formula provides an expression for the solution at any time $t 0$
+
+_i^(N),(t,)=e^t^(N)(k)_i^(N),(0,)+E_(k)_ip()\!_s=0^te^(t-s)^(N)(k)^(N)_p(s,).
+
+Using , it is straightforward to check that for all $t 0$ one has
+
+e^t^(N)(k)=e^- tT_
+
+1 & t & & (N-2)! & (N-1)! \\
+0 & 1 & & & (N-2)! \\
+ & & & & \\
+0 & & & 1 & t \\
+0 & 0 & & 0 & 1
+
+and as a result one has
+
+e^t^(N)(k)^(N)
+=
+e^- tT_k
+
+(N-1)! \\
+(N-2)! \\
+ \\
+t \\
+1
+
+.
+
+Like in the derivation of the numerical scheme when $N=1$, it is convenient to express the solution at time $t_m+1=t_m+ t$ depending on the solution at time $t_m$, as
+
+_i^(N),(t_m+1,)&=e^ t^(N)(k)_i^(N),(t_m,)\\
+&+E_(||)_ip()_s=t_m^t_m+1e^(t_m+1-s)^(N)(k)^(N)_p(s,).
+
+It is required to sample at each iteration the Gaussian random vector 
+
+_p,m^(N)()
+=
+
+_p,m^(N)()\\
+_p,m^(N-1)()\\
+\\
+_p,m^(2)()\\
+_p,m^(1)()
+
+=
+_s=t_m^t_m+1e^(t_m+1-s)^(N)(k)^(N)_p(s,)
+
+which has components given by
+
+_p,m^(n)()=_s=t_m^t_m+1e^-(t_m+1-s)T_-s)^n-1(n-1)!_p(s,).
+
+The components of $_p,m^(n)()$ are not independent since they depend on the same white noise. In order to sample the centered Gaussian random vector $_p,m^(N)()$, one needs to compute its covariance matrix $^(N)()$ with entries given by
+
+(^(N)())_n_1,n_2&=[_p,m^(n_1)()_p,m^(n_2)()]\\
+&=L^3__s=t_m^t_m+1e^-2(t_m+1-s)T_-s)^n_1-1(n_1-1)! -s)^n_2-1(n_2-1)!ds\\
+&=L^3__s=0^ te^-2sT_(n_1-1)! (n_2-1)!ds.
+
+In order to sample a centered $N$-dimensional Gaussian random vector with a given covariance matrix $$, it is sufficient to identify any matrix $$ such that $=^T$. Indeed, if $$ is a Gaussian random vector with independent components distributed as standard centered normal random variables, then $$ is a centered Gaussian random vector with covariance matrix $^T=$. The identification of such matrices $$ can be performed in several ways. Recalling that the covariance matrix $$ is nonnegative symmetric, one may compute its square root (which requires to compute first its eigenvalues and eigenvectors). In practice, when $$ is positive definite, a more convenient approach is to compute the Cholesky decomposition of $$, which amounts to finding a matrix $$ that is lower triangular. The matrix $$ is unique if the diagonal entries of $$ are positive. Moreover, Cholesky decomposition can be computed using a straightforward algorithm.
+
+Let $^(N)()$ denote the matrix obtained by the Cholesky decomposition of the covariance matrix $^(N)()$ whose entries are given above. The Gaussian random vector $_p,m^(N)()$ can be sampled as $^(N)()_p,m^(N)$,
+where $_p,m^(N)$ is a Gaussian random vector given by
+\[
+_p,m^(N)=
+_p,m^(N)()\\
+_p,m^(N-1)()\\
+\\
+_p,m^(2)()\\
+_p,m^(1)()
+
+\]
+with entries $_p,m^(N)(),,_p,m^(1)()$ given as Fourier modes of independent Gaussian white noise vectors $_p,m^(N)(),,_p,m^(1)()$.
+
+Finally, one obtains the numerical scheme defined by
+
+_i,m+1^(N),()=e^ t^(N)(k)_i,m^(N),()+E_(||)_ip()^(N)()_p,m^(N).
+
+The numerical approximation defines a discrete time Markov process, where at each iteration $N$ new Gaussian white noise vectors and their Fourier modes need to be computed.
+
+If the initial value $_i,0^(N),()$ is equal in distribution to the initial value $_i^(N),(0,)$ of the continuous time dynamics, then for all $m 0$ one has $_i,m^(N),()=_i^(N),(t_m,)$ in distribution. As a result, the proposed numerical scheme solves exactly in distribution the Ornstein--Uhlenbeck dynamics (at grid times $t_m=m t$).
+
+A stationary version of the numerical approximation is obtained by choosing the initial value $_i,0^(N),()$ distributed according to the Gaussian stationary distribution described in subsection~. If this holds, then the distribution of $_i,m^(N),()$ is independent of $m$.
+
+Conclusions and perspectives
+
+We have proposed a time evolving stochastic model of a Gaussian velocity field that reproduces several important aspects of fluid turbulence, up to second-order statistical quantities. The present version of the model is formulated in a Gaussian framework and is fully characterized by its spectral properties, or equivalently by its second-order structure function, in both space and time. To the best of our knowledge, this is the unique stochastic representation of fluid turbulence with a realistic statistical temporal structure, associated to a causal formulation, which encompasses the dimensional predictions of . The statistical signatures of this random field compare in a satisfactory manner with the observations made on DNS velocity fields, provided by the Johns Hopkins database . We provide efficient numerical schemes, exact in probability distributions, that are straightforward to implement.
+
+As mentioned throughout the article, the present random model is a Gaussian field and therefore misses the possibility of reproducing several other fluid turbulence properties of crucial importance. Among them, the model misses the asymmetrical nature of the probability density functions of the velocity increments, known in turbulence as the skewness phenomenon . The skewness phenomenon is clearly understood in the context of energy transfers. Its statistical formulation is fully taken into account by the Kármán and Howarth equation and even locally in the context of the budget of weak solutions of the Navier-Stokes equations . It is usually associated with the existence of a cascading phenomenon of energy towards small scales. Thus, in this sense, the present Gaussian model is not able to reproduce some crucial ingredients of the nonlinear dynamics, that are at the heart of the equations of fluid motion. In the same spirit, other non-Gaussian behaviors, as can be observed in higher-order statistical quantities, such as the flatness of velocity increments , are not reproduced either. These anomalous behaviors are usually associated to the intermittency phenomenon, also known as multifractality . In a future communication (part II), we aim at generalizing the present Gaussian approach to a multifractal framework, while including some ingredients of the vorticity stretching phenomenon, in the spirit of previous works .
+
+Also, as we mentioned in Section when we compared the temporal structure of the present modeled velocity field with DNS, the present approach misses an important ingredient of the sweeping effect, but presents excellent agreement from a statistical point of view. A recent proposition by seems to allow this property by introducing in their iterative construction of a velocity field the inverse of the Lagrangian flow map. It is thus tempting to apply such a procedure in the context of fractional Gaussian fields and explore whether it gives a realistic picture in time and if this remains affordable from a numerical point of view. Once again, we keep this aspect in mind for future investigations.
+
+ 
+ [Acknowledgements]L.C. and I. S. are partially supported and J. D. L. is funded by the Simons Foundation Award ID: 651475. We thank Mokhtar Adda Bedia for his help regarding the expansion of Bessel functions in the vicinity of the origin. This work is also partially supported by Institut des Mathématiques pour la Planète Terre (Project: The role of turbulent fluctuations in the natural dispersion of aerosols, particles and pollutants).
+
+Analysis of the temporal covariance structure of the embedded model
+
+Computation and limit of the covariance structure of $(t,_)$ as $N$. 
+
+Following Proposition A.1 of Ref. , we can compute the covariance function of $^(N),_i(t,_)$. Let us reproduce here the arguments developed in . Let us first assume that the system of $N$ equations to possesses a statistically stationary solution, with the consequence that correlation functions only depend on the time difference, such that 
+
+ C__i^(N),,_j^(N),(,,')=[^(N),_i(t,)^(N),_j(t+,')],
+
+and for any $1 n N-1$,
+
+ C__i^(n),,_j^(n),(,,')=[^(n),_i(t,)^(n),_j(t+,')].
+
+In the statistically stationary regime, we can write, similarly to ,
+
+^(N),_i(t,_)=_-^t \; e^-(t-s)/T__^(N-1),_i(s,_) s,
+
+and as a result, one obtains
+
+ C__i^(N),,_j^(N),&(,_,_)\\
+&=_-^t_-^t+ \; e^-(2t+-s_1-s_2)/T__ C__i^(N-1),,_j^(N-1),(s_1-s_2,_,_) s_1 s_2\\
+&=_-^0_-^ \; e^-(-s_1-s_2)/T__ C__i^(N-1),,_j^(N-1),(s_1-s_2,_,_) s_1 s_2\\
+&=_0^_-^ \; e^-(+s_1+s_2)/T__ C__i^(N-1),,_j^(N-1),(s_1-s_2,_,_) s_1 s_2,
+
+where the last equality follows by the parity in time of any correlation function. The above can be formally rewritten as 
+ 
+ C__i^(N),,_j^(N),(,_,_)&= _ R^2 g_T__(+s_2)g_T__(s_1) C__i^(N-1),,_j^(N-1),(s_1-s_2,_,_) s_1 s_2\\
+ &=_ R^2 g_T__(+t_1+t_2)g_T__(t_1) C__i^(N-1),,_j^(N-1),(t_2,_,_) t_1 t_2\\
+ &=_ R (g_T__ g_T__)(+t_2) C__i^(N-1),,_j^(N-1),(t_2,_,_)) t_2\\
+ &=(g_T__ g_T__ C__i^(N-1),,_j^(N-1),( ,_,_))(),
+
+where we have introduced the function $g_T_(t)=e^-t/T__t 0$ and the correlation product $$, which is defined, for any two functions $g_1$ and $g_2$, as
+$$ (g_1 g_2)() = _ Rg_1(t)g_2(t+) t.$$
+Note now that the correlation product of $g_T_$ by itself is given by
+
+G_T_(t) (g_T_ g_T_)(t) = 2e^-|t|/T_.
+ 
+Therefore, by induction, we obtain
+ 
+ C__i^(N),,_j^(N),(,_,_)&=(G_T__^ (N-1) C__i^(1),,_j^(1),( ,_,_))(),
+
+using the notation
+$$g^ n=_n.$$
+Finally, noting that 
+$$ C__i^(1),,_j^(1),( ,_,_) = q^(N)L^3_ G_T__()E_^(k_)_ij(_)_,-^(3),$$
+we obtain the expression of the temporal correlation function 
+ 
+ C__i^(N),,_j^(N),(,_,_)= q^(N)L^3_ G_T__^ N()E_^(k_)_ij(_)_,-^(3).
+
+In order to study the asymptotic behavior when $N $, the function $G_T_(t)$ can be written in the frequency domain as
+
+G_T_() = _ Re^2i 4N1+^2N^2d,
+ 
+and one obtains
+
+G_T_^ N() = _ Re^2i [4N1+^2N^2 ]^N d.
+
+Taking into account the value of $q^(N)$ , we obtain
+ 
+ C__i^(N),,_j^(N),(,_,_)&= 2F^(N)(/T__)E_^(k_)_ij(_)_,-^(3),
+ 
+ with the kernel $F^(N)$ given by
+ 
+F^(N)()=e^2i [1+N]^N d _ R[1+N]^N d.
+ 
+ Note that the expression provided in with the temporal kernel $F^(N)(/T_)$ given in follows from once the remaining integrals entering in are computed with the help of a symbolic calculation software that also allows us to give the explicit expression in . 
+ 
+ Unlike the Fourier mode $_i^(1),(t, )$ which is not differentiable, the Fourier mode $_i^(N),(t, )$ for $N 2$ is now differentiable (N-1) times. In particular, the variance of its derivatives $^p_i^(N),(t,_)/ t^p$ becomes finite as long as $p N-1$, and we can get the expression
+ 
+ [| ^(N),(t,_) t^p|^2]&=L^3_E_^(k_)(-1)^p.F^(N)(/T__) t^2p|_=0\\
+ &=L^3_E_^(k_)T__^2p[1+N]^N d _ R[1+N]^N d
+ 
+which can be shown to be finite as long as $p N-1$, and can eventually be exactly expressed.
+
+ More interesting is the limit of when $N $. Using the expression of the exponential as the limit
+ 
+ _N ( 1+N)^N = e^-x,
+ 
+ permutation of the integrals and the limits ensured by a dominated convergence argument , one then obtains following from in the limit $N$.
+
+Computation of the equivalent of the kernel $F^(N)
+$ at small argument 
+
+We will eventually need the behavior of the function $F^(N)()$ at small argument $ 0$. An analytical expression of can be computed using Mathematica which reads:
+ 
+ F^(N)() = |^N-1/2
+ K_N-1/2( 2||)(N-1/2).
+ 
+To do so, we have to perform a development of the modified Bessel function of the second kind. We found the approach developed by very clear and convenient. Based on their equations (2) and (3), we write
+$$K_N-1/2( 2||)=(-1)^N2[I_N-1/2( 2||)-I_-N+1/2( 2||) ],$$
+which depends on the modified Bessel function of the first kind $I_(x)$ with the following development
+$$ I_(x) =( 2)^_k=0^ 4^k k! (+k+1)x^2k=( 2)^( (+1)+4 (+2)x^2+o(x^2)).$$
+At small argument, we get the following
+
+ F^(N)() = (-1)^N+1 (N-1/2)( (-N+3/2)+ (-N+5/2)+o(^2)),
+ 
+which, using
+$$ (-N+3/2)(N-1/2) = ( (-N+3/2))=(-1)^N+1$$
+and
+$$ (-N+5/2)(N-1/2) =(-N+3/2)(-1)^N+1,$$
+simplifies to,
+
+ F^(N)() = 1- N-3/2^2+o(^2).
+ 
+ 
+ 
+
+Relationship between the time-correlation of the three-dimensional Fourier modes and the one-dimension longitudinal Fourier modes
+
+While most of the experimental and numerical statistics are expressed in terms of the longitudinal spectrum and longitudinal Fourier modes \ , the present model is made to first prescribe the 3D PSD $E_^ k $. We therefore compute a relation between the longitudinal Fourier modes \ and the 3D Fourier modes . 
+
+ C_^(N), , k_x & := [ _x^(N), t+, k_x, y, z _x^(N), t+, k_x’, y, z] \\
+ &= L_ _[-L_/2\ ; \ L_/2]^2 1-k^2 (k)2 F^(N)T_k k_y \ k_z\\
+ &= L_ _0^+ k_x^2+^2_2 F^(N) T_\ 2\ \ .
+
+This integral expression cannot be written as a function depending on $k_x$ and $$ multiplied by a constant. It can however be used to numerically compute the theoretical prediction $ C_^(N), , k_x $, that are plotted for
+reference in Fig. (b) in solid line.
+
+One-dimensional Fourier modes correlation function and its convergence onto a Gaussian.
+
+We study here the Fourier modes correlation function of a one-dimensional model similar to the previous 3D one and numerically show their convergence toward a Gaussian. The one-dimensional $N$-layers model writes: 
+
+ ^(N),_1D(t,k) t &= -T_k^(N),_1D(t,k)+^(N-1)_1D(t,k)\;\\
+ ^(N-1)_1D(t,k) t &= -T_k^(N-1)_1D(t,k)+^(N-2)_1D(t,k)\;\\
+ &\\ 
+ ^(2)_1D(t,k) t &= -T_k^(2)_1D(t,k)+ ^(1)_1D(t,k)\;\\
+ ^(1)_1D(t,k)&= -T_k^(1)_1D(t,k) t + E_^(k)(t,k)\;,
+
+where $E_^(k)$ is the longitudinal PSD as defined in , $T_k$ the characteristic time of the Fourier mode $k$ defined in and $q^(N)$ a normalization factor defined in . Similarly to , the one-dimensional Fourier modes correlation function write in the : 
+
+[^(N),_1D(t+,k_n)^(N),_1D(t,k_m)]= L_F^(N)(/T_k_n)E_^(k_n)_n,m,
+
+with $F^(N)$ defined in . This result is summarized in Fig. .
+
+Figure (a) shows both numerical estimation (dots) and theoretical prediction (solid line) of Fourier modes correlation function for $N = 8$ layers, in the uni-dimensional case 
+and for log-spaced Fourier modes. The inset shows the exact same curves as a function of $/T_k$ and we observe that all curves collapse on a single nearly Gaussian function. In Figure (b), we show the convergence of a Fourier mode correlation function toward a Gaussian while increasing the number of layers $N$. We can observe that there is a slight but sufficiently small difference between $N = 8$ and $N +$ to consider a $8$-layers process to be numerically smooth and whose Fourier mode \ are almost Gaussian. 
+The model is therefore fully able to depict a Gaussian-like Fourier mode correlation function. To lead those numerical simulations, we have chosen the same set of parameters as for the $3D$ simulations, namely $D_3 = 3.62$, $D_2 = 0.021$, $H = 1/3$, $ = 1/2$, $L= L_ =2$, $_d =0.085$, $N_x = 1024$, $N_t = 5028$ and $ t = 0.002$. The integral time scale $T_E$ has been defined arbitrarily by $T_E = $, where $^2$ is the variance of the process $^2 = 2_0^+ E_^(k) \ k$. An ensemble average of the process has been made over 100 realizations to estimate numerically the Fourier modes s \ in Fig. .

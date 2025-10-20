@@ -1,0 +1,397 @@
+[mathlines]lineno
+
+[utf8]inputenc
+[T1]fontenc
+
+1
+
+[utf8]inputenc 
+[T1]fontenc 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ \\
+ 
+ 
+ Xiaowei Zhu \\
+ Department of Mechanical and Materials Engineering \\ Portland State University \\ Portland 97201, OR, USA. \\
+ \\
+ 
+ Ghanesh Narasimhan \\
+ Department of Mechanical Engineering \\\& St. Anthony Falls Lab.\\ University of Minnesota \\ Minneapolis, MN 55455, USA. \\
+ \\
+ 
+ Dennice F Gayme \\
+ Department of Mechanical Engineering \\ Johns Hopkins University \\ Baltimore, MD 21218, USA. \\
+ \\
+ 
+ Charles Meneveau \\
+ Department of Mechanical Engineering \\ Johns Hopkins University \\ Baltimore, MD 21218, USA. \\ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+The atmospheric boundary layer undergoes significant changes throughout a diurnal cycle, affecting wind turbine performance and wakes in wind farms. Wind farm Large Eddy Simulations (LES) under such conditions provide rich datasets to study the underlying dynamics and identify important trends. Here, we describe a comprehensive open dataset generated using LES of an 8-turbine wind farm consisting of four rows of two turbines. To avoid specifying either prescribed surface temperature or heat flux, a local 1D soil heat conduction model is used with time-periodic solar surface heating, coupled to LES. After several days of low-resolution LES, an approximately time periodic behavior is achieved, after which high-resolution LES is continued during a 24-hour period. Analysis of the LES data reveals that wind turbine wakes have a significant impact on the temperature field and spatial surface heat flux patterns and exhibiting increased surface temperature behind the wind farm at night under the specific conditions of the simulation (dry unvegetated soil, clear sky). We observe that for a few morning hours the first row of wind turbines generates less power compared to the last row. Detailed analyses of the data using innovative web-services facilitated data access tools reveal that during the morning transition, the presence of a low-level jet and the wind farm blockage effect combine to cause cooling and a reduction in wind speed at hub height upstream of the wind farm. In addition, larger turbulence levels exist downstream in the wind farm, explaining the larger power production of downstream turbines. 
+
+Introduction
+
+The wind and temperature fields in the atmospheric boundary layer (ABL), which influence the background stratification and consequently the atmospheric conditions in the ABL, are the most critical meteorological variables for wind energy applications. A number of numerical studies have investigated the characteristics of the convective ABL , conventionally neutral ABL , and stable ABL , typically conducted with constant thermal forcing at the ground surface and analyzing the statistics when quasi-equilibrium conditions are reached. The stability of the ABL flow affects wind shear, wind veer, and turbulence in the incoming wind profile, all of which are essential to wind farm performance . Furthermore, recent studies have examined the interaction between the aforementioned ABL flow and wind farms , revealing that the presence of wind farms generates wake flows, triggers turbulence behind the wind turbines, and even affects the temperature field distribution within and beyond the wind farm . In particular, nighttime warming behind wind farms has been reported in a few high-fidelity numerical studies on the interaction between a stably stratified ABL and a wind farm. This temperature increase has also been confirmed by several observational studies, which show a rise of approximately $O(1)$ K at the land surface, depending on vegetation type and season . 
+
+On a daily scale, the real ABL flow not only experiences stable, conventionally neutral, or convective conditions but also undergoes late-afternoon and early-morning transitions, during which stability and thermal forcing at the ground surface change significantly within a few hours—not only in magnitude but also in sign—substantially influencing the ABL flow and temperature structure. In the diurnal cycle, variations in the atmospheric boundary layer height lead to changes in wind direction in part due to the Coriolis effect. Additionally, the early-morning 
+transitions can trigger formation of a low-level jet, a narrow band of fast-moving wind flow above the ground surface which enhances wind speeds near the ground.
+
+There are a few large-eddy simulation (LES) studies of the ABL and its interaction with wind farms on a daily cycle time scale. Several LES studies investigated the evolution of ABL flows and the temperature field during a typical diurnal cycle, using surface temperature or surface sensible heat flux from a well-known field campaign as thermal boundary conditions . Quon et al. examined the interaction of ABL flows with a wind farm using realistic turbine spacing and a wake-steering strategy that varies between different turbines, all on a diurnal scale through measurement-driven large-eddy simulations . Limited studies explored wind farm performance in a diurnal cycle through an idealized LES, where the formation of a low-level jet and its modulation by the presence of the wind farm were observed in the early morning . 
+
+The presence of wind turbines will generate wake flows behind them, causing significant reductions in power for turbines in the wakes of upstream turbines . In addition, the wake turbulence is expected to modulate the ground surface sensible heat flux due to the air flow above it. Therefore, ground surface sensible heat flux, and consequently ground surface temperature, are expected to be heterogeneous between the areas directly behind the wind turbines and the spaces between them. Most diurnal cycle studies impose either spatially uniform surface temperature or surface sensible heat flux from the field campaign as thermal boundary conditions . More realistically, the ground surface sensible heat flux and temperature can be determined by coupling the solution of a three-dimensional heat conduction equation in the soil with a surface thermal energy balance approach. . The soil model can also be simplified to a zero-layer model, without explicitly resolving the soil domain . 
+
+In this study, we investigate a representative diurnal cycle evolution of ABL flow and its interactions with a small wind farm. 
+We aim to answer the following research questions: (a) What is the effect of the wind farm on the thermal state of the ABL especially in the wake of the wind farm during the stably stratified conditions during night-time? (b) Is the usual turbine wake effect (namely that downstream turbines can generate substantially less power than upstream turbines when they are waked) observed at all times during a representative 24 hour period of a typical wind farm evolution? (c) Can carefully designed storage of the simulation data facilitate the identification of physical phenomena that underlie the observations made? The amount of data generated during a diurnal cycle of a wind-turbine array boundary layer flow (WTABL) is quite significant and provides a rich amount of information that could be used to address also many other research questions. Therefore, both to facilitate data analysis to answer the aforementioned current research questions and to enable additional analysis of many other possible questions, the dataset generated in our simulation is ingested into an existing public database system (the Johns Hopkins Database System, JHTDB). Together with another wind farm dataset for a larger wind farm in a quasi-steady state conventionally neutral ABL , the new datasets forms the new JHTDB-wind system (). 
+
+The LES framework and governing equations are described in section , including a description of the boundary and inflow conditions, the latter using a concurrent-precursor inflow method . For the thermal boundary condition, a separate one-dimensional soil heat conduction equation is used to avoid prescribing homogeneous ground surface temperature or heat fluxes a priori. Section provides relevant information regarding the simulation setup and data stored to build the JHTDB-wind database. Simulation results and general observations regarding the flow evolution during the 24 hour period are presented and discussed in section . In section and we discuss results pertaining to the two specific research questions regarding the thermal state and power production during transitions to and from the stably stratified conditions. Conclusions are provided in . Details about JHTDB-wind as well as descriptions of methods to access the public dataset are provided in appendices. 
+
+Large-eddy simulation
+
+Simulations are performed using the open-source large-eddy simulation model LESGO. This code has been applied extensively in previous LES studies to simulate wind turbine wake flows. The three-dimensional Cartesian coordinates are $(x, y, z)$, where $x$ is the streamwise direction, $y$ the spanwise direction, and $z$ the vertical direction, respectively. We also use, interchangeably when convenient, index notation where $x_i$ ($i$ = 1, 2, 3) for each direction. Velocity components along these directions are $u_i$ ($i$ = 1, 2, 3), or $u$, $v$, and $w$ for the $x$, $y$, and $z$-directions, respectively.
+
+The turbulent flow is simulated by solving the filtered Navier-Stokes equations in their rotational form assuming divergence-free velocity distribution and in the Boussinesq approximation, along with the transport equation for the potential temperature field:
+
+ x_i &= 0,\\
+ t 
+ + u_j ( x_j - x_i ) 
+ &= - x_i 
+ + _0 ( - _0)_i3 
+ 
+ - ,d_ij x_j 
+ - f_i 
+ \\
+ &+ f_c( u_2 - V_g) _i1 - f_c( u_1 - U_g) _i2,\\
+ t + u_j x_j &= - x_j.
+ 
+
+Tilde ($$) notation indicate filtering at the LES grid scale $=[3] x \ y \ z$. Also, $$ is air density; $^_ij$ is the subgrid-scale (SGS) stress tensor and $^,d_ij=^_ij-(1/3)^_kk _ij$ is the deviatoric (trace-free) part
+of the SGS stress tensor, $ p^* = p/+ u_k u_k/2+^_kk/3$ is the pseudo pressure, where $ p$ is the resolved pressure; while $f_i$ is the body force that models the aerodynamic forces exerted on the air flow by the turbines. Here $f_i$ is modeled using the actuator disk model (ADM) during the initial coarse simulation and the actuator line model (ALM) in the fine simulation (more details provided in ). Moreover $g = 9.81\,/^2$ is the gravitational acceleration, $ _0$ is the reference potential temperature scale taken to be 263.5 K. The SGS stress tensor $^,d_ij$ is modeled using the Lilly-Smagorinsky eddy-viscosity model, i.e. $^,d_ij=-2_ S_ij=-2(C_s)^2| S| S_ij$, where $ S_ij=0.5( _i/ x_j+ _j/ x_i)$ is the resolved strain-rate tensor, $| S|= S_ij$ is the strain-rate magnitude, and $_=(C_s)^2| S|$ is the SGS eddy viscosity. $C_s$ is obtained dynamically utilizing the Lagrangian-averaged scale-dependent dynamic (LASD) model . This particular SGS model has been applied extensively in several prior LES studies of wind turbine wake flows . In Eq. , $_j=- u_j $ represents the SGS heat flux in which the eddy diffusivity 
+($_$) is computed as 
+$_=Pr_^-1_$, where the SGS Prandtl number is chosen as unity ($Pr_=1$) .
+
+LESGO is based on the pseudo-spectral method for the spatial discretizations in the $x$- and $y$-directions, while a centered, second-order finite-differencing method based on staggered grids is used for the spatial discretization in the $z$-(vertical) direction. Time advancement uses the second-order Adams-Bashforth scheme to obtain a predicted velocity field, followed by a pressure Poisson equation solution to impose the divergence-free constraint. Then, the velocity field is projected onto the divergence-free space using the gradient of the pseudo-pressure to obtain the velocity field for the new time step. The equations, numerical treatment and boundary conditions are described in additional detail in Ref. and earlier references . 
+The atmospheric boundary layer flow is driven by a constant Geostrophic wind. In the Coriolis terms, $f_c = 2 = 10^-4\ ^-1$ is the Coriolis parameter for a mid-latitude condition. The geostrophic wind $ = (U_g, V_g)$ is an imposed parameter. 
+ 
+During the initial stages of the simulation using a coarse grid (see the next section for details), we use the actuator disk representation of the turbine. After switching the simulation to finer resolution, the actuator line model (ALM) is adopted to represent each turbine blade by a rotating line, along which forces are applied according to the relative velocity field and the angle of attack. Lift and drag coefficients at various blade locations are obtained from tabulated data. A Gaussian kernel is used to smear the ALM forces onto the LES grid, using a kernel width of $$ equal to twice the LES resolution as recommended by . We implement the advanced filtered actuator-line method based on filtered line theory and its generalization .
+As wind turbine, we use the parameters of the NREL-5MW reference wind turbine. It is three bladed with diameter $D=126\,$ and a hub height of $z_h = 90\,$. More details about the turbine model are presented in . 
+
+Boundary conditions
+
+Periodic boundary conditions are used in the spanwise $y$ direction, and the stress-free condition is applied at the top boundary. In the streamwise direction, inflow-outflow conditions together with a concurrent precursor simulation approach are used in order to model the inflow. Two simulations are coupled: a precursor domain without wind turbines generates realistic turbulence that is then used in the wind farm domain as inflow. The wind farm domain uses a fringe region to force the outflow to equal the inflow at the periodic boundary (see Fig. ). More details of the inflow-outflow conditions implemented in the current pseudo-spectral solver are provided in . 
+
+ 
+
+Additionally, the precursor domain simulation uses a fringe region to impose a spanwise shift , which serves to prevent persistent spanwise locking of large-scale turbulent structures. A shift of $L_y- shift = 761.25\,$, which is approximately as $L_y- shift 4 L_z$, with $L_z$ as the domain height. The fringe region $W_F$, as well as the mapping ($P_M$) and spanwise shifting ($P_S$) regions, have a length of $L_x/8$, and the mapping region $P_M$ extends from $5L_x/8$ to $3L_x/4$. Vertically, $1.8\,$ is used for unforced data, followed by a $0.6\,$ Rayleigh damping sponge layer ($R$) above (see Figure~). The sponge layer, located at the top 25\
+
+At the bottom surface, we specify Monin-Obukov equilibrium surface fluxes in both the precursor and wind turbine domains using the usual Monin-Obukov equilibrium wall modeling, using a prescribed roughness 
+length $z_0$ and standard stability correction functions. The components of local surface shear stress are computed as a function of the prescribed roughness length by
+
+ _ i,3|surf=- u_*^2^2+^2, ~~~~~~~ i = 1,2; ~~~~~ and~~~~~
+ u_*= \, ^2(0.5 z)+^2(0.5 z)(0.5 z/z_0)-_m(0.5 z/L)+_m(z_0/L).
+
+Here, $ = 0.41$ is the von K\'arm\'an constant, $z_0 = 0.1$ m is the prescribed roughness length, the friction velocity $u_*$ is expressed in terms of the horizontal velocity $(,)$ at the first grid-point ($z_1=0.5 z)$, filtered at twice the grid resolution, $=2$ . 
+Moreover, $_m$ is the momentum stability correction function for the momentum flux boundary condition which is specified according to MOST following,
+
+ _m(=L)=_0^[1-_m(^)]^\,. 
+
+Here, $ = z/L$ is the stability parameter, $L$ is the Obukhov length (defined below). The stability correction function $_m()$ is obtained by integrating $[1-_m()]/$. Here, $_m()= z/u_* |u|/ z$ is the stability function that physically represents the dimensionless form of velocity gradient ($ |u|/ z$), made non-dimensional using friction velocity $u_*$ as the characteristic velocity scale and $ z$ as the characteristic mixing length scale of the turbulent eddies within the atmospheric surface layer. We use the empirical expressions from for $_m()$ under unstable ($<0$) and stable ($>0$) atmospheric conditions.
+They are listed in detail in Appendix A.
+
+The Obukhov length $L$ is computed in LES as, 
+
+ L= g T_*,
+
+where $(0.5 z)$ is the potential temperature at the first grid point and $T_*$ potential temperature flux scale. It is determined from the MOST as follows,
+
+ T_*=-u_*,
+
+where $q_ 3|surf$ is the
+imposed surface heat flux given as,
+
+ q_ 3|surf= \, u_* \, -(0.5 z)( 0.5 z /z_0,s)-_h(0.5 z/L)+_h(z_0,s/L),
+
+and where $z_0,s=0.1 z_0$ , $_s$ is the surface potential temperature, $(0.5 z) $ is the potential temperature at the first grid point $(z=0.5 z)$, and $_h()$ is the stability correction function determined from the MOST theory. It is obtained as,
+
+_h()=_0^[1-_h(^ )]^.
+
+Here, $_h()$ is thermal stability function that represents dimensionless form of potential temperature gradient, $_h()=( z/T_*) / z$. 
+The stability correction functions for potential temperature are provided in Appendix A.
+
+For the potential temperature field, the most common surface thermal boundary conditions used for LES of atmospheric boundary layers are specified surface temperature (i.e. specifying $_s$) or a specified heat flux. However, since turbine wakes are expected to affect locally the heat transfer coefficients in wakes and that the thermal inertia of the ground will play a role, it is likely that specifying either of these types of boundary conditions will miss important localized features of the flow. Therefore, similarly to the approach taken by Lu and Porté-Agel , we solve an additional evolution equation for $_s$, the temperature field in the soil. A surface thermal energy balance is used for determining land-surface temperature and surface heat flux. 
+A similar method was used by Deardorff , who assumed horizontal homogeneity and solved a single one-dimensional heat equation in the soil. Allowing for spatial dependence, Abkar, Sharifi, and Porté-Agel solved a 3D soil conduction equation. However, given the dominance of vertical heat conduction over horizontal heat conduction in the soil, we only solve a one-dimensional (1D) differential equation for the soil domain. In this approach, the soil heat flux, the flux of sensible heat and an imposed net radiative flux are included in the surface energy balance. Specifically, at every horizontal grid-point of the simulation, we solve the 1-D heat equation for $Z_s < z < 0$,
+
+ t = _s z^2,
+
+where
+$_s$ is the diffusivity coefficient of the soil. $Z_s$ is the depth of the soil domain. The following boundary conditions are used: at the ground surface at $z=0$, we balance incoming radiation and convective heat flux with heat conduction into the soil:
+
+ k_s z|_z=0(x,y,t) = H_ rad(t) - H_ air(x,y,t), ~~~~~~~ with ~~\,\,H_ rad(t) = [B_0 (T) - B_2,B_1].
+ 
+
+Here, $H_ air=c_ air\,q_ 3|surf$, while we assume an adiabatic boundary condition far below the ground at $z=Z_s$ (where $Z_s=-1.40$ m): 
+
+ z |_z = Z_s(x,y,t) = 0.
+
+The initial soil temperature is uniform and equals to 295 $$. The soil is treated as effectively dry 
+
+with a volumetric heat capacity of $c_s$ = 1.85 $10^6\, /^3 $, thermal diffusivity $_s$ = $5.0 10^-7\,m^2/s$, and thermal conductivity $k_s = c_s_s = 0.925\, / \,$ . The soil’s effective ``dry'' parameterization assumes negligible moisture effects.
+
+$H_ rad(t)$ is the imposed representative radiative flux throughout the day, with $B_0 = 371.5\,/^2$, $B_1 = -157\,/^2$, $B_2 = 85.5\,/^2$, and $T = 24\,$. The imposed radiative flux is guided by the Cooperative Atmospheric Surface Exchange Study (CASES-99) field campaign and is comparable in magnitude to that used in the original diurnal cycle LES approach of Kumar et al. . Note that the units of radiative flux can be expressed as either $/^2$ or $ /$, and they are related through the volumetric heat capacity of air, $c_ air = 1,200\, /^3 $. However, the time-history of radiative heat flux is shifted such that it has zero mean over a 24-hour period to enable reaching daily time-periodic conditions.
+Fig. illustrates the approach.
+
+The thermal penetration depth estimated using $_ s $ with $ = 2/24\,^-1$ is on the order of $_ s 0.08\,$. This depth is much smaller than the horizontal resolution in the LES, thus justifying the 1D approximation to integrate Eq. as well as placing the lower boundary condition at a much larger depth of -1.4m. Numerically, $^2 _s/ z^2$ is discretized using a stretched-grid finite difference scheme, with the second derivative at $z = z(k)$ approximated as: 
+
+ z^2 |_z = z(k) = [z(k+1) - z(k-1)] [ z(k+1) - z(k) - z(k) - z(k-1) ],
+
+where $k$ represents the $k$-th grid point. The vertical grid discretizations into 31 levels of soil temperature, extending to a depth of $Z_s -1.4\,$, uses a stretched configuration, $z(k) = z(k-1) + _ surface ^k-1$, with a surface grid spacing $_ surface$ of $0.001\,$ and a stretch ratio $$ of 1.2, resulting in finer spacing near the surface. The heat equation is solved along $z<0$ for $_s(k,t)$ using the Adams-Bashforth 2nd-order scheme for time advancement at each time step. Note that Eq. was implemented using simple explicit formulation as the time step was much shorter than any relevant diffusion timescale. Extensive validation tests (e.g. offline calculations using much finer grids and time-steps) confirm that the resolution employed yields highly accurate solutions of the 1D heat equation in the soil.
+
+ 
+
+Wind turbine model
+
+During an initialization stage of the simulation using a coarse grid (to be described in the next section), we use an actuator disk representation with a local thrust coefficient of $C_T^ = 1.33$. $C_T^$ is defined based on the disk-averaged velocity $u_d$ at the rotor location, according to $F_d = 2 C_T^ u_d^2 A_d$ (where $F_d$ is the force per unit mass acting on a disk area $A_d$). Unlike the far-upstream velocity $U_$ usually used to define the thrust coefficient $C_T$, the local velocity $u_d$ is immediately available in LES. 
+For the production run and data generation during the target 24 hour period of the diurnal cycle, we use a finer grid resolution, and an advanced actuator line model (ALM) is used. In the ALM method, each rotating blade is represented by a line of points (here we use $N=100$ ALM points) at which the ALM force per unit length is computed as 
+
+ _ alm = 0.5 c |_ rel|^2(C_L _L + C_D _D),
+
+where $|_ rel|$ is the magnitude of the relative velocity of the upwind flow to the wind turbine blade, $c$ is the local airfoil chord length, $C_L$ and $C_D$ are lift and drag coefficients obtained from tabulated airfoil data, respectively, while $_L$ and $_D$ are unit vectors along the direction of the lift and drag forces at each actuator point, respectively. These forces are then smeared using a Gaussian kernel to project them into the computational LES grid using a width $ = 2 (_x _y _z)^1/3$ as recommended in the literature. 
+Since $$ is substantially larger than the optimal $$ required to capture the local aerodynamic interactions causing e.g. tip losses, we use a correction developed from the generalized filtered lifting line theory . This model enables is us to combine ALM with a relatively coarse LES resolution. 
+
+The turbine parameters used in this study are based on the reference NREL-5MW baseline wind turbine . The three blade turbine has a diameter of $D=126\,$ and its hub height is at elevation $z_h = 90\,$. Its standard tabulated lift and drag coefficients are used. 
+The ALM implementation in LESGO allows to model detailed turbine operation controls, such as feathering (pitching) the blades during region III operations, e.g. above rated conditions. However, in the current simulation the turbines are operated during the entire time at optimal tip-speed ratio (``region II'' operation, also without including regions 1.5 and 2.5), in order to avoid having to store additional data relating to curtailment (e.g. blade pitch) and possibly complicated turbine control actions. We therefore refer to the modeled turbine as the NREL-5MW+ turbine, meaning that it is allowed occasionally to rotate slightly faster than the maximum rotation rate of the original NREL-5MW reference turbine (up to about 25-30\
+
+Simulation setup and data acquisition
+
+Simulation setup
+
+The computational domain and dimensions are illustrated in Fig. . 
+The wind farm configuration consists of two columns and four rows of NREL-5MW+ turbines. The turbine spacings in the streamwise ($x$) and spanwise ($y$) directions are $7D$ and $5D$, respectively, where $D = 126\,$ denotes the rotor diameter. The domain width, $L_y$, is chosen as $10D = 1,260\,$, with the centers of the two turbine columns positioned $2.5D$ from the nearest side computational domain boundaries, ensuring that turbine center locations are positioned at grid points. In the streamwise direction, the wind farm domain extends over a length of $L_x = 63D = 7,936\,$. This includes a length of $14D$ upstream of the first turbine row and $20D$ downstream of the last row to provide sufficient space for capturing the wind farm blockage effect upstream and allowing the wake flow to fully develop downstream. Additionally, a fringe region of $8D$ is included at the downstream end to prevent any outflow from influencing the inflow due to the horizontally imposed periodic boundary condition. The precursor domain uses exactly the same domain size and resolution as the entire wind farm domain. 
+
+The flow is forced via a prescribed constant geostrophic wind velocity with magnitude $G=(U_g^2+V_g^2)^1/2= 15\,/$ and angle $_g=(V_g/U_g)= -28^$ with respect to the $x$ direction. This angle is chosen so that the average wind direction over the 24 hr period at turbine hub height is (approximately) in the $x$ direction. The (mid-latitude) Coriolis parameter is $f_c = 1 10^-4\, ^-1$. The aerodynamic ground surface roughness is set to $z_0 = 0.1\,$, and the reference potential temperature is specified to be $_0 = 295\,$. The simulation is initialized with a constant streamwise velocity $U_g = 15\,/$ and zero velocity for the spanwise and vertical components. The potential temperature is initialized with a uniform temperature of $295\,$ in the lowest $1000\,$. Above this layer, the ABL is set to be laminar with a constant lapse rate of $10\,/$. In the lower layer below $1000\,$, small random (white noise) perturbations are added to the initial velocity and potential temperature fields. The initial soil temperature is uniform and equals $295\,$. 
+
+Simulations are initially conducted over approximately five full diurnal cycles using a coarse resolution to ensure convergence and establish periodicity from one day to the next. Subsequently, an additional diurnal cycle is simulated with a finer spatial resolution. The table displays relevant information regarding the computational domains of the precursor and the wind farm regions. The database construction and subsequent data analysis focuses on this last diurnal cycle obtained from the fine resolution simulation. During the initial stages using the coarse resolution, the wind turbines are represented using the actuator disk model (ADM) and for simplicity of implementation, the disks are not yawed during the several days of evolution simulated on the coarse grid. 
+Then the horizontal grid spacing is halved, the actuator line model (ALM) is activated, and the turbines are allowed to yaw to align with the mean hub-height incoming velocity from the precursor domain. After switching from coarse to fine grid, and from ADM to ALM, the simulation is run for 4 hours to build up small scales and flush out any remnants of the ADM turbine representation (4 hours is on the order of 16 flow-through times). Then, at what corresponds to a time of 15:00 hr, the data storage is started. 
+
+Once the actuator line model is activated in the fine-resolution simulations, for each turbine the angular velocity $$ is set such that the tip speed ratio $$ remains fixed. As explained before, we purposefully operate the NREL-5MW+ turbines in ``region II'' throughout the diurnal cycle to avoid additional controller actions such as curtailment or cut-off conditions that would add additional complexity to characterization of turbine operation. The tip-speed ratio is fixed near the optimal operating point of the turbine, namely $= 7.5$. The tip-speed ratio is calculated using the upstream axial velocity $U_ ax$, obtained from LES results evaluated over each wind turbine swept region, but shifted one grid cell upstream. Finally then, the angular velocity is given by $ = 7.5 R/ U_ ax$. 
+
+Based on the coarse-grid initial simulations, Fig. (a) shows time histories of the spatially averaged flow angle at hub-height $z_h = 90\,$, computed at every time-step in the precursor domain according to $ = ( v_x,y/ u_x,y)$. Averaging is done over horizontal $x,y$ planes in the precursor domain. The last 24 hours correspond to the fine resolution used for data analysis and database. At about 15:00 hr of the last period at the start of the fine resolution data acquisition, the flow angle at hub height is nearly zero. Starting the data acquisition for the fine-resolution simulation at a time when the yaw angle is zero minimizes the time required for the wake flow to develop and adjust behind the turbines since the coarse-grid ADM used non-yawing turbines so that the ADM wakes are more realistic when $ 0$. Another observation is that the fine-resolution flow angle displays some differences with the values of the preceding cycle at coarse resolution, especially near midnight where the decrease in angle is more pronounced. Also the soil temperature reaches a lower minimum value (at early morning hours) in the fine grid simulation as compared to the coarse ones. These observed differences are due to the grid resolution that affects the behavior especially during the stably stratified night-time conditions in which turbulent flow structures occur at much smaller scales. Still, at the end of the 24 hour period of the fine grid simulation, the end values return to their initial values at 15:00 hr of the preceding day. We conclude that the fine resolution run can be considered to have converged sufficiently to periodic behavior. 
+
+Also shown in Fig. (b) and (c) are the surface heat flux and surface soil temperature averaged over $x,y$ plane in the precursor domain. As can be seen by around 120 hours (about 4 days) a time-periodic flow condition has been fully achieved. At 11:00 hr (approximately 125 hours after the start of the coarse-grid simulation) of the coarse simulation, fields are interpolated (spectrally with zero-padding in the spectral directions and using linear interpolation in the $z$ direction) onto the finer mesh, and the ALM model is activated to replace the ADM. The fine-grid simulation is run for 4 hours, corresponding to around 10 flow-through times across both the precursor and wind farm domains, reaching an equilibrated state on the fine grid. At 15:00 hr, the simulation continues in order to generate a 24-hour run. The simulation time-step is held constant for the purpose of storing the data, and is set to $ t_ les=0.05\,s$. This time-step is small enough to conform to the CFL condition during the entire simulation time.
+
+Data acquisition for database
+
+To create the database for subsequent analysis, field variables are spatially filtered at scale ($2 x$, $2 y$) and coarse-grained in horizontal planes, thus reducing the amount of data that needs to be stored by a factor of 4. This approach is justified on the grounds that the finest resolved scales in LES are those most affected by numerical and modeling uncertainties. For the stored dataset, the precursor and wind farm domains are combined to create seamless fields. The three velocity components, potential temperature, pressure, and turbulent viscosity are merged into a unique domain containing both the periodic inflow as well as the wind farm domain. The fringe regions at the outlet of both the precursor (with a length of $L_x/4$) and wind farm domains (with a length of $L_x/8$) are not stored, as the field data there are not physical there. The resulting 3D database domain is illustrated in Fig. . Due to the non-local nature of the Poisson equation used to solve for pressure and properties of the concurrent precursor simulation method in which only the velocities but not the pressure fields are coupled, the stored pressure field contains a small offset discontinuity at the merger plane between the two domains. 
+
+Data are stored at every 10 time steps, i.e. $ \,t_ db = 10 \, t_ les=0.5\,s$. The ALM turbine data at each of the ALM actuator point along the three blades of each of the 8 turbines are stored at the original LES time-step $ \, t_ les=0.05\,s$. Additional details regarding which flow and wind turbine variables are stored in the database are provided in Appendix B. 
+
+Diurnal cycle: general observations
+
+Overall, as will be seen, the trends discussed in this section are qualitatively in good agreement with results and observations from prior studies of the ABL during a diurnal cycle . Fig. shows four snapshots of the $x$ direction velocity component from LES on several planes in the flow. The figure shows that, over the diurnal cycle, both the flow direction and ABL height change substantially. At a time of 18:00 hr, the flow direction near the ground is about $ = - 15^$, consistent with the observed orientation of the bottom streaks. Also visible are the turbine wakes and the sharp inversion layer near $z_i 1,400$ m at that time near the end of the day. Conversely, in the morning time at 06:00 hr, significantly reduced velocity develops in front of the wind farm due to the wind farm blockage effect, and the nocturnal low-level jet can be observed at low elevations (around $z 200$m), characterized by a narrow ($ z 150$m) band of high-speed wind. Both phenomena will be discussed further in section .
+
+ 
+ Fig. shows time series of surface heat flux (to air) and soil surface temperature over the 24 hour period in the precursor domain. As can be seen, start and ending values are the same, consistent with temporal periodicity. The average heat flux is nearly zero, also consistent with periodic behavior. 
+ Fig. also shows results in the wind farm domain, evaluated between the first turbine row and a location \(7D\) downstream of the last row. As can be seen, some differences exist between the mean values in the precursor and wind farm domains, especially for the heat flux at around 20:00 hr where a difference of about 20\
+ 
+ Figure shows the spatio-temporal evolution of the mean potential temperature (averaged in horizontal directions) across the entire boundary layer. After approximately 18:00 hr, when the net radiative flux becomes negative, as shown in Fig. a, a gradual temporal decrease in potential temperature and stable thermal stratification above the ground surface are observed, which is also clearly exhibited in the individual profiles at various times shown Fig. b. During the day, solar radiation heats the ground surface and the air above it, leading to the growth of the boundary layer, as explicitly shown in Fig. c.
+
+In order to quantify the boundary layer height we examine spatio-temporal contours of resolved Reynolds shear stress distribution across the diurnal cycle. The Reynolds shear stress magnitude is defined as follows
+
+|| ^R_h3||(z) = ( u'w'^2 + 
+ u'v'^2 )^1/2.
+
+The covariances $ u'w'$ and 
+$ u'v'$ are computed at each saved time $t$ and height $z$ using horizontal (plane) averaging over the $x,y$ planes. Note that we do not include the subgrid-scale component of the shear stress as it is much smaller than the resolved part. 
+The result is shown in Fig. a using logarithmic scale, and conforms to standard knowledge regarding the diurnal evolution of a standard atmospheric boundary layer. Around sundown at 19:00 hr the boundary layer turbulence rapidly collapses and a stably stratified boundary layer develops near the ground, with heights of between 150-200 m, i.e. of similar height as the wind turbines. Measures of boundary layer height are known to be difficult to define based on such data. In Fig. b we show two different definitions that appear consistent with the qualitative features of the contour plot in Fig. a: Both the first and the second value for $Z_bl(t)$ is given by $|| ^R_h3||(z=Z_bl(t)) = 0.1 max_z|| ^R_h3||(z,t)$, where the max is taken separately at each time $t$. There might be multiple points that meet the above criteria at each time, and the largest height is taken for $Z_bl, 1(t)$ and the smallest height is taken for $Z_bl, 2(t)$. Between these two heights we have the residual layer with reduced mixing and low turbulence but velocities and temperature fields somewhat decoupled from the bottom layer. 
+
+Fig.~ summarizes the diurnal cycle of boundary-layer diagnostics in the precursor domain. Panel (a) and (b) show the mean velocity shear and turbulence intensity evaluated at hub-height $z=90$m. Figures (c) and (d) show the evolution of inverse Obukhov length and friction velocity (both computed from the heat and momentum flux boundary conditions at the surface) during the diurnal cycle. For plotting purposes, the inverse Obukhov length is non-dimensionalized using a constant reference ABL height of 1000 m. At night the layer is stably stratified ($1000()/L 2025$); vertical shear at hub height is strong, turbulence intensity at hub height is very small $(( 0.020.03)$, and friction velocity is slightly lower ($u_* 0.30.4~$) than during the day. 
+Around 08:00 hr in the morning the sign of $1000()/L$ reverses, indicating the onset of daytime convective mixing, accompanied by a rapid weakening of vertical shear, an increase in $$, and a rise in $u_*$.
+
+Fig. a shows the evolution of the horizontal velocity magnitude in the early morning. As can be seen a nocturnal low-level jet exists during the early morning due to nighttime surface cooling, which leads to the development of a temperature inversion and the creation of a stable boundary layer that decouples surface winds from those in the free atmosphere above. 
+
+Additionally, due to variations in boundary layer height throughout the day and the Coriolis effect, the horizontal mean wind direction shifts gradually with altitude, a phenomenon known as wind veer. As shown in Fig. b, during the day, as the boundary layer expands and becomes more turbulent, wind speeds and directions become more uniform with height, while at night, the development of a stable boundary layer enhances wind shear and veer. To simplify the yaw angle control of the wind farm, we set all wind turbines to align with the mean wind direction at hub height from the precursor domain (inflow). To avoid unphysical temporal variability, the precursor domain mean velocity components are filtered using an exponential time-filter with a 20-minute averaging (relaxation) time scale. Hence, only slow veering of the velocity affects the imposed turbine yaw.
+
+Fig. shows the temporal evolution of horizontal turbulent kinetic energy and vertical turbulent heat flux at hub height. The turbulent kinetic energy of the resolved scales in LES, defined as $k_ les = 2 [ u'^2_x,y+ v'^2_x,y+ w'^2_x,y]$, reaches its maximum value during the day due to solar heating and buoyancy production, while at night, it decreases to around 0.1 $(m^2/s^2)$, a small but non-negligible value that still influences wind turbine wakes and residual turbulence. The vertical turbulent heat flux at hub height is positive during the day and becomes negative at nighttime, indicating a net downward turbulent heat flux. In the context of stable stratification at night, this downward flux transports warmer air from higher elevations to lower elevations, thereby warming the air near the ground. However, the vertical turbulent heat flux at hub height in the precursor domain has a magnitude at least one order of magnitude smaller compared to that in the wind farm region, as shown in Fig. and Fig. . Therefore, the warming effect at nighttime is negligible except directly behind the wind turbines, which will be described in detail later.
+
+Next, snapshots of instantaneous velocity and potential temperature fields at two representative day and night times (15:00 hr and 22:00 hr) are analyzed in more detail. Recall that turbines directly face the incoming averaged flow, and the wakes respond accordingly shifting in the direction of the incoming wind. As exhibited in Fig. a, at 15:00 hr under strong unstable conditions, the wake flow behind the wind turbines exhibit strongly meandering patterns around the streamwise ($x$)-direction. As seen in Fig. b the precursor-wind farm simulation at 15:00 hr has a mean wind direction purely in the $x$ direction at hub height (thus the imposed yaw angle of all wind turbines is zero). Later at 18:00 hr, as was shown in Figs.
+b and b the incoming flow has a negative angle relative to the $x$-direction and the turbines yaw accordingly 
+causing the wake flow behind the wind turbines to tilt towards the negative y-direction. At night-time, at 22:00 hr, Fig. b and b show that the incoming flow makes a positive angle with the $x$ direction, thus the wakes tilt towards the positive y-direction. The incoming turbulence has changed significantly in that it is far more small-scale and unorganized at large scales due to the strong stable stratification and much thinner boundary layer. 
+
+Similar trends can be observed for the vertical velocity fluctuation contours, shown in Fig. . Under strong unstable conditions at 15:00 hr, in Fig. Fig. a strong vertical fluctuations are visible and they are enhanced in the wakes. However, as the ground surface cools at night, the instantaneous vertical velocity fluctuations are greatly decreased in the incoming flow but becoming substantial only behind the wind turbines due to the increased TKE in the wakes.
+
+Analysis of thermal fields across evening transition
+
+ 
+
+Several observational studies have also observed night-time warming effects in the presence of wind farms. They report about $O(1\,K)$ rise at the ground surface, with variations depending on vegetation type and season. Prior simulation has also shown such an effect. Using the detailed dataset from our diurnal cycle simulation, we can provide additional confirmation and physical insights into the associated phenomena. 
+
+Fig. shows instantaneous potential temperature contours exhibiting significant spatial fluctuations during the strong convective conditions at 15:00 hr. For night-time conditions, e.g. at 22:00 hr, as the ground surface is cooling, the potential temperature fluctuations at the inlet become smaller amplitude and occur at much smaller scales. A significant effect can be seen behind the first row of turbines in which there is temperature reduction at hub height while behind the last row there is warming on average. This warming effect is driven by the enhanced turbulent mixing caused by the wind farm, resulting in a substantial negative vertical turbulent heat flux. This flux brings warmer air from higher elevations down to cooler, lower elevations, as shown in Fig. b. Conversely, during the day, radiative heating at the surface leads to positive vertical turbulent heat flux, as shown in Fig. a but no discernible change in average temperature in the wind farm wake. Fluxes shown in Fig. are computed based only on spanwise averaging and thus contain significant remaining fluctuations.
+
+Fig. shows the temperature at the ground surface. Clearly, the wind farm wake flow has a significant footprint on the ground surface temperature. At 15:00 hr, the wake flow slows down behind the wind turbines, reducing the turbulent heat flux into the air due to a smaller friction velocity, as indicated by equation . This results in a warming region directly behind the turbines due to increased heat flux partitioning from radiation into the ground, corresponding to the wake region in the air flow. At night-time at 22:00 hr, the aforementioned warming effect of the air flow also are observed to extend to the soil, increasing ground surface temperature behind the wind farm. Notably, the direction of the wake visible in the ground temperature distribution differs from that in the air at hub-height, as seen when comparing Fig. Fig. b and Fig. b. This difference is caused by the substantial veer effect significantly changing the wind direction at different elevations during nighttime, This is also visible in Fig. b.
+
+We conclude that the present simulations confirm prior observations of surface heating downstream of wind farms during night-time operations under strongly stable stratified conditions. The mechanism is relatively clear: the much thinner vertical extent of the boundary layer is very sensitive to additional mixing due to wind turbine wake turbulence, which brings hotter fluid closer to the surface thus raising the temperature in the lower parts of the boundary layer including the ground surface. We remark that if we had imposed a spatially uniform surface heat flux or imposed temperature at the ground, the strong spatial variability we observe in thermal fields with the physically more appropriate boundary condition would have been masked. 
+
+Analysis of power production across morning transition
+
+ 
+
+ The power for each turbine at all times is available as part of the database and can be queried as illustrated in the code snippet presented in Appendix C. 
+Fig. a shows the power of two individual turbines in the front (turbine 1) and back (turbine 7) rows, during the initial 100 seconds of the diurnal cycle, starting from 15:00 hr. The signals show fluctuations occurring at time-scales of about O(15) seconds. With a mean velocity of O(10) m/s, this corresponds to turbulence length-scales of about 150 m, consistent with averaging them over the rotor disk of diameter O(120) m. Conversely, the signals also display periodic oscillations at a time-scale of 2 seconds, which is consistent with a blade passage frequency (3$$ rotor frequency). We have verified that the peaks in these signals correspond to two blades being in the upper parts of their cycle, exposed to faster winds. 
+
+We next document the power production of the entire wind farm across the full diurnal cycle in Fig. b.
+Significant variations in generated power can be observed during the 24 hour period, even though the imposed geostrophic wind velocity is kept constant at 15 m/s. Production rises during the day and reaches a peak late afternoon near 17:00 hr, then quickly decreases to increase again during the first part of night-time. After midnight, a slow decrease is observed again. Also visible are larger power fluctuation levels during the day-time unstable atmospheric conditions. 
+
+Focusing now on individual turbines in the front (turbine 1) and back (turbine 7) rows during the entire cycle, Fig. c displays their generated power. Comparing the different behaviors of turbines in the front and back rows, we recall that turbines in the first row in a wind farm typically experience stronger wind velocities compared to those located downstream that are affected by wakes. As shown in Fig. c this pattern is indeed observed throughout most of the diurnal cycle as turbine 1 generates significantly more power than turbine 7. However, during the morning transition between 06:00 hr and 10:00 hr, an unusual phenomenon occurs, where the power generated by turbine 7 in the last row is actually higher than that of turbine 1 in the first row. The morning transition period is of great interest because it marks the shift from a stable to a convective boundary layer. During this time, the stability of the atmosphere rapidly changes, which impacts wind shear, turbulence, and overall wind flow. For wind energy, this transition is particularly important because the changing turbulence and wind speed profiles can affect turbine performance and energy generation. 
+
+We now present morning transition data for velocity, temperature and turbulent kinetic energy distributions to shed light onto the origin of the observation of larger power production of downstream turbines during parts of the cycle. Figure shows the hub-height velocity as function of time during the diurnal cycle at three streamwise locations: in the precursor (upstream of the wind farm), at the location of the first row and at the last row. These results are consistent with the power signals in the sense that roughly between 06:00 hr and 09:00 hr the hub-height wind velocity is larger for the last row compared to the first row. We also observe that the difference between the upstream and first-row velocity significantly increases during the night time, especially after 03:00 hr. This effect is caused by increased flow blockage and deflection of the low-level jet.
+
+The transition from stable to convective occurs gradually between approximately 06:00 hr and 09:00 hr. During this period, a strong nocturnal low-level jet is observed above the ground, as shown in Fig. a and Fig. , characterized by a narrow band of high velocity just above hub height. Initially, the incoming flow features a relatively broader band of low-level jets with less turbulence. As the flow approaches the wind farm, particularly within the first few rows of turbines, it rises to a higher elevation. 
+
+The lifting of the nocturnal low-level jet as it encounters the wind farm is caused by the blockage effect of the turbines, which becomes quite significant when the boundary layer height is comparable to the turbine height. This blockage effect is characterized by a strong induced positive vertical velocity just in front of the wind farm, along with a pronounced adverse pressure gradient and a negative vertical pressure gradient, as exhibited in Fig. and Fig. . 
+
+The pressure distribution within the wind farm, shown in Fig. , shows the expected high pressure region in front of the wind farm which acts to deflect the flow upwards, as seen in Fig. . Interestingly, the effect propagates slightly downstream at 09:00 hr consistent with the vertical velocity distribution in Fig. that also shows the downward moving regions shifting downstream in the farm at later times. 
+
+Thus, the rapid decrease in velocity seen by the first row of turbines is associated with flow blockage and low-level jet deflection. How about the last row's velocity that does not decrease accordingly? To answer this question we examine the turbulence levels, shown in Fig. across the diurnal cycle. As is expected, the turbulence level at the last row of wind turbines is consistently stronger than at the first row, especially during night-time stable conditions and the morning transition. Even during very stable conditions the turbine wakes maintain more elevated levels of turbulence as compared to the much decreased turbulence levels of the incoming stably stratified flow. 
+ 
+
+In order to identify the effects of the increased turbulence levels on the mean velocity distributions arriving at the turbine hub-height, it is instructive to analyze the diurnal cycle time evolution of mean velocity across heights. This is shown in Fig. , both as contour plots in the lower 200 m across the full diurnal cycle and vertical profiles at select times encompassing the morning transition. The blockage effect is visible in comparing figures (a,b) to (c,d), the latter appearing shifted upwards. 
+The effect of increased mixing during the 06:00 hr - 09:00 hr time period of interest can be seen as the ``flattening out'' of the velocity iso-contours during that time-frame when comparing (c,d) with panels (e,g). In particular iso-contours are more separated, hence the flow is better mixed in panels (e,f) between times 06:00 hr - 09:00 hr at elevations between $z = 30\,$ and $z = 150\,$, which corresponds to the range of heights the turbines can reach. During the morning transition, the boundary layer height is at its lowest, as shown in Fig. . As a consequence, the low-level jets exhibit the largest vertical gradient at this time compared to other periods. Moreover, the low-level jet of the incoming flow is positioned just above the wind turbines. In the presence of the turbines, particularly at the last row, strong turbulence mixing is triggered, bringing high-velocity momentum from the higher elevations within the narrow band of the low-level jet downward into the region swept by the turbines, resulting in higher wind speeds experienced by the turbines. 
+
+We conclude that the unexpected behavior of larger power in the last row of turbines compared to the first row can be ascribed to a combination of two effects: reduced power in the front row due to increased blockage during night-time and increased mixing of the deflected low-level jet into the wind farm due to wind farm turbulence which remains relatively strong even at night-time. 
+
+Conclusions
+
+Data generated from LES of a wind farm placed in a diurnal cycle of atmospheric boundary layer evolution were analyzed. Placement of the simulation data into a web-services accessible database system facilitated detailed analysis to address specific research question. Details about the JHTDB-wind database system and its access methods are provided in the appendices. Data analysis focused on two features of the complex dynamics of atmosphere-wind farm interactions: The thermal fields during the evening transition and a power production anomaly observed during the morning transition. Results highlighted the importance of using a soil conduction model to avoid having to specify either prescribed surface temperature or heat flux which would have eliminated the strong spatial variability ultimately observed in these quantities inside and downstream of the wind farm. 
+
+Results confirmed that during night-time when the ABL is strongly stable and the boundary layer is very shallow (of similar height to the wind turbines), increases in surface temperature of several degrees are observed. Analysis of the velocity and potential temperature fields during the evening transition show that increased turbulence levels in the wind farm wake cause warmer air from above (the residual layer) to be entrained downward causing local increases in temperature. 
+
+Another unusual behavior observed in the simulation was a higher power production for downstream turbines as compared to the front turbines during the morning transition. This phenomenon too was traced to increased turbulence levels in the wind farm, which had a disproportionate effect during time periods with shallow incoming boundary layer and strong wind farm blockage effects, i.e. under strongly stable conditions. 
+
+Many additional research questions can be posed based on the LES of a wind farm during a full 24 hour period. The availability of publicly accessible data consisting of all the relevant fields in 4 (space and time) dimensions as well a along all of the turbine blades that can be easily queried as part of JHTDB-wind should help facilitate such research and provide added value to high-fidelity simulations of representative wind farms. 
+
+ Data Availability:
+
+ The entirety of the wind farm data is available for open access at the JHTDB-wind website (), and demonstration data access (DEMO) codes () are available on this site as well, as described in this paper (Appendix C).
+
+ 
+
+Appendix A: Stability correction functions
+ 
+ 
+In this Appendix we list the empirical stability correction functions implemented in LESGO, based on Refs. . For the momentum boundary conditions, $_m()$ under unstable ($<0$) and stable ($>0$) atmospheric conditions are given by:
+ 
+
+ _m() = 
+
+a_u - & ~~ for~~ - b_u^-3 \ , \\
+1.0 & ~~ for~~ - > b_u^-3 \ , \\
+1 + a_s (1 + ^b_s)^-1 + b_s + (1 + ^b_s)^b_s & ~~ for~~ > 0 ,
+ 
+
+where the constants for unstable atmospheric conditions are $a_u=0.33$, $b_u=0.41$, and for stable conditions are $a_s=6.1$, $b_s=2.5$. The $_m()$ stability correction functions resulting from evaluating Eq. by using Eq. are,
+
+_m() = 
+
+(a_u -) - 3 b_u (-)^1/3 \\ + 2 [ )^2(1 - (-/a_u)^1/3 + (-/a_u)^2/3) ] \\
+ + 3^1/2 b_u a_u^1/3 ^-1 [ (2(-/a_u)^1/3 - 1) / 3^1/2 ] + _0 & ~~ for~~ - b_u^-3 \ , \\
+_m(b_u^-3) & ~~ for~~ - > b_u^-3 \ ,\\ 
+-a_s \, ( + (1 + ^b_s)^b_s ) & ~~ for~~ > 0 ,
+
+where, the integration constant $_0 = - a_u +3^1/2b_u a_u^1/3/6$.
+
+For the scalar potential temperature field , $_h()$ for unstable and stable atmospheric conditions are given by,
+
+ _h() = 
+ 
+c + (-)^n & ~~~~~~~ for~~~ < 0 \ , \\
+&\\
+1 + a_h [ (1 + ^b_h)^-1 + b_h + (1 + ^b_h)^b_h] & ~~~~~~~ for~~~ > 0 \ ,
+ 
+
+where the constants are $a_h = 5.3$, $b_h = 1.1$, $c = 0.33$, $d = 0.057$, and $n = 0.78$.
+Substituting Eq. in Eq. gives,
+
+ _h() = 
+ 
+n [ c ] & ~~~~~~~ for~~~ < 0 \ , \\
+-a_h \, ( + (1 + ^b_h)^b_h ) & ~~~~~~~ for~~~ > 0 \ . 
+ 
+
+ 
+
+Appendix B: JHTDB-wind database construction
+ 
+The LES data from the diurnal cycle simulation ingested into the database consist of three types: (i) 3D field data across the simulation domains (precursor and wind farm domains), (ii) wind turbine data for each wind turbine from the integration of quantities along each of the blades for each turbine from the actuator line model, and (iii) detailed rotor blade data from the actuator line model along each of the rotor blades in the wind farm.
+
+B1: 3D field data
+
+As shown in Table , the fine resolution LES of the two combined domains involved $N_x N_y N_z = (432+432) 144 480$ grid points, with $ x = 18.375 \ , y = 8.75 \ , z = 5 \ $. In order to reduce size of stored data, the output has been spectrally filtered in horizontal planes and sampled every other point horizontally. Also, fringe regions have been excluded prior to merging the data in the precursor and wind farm domains. The fringe regions excluded in the precursor domain amount to 2/8 of the domain in the $x$ direction and to 1/8 in the wind farm domain. Therefore, the size of the finally stored output files at each time step is $N^s_x N^s_y N^s_z = 351 72 480$, since $N^s_y=N_y/2$ and $N^s_x = (N_x/2) 6/8 + (N_x/2) 7/8$. 
+
+ Field data are stored at every 10 time steps of the LES. With the conservatively small time step used in the LES ($ t_ les = 0.05$s), the CFL condition is easily met. The stored time-step ($ t_ db = 0.5$s) also means that a fluid particle will move at most 7m in the streamwise direction if moving at the largest fluid velocity (geostrophic speed), i.e. less than the horizontal spacing of the stored data. Rotor speeds are higher and will move across several vertical grid-spacings. However, the corresponding rotor force field is very smooth (Gaussian filtered at scale $=19\,m 2( x y z)^1/3$) and hence the storage frequency of $ t_ db = 0.5$s is still appropriate. At every time, there are six spatial fields stored: the three velocity components $u(x,y,z,t)$, $v(x,y,z,t)$, and $w(x,y,z,t)$, the potential temperature field in the air $(x,y,z,t)$, 
+the (kinematic) pressure field $p(x,y,z,t)/ = p^*-u_ku_k/2$ (the SGS stress trace is not available and anyhow negligible), 
+and the subgrid-scale eddy viscosity $_ SGS(x,y,z,t)$ (computed dynamically using the Lagrangian scale dependent dynamic Smagorinksy model). In addition, there is the soil temperature field $_s(x,y,z,t)$ stored on 31 vertical points, i.e. on $351 72 31$ grid points at every time. And, the wind turbine force field $f_x(x,y,z,t)$, $f_y(x,y,z,t)$, and $f_z(x,y,z,t)$ is also stored. The turbine force data is mainly zero in most of the domain. Hence, stored data includes data only only up to 200 meters since at higher positions the turbine forces are zero (they are also zero between turbines but for storage and coding simplicity the data there are still stored as zeroes). The force field is not spatially filtered and subsampled, and is instead stored at the original LES resolution. As function of time, over the 24 hours (86,400 seconds) there are $172,800$ fields stored. 
+ 
+Table indicates the stored field variables, their units, the corresponding spatial domain sizes, and the number of time-steps stored. 
+ 
+
+ 
+The fields are stored using the ZARR format with chunk sizes of $39 72 80$ for most quantities. Prior experience and tests with other JHTDB datasets have shown that ZARR chunk sizes of $64^3$ provide optimal retrieval speeds and performance for typical data access modalities. Chunks should be large enough to accommodate operations (interpolations, differentiation) that require data in a 3D neighborhood of a queried datapoint, while avoiding reading too large data segments into memory. The total amount of data stored for the diurnal cycle is about 40 Terabytes. 
+
+B2: Data for each wind turbine
+
+For each of the 8 turbines, variables deduced from the actuator line modeling that represent turbine operation are recorded as function of time. Unlike field data that are stored in kinematic units, air density must be specified and used to compute force and power data. A value of $_ air=1.23$ kg/m$^3$ is used. Wind turbine data are stored at the original simulation time-step, $ t_ les=0.05$s. 
+
+Unlike the 3D field data, these files are much smaller and require far less memory. Hence, they are stored as simple files using the Parquet format that is easy to query from various languages. See Appendix B for examples. The turbine data stored consist of the variables listed in table : 
+
+ 
+ Similarly to getData functions to query 3D field data such as fluid velocity and pressure, the Turbine data can be queried using the getTurbineData calls from analysis programs (python, Matlab). 
+
+B3: Wind turbine blade data along actuator line points
+
+For each of the blades ($8 3 = 24$ blades), 
+time histories of 19 different quantities (listed in Table ) are stored 
+at 100 ALM collocation points. Similarly to turbine 
+data, the blade data are stored as simple files using 
+the Parquet format that is easy to query from various 
+languages. The first column represents time in 
+seconds, starting from $0\,s$ (corresponding to 15:00 hr) and going up to $86,400$s corresponding to 15:00 hr of the next day), the second column is the 
+turbine number, the third column is the blade number, and the remaining 100 columns are the values at each of the 100 actuator points from root to tip. Different quantities are 
+stored in different files. 
+They can be selected as 
+ variable specified in 
+the
+getBladeData calls, and are listed in table .
+
+Appendix C: Sample JHTDB-wind access methods
+
+Similarly to JHTDB data, JHTDB-wind fields can be accessed via Web Services (). Users can use familiar languages such as Python, Matlab, C or Fortran to execute analysis codes either remotely on their own computers or on a cloud service (SciServer) close to the data. Virtual sensors are placed in the flow field by means of the getData(...) function which requests field values at specified sets of points, time, etc. Below (in Fig. ) we provide snippets of Python code that queries JHTDB-wind to obtain x-direction velocity snapshots on a horizontal plane at hub-height at two times, one at $t=1,800.25$ s (about 15:30 hr) and another at $t=10,800.75$ s (about 18:00 hr). 
+
+First, coordinates of a set of points are specified (in this case a equally spaced grid of $1,100 200$ points in the x and y directions at a constant height $z=z_h=90$m. Note that these points may not coincide with simulation grid points and JHTDB provides appropriately interpolated values . We here specify Lagrange polynomial of order 8 for spatial interpolation. Note that near non-periodic boundaries (bottom and top surfaces, and inflow and outflow planes) interpolation orders are downgraded to accommodate the smaller number of grid points available. For instance, in the last interval between the first and second stored grid-points, only linear interpolation is possible. The requested times also do not correspond exactly to simulation time steps. JHTDB interpolates in time using third-order CHIP interpolation method . The resulting contour plots are shown in Fig. .
+
+Similar calls can be made to extract any of the other 3D fields at any of the times. For example, the potential temperature field and turbine force-field (its magnitude) distribution on a y-z plane going through the first row of turbines (turbines \#1 and \#2, at $x=1,764$m downstream of the wind farm domain) at time $t=57,600.4$s (about 07:00 hr) is shown in Fig. . This resulted from code specifications as in the snippet shown in Fig. . More details are provided in .
+
+Turbine and individual blade data are obtained in a similar fashion using get functions, namely getTurbineData(...) and getBladeData(...). Users must specify turbine number for the former, and turbine number and blade number for the latter. An array of point indices along the blade's discretized actuator line is prescribed, as well as an array of times at which the data are required. Linear time interpolation between stored simulation time-steps is supported. More details are provided in . As an example, Fig. shows a time series of thrust force on four turbines in a column during a one hour interval. Time-delayed travel time correlations can be discerned . The code snippet specifying the getTurbineData(...) call is shown in Fig. 
+.
+
+ The use of getBladeData (...) is illustrated in Fig. , showing the angle of attack time-histories on blade \#2. The code snippet specifying the getBladeData(...) call is shown in Fig.

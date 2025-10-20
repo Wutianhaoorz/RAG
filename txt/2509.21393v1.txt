@@ -1,0 +1,689 @@
+[
+ aip,
+
+ amsmath,amssymb,
+preprint,
+
+]revtex4-2
+[cal=boondox]mathalfa
+
+ 
+>X 
+
+[utf8]inputenc
+[T1]fontenc
+
+[ruled]algorithm2e
+[hidelinks]hyperref
+ 
+ 
+
+\@email#1#2
+ 
+ 
+ @RRAPformat
+ @RRAPformat@RRAP*#1#2
+ 
+
+@maketitle
+
+ 
+ 
+ @maketitle 
+ 
+
+$
+$
+$
+$ Department of Power Mechanical Engineering,
+National Tsing Hua University, Hsinchu 30013, Taiwan \\
+Email address: \\ dodger25685@gmail.com (Y.-E. Chou), \\ hsinl606@gmail.com (T.-H. Liu), \@pme.nthu.edu.tw (C.-A. Lin)
+
+Physics-Informed Neural Networks (PINNs) offer a mesh-free framework for solving PDEs but are highly sensitive to loss weight selection. We propose two dimensional-analysis-based weighting schemes: one based on quantifiable terms, and another also incorporating unquantifiable terms for more balanced training. Benchmarks on heat conduction, convection–diffusion, and lid-driven cavity flows show that the second scheme consistently improves stability and accuracy over equal weighting. Notably, in high-Peclet-number convection–diffusion, where traditional solvers fail, PINNs with our scheme achieve stable, accurate predictions, highlighting their robustness and generalizability in CFD problems.
+
+Introduction
+
+In this study, we apply deep learning based method to computational fluid dynamics(CFD). In this chapter, we will begin from introducing some background knowledge of deep learning which is correlated to this work, followed by literature survey, and last, we will introduce the organization of this thesis in summary.
+
+Deep learning
+
+Artificial Intelligence (AI) refers to computational techniques that enable machines to mimic human intelligence. It encompasses a wide range of methods, including symbolic reasoning , expert systems , natural language processing , and more recently, machine learning (ML) and deep learning (DL) .
+ML focuses on algorithms that automatically learn from data without explicit programming. As noted by Tom M. Mitchell , “A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.”
+
+A deep neural network (DNN)~ is inspired by the biological neural network of the brain. In biology, neurons sum incoming signals and fire when a threshold of excitation is reached. Artificial neurons mimic this behavior using weighted sums and activation functions. The first artificial neuron, the perceptron, was introduced by Rosenblatt in 1958~ as a linear classifier that categorized inputs into two possible classes. 
+
+A neural network consists of an input layer $$, multiple hidden layers $_1, _2, , _H$, and an output layer. Each neuron in the hidden layer computes a weighted sum of its inputs with parameters $\W_i^T, b_i\$, then applies a nonlinear activation function $$: 
+
+_1 = (W_0^T _i + b_0 ).
+
+Activation functions play a crucial role in neural networks by introducing nonlinearity and enabling the network to capture complex relationships between inputs and outputs. Without nonlinear activation, even very deep neural networks would behave as linear models; with nonlinear activation, they are able to tackle complex tasks. 
+
+Training a neural network can be summarized into the following steps: (i) a forward pass, where the input data is propagated through the network to generate predictions; (ii) computation of the loss $$, which measures the difference between predictions and ground truth, followed by a backward pass to determine parameter gradients; and (iii) parameter updates based on these gradients. This process is repeated for many iterations (commonly called epochs) until convergence. The model parameters are defined as 
+
+ = \, b\,
+
+where $$ are the weights and $b$ the biases. 
+
+Different tasks often favor different architectures: convolutional neural networks (CNNs) for vision, recurrent neural networks (RNNs) for audio, and generative models such as VAEs~ and GANs~ for data generation. In contrast, Physics-Informed Neural Networks (PINNs) typically adopt fully-connected networks (FCNs)~, which require no special assumptions about the input and therefore provide a flexible starting point with wide applicability. 
+
+Literature survey
+
+Although the origins of machine learning date back to the 1940s, its application to computational fluid dynamics (CFD) has emerged only in recent years. Brunton et al. highlighted the potential of integrating machine learning with CFD, outlining three main directions: accelerating Direct Numerical Simulation (DNS), improving turbulence modeling, and developing Reduced-Order Models (ROMs).
+
+:
+
+Turbulence can be simulated using RANS, LES, or DNS. Among them, DNS provides the highest fidelity but is also the most computationally expensive, with costs rising sharply as Reynolds number increases. To improve efficiency, researchers have proposed methods such as reducing resolution requirements , accelerating the solution of the Poisson equation , and other techniques.
+
+:
+
+RANS offers the highest computational efficiency but the lowest accuracy. Conventional models are typically based on the Boussinesq approximation, relying on extensive mathematical derivations and assumptions . Beyond these approaches, recent studies have applied machine learning to enhance RANS models, including improving numerical stability and predicting Reynolds stresses with physics-informed neural networks , among others.
+
+:
+
+Reduced-Order Modeling (ROM) seeks low-dimensional representations of flow fields, reducing both memory requirements and computational cost—an important advantage given GPGPU memory limits and the strong dependence of simulation time on mesh size. ROM exploits the fact that even complex flows often exhibit dominant coherent structures . A well-constructed representation not only improves computational efficiency but also enables accurate feature capture and serves as a tool for flow control .
+
+ROM has been applied in various fluid dynamics problems, including flow over a cylinder , incompressible flow over a flat-plate wing , and turbulent flow over a NACA0012 airfoil . Deep learning methods such as autoencoders further facilitate ROM by learning compact representations through a bottleneck architecture, where input data are encoded into a low-dimensional space and decoded back to approximate the original field .
+
+:
+
+Applications of neural networks to PDEs date back to the 1990s . To address the high cost of solving the incompressible Navier–Stokes equations, Schlachter et al. proposed a pressure prediction model using long-term convolutional neural networks to replace iterative solvers . Other studies explored alternative approaches for solving the Poisson equation, including CNN-based solvers .
+
+Physics-Informed Neural Networks (PINNs) combine deep learning with physics-based modeling by embedding governing equations into the training process. Beyond fitting data, PINNs incorporate loss terms that enforce physical laws, ensuring solutions remain consistent with both observations and underlying physics.
+
+:
+
+Differentiation in PINNs is mainly computed by two approaches: automatic differentiation (AD) and numerical differentiation (ND) . AD, based on backpropagation and the chain rule, is widely used because it yields exact derivatives and aligns naturally with the meshless nature of PINNs. However, Chiu et al. showed that AD may fail to capture physically consistent results since it does not correlate neighboring grid points. In contrast, ND correlates neighboring points and can sustain physical consistency, but introduces truncation errors.
+
+:
+
+Activation functions introduce nonlinearity, enabling neural networks to capture complex input–output relationships. Common choices in computer science include the sigmoid~ and ReLU~, both valued for their simplicity and effectiveness~. The sigmoid function, 
+
+(x) = 1 + e^-x,
+
+maps inputs to values between 0 and 1 and is widely used in binary classification tasks~. The ReLU function, 
+
+(x) = (0, x),
+
+is popular for overcoming the vanishing gradient problem and has proven effective in applications such as image recognition and natural language processing. 
+
+In contrast, Physics-Informed Neural Networks (PINNs) often favor sinusoidal activations. PINNs solve partial differential equations (PDEs) by embedding physics-based constraints into neural networks, and studies have shown that the sine function is particularly well-suited for this purpose~. The sine activation is defined as 
+
+(x) = (x),
+
+and its periodic and smooth nature makes it effective for representing oscillatory or wave-like behaviors, naturally linking to generalized Fourier analysis. 
+
+Although Fourier neural networks~ are uncommon in general machine learning, several studies report that sinusoidal activations yield superior performance in PINNs~ compared to ReLU or sigmoid. This advantage arises from the Fourier series property of the sine function, which ensures that any function can be represented as a series of sines~, allowing PINNs to capture complex patterns, periodic phenomena, and sharp transitions with high accuracy. 
+
+:
+
+The incorporation and weighting of loss terms in PINNs have received limited attention in existing literature, despite their significant impact on performance. Many studies either merge loss terms without explicit weights~ or provide little detail on their assignment~, leaving a gap in clear guidelines. Recent work highlights the importance of proper weighting: Cai et al.~ emphasize the need to balance data fitting and physics consistency, while Cuomo et al.~ point out that multiple weighted losses complicate hyperparameter tuning, motivating the development of dedicated tools and libraries. 
+
+Methodology
+
+Physics-informed neural networks(PINNs) are neural networks that act as explicit functions to describe implicit governing equations of a system. Such neural networks take in independent variables of the system as the input of the neural network, and dependent variables are the outputs of the neural networks. In FIG. 4 act as explicit functions to describe some physics quantity u where the independent variables are position x y and t based on given implicit governing equations of a system and boundary conditions.
+
+The loss function $$ in PINNs is defined as a weighted sum of different loss components. The differential-equation loss $_DE$ enforces the governing equations, the boundary-condition loss $_BC$ enforces boundary conditions, and the initial-condition loss $_IC$ enforces initial conditions. The general form is 
+
+ = _DE_DE + _BC_BC + _IC_IC.
+
+In this thesis, PINNs are applied to three problems: two-dimensional conduction, two-dimensional convection–diffusion, and steady two-dimensional lid-driven cavity flow. For the conduction and convection–diffusion problems, the independent variables are the spatial coordinates $(x,y)$ and the dependent variable is temperature $T$. For the lid-driven cavity problem, the independent variables are also $(x,y)$, while the dependent variables are velocity components $(u,v)$ and pressure $p$. 
+
+Define loss function L for the PINNs: Numerical Differentiation(CDS)
+
+One commonly used measure to compute this discrepancy is the mean square error (MSE) (eq(7)), which is empirically popular and employed to calculate the loss in this study.
+
+ MSE(,y) = n_i=1^n (-y_i)^2 = n e^2_i
+
+Boundary-condition loss component $_BC$ is defined by the residue of boundary conditions of the defined problem where 
+
+_BC = || _i=1^|| ( f_i - g_i )^2
+
+$$:index of sampling point on domain boundary $$ \\
+|$$|:total number of sampling points on domain boundary $$
+\\
+f: Neural network’s prediction of boundary\\
+g: Boundary condition\\
+Boundary-condition loss component $_BC$ can be either Dirichlet-boundary-condition loss component $_DBC$ or Neumann-boundary-condition loss component $_NBC$. When there both boundary condition is defined by the problem, $_BC$ along with its corresponding weight $_BC$ will be redefined as the weighted sum of loss components defined by these boundary conditions, where
+
+ _BC_BC = _DBC_DBC + _NBC_NBC
+
+Determine loss weight $$ for the PINNs:
+
+Many studies either assign the same value to $$ or leave it undefined. Using a single $$ often leads PINNs to produce non-physical solutions, as different $$ combinations directly affect the results. Without clear guidelines, reproducibility becomes difficult. In this section, we present strategies for setting $$, aiming to improve reproducibility and enable systematic comparisons.
+
+One of our key objectives is to analyze the order of magnitude of the loss components to balance their relative importance in the neural network. To prevent smaller-magnitude terms from being neglected, we assign larger weight parameters $$ to them and smaller weights to larger-magnitude terms. The specific values are determined through an order-of-magnitude analysis. The loss components are defined in Section~II.A, with their respective magnitudes evaluated in Sections~III.A.1--III.A.3.
+
+We investigate three different weighting schemes for the loss components in Physics-Informed Neural Networks (PINNs). These schemes are derived in Sections~III.A.1--III.A.3, and solutions obtained from PINNs trained with the corresponding loss weights are compared.
+
+The three schemes are as follows:
+
+1. Equal weights: all loss weights are assigned the same value. This commonly used approach is denoted by the subscript ``0'', e.g $_0$, $_0$, $_0$.
+
+2. Order-of-magnitude balancing: loss weights $$ are determined from the ratio of magnitudes of quantifiable terms in each loss component. For the heat-conduction PINN, the solutions are denoted with the subscript ”$NM^2$", e.g, $_NM_2$, $_NM_2$, $_NM_2$.
+
+3. Relaxed order-of-magnitude balancing: a relaxation factor is introduced by taking the square root of the ratio, acknowledging that unquantifiable terms vary alongside quantifiable ones. This exploratory scheme is denoted with the subscript ``NM'', e.g., $_NM$, $_NM$, $_NM$.
+
+By comparing different ratios of loss weights, we evaluate their impact on the performance of PINNs in capturing the underlying physics and producing accurate results. The choice of $$ is critical, as it controls the relative importance of each loss component in guiding the network’s training.
+
+We compare different loss-weight ratios to assess their effect on PINN performance in capturing physics and producing accurate results. The choice of $$ is critical, as it governs the balance among loss components during training. In Section~III, we analyze three weighting schemes, discussing their effectiveness and limitations. Although no single optimal strategy is identified, the study offers insights into $$-scaling and its role in improving the accuracy and stability of PINNs for CFD applications.
+
+Method to increase model complexity for PINNs
+
+Model complexity is critical to the accuracy of Physics-Informed Neural Networks (PINNs). As sampling points and problem difficulty increase, more trainable parameters are required to achieve physics-consistent solutions. In this thesis, a five-layer network with 64 neurons per layer is adopted as the default, balancing efficiency and capacity.
+
+PINN complexity is primarily determined by network architecture. Increasing neurons is often more effective than adding layers, consistent with Fourier’s principle that any function can be represented as a series of sines . In Section~III.B.1, we compare different configurations to highlight the trade-offs between complexity, accuracy, and computational cost, providing guidance for selecting architectures in CFD applications.
+
+Benchmark
+
+This study apply finite difference method (FDM) to obtain numerical result for benchmark. Discretization of differential equations is based on Taylor expansion. Derivatives of a function, e.g, $(x, y, t)$, on discretized domain utilize Taylor expansion of functions adjacent points in the direction independent variable, e.g, x, y, t. Function of an adjacent points are described as:
+
+f'(x) &= 2h
+
+and we obtain the second derivative 
+
+f''(x) &= h^2
+
+Conduction problem is depicted via eq(27). The discretized form
+of governing equation is
+
+ T_i,j = +T_i,j+1+T_i-1,j+T_i,j-14
+
+The iterative process run on problem domain $$ on collocated grid. Gauss Seidel iteration is applied, and the convergence criterion is when
+
+_(i,j) 
+_i,j - T^n_i,j10^-20 + T^n_i,j
+< 10^-6
+
+Convection-and-diffusion problem is depicted via eq(39). The discretized form of governing equation is
+
+T_i,j = 
+ + T_i-1,j + T_i,j+1 + T_i,j-1
+- 2 Pe [ (T_i+1,j - T_i-1,j) + (T_i,j+1 - T_i,j-1) ]
+4
+
+The iterative process is performed on the problem domain $$ using a collocated grid. The Gauss-Seidel iteration is applied, and convergence is achieved when
+
+_(i,j) 
+_i,j - T^n_i,j10^-20 + T^n_i,j
+< 10^-6
+
+Flow characteristics of viscous incompressible flow is depicted via the law of conservation of momentum, for fluid it is the Navier-Stokes equation eq(51), eq(52), and the law of conservation of mass, or the continuity(eq(53). 
+
+Governing equations can be written in vector form, where the momentum equations in vector form is described as
+
+_t + ( )
+= - p + ^2 
+
+Continuity in vector form is described as
+
+ = 0
+
+The flow domain is a square region and a uniform grid is applied, and compute for u, v and p on every grid point $c_ij$. To avoid checkerboard distribution in the process of computation, staggered grid is applied, and the grid is then collocated onto the uniform grid on the flow domain.
+
+This study apply finite difference method (FDM) for discretization.	The discretized form of momentum equation in x-direction is
+
+^n+1-u_i,j^n t
+&\;+\; u_i,j\,-u_i-1,j2 x
+ + _i,j\,-u_i,j-12 y \\
+&= -p_i,j x
+ \;+\; Re\!(
+ +u_i+1,j-2u_i,j x^2
+ + +u_i,j+1-2u_i,j y^2
+ )
+
+$_i,j$ denotes $$ on the grid point $_i,j$, a grid point on the grid for $$ where,
+
+_i,j =
+ + v_i+1,j + v_i,j-1 + v_i+1,j-14
+
+and the discretized form of momentum equation in y-direction is
+
+^n+1-v_i,j^n t
+&\;+\; _i,j\,-v_i-1,j2 x
+ + v_i,j\,-v_i,j-12 y \\[6pt]
+&= -p_i,j y
+ \;+\; Re\!(
+ +v_i+1,j-2v_i,j x^2
+ + +v_i,j+1-2v_i,j y^2
+ ) 
+
+$_i,j$ denotes u on the grid point $_i,j$, where
+
+_i,j = + u_i,j+1 + u_i-1,j + u_i,j4
+
+Algorithm adopted in this work is projection method. Projection method split eq(16) into
+
+^* - ^n t
++ (^n)
+= - p^n + (^n)
+
+^** - ^* t
+= p^n
+
+^n+1 - ^** t
+= - p^n+1
+
+, the sum of the LHP and the RHP of 3 equations add up to be the momentum equation(17). Take divergence of eq(24), we have
+
+ ^n+1 - ^** t
+= -^2 p^n+1
+
+As a part of the algorithm, velocity field under each time-step reach divergence free under every time step, i.e, $ ^n+1$ = 0, therefore, we have 
+
+ ^** t = ^2 p^n+1
+
+Projection method utilize these fraction equations of eq(17) to solve for p, u and v at each time-step. For each time-step, the procedure may be described into 4 steps: first, solve $^*$ with eq(22); second, solve $^**$ with eq(23); third, iterative update $p^n+1$ with eq(26); and last, solve $v^n+1$ with eq(24).
+
+[H]
+
+initialization\;
+
+ solve $^*$ with eq(22)\;
+ solve $^**$ with eq(23)\;
+ take initial guess of $p^n+1$\;
+ 
+ iteratively update $p^n+1$ with eq(26)\;
+ 
+ solve $^n+1$ with eq(24)\;
+ collocate $^n+1$\;
+
+Framework for deep-learning: Pytorch
+
+This study employs PyTorch, an open-source machine learning framework for Python that supports efficient research prototyping and deployment. Developed by Facebook AI Research, PyTorch builds on the Torch library with a Python interface while retaining the optimized C backend and GPU acceleration, ensuring both flexibility and performance.
+
+Integration of numerical solver and learning based method
+
+PINNs are newly introduced in this study and not yet integrated with existing CFD solvers. However, such integration is essential for practical applications, as numerical solvers are typically developed in C/C++ or FORTRAN, whereas learning-based methods are commonly implemented in Python. Two coupling strategies exist: embedding Python-based learning methods into C++ solvers, or incorporating C++ solvers into Python frameworks. In Section~III.C, we compare these approaches and explain why integrating Python-based methods into C++ solvers is the preferred choice..
+
+Experimental study
+
+Solution obtain by PINN with varying loss weight at h = $$, $30$ and $50$
+In this section, we compare the solutions obtained from PINNs trained with varying loss weight to determine physic quantity on equidistant-spaced grid with spacing h = $10$, $30$ and $50$. The PINN architecture, training configuration, and also the training cost are summarized in Table I.
+
+In this section, we compare the solutions obtained from PINNs trained with varying loss weight. A two-dimensional conduction problem is governed by the following differential equation, 
+
+ x^2 + y^2 = 0
+
+where the domain boundary $$ is defined with boundary condition g where
+
+g(x,y) =
+
+0, & x=0,1;\; y=0 \\
+1, & y=1
+
+$: 
+
+A two-dimensional conduction problem is governed by eq(27). The conduction PINN is trained with loss function $$ composed of differential loss component $_DE$ and Dirichlet boundary condition loss component $_DBC$, each loss component is multiplied with a corresponding loss weight $$, which is defined as
+ 
+ =_DE_DE+_DBC_DBC
+ 
+where loss components of conduction are defined by numerical differentiation(ND) with central differencing scheme(CDS), when compute with MSE, differential-equation loss component $_DE$ is defined as
+
+_DE = _||
+
+where
+
+ ^2 T ^2_
+= _i=1^N-2 _j=1^N-2 
+( + T_i-1,j + T_i,j+1 + T_i,j-1 - 4T_i,jh^2 )^2
+
+and temperature boundary condition eq(28) is written into the Dirichlet boundary-condition loss component $_DBC$ is defined as
+
+_DBC = _ | |
+
+:
+
+Two-dimensional conduction problem is governed by eq(27). The conduction PINN is trained with loss function composed of differential loss component $_DE$ and Dirichlet boundary condition loss component $_DBC$, each loss component is multiplied with a corresponding loss weight $$ (eq(29)). To determine the proper ratio between each loss function, analyze on order of magnitude of loss component is considered. Order of magnitude of differential equation loss component is
+
+_DE = _||
+ \;\; ( + T_i-1,j + T_i,j+1 + T_i,j-1 - 4T_i,jh^2 )^2
+ \;\; [h]^4
+
+Order of magnitude of Dirichlet boundary condition loss component is
+
+_DBC = _ | |
+ \;\; [T]^2
+
+:
+Loss weights $_s$ in eq(29) control the contribution of each different component, we investigate three different weighting schemes for the loss components in Physics-Informed Neural Networks (PINNs). The three schemes are: when the loss weights are given the same value, when the ratio of loss weights is determined from the analysis of the order of magnitude, and when the square root of the ratio is employed as a relaxation factor. The first scheme represents the most commonly used approach for setting loss weights in PINNs, where
+
+ _DE : _DBC = 1:1
+
+Solutions obtained from PINNs trained ratio set with the first scheme will be denoted with a subscript ”0”, i.e, $_0$
+
+The second scheme aims to balance the order of magnitude of the loss components by determining the loss weights based on the magnitude of quantifiable terms(eq(33), eq(34)) within the loss components, where
+
+[_DE_DE] & [_DBC_DBC] \\[6pt]
+[_DE] : [_DBC] & [h]^4 : 1
+
+Solutions obtained from PINNs trained ratio set with the second scheme will be denoted with a subscript ”$NM^2$”, i.e, $_NM^2$.
+
+The third scheme introduces a relaxed version of the second scheme, taking into consideration that the magnitude of unquantifiable terms tends to change alongside the quantifiable terms. As a result, some relaxation is applied to the determined ratio, with the square root being used in this research as a form of relaxation, where
+
+ _DE:_DBC = h^2:1
+
+Solutions obtained from PINNs trained ratio set with the third scheme will be denoted with a subscript ”NM ”, i.e, $_NM$.
+
+:
+
+FIG. 5 shows solutions obtained from PINNs and benchmark solution obtained from finite difference method $T_FDM$ at y =0.5. FIG. 5(a) shows that $_0$, $_NM$ and $_NM^2$ agree with benchmark solution when h = $10$ FIG. 5(b) shows that $_0$, $_NM$ and $_NM^2$ agree with benchmark solution when h = $30$; FIG. 5(c) show that only $_NM$ agree with benchmark solution when h = $50$.
+
+Corresponding mean square error(MSE) can be found in Table II. The efficacy and accuracy of PINN trained with the third weighting scheme(eq(38)) is thus demonstrated in this test problem.
+
+The following figures show results of conduction PINN when h = $10$ FIG. 6 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+The following figures show results of conduction PINN when h = $30$ FIG. 7 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+The following figures show results of conduction PINN when h = $50$ FIG. 8 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+In this section, we compare the solutions obtained from PINNs trained with varying loss weight in Convection-and-diffusion PINN when Pe = 10 and 100 respectively. A two dimensional convection-and-diffusion problem is governed by the following differential equation, 
+
+u x + v y
+= ( x^2 + y^2 )
+
+suppose
+
+ = Pe, u = v = 1, \; = 1
+
+eq(39) is rewritten into
+
+h ( x + y )
+= x^2 + y^2
+
+, domain boundary $ $ is defined with boundary condition g where
+
+g(x,y) =
+
+0, & x=0,1;\; y=0 \\
+1, & x=1;\; y=1
+
+$:
+
+A two-dimensional convection-and-diffusion problem is governed by eq(39). The convection-and-diffusion PINN is trained with loss function $$ composed of differential loss composed of differential loss component $_DE$ and Dirichlet boundary condition loss component $_DBC$ each loss component is multiplied with a corresponding loss weight $$, which is defined as
+
+ = _DE_DE+_DBC_DBC
+
+where loss components of conduction are defined by numerical differentiation(ND) with central differencing scheme(CDS), when compute with MSE, differential equation loss component $_DE$ is defined as
+
+ ^2 T - h T ^2_ 
+&= _i=1^N-2 _j=1^N-2 
+( + T_i-1,j + T_i,j+1 + T_i,j-1 - 4T_i,jh^2 . \\
+& . - h -T_i-1,j) + (T_i,j+1-T_i,j-1)2h )^2
+
+and temperature boundary condition eq(42) is written into Dirichlet boundary condition loss component $_DBC$ is defined as 
+
+ T - g ^2_ =
+_i=0^N-2 (T_i,0 - g_i,0)^2
++ _i=0^N-2 (T_i,N-1 - g_i,N-1)^2 \\
++ _j=0^N-2 (T_0,j - g_0,j)^2
++ _j=0^N-2 (T_N-1,j - g_N-1,j)^2
+
+:
+
+Two-dimensional convection-and-diffusion problem is governed by eq(39). The convection-and-diffusion PINN is trained with loss function composed of differential loss component $_DE$ and Dirichlet boundary condition loss component $_DBC$, each loss component is multiplied with a corresponding loss weight $$ (eq(43)). To determine the proper ratio between each loss function, analyze on order of magnitude of loss component is considered. Order of magnitude of differential equation loss component is
+
+_DE = \| ^2 T - h T \|^2_
+ \;\; [ h - T_i-1,j + T_i,j+1 - T_i,j-12h ]^2
+ \;\; [h]^4
+
+, and order of magnitude of Dirichlet boundary condition loss component $_DBC$ is 
+
+_DBC = | |
+ \;\; [T]^2
+
+:
+
+Loss weights $_s$ in in eq(43) control the contribution of each different component, we investigate three different weighting schemes for the loss components in Physics-Informed Neural Networks (PINNs). The three schemes are: when the loss weights are given the same value, when the ratio of loss weights is determined from the analysis of the order of magnitude, and when the square root of the ratio is employed as a relaxation factor. The first scheme represents the most commonly used approach for setting loss weights in PINNs, where
+
+ _DE:_DBC = 1:1
+
+Solutions obtained from PINNs trained ratio set with the first scheme will be denoted with a subscript ”0”, i.e, $_0$.
+
+The second scheme aims to balance the order of magnitude of the loss components by determining the loss weights based on the magnitude of quantifiable terms(eq(46), eq(47)) within the loss components, where
+
+[_DE_DE] &\;\; [_DBC_DBC] \\[6pt]
+_DE : _DBC &\;\; [Pe]^2 : 1
+
+Solutions obtained from PINNs trained ratio set with the second scheme will be denoted with a subscript "$NM^2$", i.e, $_NM^2$.
+
+The third scheme introduces a relaxed version of the second scheme, taking into consideration that the magnitude of unquantifiable terms tends to change alongside the quantifiable terms. As a result, some relaxation is applied to the determined ratio, with the square root being used in this research as a form of relaxation, where
+
+_DE : _DBC = Pe^-1h^2 : 1
+
+Solutions obtained from PINNs trained ratio set with the third scheme will be denoted with a subscript ”NM”, i.e, $_NM$.
+
+:
+
+FIG. 10 shows solutions obtained from PINNs and benchmark solution obtained from finite difference method $T_FDM$ at x = 0.5 when Pe = 10. FIG. 10(a) shows that $_NM$ and $_NM^2$ agree with benchmark solution when h = $10$; FIG. 10(b) shows that $_NM$ and $_NM^2$ agree with benchmark solution when h = $30$; and FIG. 10(c) shows that $_NM$ and $_NM^2$ agree with benchmark solution when h = $50$.
+
+Corresponding mean square error(MSE) can be found in Table III. The efficacy and accuracy of PINN trained with eq(49), eq(50) are thus demonstrated in this test problem. 
+
+The following figures show results of PINN with h = $10$ FIG. 11 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+The following figures show results of PINN with h = $10$ FIG.12 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+The following figures show results of PINN with h = $50$ FIG.13 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+:
+
+FIG.14 shows solutions obtained from PINNs and benchmark solution obtained from finite difference method $T_FDM$ at x = 0.5 when Pe = 100. FIG.14(a) shows that $_NM$ and $_NM^2$ agree with benchmark solution when h = $10$; FIG.14(b) shows that $_NM$ and $_NM^2$ agree with benchmark solution when h = $30$; and and FIG.14(c) shows that $_NM$ and $_NM^2$ agree with benchmark solution when h = $50$.
+
+Corresponding mean square error(MSE) can be found in Table IV. The efficacy and accuracy of PINN trained with eq(49), eq(50) are thus demonstrated in this test problem.
+
+The following figures show results of PINN with h = $10$. FIG. 15 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+The following figures show results of PINN with h = $30$. FIG.16 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+The following figures show results of PINN with h = $50$. FIG.17 shows distribution of $_0$, $_NM$ and $_NM^2$ in the problem domain and their error from $T_FDM$.
+
+Lid-driven-cavity
+
+In this section, we compare the solutions obtained from PINNs trained with varying loss weight in Lid-driven-cavity PINN when Re = 10 and 100. A two-dimensional lid-driven cavity problem is governed by the steady state, two-dimensional incompressible Navier-Stokes equations and continuity, where Navier-Stokes equation in x-direction (x-momentum) is described as 
+
+u x + v y
+= - x
++ Re( x^2 + y^2 )
+
+Navier-Stokes equation in y-direction (y-momentum) is described as
+
+u x + v y
+= - y
++ Re( x^2 + y^2 )
+
+and continuity is described as
+
+ x + y = 0
+
+The domain boundary $$ is defined with boundary condition of velocity in x-direction $g_u$ where
+
+g_u(x,y) =
+
+0, & x = 0,1;\; y = 0 \\[6pt]
+1, & y = 1
+
+,boundary condition of velocity in x-direction $g_v$ where
+
+ g_v(x,y) = 0
+
+and boundary condition of pressure where
+
+ n = 0 (x,y) 
+
+With the condition given in this problem, pressure gradient $p_x$ is unique while there exists infinite solution for pressure p. To evaluate PINN’s solution of pressure p, error between PINN’s solutions of pressure gradient $_x$ and benchmark for pressure gradient $_xFDM$ has has much more significance over error between PINNs’ solutions of pressure $$ and benchmark for pressure $p_FDM$ Thus, for FIG. 19, FIG. 20, and FIG. 21, besides the outputs of lid-driven-cavity PINN $$, $$ and $$ are plotted alongside, where $_x$ are processed from $$ with finite difference method(FDM) using central differencing scheme(CDS). Furthermore, velocity field is the focus in this problem, and thus we will focus on the velocity $$ obtain by PINN in this subsection.
+
+$:
+
+A two-dimensional lid-driven-cavity problem is governed by eq(51), eq(52) and eq(53). The lid-driven-cavity PINN is trained with loss function $$ composed of Navier-Stokes equation in x-direction loss component $_NSx$, Navier-Stokes equation in y-direction loss component $_NSy$, continuity loss component $_c$ Dirichlet boundary condition loss component $_DBC$, and Neumann boundary condition loss component $_NBC$, each loss component is multiplied with a corresponding loss weight $$, which is defined as
+
+ = _NS_x_NS_x
++ _NS_y_NS_y
++ _c_c
++ _DBC_DBC
++ _NBC_NBC
+
+Loss components of conduction are defined by numerical differentiation(ND) with central differencing scheme(CDS), when compute with MSE, Navier-Stokes equation in x-direction loss component $_NSx$ is defined as
+
+\|
+(u x + v y)
+- (- x 
++ Re( x^2 + y^2))
+\|_^2
+& \\[6pt]
+= _i=1^N-2_j=1^N-2
+\
+ u_i,j -u_i-1,j2h
+ + v_i,j -u_i,j-12h
+ - -p_i-1,j2h \\
+
+ + Re(
+ +u_i-1,j+u_i,j+1+u_i,j-1-4u_i,jh^2
+ )
+\^2
+
+,Navier-Stokes equation in y-direction loss component 
+
+\|
+(u x + v y)
+- (- y 
++ Re( x^2 + y^2))
+\|_^2
+& \\[6pt]
+= _i=1^N-2_j=1^N-2
+\
+ u_i,j -v_i-1,j2h
+ + v_i,j -v_i,j-12h
+ - -p_i,j-12h \\
+
+ + Re(
+ +v_i-1,j+v_i,j+1+v_i,j-1-4v_i,jh^2
+ )
+\^2
+
+,Navier-Stokes equation in y-direction loss component $_NSy$ is defined as
+, continuity loss component $_c$ is defined as
+
+_c =
+ _^2||
+
+,velocity boundary condition $g_u$ (eq(54)) and $g_v$ (eq(55)) is written into Dirichlet-boundary-condition loss component $_DBC$, where it is defined as
+
+_DBC =
+^2| |
+
+where
+
+\|(u - g_u) + (v - g_v)\|_ ^2
+&= _i=0^N-2 [ (u_i,0 - g_u,i,0)^2 + (v_i,0 - g_v,i,0)^2 ] \\
+& + _i=0^N-2 [ (u_i,N-1 - g_u,i,N-1)^2 + (v_i,N-1 - g_v,i,N-1)^2 ] \\
+& + _j=0^N-2 [ (u_0,j - g_u,0,j)^2 + (v_0,j - g_v,0,j)^2 ] \\
+& + _j=0^N-2 [ (u_N-1,j - g_u,N-1,j)^2 + (v_N-1,j - g_v,N-1,j)^2 ]
+
+, pressure boundary condition $g_u$ (eq(54)) and $g_v$ (eq(55)) is written into Dirichlet-boundary-condition loss component $_DBC$, where it is defined as
+
+_NBC = 
+ n - g_p \|^2_ | |
+
+where
+
+\| n - g_p \|^2_ 
+&= _i=0^N-2 ( - p_i-1,j2h )^2
++ _i=0^N-2 ( - p_i-1,j2h )^2 \\
+& + _j=0^N-2 ( - p_i,j-12h )^2
++ _j=0^N-2 ( - p_i,j-12h )^2
+
+:
+
+Two-dimensional lid-driven-cavity problem is governed by eq(51), eq(52) and eq(53). The lid-driven-cavity PINN is trained with loss function composed of Navier-Stokes equation in x-direction loss component $_NSx$ Navier-Stokes equation in y-direction loss component $_NSy$, continuity loss component $_c$, Dirichlet boundary condition loss component $_DBC$ and Neumann boundary condition loss component $_NBC$ each loss component is multiplied with a corresponding loss weight $$(eq(57)). To determine the proper ratio between each loss function , analyze on order of magnitude of loss component is considered. Order of magnitude of u momentum (Navier-Stokes equation in x direction) loss component is
+
+&_NS_x (Re +u_i-1,j+u_i,j+1+u_i,j-1-4u_i,jh^2)^2
+ [Re]^2 [h]^4
+
+Order of magnitude of v momentum (Navier-Stokes equation in y direction) loss component is 
+
+&_NS_y (Re +v_i-1,j+v_i,j+1+v_i,j-1-4v_i,jh^2)^2
+ [Re]^2 [h]^4
+
+Order of magnitude of continuity loss component is
+
+_c = \|_^2||
+ [h]^2
+
+Order of magnitude of Dirichlet boundary condition is
+
+_DBC = ^2| |
+ [U]^2
+
+Order of magnitude of Neumann boundary condition is
+
+_NBC = 
+ n \|^2_
+||
+ _NS_x
+ [Re]^2 [h]^4
+
+:
+
+Loss weights $_s$ in eq(57) control the contribution of each different component, we investigate three different weighting schemes for the loss components in Physics-Informed Neural Networks (PINNs). The three schemes are: when the loss weights are given the same value, when the ratio of loss weights is determined from the analysis of the order of magnitude, and when the square root of the ratio is employed as a relaxation factor. The first scheme represents the most commonly used approach for setting loss weights in PINNs, where
+
+_NS_x : _NS_y : _c : _DBC : _NBC 
+= 1 : 1 : 1 : 1 : 1
+
+Solutions obtained from PINNs trained ratio set with the first scheme will be denoted with a subscript ”0”, i.e, $_0$, $_0$ and $_0$.
+
+The second scheme aims to balance the order of magnitude of the loss components by determining the loss weights based on the magnitude of quantifiable terms(eq(65), eq(66), eq(67), eq(68), eq(69)) within the loss components, where
+
+[_NS_x_NS_x]
+ [_NS_y_NS_y]
+ [_c_c]
+ [_DBC_DBC]
+ [_NBC_NBC] \\[6pt]
+_NS_x : _NS_y : _c : _DBC : _NBC
+ [Re]^2 h^4 : [Re]^2 h^4 : h^2 : 1 : [Re]^2 h^4
+
+Solutions obtained from PINNs trained ratio set with the second scheme will be denoted with a subscript ”$NM^2$", i.e, $_NM^2$, $_NM^2$ and $_NM^2$.
+
+The third scheme introduces a relaxed version of the second scheme, taking into consideration that the magnitude of unquantifiable terms tends to change alongside the quantifiable terms. As a result, some relaxation is applied to the determined ratio, with the square root being used in this research as a form of relaxation, where
+
+_NS_x : _NS_y : _c : _DBC : _NBC 
+= Re h^2 : Re h^2 : h : 1 : Re h^2
+
+Solutions obtained from PINNs trained ratio set with the third scheme will be
+denoted with a subscript ”NM”, i.e, $_NM$, $_NM$ and $_NM$.
+
+:
+
+FIG. 19, FIG. 20 and FIG. 21 show solutions obtained from PINNs and benchmark solution obtained from finite difference method when Re = 100. FIG. 19 shows that $_0$, $_NM$, and $_NM^2$ agree with benchmark solution when h = $10$. FIG. 20 shows that $_0$, $_NM$, and $_NM^2$ agree with benchmark solution when h = $30$; and FIG. 19(c) shows that $_0$, $_NM$ agree with benchmark solution when h = $50$.
+
+Corresponding mean square error(MSE) can be found in Table V. The efficacy and accuracy of PINN trained with the first(eq(70)) and the third (eq(72)) weighting scheme are thus demonstrated in this test problem.
+
+The following figures show results of PINN with h = $10$. FIG. 22 shows distribution of $_0$, $_NM$, and $_NM^2$ in the problem domain and their error from $u_FDM$.
+
+The following figures show results of PINN with h = $30$. FIG. 23 shows distribution of $_0$, $_NM$, and $_NM^2$ in the problem domain and their error from $u_FDM$.
+
+The following figures show results of PINN with h = $50$. FIG. 24 shows distribution of $_0$, $_NM$, and $_NM^2$ in the problem domain and their error from $u_FDM$.
+
+:
+
+Compiled languages such as C/C++ and FORTRAN translate directly to machine code and thus run efficiently, making them well-suited for numerical computation. In contrast, interpreted languages like Python execute via bytecode, resulting in lower efficiency and making them less ideal for high-performance numerical codes. 
+
+Despite this drawback, Python is widely adopted for its simplicity and versatility, and frameworks such as TensorFlow and PyTorch are primarily developed in Python with back end optimizations tailored for it. This raises the question of whether PyTorch-based numerical code in C++ can outperform Python, motivating the comparative tests conducted in this study. 
+
+From the table above, we found that overall performance indicates that integrating learning-based method in python to numerical solver in C++ is a faster choice for integrating numerical solver and learning-based method, and therefore C++ is chosen as the language for integrating the two method.
+
+Conclusion
+
+In this thesis, we investigate loss-weighting strategies for Physics-Informed Neural Networks (PINNs). Two schemes are proposed: the first assigns weights based on the orders of magnitude of quantifiable loss terms, while the second also accounts for unquantifiable terms. These are compared with the commonly used equal-weight scheme across three benchmark problems: conduction, convection–diffusion, and lid-driven cavity.
+
+Our results show that the second scheme achieves superior accuracy in the conduction and lid-driven cavity problems, underscoring the importance of incorporating both quantifiable and unquantifiable terms. For the convection–diffusion case, both schemes perform effectively, capturing the complex underlying physics.
+
+An additional finding is that PINNs can solve equations that are unstable or unsolvable with traditional numerical methods, demonstrating their potential for tackling challenging problems in computational physics. Overall, our study highlights the significance of informed loss weighting in enhancing PINN performance and broadening their applicability.
+
+Chao-An Lin would like to acknowledge support by Taiwan National Science and Technology Council under project No. NSTC 113-2221-E-007-129.
+
+Data Availability Statement
+
+The data supporting this study's findings are available from the corresponding author upon reasonable request.
+
+Conflict of Interest
+
+The authors have no conflicts to disclose.

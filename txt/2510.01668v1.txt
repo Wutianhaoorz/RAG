@@ -1,0 +1,132 @@
+[prl,preprintnumbers,amsmath,amssymb,twocolumn]revtex4
+
+Fluid deformation controls myriad processes including mixing and dispersion, development of stress in complex fluids, droplet breakup and emulsification, fluid-structure interaction, chemical reactions and biological activity. We develop a simple stochastic model for fluid deformation in random unsteady flows such as homogeneous isotropic turbulence. We show that although the Lagrangian velocity process is non-Markovian and non-Fickian, temporal decorrelation due to the unsteady nature of the flow renders the evolution of the Lagrangian velocity gradient tensor to be Fickian. Application of a coordinate transform renders the velocity gradient tensor upper triangular, eliminating vortical rotation and decoupling principal stretches from shear deformations, leading to a stochastic model of fluid deformation as a simple Brownian process. We develop closed-form expressions for the evolution of the Cauchy-Green tensor and show that the finite-time Lyapunov exponents are Gaussian distribution. Application of this model to DNS calculations of forced isotropic turbulence at Taylor-scale Reynolds number Re$_ 433$,confirms the underlying model assumptions and provides excellent agreement with theoretical results.
+
+Deformation of fluid elements is fundamental to myriad fluid-borne processes, ranging from from stretching of material lines and surfaces~ to diffusive mixing and transport of solutes, particles and scalars~, fluid-structure interactions~, development of stresses in polymer and viscoelastic systems~, turbulent energy cascade and dissipative structures~, Lagrangian coherent structures (LCS) that govern advective transport~, particle orientation, alignment and dissipation~, multiphase processes such as droplet breakup and emulsification~, and reactive processes including chemical reactions~, biological activity~ and geochemical processes~. The understanding, characterisation and prediction of these processes requires quantification of fluid deformation, and indeed many models of these processes require characterisation of fluid shear and stretching rates (such the Lyapunov spectra) as model inputs.
+
+To leading order, fluid deformation is characterised in terms of the fluid deformation gradient tensor $$ (or the Cauchy-Green tensor $=^$), which quantify the affine deformation of material elements as they are advected with the flow. For random unsteady flows such as turbulent flows, sheared suspensions~ and transient flows in random porous media, the prediction of fluid deformation dates back to consideration of line and surface stretching by , followed by a series of studies~ that examine the deformation kinematics of material elements (lines and surfaces) from a stochastic perspective. Although these models capture the deformation process, they arise as phenomenological models that assume deformation dynamics rather derive these from first principles. Furthermore, the relevant stretching characteristics such as Lyapunov exponents are determined from the evolution of lines and surfaces and the connection with the velocity gradient tensor is not clear.
+
+In this study we address this problem by developing an ab initio stochastic model for fluid deformation in ergodic and statistically stationary random unsteady flows. This stochastic deformation model is based upon exponential decay of the temporal Lagrangian velocity gradient autocorrelation function, leading to evolution of the components of the velocity gradient components which are well-described via Brownian motion. We use a moving coordinate frame to render the velocity gradient tensor in the Lagrangian frame to be upper-triangular, which also render the deformation tensor upper triangular, and generate analytic solutions for the non-zero components of this tensor. In this frame, the ensemble average of the diagonal components of the velocity gradient correspond to the Lyapunov spectrum of the flow, and the off-diagonal terms characterise how vorticity and shear interact with these principal stretching actions. We use a stochastic model to solve the evolution of the components of the deformation tensor, and use this to predict evolution of the deformation tensor, Cauchy-Green and similar measures. We apply this method to direct numerical simulation of homogeneous turbulent and show that this model accurately characterises all aspects of fluid deformation evolution.
+
+A similar approach has been developed~ for fluid deformation in steady random three-dimensional flows, such as those that arise in heterogeneous porous media. For random steady flows, the Lagrangian velocity decorrelates in space as tracer particles are advected through the spatially heterogeneous velocity field~, and hence follow a spatial Markov process, leading to e.g. continuous time random walk (CTRW) models for the evolution of longitudinal dispersion in heterogeneous porous media~. Such spatial Markovianity leads to non-Fickian transport if the Eulerian velocity distribution $p_e(v)$ for $v v$ scales as $p_e(v) v^$ with $1<<2$. Further studies~ have shown that, as expected, the velocity gradient tensor component in steady random flows has the same decorrelation structure as the velocity vector components, and so also follows a spatial Markov process, leading to CTRW models for fluid deformation in random steady 2D~ and 3D~ flows which also exhibit non-Fickian behaviour if $p_e(v) v^$ for $v v$ with $1<<2$.
+
+For unsteady flows such as turbulent flows or transiently forced flows in heterogeneous porous media, the picture is more complicated as these flows are observed to be neither Markovian in space or time, leading to e.g. strong intermittency of both the Lagrangian velocity and velocity gradient in time. However, if these flows are space-time ergodic (i.e. the statistics are sampled by the space and time fluctuations), these quantities may be rendered Markovian with respect to a Lagrangian sampling variable $r(s,t)$~ that is a function of the distance travelled $s$ and time $t$ along a pathline, which is chosen such that the sequence of Lagrangian particle speeds is Markovian with respect to $r$.
+
+This leads to the notion of a local Kubo number $_n=v_n _v/_v$ (where $v_n$ is the local velocity and $_v$, $_v$ respectively are the characteristic decorrelation time and length) that characterises the competition between local spatial and temporal decorrelation. For $_n 1$, the local velocity $v_n$ decorrelates in time, whereas for $_n 1$, $v_n$ decorrelates in space, and for $ 1$, velocity decorrelation is spatio-temporal. This formulation renders the velocity process Markovian with respect to $r$, hence a CTRW model can be developed that captures the evolution of the Lagrangian velocity in $r$-space.
+
+For space-time non-separable unsteady flows (i.e. those whose velocity field cannot be decomposed into a spatial field multiplied by a transient forcing function), transport is always Fickian (even if $1<<2$) on scales longer than the temporal decorrelation scale $_v$~, as long episodes in low velocity regions (that would normally generate persistent non-Fickian behaviour in steady or space-time separable flows) are interrupted by resetting of the temporal velocity process. Hence, despite the non-Markovian properties of ergodic unsteady flows, the evolution of the Lagrangian velocity (and hence velocity gradient) in time is described by a Brownian process along pathlines. 
+
+The fluid deformation gradient tensor $(,t)$ characterises the affine deformation with Lagrangian time $t$ of a material line element $d$ initially located at Lagrangian coordinate $$ as it deforms into its current state $d$ in Eulerian ccordinate $$ as $d=(,t)d$. Thus, the deformation tensor evolves in Lagrangian time $t$ along a trajectory of the flow $(,t)$ as
+
+(,t)dt=(,t)(,t),(,0)=,
+
+where $(,t)[((,t),t)]^$ is the velocity gradient tensor along the trajectory. Typically, the velocity gradient is dense and solution of () must be performed numerically. However, appropriate rotation via the moving coordinate frame $^=_0(,t)+^(,t)$ (where $(,t)$ is a proper orthogonal rotation matrix that satisfies $^=$ and $(,0)=$, and $_0(,t)$ is the position of fluid particle initially at position $$ at $t=0$), then the velocity gradient in this moving frame is then~
+
+^(,t)=(,t)^(,t)(,t)+(,t)^dt(,t),
+
+and the deformation tensor also transforms as $^(,t)=^(,t)(,t)$, hence the evolution equation () also holds in the moving coordinate frame (with primes added). As appropriate choice of $(,t)$ can render both $^(,t)$ and $^(,t)$ upper triangular, and so closed-form expressions for the components of $^(,t)$ are obtained in terms of the elements of $^(,t)$. We term such a moving coordinate frame as the Protean frame~, and for steady flows this corresponds to a streamline coordinate system (where $_1^=/v$) due to topological constraints associated with steady flows.
+
+However for unsteady flows the orientation of this coordinate frame does not correspond to any physically meaningful quantity due to the actions of shear and vorticity. For such flows we compose $(,t)$ as a series of rotations of angle $_1(t)$, $_2(t)$, $_3(t)$ respectively about the $x_1$, $x_2$, $x_3$ coordinates as $(,t)=_3(,t)_2(,t)_1(,t)$, where explicitly
+
+_i(,t)&=_i(,t)\,+_i(,t)(_i)_\\
+&+(1-_i(,t))\,_i_i, i=1:3,
+
+where $(_i)_$ is the cross-product matrix
+
+()_
+(ccc
+0 & -a_3 & a_2\\
+a_3 & 0 & -a_1\\
+-a_2 & a_1 & 0
+
+).
+
+Insertion of () and () into () to yield $^_ij(t)=0$ for $i<j$ generates a series of three coupled ODEs for the angles $_i(,t)$ with $_i(,0)=0$, detailed in~
+
+,t) t=f_i[_1,_2,_3,], i=1:3.
+
+Hence solution of () renders the Protean velocity gradient tensor $^(t)$ upper triangular. Although particle tracing and solution of these ODEs must be performed numerically as a post-processing step, the resultant non-zero components of the Protean velocity gradient tensor ($^_ij(t)$, $j i$) contain important information regarding the deformation kinematics of the flow. From (), the principal components of the Protean deformation tensor evolve as
+
+F^_ii(,t)=(_0^t^_ii(,t^)dt^),
+
+and so the ensemble average of the diagonal components of the deformation tensor grow as $ F^_ii(t)^_ii t$, hence the Lyapunov exponents of the flow are simply $_i=^_ii$, with $_i _i+1$. For volume-preserving flows $_i^_ii(t)=0$, hence $_i F^_ii=1$, whereas for compressible flows the constraints only apply in an averaged sense $_i^_ii=0$, $_i F^_ii=1$. As such, there exist three distinct scenarios for the Lyapunov spectra depending upon the number of positive or negative Lyapunov exponents; we assume the commonly-observed case~ for turbulent flows of two positive and one negative Lyapunov exponents, corresponding to distortion of fluid sphere into pancake-shaped discs, and note that the extension to the other two cases is straightforward. Note that we also do not consider non-chaotic flows where all of the Lyapunov exponents are zero (and so fluid deformation is algebraic in time), random walk models for such non-chaotic cases have previously been developed for 2D~ and 3D~ flows. In we show that the off-diagonal components of the deformation tensor evolve as
+
+F^_12(t) &=F^_11(t)_0^t dt^(t^) F^_22(t^)F^_11(t^),\\
+F^_23(t) &=F^_22(t)_0^t dt^(t^) F^_33(t^)F^_22(t^),\\
+F^_13(t) &= F^_11(t)_0^t dt^(t^)F^_23(t^)+^_13(t^)F^_33(t^)F^_11(t^)
+
+To develop a stochastic model for the evolution of the components of the Protean deformation tensor $^$, we consider how the components of the velocity gradient tensor $^$ evolve in time. Several studies~,show that for homogeneous turbulence, the Lagrangian velocity gradient tensor components $_ij$ have finite mean $_ij$ and variance $__ij^2$ and furthermore~ the Lagrangian velocity gradient correlation function in turbulent flows decays approximately exponentially in time (albeit at different rates given by the local Kolmogorov time scale in different parts of the flow). We show that the Protean velocity gradient components also exhibit exponential decorrelation in time as
+
+R__ij(t)(t)^_ij(t+)_ij^2=_c,ij(-|t-t^|/_c,ij),
+
+where $_c,ij$ is the characteristic decorrelation time for the component $^_ij$. In the following, we show that the Protean velocity gradient components also follow the same correlation structure, with $_c,ij=_c$ for all $i,j$. Hence the temporal variance of each component $_ij^$ is then
+
+_ij^2=2__ij^2_c, i=1:3,\,j i.
+
+As the diagonal components $^_ii$ are strongly correlated due to mass conservation condition $_i=1^3 ^_ii=0$, the 3$$3 covariance matrix $$ between the diagonal components $^_11$, $^_22$, $^_33$ has non-zero off-diagonal components $_ij=_ij_ii_jj$ (where $_ij$ is the correlation between $^_ii$ and $^_jj$) and diagonal components $_ii=_ii^2$. The Cholesky decomposition of $$ as $=^$ with the constant matrix $$ upper triangular then allows us to develop a simple stochastic model for $_ii(t) F^_ii(t)$ for $i=1:3$ that is consistent with these properties and () as
+
+d_ii=_i dt+V_ij dW_j(t),
+
+where $dW_j(t)$ with $j=1:3$ are independent Brownian motions. Hence the log-stretches $_ii(t)$ are Gaussian-distributed with mean $_i t$, variance $_ii^2 t$ and the vector $=(_11,_22,_33)$ has mean $\,t=(_1,_2,_3)t$ and correlation matrix $\,t$, and the principal stretches $F^_ii(t)$ are log-normally distributed with log-mean $\,t$ and log-covariance matrix given by $\,t$. As the Lyapunov exponents satisfy $_1>_2>_3$, then the integrals in ()-() converge to constants for $t_$, where the stretching time $_(1/(_1-_2),1/(_3-_2))$ as
+
+A_12(,t) & (,t)F_11(,t) a_12(),\\
+A_23(,t) & (,t)F_22(,t) a_23(),\\
+A_13(,t) & (,t)F_11(,t) a_13().
+
+The Cauchy-Green tensor
+
+(,t)(,t)^(,t)=^(,t)^^(,t),
+
+ controls the vast array of fluid-borne phenomena outlined in the introduction. From ()-(), a closed form expression for the rescaled Cauchy-Green tensor $(,t)/F_11(,t)^2$ is
+
+(ccc
+1 & a_12 & a_13\\
+a_12 & a_12^2+m_22^2 & a_12a_13+a_23m_22^2\\
+a_13 & a_12a_13+a_23m_22^2 & a_13^2+a_23^2m_22^2+m_33^2
+
+),
+ 
+
+where $m_jj(,t) F_jj(,t)/F_11(,t)$ and $m_jj 0$ as $t _$ for $j=2,3$. As the Cauchy-Green tensor $(,t)$ for $t _$ converges to a steady matrix multiplied by $F_11(,t)^2$, local fluid deformation is dominated by stretching associated with $^_11$. Furthermore, the leading eigenvalue of $(,t)$ rapidly converges to $(,t)=F_11(,t)^2(1+a_12()^2+a_13()^2)$, and so the finite-time Lyapunov exponent (FTLE) $(,t)$ also evolves as
+
+(,t)&2t(,t)\\
+t_11&(,t)+2t(1+a_12()^2+a_13()^2)\\
+&_+^2(t),
+
+where $(t)$ is a white noise with zero mean and unit variance where $(t)(t^)=(-|t-t^|/_c)$. Hence averaging over $N$ trajectories (denoted $_N$) yields faster convergence of the FTLE to the Lyapunov exponent $_$ as
+
+(,t_N=_+^2_.
+ 
+
+To illustrate and test this stochastic model for the evolution of $$ and $$, we utilise direct numerical simulation (DNS) data hosted as part of the Johns Hopkins Turbulence Database (JHTU) of forced isotropic turbulence at Taylor-scale Reynolds number $Re_433$ computed using 1024$^3$ nodes via a pseudo-spectral method. Tracer particle position, velocity and velocity gradient data is recorded over randomly sampled points at fixed spatial locations and fixed times, as well as for 10$^3$ fluid tracer trajectories for a time period of 10 seconds (corresponding to five eddy turnover times $T_L$). This data allows for characterisation of both the spatial and temporal correlation structures of the flow, as well as Eulerian velocity statistics and the evolution of the velocity gradient tensor along pathlines.
+
+Spatial and temporal decorrelation of the velocity magnitude $v$ is shown in Fig.(a), (b), indicating decorrelation is approximately exponential (first order and linear) in both space and time. The transition to negative correlation with finite time or distance shown in Fig.(a), (b) is due to sweeping behaviour of the local flow. The fitted decorrelation temporal and spatial scales are respectively $_v=0.844$, $_v=0.439$, which in conjunction with the mean velocity $ v=1.091$, yields the global Kubo number
+
+ v_v 2.0975,
+
+indicates that spatial decorrelation occurs approximately twice as fast as temporal decorrelation. The Eulerian velocity PDF $p_e(v)$ is also shown in Fig.(c), which is well-fitted by the Nakagami distribution
+
+p_e(v)=()()^ v^2-1(-),
+
+where $=1.4903$, $=1.3854$ are statistical parameters of the distribution, which recover the mean Eulerian velocity as $ v=(+1/2)/()1.0902$]. For small velocities, this distribution has the power-law scaling $p_e(v) v^2-1=v^1.981$. Although this velocity scaling ($1<<2$) is typically associated with non-Fickian transport in e.g. steady flows, the finite Kubo number ($ 2$) means that temporal decorrelation plays a significant role in resetting the velocity along pathlines, leading a transition to Fickian behaviour for times greater than $_c$.
+
+Solution of the ODE () and application of the rotation $(,t)$ to the velocity gradient data along pathlines generates the Protean velocity gradient tensor $^(,t$. The Lagrangian correlation structure of the diagonal velocity gradient components $^_ii$ is shown in Fig.~(d), which in accordance with (), indicates that these components decorrelate approximately exponentially in Lagrangian time, with decorrelation time $_c 0.45$. This exponential behaviour confirms the Brownian motion for the evolution of the log-deformations in (). The Protean velocity gradient PDFs shown in Fig.~(e,f) (sampled at fixed temporal increments $_c$ along a pathline). From the ensemble averages of the diagonal components $^_ii$, the Lyapunov exponents are $(_1,_2,_3)=(3.047,0.904,-3.961)$, consistent with previous studies~ that observe $_2$ to be positive and around one third the magnitude of $_1$ in of turbulent flows. Conversely, the off-diagonal components $^_ij$ have negligible ensemble averages ($|^_ij|<10^-4$).
+
+All of the non-zero velocity gradient components have finite variance, with the diagonal components have lower variance ($_11^2$=20.36, $_22^2$=27.42, $_33^2$=43.49) than their off-diagonal counterparts ($_12^2$=45.90, $_13^2$=80.88, $_23^2$=120.08). The correlation matrix for the six non-zero velocity gradient components $$ shows that the all of the velocity gradient components are independent (with cross correlation $||<10^-3$)) except for the diagonal velocity gradient components $_ii^$ which are found to be weakly negatively correlated due the incompressibility constraint, where the correlations between components are $_11,22$=-0.091, $_11,33$=-0.612, $_22,33=-0.732$. As shown in Fig.~(e,f), the velocity gradient PDFs are well-fitted by Laplace distributions.
+
+Fig.~(a), (b) show that the mean and variance of the log-stretches $_ii(,t)$ grow linearly in time (after some transient dynamics in the case of the latter) at rates that closely match the Lyapunov exponents $_i$ and variances $_ii^2$ respectively. This provides strong confirmation that the fluid deformation process is Fickian and validates the simple Brownian process () for the evolution of $_ii(,t)$, Although the particle trajectories are only advected a few multiples $T/_ 5$ of the stretching time $_$, convergence of the terms $A_ij(,t)$ to the steady values $a_ij()$ is readily apparent for most trajectories show in Fig.~(c). Similarly, decay of the terms $m
+_ij(,t)$ with time for most trajectories is also apparent in Fig.~(d). At longer times (not computed), all of the $A_ij$ and $m_ij$ terms will respectively converge to a constant and zero. Similarly, Fig.~(e) shows convergence of all terms of the normalised Cauchy-Green tensor $(,t)/F_11(,t)^2$ to the constant values
+
+(,t)F_11(,t)^2
+
+(
+ccc
+1 & a_12 & a_13\\
+a_12 & a_12^2 & a_12a_13\\
+a_13 & a_12a_13 & a_13^2
+
+).
+ 
+This represents a significant simplification as for times $t_$, the Cauchy-Green tensor is simply a constant tensor scaled by $F_11^2$. Fig.~(f) shows that the individual FTLEs $,t)$ fluctuate and slowly converge toward the leading Lyapunov exponent $_$. After a short transient (associated with convergence to the CLT), the ensemble averaged FTLE $,t)_N$ converges toward $_$ as $1/$, in accordance with ().
+
+These results establish that fluid deformation in unsteady flows has particularly simple dynamics when transformed into the Protean frame. Despite the heavily-weighted Eulerian velocity PDF with $1<<2$, which is typically associated with non-Fickian transport, the moderate Kubo number $$ ensures that temporal decorrelation renders transport to be Fickian by resetting the velocity process during low velocity events. This leads to exponential decay of the Lagrangian velocity gradient correlation function in time, leading to a well-defined characteristic decorrelation time $_C$, and a random fluid stretching process that is described by a simple Brownian motion. By converting into the Protean frame (essentially performing a continuous QR decomposition of the velocity gradient tensor), the impacts of vorticity are removed, decoupling the principal (diagonal) stretching rates from the shear (off-diagonal) contributions. The Lyapunov spectrum is then given by the ensemble averages of the diagonal components $^_ii$, and the associated variances $_ii^2$, which together with $_c$ completely characterise the fluid stretching process described by the Brownian motion (). At times longer than the stretching time $_$, the Cauchy-Green tensor which governs myriad fluid processes converges to a constant tensor scaled by the dominant stretching process. This is linked to convergence of the finite-time Lyapunov exponent $(,t)$ and the ensemble mean $(,t)$ to the Lyapunov exponent $_$.

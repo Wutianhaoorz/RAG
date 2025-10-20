@@ -1,0 +1,133 @@
+[
+
+onecolumn,
+superscriptaddress,
+
+ amsmath,amssymb,
+ aps,prfluids
+
+]revtex4-2
+
+[svgnames]xcolor
+
+HTML1F77B4
+
+Turbulent flows laden with small bubbles are ubiquitous in many natural and industrial environments. From the point of view of numerical modeling, to be able to handle a very large number of small bubbles in direct numerical simulations, one traditionally relies on the one-way coupling paradigm. There, bubbles are passively advected and are non-interacting, implicitly assuming dilute conditions. Here, we study bubbles that are four-way coupled, where both the feedback on the fluid and excluded-volume interactions between bubbles are taken into account. We find that, while the back-reaction from the bubble phase onto the fluid phase remains energetically small under most circumstances, the excluded-volume interactions between bubbles can have a significant influence on the Lagrangian statistics of the bubble dynamics. We show that as the volume fraction of bubbles increases, the preferential concentration of bubbles in filamentary high-vorticity regions decreases as these strong vortical structures get filled up; this happens at a volume fraction of around one percent for $_=(10^2)$. We furthermore study the influence on the Lagrangian velocity structure function as well as pair dispersion, and find that, while the mean dispersive behavior remains close to that obtained from one-way coupling simulations, some evident signatures of bubble collisions can be retrieved from the structure functions and the distribution of the dispersion, even at very small volume fractions. This work not only teaches us about the circumstances under which four-way coupling becomes important, but also opens up new directions towards probing and ultimately manipulating coherent vortical structures in small-scale turbulence using bubbles.
+
+Introduction
+ 
+
+Bubbles immersed in turbulent flows impart complex, multiscale dynamics that play a central role across many natural and engineered systems, from mixing , to boiling processes , to specially tailored bubble curtains and bubbly drag reduction . In this large variety of bubbly flows, one encounters bubbles across a wide range of different sizes, which can all give rise to different dynamical effects.
+
+This work focuses on the dynamics of bubbles that are small with respect to the Kolmogorov scale of the turbulent flow (also referred to as microbubbles), are undeformable and are subject to strong turbulence so that gravity plays a negligible role. Semantically, this coincides with the high Froude number, low Weber number limit. In numerical simulations, such bubbles have traditionally been studied in a one-way coupling paradigm, meaning that only the advection from the fluid phase exerted onto the bubble phase is taken into account. Intuitively, such an approximation is justified if the concentration of bubbles is dilute, such that both the collective effect of the back-reaction of the bubbles onto the fluid as well as interactions between bubbles themselves can be neglected. Once the bubble volume fraction increases, however, this approximation is challenged, and more sophisticated methods that take all such interactions into account are warranted, potentially exacerbating the numerical costs. Recently, we have introduced an efficient method for simulating small particles in turbulence in the so-called four-way coupling regime, taking the two-sided momentum exchange between particle and fluid phase into account, as well as excluded-volume interactions between the particles, at only a very limited additional numerical cost with respect to one-way coupling .
+
+In this work, we apply this method to simulate undeformable small spherical bubbles in turbulence, see Fig.~. The objective of this work is to study the effect of the interactions included in this four-way coupling paradigm on the dynamics of bubbles in turbulence, spanning volume fractions over five orders of magnitude from a very dilute regime to a very dense regime. We consider various Eulerian and Lagrangian statistical properties that together paint a clear picture of the dynamical behavior of small bubbles in turbulence at the different volume fractions and the influence of four-way coupling thereon. We study under which circumstances, and in which particular observables, effects of four-way coupling emerge, and trace these findings back to the different aspects of the interactions that are accounted for in the four-way coupling method.
+
+Numerical set-up
+ 
+
+The simulations in this work employ pseudo-spectral Direct Numerical Simulation (DNS) to solve the Navier-Stokes equations for the Eulerian flow in the fluid phase, coupled with Lagrangian interpolation for the bubble phase, solving the Maxey-Riley equations of motion for point particles in turbulence. On top of that, we include a back-reaction of the bubbles onto the fluid phase and excluded-volume interactions between the bubbles, completing the four-way coupling paradigm. The method is discussed and validated in detail in Ref.~, here we give a brief description.
+
+The flow field $(,t)$ in the fluid phase in Eulerian space $$ and time $t$ is governed by the conservation of momentum and mass as
+
+ 
+ t = - p + + + _p,\\
+ =0,
+
+where $p$ denotes the pressure and $$ is the kinematic viscosity. The flow is driven by an external force $$, acting on forcing wavenumber $k_f$, defined in Fourier space as () = () / _k_f || < k_f+1 |()|^2$, ensuring smoothness and a constant energy injection rate $$ .
+
+Furthermore, $_p$ denotes the back-reaction from the point particles onto the fluid phase, which is governed by momentum exchange as 
+ 
+ _p _i^N_p [ t - _f _i t ] _p ( - _i(t) ),
+
+summing the individual contributions to the feedback force for all $N_p$ particles. Here, $_i$ and $_i$ denote the velocity and position of particle $i$, respectively, $_p$ is the volume of the modeled particle, and $_p$ and $_f$ represent the density of the particle and the fluid, respectively. For massless bubbles, $_p=0$, such that only the first term in the square brackets remains, originating from the added mass of the bubble. Under the point-particle assumption, the back-reaction force is $$-distributed in space, which is approximated in practice by extrapolating to the nearest eight grid points surrounding the particle, see Ref.~.
+
+Finally, the particle phase is evolved through Lagrangian interpolation following the Maxey-Riley equations , where we retain only the dominant forces, being the pressure gradient force, added mass and Stokes drag, yielding
+
+ t &= (,t) t -_p(-(,t)),\\
+ t &= + .
+
+Here, $3/(1+2_p / _f)$ and $_p$ is the reciprocal Stokes drag coefficient or particle response time, which is typically compared with the Kolmogorov time $_$ of the turbulence to yield the Stokes number $_p/_$. Finally, we resolve collisions between particles by enforcing the excluded-volume interactions, assuming spherical particles with collision diameter $D$, using the `You Only Collide Once' (YOCO) algorithm, see Ref.~.
+
+This method presumes that collisions happen instantaneously. In reality, there will be an elastic time scale involved in the bubble collision process. Our method thus represents the limit in which this elastic time scale of collisions is much smaller than the smallest dynamical time scale of the turbulent flow, represented by $_$.
+
+This work shall focus on massless bubbles ($_p/_f = 0$, $=3$), with a resonant Stokes number $=1$, yielding the strongest effect of the characteristic preferential concentration of bubbles in high-vorticity regions . The main simulations are carried out with a resolution of $512^3$ Eulerian grid points and Taylor-scale Reynolds number $_95$, while we also perform smaller simulations at $256^3$ and $128^3$ resolution and smaller $_$ to assess $$-dependence. We ensure that the largest wavenumber resolves $k_ 3$, such that the grid spacing coincides with the Kolmogorov length $^3/4^-1/4$, yielding a well-resolved dissipative range. Bubbles with various collision diameters are considered in the range $D=(0.41-1.63)$, which is sufficiently small to justify the point-particle approximation . While formally, the ratio $D/$ would impose the $$ if one assumes pure spherical Stokesian drag, we numerically fix $=1$ for all bubble sizes. This not only maximizes the effect of preferential concentration, but also isolates the effect of bubble-bubble interactions from inertial effects, while ensuring that bubbles can be modeled to be sufficiently small. To assess the influence of bubble volume fraction, the number of particles is varied over a large dynamic range from $N_p=256$ to $N_p=410^7$, yielding a bubble volume fraction $ N_p D^3 / (6 )$ (with $$ the total simulation volume) that varies all the way from a very dilute regime with $=(10^-5)$ to a very dense regime with $=(10^-1)$. This allows us to systematically explore the effect of four-way coupling on bubbly turbulence.
+
+Bubble-fluid interaction
+ 
+
+To understand the effect of the four-way coupled bubbles on the underlying turbulent flow, we start by studying how they affect the kinetic energy. Changes in the energetic properties of the flow will be a consequence of the back-reaction that the bubbles exert on the fluid phase. In Fig.~, we show the total kinetic energy $E_$ (panel a) in the fluid phase for the four-way coupled system at varying bubble volume fraction, compared with its one-way coupled counterpart, as well as the corresponding spectral distribution of energy $E(k)$ as a function of wavenumber $k$ (panel b).
+
+It shows that only when one goes to extremely high volume fraction of $ 10\
+
+The relatively small magnitude of the effect of the four-way coupled bubbles on the fluid kinetic energy can be understood from the nature of the back-reaction force itself. For fluids laden with heavy particles, strong turbulence attenuation is obtained even at only moderate volume fractions , see also the inset in panel (a). The massless bubbles, on the contrary, do not carry any momentum themselves. As a consequence, the only back-reaction in the case of bubbles is due to their added mass, i.e. the first term in the square brackets in Eq.~, while the second term vanishes, yielding only a relatively small force on the underlying flow.
+
+Preferential sampling and clustering
+ 
+
+Although the back-reaction on the fluid may be small, we can expect a significant difference between four-way coupled and one-way coupled bubbles in the Lagrangian statistics due to the interactions between bubbles themselves. Because of the preferential concentration inside high-vorticity regions, local densities can be much larger than the mean density, which raises the importance of bubble-bubble interactions even further. To investigate the effect of these interactions on the preferential concentration of bubbles inside the high-vorticity regions, we study the enstrophy $^2||^2$ that is sampled at the position of the bubble.
+
+The results are shown in Fig.~ for varying volume fraction $$ and for different bubble sizes $D$ and turbulence Taylor-scale Reynolds number $_$. The figure shows a clear transition between a dilute regime at low $$ and a denser regime at higher $$. In the dilute regime, the preferential sampling of the four-way coupled bubbles is indistinguishable from that of the one-way coupled bubbles. In the denser regime, preferential sampling decreases as bubbles start to interact through their excluded-volume and eventually approaches the Eulerian average expected for uniformly distributed bubbles at the highest volume fractions. The transition between the two regimes occurs at around a critical volume fraction $=_c1\
+
+The high-enstrophy regions that the bubbles preferentially sample are associated with vortex filaments in the turbulent flow . These coherent structures are long-lived small-scale structures that extend in a line-like filamentary fashion. They have been an active topic in fundamental turbulence research and are presumed to be intricately connected to turbulence intermittency . The findings in this work shed some light on the space occupied by these high-vorticity regions. Since we find that preferential sampling decreases from around $_c1\
+
+To assess the $$-dependence of this transition point, we consider the preferential sampling for different $_$ in panel (b). This yields different levels of preferential sampling due to their different levels of intermittency, but we can linearly rescale the enstrophy to be between 0 and 1 (inset). In panel (c) we show that these curves then collapse well upon rescaling the volume fraction by a factor $_^-1/2$. This suggests that the transition point, associated with the volume fraction of vortex filaments, scales as $_c _^-1/2$. However, it must be noted that the accessible dynamic range of $_$ is limited.
+
+As we approach this transition point at which the most preferential regions become filled, we should also expect the morphology of the bubble clusters to change. To investigate this, we compute the fractal covering dimension $d$ of the total set of bubbles, capturing the spatial dimensionality of the bubble configuration. Details on this computation are provided in Appendix~. The resulting fractal dimensions are shown in Fig.~. This indeed shows how the bubble cluster conformation changes from one dimensional ($d 1$) line-like structures at low $$, following the morphology of vortex filaments, to a gradually more volumetric conformation at higher $$, approaching full three dimensionality ($d 3$). This change can also be appreciated visually from the example snapshot in Fig.~. For the fractal covering dimension, there is an explicit dependence on $D$, as larger bubbles remain in a line-like configuration till higher $$ than smaller bubbles when filling up the vortex filaments. This is also evident from the apparent collapse when rescaling the abscissa by the bubble size $D$ (inset). 
+
+Lagrangian velocity structure function
+ 
+
+Another commonly studied property of Lagrangian turbulence where we may expect signatures of bubble-bubble interactions is the velocity structure function
+
+ S_p() | _ |^p = | (t+) - (t) |^p ,
+
+and its scaling behavior $ S_p()^_p$ with scaling exponents $_p$. These structure functions can be used to describe the intermittency properties of Lagrangian turbulence through the deviation from the Kolmogorov prediction $_p = p/2$ .
+
+To measure the scaling exponents $_p$, they are typically obtained using extended self-similarity (ESS) as
+
+ _p() S_p() S_2().
+
+The local scaling exponents $_p()$ of the Lagrangian velocity structure functions are known to show a notable decrease around the dissipative scale $ = (_)$, before plateauing into the inertial range at $>(10_)$ . This so-called `viscous dip' is associated with trapping in vortex filaments and is hence amplified for light particles .
+
+In Fig.~, we show the obtained ESS Lagrangian velocity structure function scaling exponents of the 4th order for the four-way coupled bubbles, alongside the one-way coupled bubbles and tracer particles for comparison. It shows that at low volume fraction $ 1 \
+
+Pair dispersion
+ 
+
+Finally, we study how the four-way coupling affects the dispersion of pairs of bubbles in the turbulent flow. To that extent, we consider the evolution of the separation between pairs of bubbles $_i$ and $_j$ as
+
+ x_ij () | _i(t+) - _j(t+) |,
+
+which initially are close together $0.9D< x_ij(0) < 3.5$. In Fig.~, we plot the mean squared displacement $ x_ij^2 ()$ for four-way coupled bubbles at different volume fractions as well as for tracers and one-way coupled bubbles for comparison. The pair dispersion shows an initial exponential growth, followed by the famous Richardson superdiffusive growth as $^3$ in the inertial range, and a diffusive regime $$ at long time beyond the integral scale ($ 10^2_$) . Note that the tracers, one-way, and four-way coupled bubbles exhibit similar mean dispersion, and there are no measurable differences between the one-way and four-way coupled bubbles within the statistical accuracy. This indicates that the collisions between bubbles do not alter their mean dispersive behavior.
+
+Although the mean dispersive behavior is not affected by bubble collisions, we may expect differences in the distribution of the pair dispersion, particularly at short distances when collisions should be more prevalent. To study this in more detail, we consider the distribution of first-exit time $_$, defined as the first time when a pair of bubbles reaches a certain separation $ x_ij$ . The resulting distributions for various separations are shown in Fig.~.
+
+This shows that, although the mean dispersive behavior is not strongly affected by the four-way coupling, the tails of the distribution of the first-exit times are becoming strongly reduced. These exponential tails correspond to the rare events of pairs of bubbles that remain together for an exponentially long time, before separating and crossing the first-exit threshold. The occurrence of such long-lived pairs is strongly reduced due to the excluded-volume interactions as bubbles push each other away, even at the smallest volume fractions, explaining the large differences in the tails of the distributions. These differences gradually diminish at larger separation distances as collisions play a smaller role, as shown in the figure.
+
+Although the contributions of these rare events of long-lived pairs to the mean dispersive behavior is negligibly small, as shown above, the presence or absence of such long-lived pairs may still have practical implications e.g. for reactive flows and four-way coupling can thus be an important consideration in the modeling for such applications at all volume fractions.
+
+Conclusions and outlook
+ 
+
+We have studied how the dynamics of small bubbles in turbulence changes when one goes from the commonly used one-way coupling paradigm to a four-way coupled method, where both the back-reaction from the bubbles onto the underlying fluid is considered, as well as excluded-volume interactions between the bubbles themselves. We have found that the energetic properties of the underlying turbulent flow remain largely unaffected by the presence of small passive bubbles. This can be understood from the fact that massless bubbles carry no momentum, and the back-reaction thus consists only of the added mass effect, in contrast with dispersed heavy particles. Considering the Lagrangian dynamics of the bubbles themselves, the picture becomes more subtle, as some Lagrangian statistics are found to be sensitive to the collisions between bubbles. We find a cross-over between a dilute regime at low volume fractions $ 1\
+
+Furthermore, we show that the excluded-volume interactions can alter the Lagrangian velocity structure function. Firstly, collisions introduce roughness at the shortest sub-Kolmogorov time scales, which eventually dominates the statistics even at the smallest volume fractions as there is no other dynamics at play at such small time scales. In the dissipative and inertial range, for the dilute regime, the statistics largely follow that of the one-way coupled simulations, reassuring us of the validity of previously obtained results under the one-way coupling paradigm. As the volume fraction increases, however, the statistics gradually get closer to that of tracer particles as preferential concentration decreases, reducing the well-known `viscous dip' of the scaling exponent. Finally, considering the pair dispersion of bubbles in turbulence, we find that the mean dispersion is largely unaltered by the introduction of four-way coupling, again supporting the validity of one-way coupling simulations when studying the dispersive properties of bubbly turbulence. However, a clear signature of bubble collisions can still be observed from the tails of the distribution of first-exit times, showing that the prevalence of rare events of exponentially long-lived pairs is reduced by bubble collisions, even at the smallest volume fractions. This can have consequences for certain applications that are sensitive to such long-lived pairs, making four-way coupling an important consideration for such applications at all volume fractions.
+
+Our findings show that the question whether or not four-way coupling is important in bubbly turbulence is a subtle question to answer and is intrinsically dependent on the type of observable that one is interested in. While we have shown that some observables are virtually insensitive to four-way coupling at all volume fractions, other observables show a dilute, unaffected regime and a denser, affected regime, while still other observables show effects of four-way coupling at all considered volume fractions.
+
+We emphasize that this study is focusing on the effect of four-way coupling on passive bubbles that are small with respect to the Kolmogorov scale of the flow and we are not considering the effects of deformation, break-up and coalescence, nor the effect of gravity. Significant two-way interactions between the fluid and bubble phase that measurably alter the turbulent flow are expected when one considers larger, fully interacting bubbles that extend into the inertial range of the turbulence and/or are significantly affected by buoyancy . However, even in the idealized setting of small rigid bubbles studied here, a significant, well-targeted alteration of the statistics of the underlying turbulent flow can be achieved as soon as one considers external forcing on the bubbles, e.g. due to inertial or acoustic forces, as shown in Ref.~. Future work will further explore the possibilities of this approach of targeted and controlled shaping of turbulence.
+
+We thank Luca Biferale for useful discussions. This work is supported by the Netherlands Organization for Scientific Research (NWO) through the use of supercomputer facilities (Snellius) under Grant No. 2023.026, 2025.008. This publication is part of the project “Shaping turbulence with smart particles” with Project No. OCENW.GROOT.2019.031 of the research program Open Competitie ENW XL which is (partly) financed by the Dutch Research Council (NWO). A.F. acknowledges support from the European Union’s HORIZON MSCA Doctoral Networks programme under Grant Agreement No. 101072344, project AQTIVATE (Advanced computing, QuanTum algorIthms and data-driVen Approaches for science, Technology and Engineering) and the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme Smart-TURB (Grant Agreement No. 882340).
+
+Computation of fractal covering dimension
+
+The fractal covering dimension of a set of points can be computed by tiling the embedding space with boxes of varying size $l$ and computing the number of non-empty boxes $n(l)$ that have at least one point inside. The fractal covering dimension $d$ is then readily obtained from the logarithmic derivative of $n(l)$ as
+
+ d = - n(l) l.
+
+This shows that the fractal covering dimension $d$ is in principle a function of $l$, and we are typically interested in the limiting behavior of the fractal dimension for $l 0$. In practice, however, this poses problem whenever considering a finite set of sample points, because at low $l$, zero-dimensional contributions from individual points can start to dominate the statistics of $n(l)$ due to the finiteness of the sample, leading to an underestimation of the true fractal dimension of a hypothetically infinite sample.
+
+This is illustrated from our data in Fig.~, showing that at low $l$, and particularly at lower $$ and larger $D$ (fewer bubbles), the fractal dimension goes below unity due to contributions from individual points. The true fractal dimension is arguably retrieved in the plateau at moderate $l/$. To account for the effect of the finiteness of the number of bubbles, we select the true representative fractal dimension (used in Fig.~) at a length $l$ that scales as the average interparticle distance $l ^-1/3$, indicated by the black crosses in Fig.~. We propagate the uncertainty due to this scale selection into the error bar in Fig.~.
+
+For the smallest $D=0.41$, the highest $$ values are not accessible because of computational limitations due to the extremely high number of particles, while for the largest $D=1.63$, the lowest $$ values are not reliably measurable because of the large interparticle distance due to the low number of particles.

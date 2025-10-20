@@ -1,0 +1,546 @@
+[final]siamltex
+
+ 
+
+Remark[section]
+
+[2][Claim]
+[ #1 #2.]
+
+\0
+
+[1]
+[1]
+
+[1]#1
+[1]#1
+[1]Fig.~
+
+ Funding: This 
+		work was partially supported by AFOSR FA9550-24-1-0237.
+				
+				
+
+We present a numerical framework for constructing a targeted digital twin (tDT) that directly models the dynamics of quantities of interest (QoIs) in a full digital twin (DT). The proposed approach employs memory-based flow map learning (FML) to develop a data-driven model of the QoIs using short bursts of trajectory data generated through repeated executions of the full DT. This renders the construction of the FML-based tDT an entirely offline computational process. During online simulation, the learned tDT can efficiently predict and analyze the long-term dynamics of the QoIs without requiring simulations of the full DT system, thereby achieving substantial computational savings.
+
+After introducing the general numerical procedure, we demonstrate the construction and predictive capability of the tDT in a computational fluid dynamics (CFD) example: two-dimensional incompressible flow past a cylinder. The QoIs in this problem are the hydrodynamic forces exerted on the cylinder. The resulting tDTs are compact dynamical systems that evolve these forces without explicit knowledge of the underlying flow field. Numerical results show that the tDTs yield accurate long-term predictions of the forces while entirely bypassing full flow simulations.
+
+Targeted digital twin, flow map learning, data-driven modeling, computational fluid dynamics.
+
+Introduction
+ 
+
+Digital Twin (DT) is a concept that has emerged in several industrial contexts over the past decades. Formally conceptualized by Michael Grieves and John Vickers in the 2000s, DT has since attracted significant attention from academia. Widely recognized as a paradigm shift in digital transformation, Digital Twins hold tremendous promise for revolutionizing industries and accelerating both decision-making and scientific discovery. A simple online search yields thousands of publications discussing various aspects of Digital Twins. We refer the readers to and the references therein for an account of the history of Digital Twins, as well as for comprehensive reviews of the current landscape.
+
+A DT is a virtual representation of a physical system that undergoes continuous updates from real-time data, enabling simulation, analysis, control, and decision-making. A critical feature of DT is the bi-directional data exchange between the physical and digital twins. On the one hand, data from the physical twin are continuously incorporated into the digital twin, ensuring that the digital representation remains accurate with respect to the physical twin and its environment. On the other hand, the digital twin provides real-time control adjustments and decisions to the physical twin in response to environmental changes and operational objectives. In , the former process was termed P2D (physical-to-digital), the latter D2P (digital-to-physical), and the overall bi-directional exchange was described as the PDP (physical-to-digital-to-physical) framework.
+
+Although widely adopted, real-time implementation of this framework remains challenging due to its high computational cost. At the core of the DT framework lies a complete numerical solver for modeling the states of the physical twin. Also called the forward (problem) solver, this component provides accurate predictions and analyses of the physical system. However, when the physical twin is complex, which is almost always the case, the forward solver often requires extraordinarily sophisticated simulation software and incurs significant computational expense. The difficulty is compounded by the fact that many tasks in the P2D and D2P processes (e.g., optimization, control, parameter estimation, data assimilation, and uncertainty quantification) require repeated execution of the forward solver. This makes real-time DT implementation extremely challenging. Although recent works in the scientific computing community have sought to mitigate these challenges through various numerical strategies, cf. , the fundamental difficulties remain.
+
+The purpose of this paper is to formalize the concept of the Targeted Digital Twin (tDT) and introduce a numerical strategy for its construction. The idea of tDT was first introduced in within the PDDP (physical-to-digital-digital-to-physical) framework. Compared to the standard PDP bi-directional data flow framework, the PDDP framework introduces an additional D2D (digital-to-digital) loop (see Figure ). The D2D process occurs entirely in virtual time and does not require real data or inputs from the physical twin. As a self-learning process, one of its main objectives is to construct a targeted digital twin for the full digital twin. A tDT models the dynamics of critical quantities of interest (QoIs) of the full digital twin. While the full DT often relies on a forward solver with an exceedingly large number of degrees of freedom, the key QoIs necessary for control and decision-making typically involve only a small number of quantities. For instance, decisions may depend on maximum stress, average temperature, or pressure forces at specific critical locations, rather than on the full state of all variables at every grid point. If a tDT, defined as a dynamical model for these QoIs, can be constructed without solving the full system, it would enable much faster model simulations for the QoIs and be suitable for real-time control and decision making of the DT based on the QoIs. This is the motivation for constructing tDTs within the PDDP framework ().
+
+QoIs are, however, defined as functions of the state variables, and their evaluation requires solving the complete system of the full digital twin. Mathematical models for QoIs that bypass the state variables do not exist. (In other words, if such a closed-form model for the QoIs were available, it would already be incorporated into the full DT.) Consequently, construction of a dynamical model for the QoIs must be data-driven, relying on training data generated from the full DT. In this paper, we demonstrate how this can be accomplished through the Flow Map Learning (FML) methodology. FML was first introduced in to model unknown autonomous dynamical systems, and later extended to parameterized systems , non-autonomous systems , PDEs , and stochastic dynamical systems . A notable extension addressed partially observed systems , where memory-based FML was developed. This approach has proven accurate and effective for partially observed chaotic systems and PDE systems . For a detailed review of FML, see .
+
+In this paper, we present a computational procedure that adapts the memory-based FML approach for constructing a targeted DT from a full DT. We illustrate the method using a computational fluid dynamics (CFD) problem: two-dimensional incompressible flow past a cylinder, which is a well-studied benchmark. The forward solver for the full DT involves approximately $150,000$ degrees of freedom, which, while not exceedingly large, is nonetheless nontrivial. The QoIs are defined as the total hydrodynamic forces exerted on the cylinder, namely drag (the streamline component) and lift (the cross-flow component), yielding only two degrees of freedom. By conducting repeated simulations of the full DT under randomized conditions, we collect a sufficient number of short-burst training trajectories for the QoIs. A memory-based FML model is then constructed as the tDT for the forces. This tDT is an exceedingly compact model, with only two outputs: drag and lift. For prediction, a time series of cylinder forces is first acquired and used as the “initial condition” to synchronize the tDT with the full DT. Thereafter, the FML-based tDT can generate long-term predictions of the cylinder forces without any additional information from the full DT. That is, the tDT can analyze and predict the dynamical behavior of the flow-induced forces without explicit knowledge of the flow field. In a separate study, we consider the pressure distribution along the cylinder surface as the QoI and demonstrate that a tDT can also be constructed to accurately predict this distribution over long time horizons, again without requiring simulations of the full flow field.
+
+This paper is organized as follows. Section provides
+the formal definition of the targeted DT. Section 
+details the computational procedure for constructing tDTs. Section
+ presents the CFD example and demonstrates the
+effectiveness of the FML-based tDT approach. Conclusions are given in
+Section .
+
+Targeted Digital Twin
+ 
+
+In this section, we introduce the problem setup and the concept of
+Targeted Digital Twin (tDT).
+
+Full Digital Twin
+
+Without being specific, we use the following general formula to denote the mathematical model of a complete full digital twin
+ 
+u_t=(u; ),
+
+where $u$ represents the state variables, $$ the system parameters, and $$ the operator governing the evolution of the states. The system parameters $$ broadly include all the physical or hyperparameters in the model, as well as the geometry and boundary conditions.
+Note that $$ is typically highly nonlinear and involves complex interactions among many (nonlinear) sub-systems of different physics and scales. We make a general assumption that the system is well posed.
+
+Since practically all mathematical models are solved numerically over discrete spatial and time domains, we shall adopt a discrete setting and consider, hereafter, without loss of much generality, time instances over a constant time step $ t>0$,
+$$
+t_n = n t, n=0,1,,
+$$
+and the full DT as a discrete numerical model
+ 
+U_n+1 =F(U_n; p), U^N_U, p^N_p,
+
+where $U_n$ represents the numerical discretization of the state variables $u$ over the spatial domain at time $t_n$, and $p$ represents all the parameters. These parameters $p$ include not only the system parameter $$ in the original mathematical model , but also hyperparameters used in the construction of the discrete model . (Only variable parameters are considered here. Parameters with fixed values are treated as constants and not included in $p$.)
+Typically, $U$ are the grid values of the state variables $u$
+at a set of grid points when a collocation-type numerical method is
+used, e.g., finite difference, or the expansion coefficients of $u$
+over a set of basis functions when a projection-type numerical method
+is used, e.g., the Galerkin method. To fully resolve the system ,
+the dimensionality of $U$, $N_U$, is usually very high. For example, it is not uncommon for a complex system solver to have $ 10^6$ mesh
+points or more.
+
+Quantity-of-Interest
+
+For the model , we consider its quantities-of-interest (QoIs)
+ 
+v = (u;),
+
+where $$ are the variable parameters associated with the definition of the QoI. These are the quantities that are of critical significance to the overall
+performance or decision-making of the system
+. Typically, the dimension of QoI is low, often as low as
+$O(1)$.
+
+Correspondingly, for the discrete DT , we define the discrete approximation of the QoIs as
+ 
+V = H(U; q),
+
+where $q$ represents all the variable (hyper) parameters used in the
+construction of the operator $H$. 
+
+We remark that a mathematical model of the dynamics of the QoIs does not exist. To
+evaluate the QoIs, one needs to first solve the system , via
+its discrete model , and then compute the QoIs through . The dynamics of the QoIs thus follow
+ 
+V_n+1 = H(U_n+1;q) = H F(U_n; p, q).
+
+Since the operators $H$ and $F$ in general do not commute, this does
+not render a direct dynamical relationship between $V_n+1$ and $V_n$. 
+
+Targeted Digital Twin
+
+The objective of this paper is to establish a numerical procedure for
+constructing a dynamical model of the QoIs, $V$, that does not explicitly
+depend on the full system state $U$. That is, we wish to create a
+model in the form of
+ 
+V_n+1 = G(V_n, ),
+
+where $G$ is to be determined and may involve other inputs. However,
+the important feature is that $G$ does not rely on $U_n$. Hereafter we
+shall call this model targeted digital twin (tDT) of the full DT .
+
+More specifically, we employ the following loosely defined definition.
+ 
+A targeted digital twin is a numerical representation of the quantities of interest of a full digital twin, synchronized and dynamically updated with data from the
+full digital twin.
+
+In other words, tDT is ``a digital twin of a digital twin". The bi-directional data
+exchange is exclusively between the tDT and the full DT and does not
+involve the physical twin. This ensures that the construction,
+learning, and updating of the tDT can be performed in virtual time by
+executing the full DT model. This falls into the PDDP framework
+proposed in .
+Note that this does not necessarily
+exclude the use of real data from the physical twin, when such data
+become available. 
+
+Preliminary: Flow Map Learning
+
+The proposed numerical method for creating tDT has its foundation on a recently
+developed methodology: flow map learning (FML). FML is a data driven
+method for modeling unknown dynamics, first proposed in
+ for learning autonomous dynamical systems.
+For an unknown autonomous system,
+$x_t = f(x)$, $x^d$, where the governing equation $f:^d
+^d$ is not known, FML seeks to learn its flow map operator
+$:^d^d$ numerically, as opposed to learning $f$. The flow
+map operator governs the evolution of the solutions, i.e., $x(t_n) =
+_t_n-t_s(x(t_s))$. Therefore, when data of the solution
+trajectories are available, we split the trajectory data into pairs of
+data separated by one time step $ t$. These pairs of data then
+satisfy
+$x(t+ t) = _ t(x(t))$, where $t$ is the ``starting time'' of each data pair.
+
+In FML, we then seek a function $N:^d^d$ to minimize the following loss function
+$$
+_j=1^N_data \| x^(j)() - N(x^(j)(0))\|^2,
+$$
+where $N_data$ is the total number of such data pairs $(x^(j)(0), x^(j)())$, $j=1,,N_data$. Note that the ``starting time'' of each pair is set to 0 as in autonomous systems, only the relative time matters.
+Upon minimizing this loss function, we obtain $N $ and a
+predictive FML model
+ 
+x_n+1 = N(x_n),
+
+which can be used to model the system dynamics when an initial
+condition $x_0$ is specified.
+
+A notable extension of FML is modeling an incomplete system ().
+Let $x = (z, w)$, where
+$z^m$ are the observables and $w^d-m$ the missing variables. When trajectory data are available only
+on $z$, which is a subset of the entire state variable $x$, the work
+of established that modeling the dynamics of $z$ can be accomplished without any information of the missing variable $w$. Motivated by the celebrated Mori-Zwanzig formulation (),
+ developed a discrete approximate Mori-Zwanzig formulation and established that a discrete dynamical model of $z$ exists in the following form,
+ 
+ z_n+1 =
+ N(z_n,z_n-1, ,z_n-n_M), n n_M,
+ 
+where $n_M 0$ is the number of memory terms. In this case, $N:^m (n_M+1)^m$ is the flow map with memory $n_M$.
+The special case of $n_M=0$ corresponds to the learning of an autonomous system when all the state variables $x$ are observed .
+
+The memory-based FML structure has been shown to be able to model a
+wide class of partially observed systems. For a
+review of FML modeling of unknown dynamical systems, see .
+
+Targeted Digital Twin Construction
+ 
+
+In this section, we first present the mathematical justification for
+using the memory-based FML formulation to formulate tDT. We then
+describe the general numerical procedure for constructing 
+a tDT from a full DT.
+
+Mathematical Motivation
+
+To present the mathematical motivation for the proposed numerical
+method, we return to the continuous setting of the problem. That is,
+we consider the full mathematical model , along with its
+QoI . 
+
+By assuming $$ to be continuously differentiable with respect to $u$, we obtain
+
+v_t = _u u_t = _u (u; ).
+
+Let $z=(u, v, , )^T$ represent all the ``variables''. We formally obtain a
+system of equations
+
+z_t =(
+c
+ u_t \\ v_t \\ _t \\ _t
+
+)
+=(
+ c
+ (u; ) \\
+ _u(u; ) \\
+ 0 \\
+ 0
+ 
+ ).
+
+Note that we consider all the parameters $$ and $$ as time independent. This is not a restricting condition. Time-dependent parameters are usually in the form of external signals, excitations, or controls. In this case, they are given inputs and do not need to be modeled. On the other hand, if a time-dependent parameter is not an external input but follows a certain intrinsic physical law, it should be included in the state variable $u$.
+
+It is straightforward to see that the QoIs $v$ can now be considered a
+subset of the variables in the full and larger system for $z$. The
+Mori-Zwanzig motivated FML thus becomes applicable. When sufficient data of
+$v$ are available, it is possible to learn a dynamical model for $v$
+that does not depend explicitly on the knowledge $u$, $$, and $$.
+
+Numerical Procedure for tDT
+ 
+
+For numerical construction of tDT, we employ the discrete setting for the DT and the QoIs . The dynamics of the QoI thus follow
+ 
+\
+ 
+ U_n+1 &=F(U_n; p), \\
+ V_n+1 &= H(U_n+1; q).
+
+.
+
+The general procedure of constructing tDT consists of three main steps: (1)
+repetitively execution of the system to generate the QoIs training
+data; (2) learning and construction of the tDT model for $V$ in the form of ; and (3)
+synchronization of the tDT with the full DT to facilitate the
+prediction of the QoIs $V$ without using the full DT.
+
+For all the parameters $(p, q)$ involved in the full DT, we group them into two subsets, 
+$
+\p,q\ =\, \,
+$
+where
+ 
+ = \\; = \\.
+
+By ``explicit parameters" we refer to the parameters on which we have access to sufficient data and wish to study the QoIs' dependence. All other parameters are categorized as ``hidden parameters", for which we do not need any information or data. Since the hidden parameters do not appear anywhere during the study, we shall ignore them and freely call ``explicit parameters" simply ``parameters", unless confusion arises otherwise.
+
+A tDT model for the QoIs takes the form
+ 
+V_n+1 = G(V_n, V_n-1, , V_n-n_M; ),
+
+where $n_M 1$ is the memory step. This follows the form of the memory-based FML model and involves $(n_M+2)$ consecutive entries of the QoIs $V$, 1 on the left-hand-side and $(n_M+1)$ on the right-hand-side.
+
+ 
+
+The first step of constructing tDT is to perform repeated full DT simulations to acquire training data for the tDT model . 
+
+ Let $I_U$ be the domain-of-interest for the state variables, and $I_P$ and $I_Q$ be the domain-of-interest for the parameters $p$ and $q$ in the full DT . Choose $N_sim 1$ to be the number of full DT model simulations and 
+ $N_step (n_M+2)$ the total number of time steps of each simulation. 
+ Conduct $N_sim$ samples of initial conditions and parameters in the corresponding domain-of-interest, i.e., sample 
+ 
+ \U_0^(j)\_j=1^N_sim I_U; 
+ \p^(j)\_j=1^N_sim I_P, \q^(j)\_j=1^N_sim I_Q.
+ 
+ In most cases, $I_U$, $I_P$, and $I_Q$ can be set as bounded domains. We advocate the use of random sampling with uniform distribution. However, other sampling strategies can be adopted based on the problem's needs. 
+ Conduct $N_sim$ full DT simulations . Specifically, for each $j=1,, N_sim$,
+ 
+ Set the initial condition as $U_0^(j)$ and the parameters as $p^(j)$ and $q^(j)$;
+ Simulate the full DT model for $N_step$ forward time steps;
+ Evaluate the $(N_step+1)$ time history of the QoIs.
+ 
+ Discard all the state variables $U$ and the hidden parameters. Record only the time series data of the QoIs and their corresponding explicit parameters $$ to obtain the following QoI dataset
+ 
+ \. V_0^(j), , V_N_step^(j); ^(j)|j=1,, N_sim\.
+ 
+ 
+
+The full DT model simulations are now completed. This is the most computationally expensive part of the process, where the full DT model is executed for a total number of $(N_sim N_step)$ time steps. However, we remark that this cost is measured in terms of the number of time steps and not the number of full-scale complete model simulations. In standard scientific computing tasks, a full-scale complete model simulation is usually a long-term simulation lasting millions of time steps. Here, for the tDT construction, each full model is executed for only $N_step$ number of steps, where $N_step$ is usually a modest number. 
+
+The choice of $N_step$ warrants further discussion. The requirement of $N_step (n_M+2)$ is to ensure there are sufficient entries in the QoI time series to train the tDT FML model . In many cases, $N_step$ often needs to be larger than that. This is because each full DT model simulation starts from a sampled initial condition , which is likely to be ``nonphysical" (especially when random sampling is employed). Therefore, it is necessary to allow the full DT model simulations to run for a period of time such that the solution states, as well as the QoIs, become "physical". Exactly how long the full DT model simulations need to be run is problem dependent. It is also worth noting that $N_step$ should not be excessively large, as the solutions may settle down to certain stationary states in such a way that the QoI time series contains little useful dynamical information.
+
+ 
+ 
+
+The FML tDT model takes the form . It defines a mapping
+$$
+G:^(n_M+1) n_V + n_ ^n_V,
+$$ 
+which maps $(n_M+1)$ consecutive entries in the QoI time series , along with the explicit parameters, to the $(n_M+2)$-th entry. To learn such the model, we seek a parameterized form
+ 
+V_n_M+1= G(V_n_M,, V_0; ,),
+
+where $$ are the hyper-parameters that need to be trained. To train this model, we need the QoI training time series data to have at least $(n_M+2)$ consecutive entries. Hereafter, such a QoI time series shall be called a QoI ``burst", whose length (i.e., number of consecutive entries) is
+ 
+n_L = (n_M+1) + n_R, n_R 1,
+
+where $n_R$ is the number of recurrent loss, or multi-step loss. To discuss the multi-step loss, let us first consider the standard one-step loss for training the FML tDT model ,
+ 
+_1() = N_data_j=1^N_data \| V^(j)_n_M+1 - G(V^(j)_n_M,, V^(j)_0; ^(j),)\|^2,
+
+where $N_data$ is the total number of the training data. Obviously, this is simply the mean-squared mismatch between the one-step FML model predictions and the training data.
+For multi-step loss, let us consider the time marching scheme defined by the (untrained) FML model ,
+
+\
+
+ & _n_M+k = G(_n_M+k-1, , _k-1; , ), k=1,, \\
+ & _0 = V_0, , _n_M = V_n_M, 
+
+.
+
+where $k 1$ is the forward marching step. Let 
+
+ 
+_k() = N_data_j=1^N_data \| V^(j)_n_M+k - _n_M+k^(j)\|^2, k=1,,
+
+be the mean squared mismatch at the $k$-th step between the FML model prediction and the trajectory data . We then define the multi-step loss as
+ 
+() n_R_k=1^n_R _k(),
+
+where $n_R 1$ is the total number of recurrent forward steps. It is obvious that the one-step loss $_1()$ is the special case of $n_R=1$. In practice, multi-step loss with $n_R = 5 10$ can notably enhance the long-term numerical stability of FML models ().
+
+Upon taking into consideration of the multi-step loss , each piece of the training data is a time series QoI burst of length $n_L$ . They are to be selected from the QoI dataset $$ , where each QoI trajectory has a length $N_step$. In most cases, we have $N_step> n_L$, and often $N_step n_L$. It is therefore possible, and preferred, to choose multiple QoI bursts out of each QoI trajectory from $$. Let $n_B 1$ be the number of QoI bursts data chosen from each trajectory of $$. We propose to use random sampling with uniform distribution to choose the $n_L$-length burst data out of the $N_step$-length QoI trajectory, resulting in a total number of $n_B N_sim$ of QoI burst data. These become the tDT training dataset:
+ 
+ \. V_0^(j), , V_n_M^(j), , V_n_M+n_R^(j); ^(j)|j=1,, N_data\,
+
+where
+ 
+N_data = n_B N_sim
+
+is the total number of training data. Since each trajectory data in $$ follows the ``same" dynamical setting, we advocate not to use a large number of $n_B$. In practice, $n_B 10$, or less, is preferred. More discussion of this can be found in .
+
+Minimization of the loss function over the training data set results in fixed values for the hyper-parameters $$ in the FML model . We then obtain a trained FML tDT model
+ 
+V_n_M+1= G(V_n_M,, V_0; ),
+
+where the fixed hyper-parameter $$ is suppressed.
+
+Figure illustrates the network structure when DNN is used to construct the FML model. Note that in most cases, a simple feedforward fully connected network is sufficient.
+
+System Analysis via tDT
+
+The trained tDT model provides a prediction and analysis tool for the dynamics of the QoI, without requiring simulations of the full DT model. More specifically, the predictive QoI model by the tDT can be written as
+ 
+\
+
+ & V_n+1= G(V_n,, V_n-n_M; ), n n_M, \\
+ & V_0, , V_n_M. 
+
+.
+
+Given a time series of the QoIs, $V_0, , V_n_M$, as ``initial conditions", the FML tDT model can be marched forward in time, like a multi-step time integrator, to predict the future states of the QoIs. The ``initial conditions" can be acquired from either the full DT simulations or data collected from the physical twin. Once the initial conditions are prescribed, the tDT is synchronized with the full DT, in the sense that the time series $(V_0, , V_n_M)$ should correspond to certain unknown values of the hidden parameters $$ . The tDT would conduct its prediction of QoI dynamics under the same unknown value of the hidden parameters. 
+
+Application to Fluid Dynamics
+ 
+
+We now apply the proposed tDT framework to a computational fluid dynamics (CFD) problem.
+In particular, we consider the well-studied problem of two-dimensional incompressible flow past a circular cylinder.
+Although not excessively complicated, the problem possesses sufficient computational complexity to demonstrate the effectiveness of the proposed tDT approach.
+
+The Full Digital Twin
+
+The governing equations are the non-dimensional incompressible Navier-Stokes equations for velocity $ = (u,v)^T$ and pressure $p$:
+
+\
+ 
+ & = 0, \\
+&_t + ( ) = - p +
+Re^2,
+
+.
+
+where $Re$ is the Reynolds number
+
+Re = ,
+
+with $U_$ being characteristic velocity, $L$ characteristic length, and $$ the kinematic viscosity. The domain is a rectangular region $(x,y) [-10,20] [-10,10]$, where a cylinder with diameter $D=L=1$ is centered at the origin. For boundary conditions, far-field conditions of $u = U_ = 1$ and $v=0$ are imposed on the left (inlet), top, and bottom boundaries, while an outflow condition of ($_x = 0$) is enforced on the right boundary (outlet).
+The computational domain is illustrated on the left of Figure~.
+
+To solve the problem numerically, we employ Nektar++ (), an open-source high-order $hp$-spectral element solver. The domain is discretized by an unstructured mesh of $3,613$ elements, shown on the right of Figure~. Spectral elements of 6th-order polynomial are used, yielding a total number of $143,880$ degrees of freedom for the discrete system. That is, in the full DT system , $N_U=143,880$. Second-order implicit–explicit scheme is used for time integration, with a constant step size $ t=0.002$. All of these parameter settings were examined numerically to ensure sufficient resolution of the problem.
+
+The Quantity-of-Interest
+
+For flow past a body or a structure, one is often interested in the force exerted on the structure by the flow. Therefore, we consider two separate cases for the QoIs:
+(i) the total drag and lift forces on the cylinder, and (ii) the pressure distribution on the surface of the cylinder. Hereafter, we shall construct two tDT models corresponding to the two cases.
+
+ 
+
+In the first case, we consider the overall force acting on the cylinder 
+$$
+ = (f_x, f_y)^T = - _S () ds,
+$$
+where the integral is over the cylinder surface $S$,
+$$
+ = -p + ( + ^T )
+$$
+the Cauchy stress tensor, and
+$$ the outward unit normal vector. In our coordinate setting, $f_x$ becomes the drag force and $f_y$ the lift force.
+
+It is a standard practice to normalize the drag and lift, resulting in the drag and lift coefficients.
+$$
+ C_D = 2 U_^2 L, 
+ 
+ C_L = 2U_^2 L.
+$$
+These become the QoIs in the full DT system ,
+ 
+ V = (C_D,\, C_L)^T = (2f_x, 2f_y)^T^2,
+
+where the factor of 2 is the result of our chosen characteristic velocity and length.
+
+ 
+
+In the second case, we consider the pressure distribution along the surface $S$ of the cylinder as the QoI. Since the surface is a circle, we parameterize the pressure by a truncated Fourier series,
+ 
+P_S()=a_0+_n=1^N a_n (n )+b_n (n ),
+
+where $ = (y/x)$ is the polar angle along the surface. Upon numerical experimentation, we determined that $N=30$ is sufficient to fully resolve the pressure distribution function on the surface. The Fourier expansion coefficients become the QoIs in this case, i.e.,
+
+ 
+V = ( a_0,\, a_1,,a_N,\, b_1,,b_N ) ^2N+1.
+
+Trajectory Data Generation
+
+Once the QoIs are determined in the two separate cases, and , we then seek to generate training datasets, in the form of , for the two cases.
+
+For the full DT , the only system parameter is the Reynolds number, i.e., $p = \Re\$ and $q=$. In this paper, we consider the $Re$ number range to be 
+ 
+Re I_P = (100, 2000).
+
+We then conduct $N_sim = 7,800$ full DT simulations, each of which uses a uniformly distributed random $Re$ number in the range and is conducted for over $0 t 200$ with ``sudden start" initial conditions of $u_0=1$ and $v_0=0$. 
+
+We choose the explicit parameter set to be empty, $ = $. This implies that the $Re$ number is treated as a hidden parameter in the tDT models and not recorded during the full DT simulations.
+
+The QoIs for the two cases are then recorded during the simulations over a constant time step $ t= 0.1$, which is determined to be sufficient to resolve the temporal scale of the QoIs. We then obtain the trajectory dataset with $N_step=2,000$, i.e.,
+ 
+ = \.V_0^(j), V_1^(j), , V_2000^(j) j=1,, 7800\.
+
+Again, we emphasize that the $Re$ number is not recorded in these trajectory data. By doing so, the trained FML tDT model is capable of conducting QoI predictions without ``knowing" the $Re$ number. This choice of ``hiding" the $Re$ number is to mimic the more practical setting, where the precise value of the $Re$ is often difficult to determine. 
+For FML, it is perfectly fine to keep the $Re$ number as an explicit input. This will introduce an additional node in the input layer of the DNN structure. The training data will need to retain the $Re$ number of each trajectory. The trained FML model will then conduct QoI predictions when a $Re$ number and the initial conditions are prescribed. 
+More details of FML modeling with hidden parameters can be found in .
+
+Training Data
+
+Upon extensive numerical experimentation, we determined that a memory term $n_M=49$ is sufficient to construct accurate tDT models for both cases. Also, the number of multi-step loss with $n_R=10$ was deemed to be sufficient. This results in a requirement of the training data to have a length of $n_L = 60$ . We then conduct uniform random sampling of $n_L$-length burst data from the trajectory dataset . From each of the $N_sim=7,800$ trajectories, we sample $n_B$ segments of $n_L$-length data and obtain a total number of $N_data=n_B N_sim$ pieces of training data. 
+
+To summarize, the training datasets for both Case 1 and Case 2 take the following form
+ 
+ = \. V_0^(j), , V_n_M^(j), , V_n_M+n_R^(j)|j=1,, N_data\,
+
+where $n_M=49$ and $n_R=10$ for both cases, and for Case 1, $n_B=10$ and $N_data = 78,000$; for Case 2 $n_B=20$ and $N_data= 156,000$. With $ t=0.1$, each piece of the training data spans a time interval of $t=n_L t =6.0$, with the memory term spanning $(n_M+1) t = 5.0$ and the multi-step loss spanning $n_R t = 1.0$.
+
+In Figure~, we illustrate the procedure for constructing the training data for Case 1, where the drag and lift coefficients $C_D$ and $C_L$ are the QoIs. The top figure in Figure~ shows one trajectory data of $(C_D, C_L)$ from the full DT simulation in the time domain $t [0,200]$. The Reynolds number $Re=1997.055$ is randomly sampled in the range but not recorded. The 10 rectangular boxes in the figure depict the $n_B=10$ randomly sampled segments of length $t=6.0$. The ``starting" and ``ending" times of these segments are not recorded. Instead, each segment is recorded in the time domain $0 t 6.0$. These segments, plotted in the bottom two rows of Figure~, become 10 pieces of training data in the final training data set for Case 1.
+
+Figure~ demonstrates the same procedure for extracting another 10 segments of training data for Case 1 from another full DT simulation at Reynolds number $Re=195.763$, which is randomly sampled in the range but not recorded. 
+
+This procedure is repeated for each of the $N_sim=7,800$ full DT simulations and results in the $N_data=78,000$ segments of training data for Case 1.
+
+For Case 2, the procedure for constructing the training data set is the same, with only two differences compared to Case 1. The first difference is that the trajectory data contain the $(2N+1=61)$ Fourier coefficients of the surface pressure as the QoIs, and the second difference is that we sample $n_B=20$ random segments from each trajectory data to result in a total number of $N_data=156,000$ segments of training data.
+
+ 
+
+FML tDT Models
+
+The FML tDT models for both Case 1 and Case 2 are fully connected feedforward DNNs. See Figure~ for the network structure, where $n_M=49$. Note that since there is no explicit parameter, the input nodes for $$ are not required. 
+
+For Case 1, the input layer contains the nodes representing $V=(C_D, C_L)^T$ from $V_0$ to $V_n_M$, resulting in a total of 100 nodes. The output layer contains 2 nodes, one for $C_D$ and the other for $C_L$. In between, we employ 5 hidden layers, each of which consists of 50 nodes. In summary, the DNN tDT model for Case 1 has layers with width $\100, 50, 50, 50, 50, 50, 2\$. 
+
+For Case 2, the QoIs $V$ are the $61$ Fourier coefficients . The input layers contain these QoIs from $V_0$ to $V_n_M$, resulting in 3,050 nodes. The output layer contains 61 nodes for the QoIs. In between, we employ 5 hidden layers with width $\256,64,64,64,64\$. In summary, the DNN tDT model for Case 2 has layers with width $\3050, 256, 64, 64, 64, 64, 61\$. Numerical experimentation was conducted to verify that these chosen structures are sufficient to deliver satisfactory numerical results.
+
+The DNN training was performed using the Adam optimizer to minimize the multi–step loss over $n_R=10$ steps, with batch size $64$ for $3,000$ epochs. A cyclic learning rate schedule was employed, with a base rate $10^-7$, maximum rate $10^-3$, and decay factor $0.999997$.
+
+Hereafter, we shall call the trained tDT model for Case 1 ``tDT-1", and the trained tDT model for Case 2 ``tDT-2".
+
+Validation and Prediction of the tDTs
+
+We now present numerical tests to demonstrate the performance of the trained tDTs. Both tDT models take the form of , which requires $(n_M+1=50)$ steps of initial conditions for a time history of the QoIs spanning $t=5.0$. The initial conditions are obtained from a full DT simulation at a specific $Re$ number and during a specific physical time window of $[, +5.0]$. Hereafter, we shall use $$ to denote the ``physical" time used in the full DT simulations. Once the initial conditions are loaded into the tDT models, they become ``synchronized" with the full DT, in the sense that the tDT models will predict the dynamics of the QoIs starting from the specific physical time $(+5.0)$ and at the specific $Re$ number, even though the $Re$ number and the physical time $$ are never recorded and stored in the training data and are not in the inputs for the tDT models. 
+
+For the examples presented in this section, the $Re$ numbers are randomly sampled from the range and the starting physical time $$ is also randomly sampled from $[0,200]$. The tDT model predictions are conducted for long-term, for up to at least $0 t 200.0$. For clarity of presentation, we shall plot the tDT predictions in terms of the physical time $$. Again, we emphasize that the tDT models are ``unaware" of the existence of the physical time $$.
+
+In the first test case (Test 1-1), we employ initial conditions for the drag and lift coefficients computed from the full DT simulation at $Re=1,900$ and during $195.0 200.0$.
+The initial conditions are shown in Figure~, where the horizontal axis demonstrates how the initial conditions are loaded into the tDT-1 model .
+Once the initial time history is loaded into the tDT-1 model for $0 t 5.0$, it starts the prediction of $(C_D, C_L)$ from $t=5.0$, which corresponds to the (unknown) physical time $=200.0$.
+Note that the $Re=1,900$ is specifically chosen to be not within the training dataset . 
+
+The prediction of the tDT-1 model is performed for a long-term simulation of up to $t=200.0$, which corresponds to the physical time of up to $=400.0$. The predictions of $C_D$ and $C_L$ are shown in Figure~, where the solid line is the prediction by the tDT-1 model and the circles are the reference solution obtained by the full DT simulation. We observe very good agreement between the tDT-1 predictions and the full DT predictions. The errors of the tDT predictions are shown in Figure~, where we observe a slow increase in the errors. This is to be expected, as for limit cycle type of solutions in this case, a small phase error (which is unavoidable by any numerical methods) shall always induce a growth in point-wise error over time. To examine the phase error, we conduct spectrum analysis of the $C_L$ signal and report the results in Figure~. The dominating frequencies $$ correspond to Strouhal numbers $St=L/U_$. We observe excellent agreement between the tDT-1 model prediction and the reference solution by the full DT simulation. For the first four dominating frequencies, the tDT-1 model predictions match the reference values for up to 3 significant digits. This demonstrates the excellent accuracy of the tDT prediction. It is worth noting that in this case, the simulation time of the tDT-1 model prediction is on the order of seconds, whereas the full DT simulation is on the order of hours. 
+
+ 
+
+In the second test (Test 1-2), we employ an initial condition from a very early stage of the full DT simulation. In particular, we use the $(C_D, C_L)$ time history from physical time $1.0 6.0$ with $Re=1,750$ as the initial condition, shown in Figure~. This corresponds to a flow shortly after the initial ``sudden start" condition, when the fluid flow will go through a transit period and far from settling down to quasi-periodic vortex shedding regime. None of the information about the ``physics" is available to the tDT-1 model, as it requires only the information for the initial conditions in Figure~. 
+The tDT-1 model predictions for $0 t 194.0$, which corresponds to the physical time $6.0 200.0$, are shown in Figure~, where we again observe good agreements with the reference solution by the full DT simulation. The tDT-1 model, without requiring any information about the fluid field, is able to predict the dynamics of drag and lift forces from the early transition states to the later quasi-periodic states. The accuracy of the tDT-1 predictions is examined in Figure~, where the point-wise errors remain stable throughout the prediction time horizon.
+
+Many other test cases were examined at different $Re$ numbers and different initial conditions in physical time. The results are similar to the two cases presented here.
+
+ 
+
+ 
+
+We now examine the performance of the tDT-2 model, whose QoIs are the Fourier expansion coefficients of the pressure distribution along the cylinder surface . When supplied with proper initial conditions, the tDT-2 model can predict the dynamics of the Fourier coefficients over time, which in turn provides predictions of the surface pressure distribution via the Fourier expansion . 
+
+In the first test case (Test 2-1), we choose the tDT-2 initial conditions from the full DT simulation with $Re=1,500$ and during physical time $195.0 200.0$. 
+We then conduct the tDT-2 model prediction for $0.0 t 285.0$, which corresponds to the physical time $200.0 485.0$. 
+
+In Figure~, we show the temporal evolutions of the first few dominating Fourier coefficients for up to $=350.0$, which corresponds to tDT-2 predictions up to $t=150.0$. (We choose not to display the full prediction up to $=485.0$ because the figures would become too cluttered.) We observe good agreements between the tDT-2 predictions and the reference solutions by the CFD full DT simulation.
+
+We then reconstruct the pressure distribution on the cylinder surface via and examine its evolution over time. The snapshots of the pressure distribution over polar angle are shown in Figure~, where $=0$ is the rear end of the cylinder and $=$ is the front end. The surface pressure is plotted over every 15 time units within the prediction time frame $200 485$. We observe that the tDT-2 model is capable of predicting and capturing the fine details of the surface pressure function and provides good long-term accuracy. 
+
+In a different test case (Test 2-2), we conducted tDT-2 prediction using initial conditions obtained from the full DT result at $Re=1,000$ and between $195.0 200.0$. The predictions of the surface pressure for up to $=485.0$ are plotted in Figure~. Again, we observe very good predictive accuracy of the tDT-2 model. 
+
+The $L^2$ errors of the surface pressure function $P_S$ predicted by the tDT-2 model, against the full DT reference solution $p_ref$, is defined as
+$$
+e_2(t) = (_-^ (P_s(t,) - p_ref(t,))^2d)^1/2.
+$$
+The errors are plotted in Figure~, for physical time up to $ 400.0$ for both test cases. Again, we observe a relatively small growth of the errors over the long-term predictions. Such a growth is not unexpected due to the quai-periodic nature of the solution evolution. 
+
+Many other test cases were examined at different $Re$ numbers and different initial conditions in physical time. The results are similar to the two cases presented here.
+
+ 
+
+Conclusion
+ 
+
+We presented in this paper a numerical procedure for constructing
+Targeted Digital Twin (tDT), which is defined as a direct numerical
+modeling of the quantities-of-interest (QoIs) of a full digital
+twin. Relying on FML (flow map learning) methodology, we discussed the
+dynamical model of the tDT, the generation of training data by
+repeatedly executing the full DT, and the training of the tDT. To
+demonstrate the efficacy of the approach, we employed the well studied
+CFD problem of two-dimensional flow past a cylinder. We demonstrated
+that through expensive ``offline" computations, which include training
+data generation and tDT model learning, the tDT provides a highly
+efficient way for system analysis and prediction of the QoIs without
+requiring to the full DT. 
+This significantly speeds up the online QoI
+computations. Consequently, the tDT approach offers a possibility for
+real-time digital twin implementation.

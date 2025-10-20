@@ -1,0 +1,241 @@
+[preprint, review, 12pt]elsarticle
+
+	
+	
+	 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	[cor1]Corresponding author. Tel.: +91 3222 283910
+	
+	
+	
+	
+	
+		
+		
+	A three-dimensional, volume-of-fluid (VOF) based CFD model is presented to investigate droplet formation in a microfluidic T-junction. Genesis of Newtonian droplets in non-Newtonian liquid is numerically studied and characterized in three different regimes, viz., squeezing, dripping and jetting. Various influencing factors such as, continuous and dispersed phase flow rates, interfacial tension, and non-Newtonian rheological parameters are analyzed to understand droplet formation mechanism. Droplet shape is reported by defining a deformation index. Near spherical droplets are realized in dripping and jetting regimes. However, plug shaped droplets are observed in squeezing regime. It is found that rheological parameters have significant effect on the droplet length, volume, and its formation regime. The formation frequency increases with increasing effective viscosity however, the droplet volume decreases. This work effectively provides the fundamental insights into microfluidic droplet formation characteristics in non-Newtonian liquids. 
+	
+	
+	 
+		Non-Newtonian liquid Droplet T junction microchannel CFD Flow regime
+ 
+	
+
+Introduction
+
+In recent years, droplet based microfluidics offer a wide range of applications in the fields of lab on a chip, chemical, biological and nanomaterial synthesis . In a microfluidic device, each droplet provides a compartment microreactor in which species transport or reactions can occur . Recently, there has been a rapid development on emulsion generation in microfluidic devices . Non-Newtonian liquid in multiphase system has also become a significant area of research in microfluidics due to its paramount importance in biomedical engineering. Droplets generated in non Newtonian medium are frequently encountered in biochemical and drug delivery applications. However, precise control over the droplet size is required to deliver accurate dosing of a drug or chemical reactant . Therefore, monodisperse droplets are highly desirable in several areas of microfluidics . Various microfluidic devices, such as, T junction, flow-focusing, and co-flowing devices are available for generating droplets in microchannel by shearing dispersed phase with a continuous stream of liquid . Microfluidic T junction finds wide spread utilization compared to other devices owing to its simplicity in geometric configuration and superior control over droplet size. In a T junction, cross flowing continuous and dispersed phase streams meet at the junction and the consequent shear force leads to droplet formation. The droplet size and frequency are guided by continuous and dispersed phase flow rate ratio, as well as by adjusting viscous and interfacial tension forces. T junction microchannel can be operated in three regimes namely, squeezing, dripping and jetting which are active functions of the primary driving forces acting on the system such as flow rate ratio, Capillary number (Ca), pressure gradient across the droplet, and wetting properties of the channel surface. initially reported generation of water droplets in oil using a T junction microchannel. experimentally investigated the controlling parameters of droplet formation, size and frequency in an oil water system. Numerous researchers also proposed several strategies for droplet formation . 
+
+ studied the droplet and bubble formation mechanism in a T-junction and proposed a power law correlation for predicting their sizes. Subsequently, several research works were carried out to develop scaling laws in forecasting the droplet length for different inlet configuration and fluid properties . With various surfactants and their concentrations, showed that adjusting interfacial tension and the wetting properties could lead to ordered or disordered two-phase flow patterns. numerically addressed similar issues and commented on active control of two phase flow pattern by altering interfacial tension and wetting properties. computationally modeled droplet formation at the mesoscale using Lattice Boltzmann method (LBM). and investigated the droplet formation mechanism by LBM with simple modifications in a T junction and shearing plates. also applied LBM to analyze the droplet formation and cell encapsulation process where three flow regimes were illustrated and the droplet shapes are reported in each regime, such as, plug shape in squeezing, and bullet shape in dripping as well as in jetting regimes. discussed the generation of monodisperse droplets using capillary embedded T junction device and described its dependence on Ca, viscosity ratio, and dispersed phase flow rate. computationally illustrated different flow regimes using phase-field method. and analyzed bubble formation in microfluidic T-junctions and its transition from squeezing to dripping mechanism. also proposed scaling laws in terms of flow rate ratio and Ca for the estimation of bubble sizes in various regimes. Additional insights to the dispersed and continuous phase pressure profiles in droplet breakup process can be gained from the research of . Effects of liquid viscosity and interfacial tension on droplet formation were investigated by which showed that the period of slug formation increases with increasing interfacial tension. studied droplet formation in T-junction and Y junction microchannels using volume-of-fluid (VOF) method and analyzed the effect of flow rate ratio, liquid viscosity, interfacial tension, channel size, and wall adhesion properties on slug length for Newtonian liquids. investigated oil droplet formation in a flow focusing microchannel and proposed scaling laws to predict the droplet length. Benefiting from the control over shape and size, few studies are also reported in T junction device to produce spherical and plug shaped nanoparticles . 
+
+ 
+
+Interestingly, most of the reported research are concerned with the droplet formation mechanism and flow regimes in Newtonian fluids, while in several applications, liquid phases are likely to exhibit complex behaviors, such as non Newtonian properties. For example, it is apparent that in most cases of oil-water emulsions, oil phase is usually considered as the Newtonian liquid during modeling of such flow systems. However, studies on droplet formation in non Newtonian media is scarce. studied monodisperse microparticle formation in non Newtonian polymer solutions in a flow focusing device. reported polymeric filament thinning and breakup of Newtonian and viscoelastic liquids in a flow focusing microchannel. The results showed different breakup mechanisms for Newtonian and polymeric liquids having same viscosity. This phenomena was attributed to the rheological difference between the two types of liquids. numerically investigated the droplet formation in non Newtonian liquids in a cross flow microchannel. It is apparent from their findings that rheological parameters of non-Newtonian fluid significantly influence the formation mechanism and size of droplets. experimentally examined the droplet pinch off dynamics in Newtonian, yield stress, and shear thinning fluids. studied the flow patterns at the mesoscale in Newtonian and non Newtonian fluids using T junction millichannel. However, in-depth understanding of droplet formation and flow regimes in non Newtonian fluids is still lacking at the microscale. Therefore, analyses considering the liquid phase as non Newtonian fluid is imperative and desirable. In this study, we develop a CFD based model to understand the droplet formation in a T junction microchannel considering the continuous phase as non Newtonian liquid. We describe the role of rheological properties, interfacial tension, and flow rate ratio on droplet characteristics, in terms of formation mechanism, droplet length, volume, velocity, and its shape. These understandings can significantly benefit in setting guidelines to control droplet size and shape in non Newtonian liquids. 
+
+Problem formulation
+ 
+
+A three dimensional T junction microchannel, as shown in Fig. a, is considered to investigate the droplet formation in a non-Newtonian liquid which flows through the main channel having a cross-section of 100~$ m$ $$ 33~$ m$. Newtonian dispersed phase is introduced through a perpendicular channel of 50~$ m$ $$ 33~$ m$. At the merging junction of these two liquids, continuous phase shear force acts on the dispersed phase and the consequent pressure gradient results in formation of droplets that flow through downstream of the channel (Fig. b). Typically, the droplet formation characteristics are governed by the complex interactions between the two phases resulting from forces like viscous, interfacial, shear and pressure gradient in the channel. These forces are substantially influenced by the liquid properties and flow rates. To quantify droplet shape, a deformation index ($D.I$) is calculated as shown in Fig. b, which indicates an undeformed state at $D.I=0$ whereas, $D.I>0$ suggests deformed droplets with length greater than its height. 
+
+Governing equations
+
+In this work, incompressible two phase (oil water) flow is considered, where oil and water are continuous, and dispersed phases, respectively. The interface is tracked by VOF method, which solves a single set of conservation equations for both phases, as follows : 
+
+Equation of continuity:
+
+. ( ) = 0
+
+Equation of motion:
+
+) t + .( ) = - P + . + _SF
+
+where $$, $P$, $$, and $$ are velocity vector, pressure, volume averaged density, and stress tensor, respectively. For incompressible Newtonian fluids, the shear stress is proportional to the rate of strain tensor ($$), described by:
+
+= = ( U + U ^T)
+
+where $$ is the volume-averaged viscosity. The volume-averaged properties are defined in terms of oil ($_o$) and water ($_w$) volume fractions, as follows:
+
+ = _o _o + (1- _w) _w 
+
+ = _o _o + (1- _w) _w
+ 
+
+Equation of volume fraction:
+
+The volume fraction of each liquid phase is calculated by solving the following equation: 
+
+ t + . _q = 0
+
+where the subscript $q$ refers to either oil ($o$) or water ($w$) phase. In each computational cell, the volume fractions of all phases are conserved by $ _q =1$. For $_q=0$, the reference cell is assumed to be devoid of the $q$th phase, and $_q=1$ indicates that the cell is completely filled with $q$th phase. Consequently, the interface between two phases is identified by marking the cell with volume fraction range $0 < _q < 1$.
+
+ The continuum surface force (CSF) model is used to define the volumetric surface tension force ($F_SF)$ term in Eq. , as follows:
+
+ _SF = 2 (+ _w) 
+
+ where $_N$ is the radius of curvature and $$ is the coefficient of surface tension. The interface curvature ($_N$) is calculated in terms of unit normal $$, as:
+
+_N = - . = || ( || . ) || - ( . ) , where ~ = | | 
+
+ In VOF formulation, surface normal, $N$, is expressed as the gradient of phase volume fraction at the interface which can be written as: 
+
+	= _q 	
+
+This surface tension force is implemented by the piecewise-linear interface calculation (PLIC) scheme that provides accurate calculation of curvatures for reconstruction of the interface front . Wall adhesion effect is also taken into consideration by defining a three-phase contact angle at the channel wall ($_W$). Accordingly, the surface normal at the reference cell next to the wall is given by:
+
+= _W cos _W + _W sin _W 
+
+ where $_W$ and $_W$ are the unit vectors normal and tangential to the wall, respectively . In this work, a static contact angle condition is specified which is assumed to be independent of the moving contact line and the velocity . The surface normal one cell away from the wall along with the contact angle govern the local curvature of the surface, which is utilized in the calculation of the surface tension force (Eq. ) to determine the body force term in Eq. . For real surfaces, the contact angle varies dynamically between an advancing and a receding contact angle. If the contact angle remains within the range of advancing and receding angles, the contact line does not move . Typically, the use of static contact angle has been proved to be adequate for analyzing the flow behavior in microchannels . Nonetheless, the cases of dynamic contact angles can be resolved by defining a level set function and coupled with the VOF model. However, such investigation is beyond the scope of this present work and can be found elsewhere . 
+
+For non Newtonian liquids, the shear stress can be written in terms of a non Newtonian viscosity:
+
+ = ()
+
+where $$ is a function of all three invariants of the rate of deformation tensor. However, in power law model, the non Newtonian liquid viscosity ($$) is considered to be a function of only shear rate ($$).
+	
+	
+	() =K ^n-1 
+	 
+	
+where $K$ and $n$ are the consistency and power-law indices, respectively. The local shear rate ($$) is related to the second invariant of $$ and is expressed as :
+
+ = 2 ( U + U ^T)_ij ( U + U ^T)_ji 
+
+ 
+
+Implementation in numerical model
+
+Aforementioned time dependent governing equations are solved in a CFD solver (Ansys Fluent 17.0) based on finite volume method. Pressure implicit with splitting of operators (PISO) algorithm is used to resolve the pressure velocity coupling in momentum equation. The spatial derivatives are discretized using quadratic upstream interpolation for
+convective kinetics (QUICK) scheme . To avoid spurious currents as a result of mismatch between pressure and surface tension force discretization, the pressure staggering option (PRESTO) is employed for pressure interpolation . The geometric reconstruction scheme is adopted to solve the volume fraction equation. First-order implicit method is applied for the discretization of temporal derivatives. Subsequently, variable time step and fixed Courant number ($Co=0.25$) are considered for simulating the governing equations. 
+
+Constant velocity for both continuous and dispersed phases are imposed at the inlets and outflow boundary condition is specified at the outlet. It is assumed that continuous phase completely wets the channel wall and the solid walls are set to no slip boundary condition with a static contact angle of $135^0$. Structured hexahedral meshes with Green Gauss node based schemes are used in the computational domain to accurately calculate the gradients and to overcome calculation inaccuracies resulting from spurious currents, as recommended by . Moreover, the effect of mesh element size is initially investigated for analyzing numerical diffusion that mainly stems from poor meshing scheme. Thereafter, the model is validated for the droplet length estimation with the reported experimental data of . It has been realized that for more than 2.5 times of mesh elements (comparing between 137,176 and 360,640 elements), the difference in droplet length is nearly 1\
+
+Model validation
+
+Fig. shows the comparison of model predictions with the experimental observations of . At a constant water flow rate ($Q_w = 0.14$ $ L/s$), the droplet size variation with increasing oil flow rate ($Q_o = 0.124-0.408$ $ L/s$) is illustrated in Fig. a and Fig. b. Similarly, Fig. c and Fig. d describe the effect of increasing dispersed phase (water) flow rate ($Q_w = 0.004-0.006$ $ L/s$) for $Q_o =0.028~ L/s$. Fig. e portrays the quantitative comparison of droplet length estimation with the experimental observation by which shows the maximum error of 18\
+
+Results and discussion
+
+Armed with fairly validated model, the droplet formation mechanism and its behavior in non-Newtonian liquids are systematically investigated for different operating conditions by varying the continuous and dispersed phase velocities ($Q_o$ and $Q_w$, respectively). The influence of various rheological parameters, namely, power law index ($n$), consistency index ($K$), and, interfacial tension ($$) are elaborated in the following sections. 
+
+Effect of power law index
+
+Fig. portrays the temporal evolution of droplet formation phenomena in different power law liquids, obtained by varying $n$ from 0.80 to 1.10.
+
+It can be understood from Fig. that at a fixed operating condition, droplet formation time decreases with increasing power law index. This is attributed to the interplay between viscous and interfacial forces. Although the droplet formation process is similar for $n=1.0$ and $n=1.05$ (mainly due to the small change in power-law index) till 0.0014 s, it shows a significant change at 0.003 s where three droplets are formed for $n=1.05$. With increasing $n$, the effective viscosity ($_eff$) of the continuous phase (oil) is enhanced, which in turn, imparts higher viscous resistance and helps in rapid detachment of droplets. In the cases of shear thinning liquids ($n<1$), interfacial force plays a dominant role and the detachment of dispersed phase at the merging junction is delayed. 
+
+Moreover, for shear thinning liquid, squeezing regime is observed, where the dispersed phase grows slowly and covers the entire flow area (Fig. a). This results in restricted flow of the continuous phase and consequently, pressure gradient in continuous phase across the droplet increases. Eventually, the formation of plug shaped droplets are formed once the gradient is sufficiently large to overcome the pressure inside the dispersed phase droplet. Dripping regime of droplet formation is observed for Newtonian and shear thickening liquids ($n1$), where the droplet pinch off occurs at the merging junction, as depicted in Fig. b. In the dripping regime, viscous force that acts on the interface to snap off dispersed phase, typically dominates over the interfacial tension force . As a consequence of larger viscous and shear forces in Newtonian and shear thickening liquids with increasing $n$, Fig. shows rapid formation of droplets before its enlargement up to the channel top wall. It can be further noted that as the flow regime shifts from squeezing to dripping, droplet shape also changes from plug to spherical. 
+
+Fig. a shows that non-dimensional droplet length ($L_D/W_c$) decreases with increasing power law index ($n$), due to increase in effective viscosity of continuous phase liquid. It is also apparent that in shear thinning liquids, elongated droplets are formed ($(L_D / W_c > 1)$
+), whereas smaller droplets are formed for ($L_D / W_c < 1$) Newtonian and shear thickening liquids. Accordingly, droplet volume also decreases with increasing $n$, as shown in Fig. b. However, the droplet velocity is found to increase with increasing $n$. This can be ascribed to the change in film thickness and flow profile that occur in continuous phase from shear thinning to thickening nature. Typically, the velocity profile is sharper for shear thickening liquids compared to a plug flow profile for shear thinning cases . Based on length and height, droplet shape is also quantified in terms of droplet deformation index ($D.I$), as illustrated in Fig. c. Plug shaped droplets are identified for $n$1 and almost spherical shaped droplets are observed for $n$=1 when all the other parameters such as $K$, interfacial tension, and flow rates were kept constant. For $n$1, small deformation is realized from spherical shape due to higher viscous force. The pressure evolution along the channel length for different power law liquids is described in Fig. d. It can be seen from Fig. d that pressure drop increases with increasing power law index and each peak represents the droplet position (encircled by dotted red line) where there is a pressure difference before and after droplet detachment.
+ 
+
+To realize the effect of power-law index in terms of bulk viscosity and overall viscous force, effective viscosities of various liquids are estimated from the simulations and compared with the results derived from Eq.~ . 
+
+_eff=K(4n)^n( W_c)^n-1
+
+where $K$, $U_L$, $W_c$, and $n$ are the consistency index, liquid inlet velocity, width of the channel, and power law index, respectively. Fig.~a shows enhanced effective viscosity with increasing power law index and the CFD calculations are in excellent agreement with the theoretical values. Effective viscosity distributions in the middle of the liquid slugs are also presented in Fig. b. In the middle of the microchannel, the effective viscosity increases for shear thinning liquids and decreases for shear thickening liquids which are the typical representation of non-Newtonian flow behavior. Velocity profiles in the middle of the slug and the droplet are also illustrated in Fig. c and Fig. d, respectively. In all cases, flatter velocity profiles are observed for shear thinning liquids, as expected. Due to enhanced film thickness near the wall and shape of the droplet, the velocity inside the droplet for shear thickening liquids is considerably higher than the shear thinning liquids.
+	
+	 
+
+To understand the rheological behavior of non-Newtonian liquids on the droplet formation, a set of simulations are performed by adjusting the value of $K$ which results in maintaining the identical effective viscosities for both shear thinning ($n$=0.80) and shear thickening ($n$=1.10) liquids. The effective viscosity distribution profiles in the middle of the liquid slug is shown in Fig.~a. Similar to the earlier observation, typical shear dependent viscosity profiles are also apparent for both the liquids in this case. Dimensionless droplet length for shear thinning liquid ($L_D/W_C=1.860$) is found to be higher than shear thickening liquid ($L_D/W_C=1.575$) and the corresponding phase contours are shown in the inset of Fig. b. The velocity profiles illustrated in Fig. b also depict the combined influence of $n$ and $K$ even when the effective viscosities are same for both the liquids.
+
+Effect of consistency index
+
+In this section, effect of consistency index ($K$) on droplet formation mechanism, length, and velocity has been methodically explored by altering $K$=0.008-0.018 $Pa.s^n$ of the power law liquids. Fig. shows the droplet formation mechanism in squeezing and dripping regimes. For the considered range of $K$, squeezing regime is experienced for $n$1, and dripping mechanism is realized for $n$$$1, as depicted in Fig. a and Fig. b, respectively. Typically, the forces acting on the dispersed phase at the merging junction are viscous, pressure difference, and interfacial tension forces. Viscous force is caused by the viscous stress acting on a liquid liquid interface and is proportional to the dispersed phase area along with the velocity gradient. For lower values of $K$, the dispersed phase is pulled downstream of the main channel before the droplets breakup due to dominant interfacial tension forces, as shown in Fig. a at $K=0.008~Pa.s^n$. For $n$ 1, interfacial and shear forces together provide squeezing action due to lower viscous forces. A long and thick layer of dispersed phase leads to the generation of elongated droplets for $n$=0.80 at $K$ = 0.008-0.014 $Pa.s^n$. However, further increase in consistency index value for $n$=0.80 and 0.90 results in flow regime transition from squeezing to dripping. Smaller droplets are observed for $n>1$ and flow regime shifts from squeezing to dripping due to the increase in effective viscosity, as discussed earlier. In a power law liquid, the droplet formation through squeezing as well as dripping mechanism can be realized by varying the consistency index value, as shown in Fig.~c and Fig.~d for $n=0.80$.
+ 
+
+The droplet length is found to decrease with increasing $K$ as shown in Fig. a, due to increase in effective viscosity of the continuous phase liquid. For higher $K$ values, droplet length hardly changes for shear thickening liquids. From Fig. b, it can be noticed that under such scenario, droplet shape gradually changes toward nearly spherical (see for $K$ = 0.01 $Pa.s^n$) with reduced core diameter. Beyond this value of $K$, droplets are observed to fuse, attributing to extremely high viscous stress. Droplet velocity is also estimated to understand the effect of $K$ on droplet dynamics. 
+
+Fig. b depicts the gradual increase in droplet velocity with increasing $K$ which is more pronounced in shear thickening liquids. This is mainly due to increase in liquid film thickness around the droplets and reduction in droplet height ($H$ in Fig. ). Consequently, the droplet velocity marginally changes in shear thinning cases. However, a noticeable change in droplet velocity is observed for shear thickening and Newtonian liquids. Droplet volume is found to decrease with increase in $K$, as shown in Fig.~c. For higher $K$ values, droplet volume remains unchanged for shear thickening liquids. Deformation in shape is further quantified in Fig.~d which shows that, at lower consistency index ($K$=0.008-0.010 $Pa.s^n$), near spherical shaped droplets are observed for Newtonian liquids. For shear thinning liquid, plug shaped droplets are observed and the deformation decreases with increase in $K$. In the range of this study, it is observed that the droplet deformation index (D.I) hardly varies for Newtonian and shear thickening liquids. However, there is a dependence of D.I in cases of shear thinning liquids which becomes stronger with lower effective viscosity. This can be attributed to the lower shear force for droplet detachment from the neck of the junction in cases of shear thinning liquids. The non-dimensional size of the formed droplets ($L_D/W_c$) are scaled with the modified Capillary number ($Ca^'$) as a power law relationship and are illustrated in Fig. . The proposed scaling laws for Newtonian and non Newtonian liquids in the range of $0.008 K 0.018$ $Pa.s^n$ are summarized in Table which have a maximum deviation of 5\
+
+ 
+
+Effect of interfacial tension
+
+To understand the effect of interfacial tension on the droplet length and velocity, a set of simulation is carried out keeping other properties constant. All the results are analyzed based on modified Capillary number $Ca^'$ ($= w_c^1-n $). It can be seen from Fig. a that for shear thinning liquid, flow regime shifts from dripping to jetting with increasing interfacial tension. At higher interfacial tension ($ = 0.0565$ N/m and ($Ca^'$=$0.005$), a thick layer of dispersed phase covers the channel length and droplet formation is not observed. Interestingly, for shear thickening ($n$=1.10) liquid, the flow regime shifts from small beads that are linked by a filament of the dispersed phase to dripping with increase in interfacial tension and is illustrated in Fig. b. Similar observation was reported by in their experimental findings. This can be attributed to the fact that at lower interfacial tension, the growth of dispersed phase at the merging junction is hindered by the higher shear force, which in turn results into smaller droplet length for all cases. 
+
+ 
+Fig. a indicates the change in non-dimensional droplet length with varying $Ca^'$. It can be seen that with decreasing interfacial tension, the droplet length and height also decrease in all cases. Simple power law relations for various $n$ are proposed for the droplet length as a function of $Ca^'$ which are shown in Fig.~a. The applicability range of these relations are listed in Table which show a maximum error of 8\
+
+Effect of flow rate
+ 
+
+At a fixed operating condition of $K$ = 0.01 $Pa.s^n$, $ = 0.0365$ N/m, and $Q_w = 0.14 $ $ L/s$, the effect of continuous phase flow rate on droplet formation mechanism, length and deformation index is investigated. For a range of continuous flow rates from $Q_o = 0.297 $ $ L/s$ to $Q_o = 0.693 $ $ L/s$, only squeezing regime is observed for shear thinning liquid (Fig. a and Fig. b). However, transition from squeezing to dripping regime is observed for Newtonian liquid, as described in Fig. c. From Fig.~d and Fig.~e, it is apparent that in shear thickening liquid, dripping mechanism is dominant with increase in continuous phase flow rate. At lower flow rates of shear thinning continuous phase, the dispersed phase pushes easily into the main channel due to lower resistance in continuous phase and completely blocks the cross section leading to squeezing flow regime. The dispersed phase thread gradually decreases with increasing shear stress and the detachment occurs on attainment of critical thickness at the neck. 
+
+ 
+
+ 
+ 
+
+However, with increasing $n$ and continuous phase flow rate, increased viscous and inertia forces result in rapid detachment of the droplet at the neck, as evident from some cases of Newtonian and all cases of shear thickening liquid. For shear thickening liquid, greater resistance is imparted by the continuous phase liquid causing the dispersed phase to grow slowly into the main channel until it balances all forces at the junction and eventually leads to reduction in droplet length (Fig. a). Similar to the previous observation, near spherical and plug shaped droplets are observed in dripping and squeezing regimes, respectively (Fig.~b). Fig.~c shows power law relationship between the non-dimensional droplet size and $Ca^'$ resulting from the variation of continuous phase flow rate. The proposed relations are listed in Table for 0.297 $$ $Q_o$ $$ 0.693 $$L/s and predicts with a maximum deviation of 3\
+
+ 
+
+Keeping the continuous phase flow rate constant at $Q_o = 0.408 $ $ L/s$, dispersed phase flow rate ($Q_w$) is varied from 0.14 $ L/s$ \ 0.539 $ L/s$ to understand its effect on droplet formation characteristics.
+
+ 
+ 
+
+The results are explained in terms of dispersed phase Reynolds number ($Re_w= _w$). From Fig. , it can be observed that for shear thinning cases, squeezing regime prevails with increasing $Q_w$ (Figs. a and b). However, for Newtonian liquid, the regime shifts from dripping to squeezing with increasing $Q_w$ due to increased amount of dispersed phase being pushed into the channel at a fixed operating condition (Fig. c). In case of shear thickening liquid, dripping regime is observed which moves toward jetting regime with increased $Q_w$ (Figs. d and e) due to the combined effect of higher inertia force (from dispersed phase) and viscous stress (in continuous phase). Consequently, the droplet length increases significantly in shear thinning liquid with increasing dispersed phase velocity (Fig. a) as the inertia force is significant enough to resist the opposing continuous phase shear stress. However, in Newtonian and shear thickening liquid, that inertia effect is suppressed by continuous phase shear and viscous stresses resulting in small change in droplet length. Due to increase in droplet volume with increasing $Q_w$, the droplet shape also changes from near spherical to plug type, as indicated by droplet deformation index in Fig. b. For various $n$, linear scaling relationships are proposed between non-dimensional droplet size and the dispersed phase Reynolds number ($Re_w$) as shown in Fig.c. The range of applicability is provided in Table .
+
+Conclusion
+
+A comprehensive computational study of Newtonian droplet formation in non-Newtonian power-law liquids is carried out in a T-junction microchannel using VOF method. New insights are obtained regarding the droplet formation process in non-Newtonian liquids. With increasing power-law and consistency index, droplet length is found to decrease as effective viscosity increases. The droplet length also decreases with increasing continuous phase flow rate. Squeezing, dripping, and jetting regimes are found to strongly depend on the flow rate ratio, interfacial tension, and rheological properties. A parameter defined as droplet deformation index to identify the shape of droplets, shows that near spherical droplets are typically formed in all cases of dripping and jetting regimes. However, plug shaped droplets are obtained in squeezing regime. Like Newtonian medium, it is observed that interfacial tension has significant influence on the droplet formation pattern and size in non-Newtonian liquids. With increasing interfacial tension, droplet size increases in all cases, however, the regime shifts from filament linked small beads to dripping in shear thickening case. 
+
+The development of microfluidic methods to generate and manipulate monodisperse droplets have led to an increasing number of potentially interesting applications. Although the computational study can not completely diminish the necessity of exhaustive and expensive, at times, experimental investigation; a well-validated CFD model can certainly complement with various aspects of physical phenomena that are not attainable by experiments. Our findings are expected to provide better understanding and experimental guidelines in terms of controlling parameters on the formation of desired Newtonian droplet of different shape and size in a non-Newtonian medium. 
+
+Nomenclature
+
+l p12cm
+	
+	$Re_w$ & Reynolds number ($= _w$) \\
+	$Ca^'$ & Modified Capillary number ($= W_c^1-n $) \\
+	$U$	 & velocity (m/s) \\
+	$v$ 	& average velocity in a cell (m/s)\\
+	$W$ 	& width of channel\\ 
+	$H$		& height of the droplet\\
+	$D.I$	& droplet deformation index\\
+	$t$ 	& time (s)\\
+	$P$		& pressure (Pa)\\
+	$F_SF$ & volumetric surface tension force (N/m$^3$)\\
+	 $K$ & consistency coefficient ($Pa.s^n$)\\
+	 $Q$	& volumetric flow rate ($ L/s$) \\
+	$$ & rate of deformation tensor \\
+ $Q^'_r$ & flow rate ratio ($Q_o/Q_w$)\\
+ 
+	Greek symbol\\
+	
+	$$ & volume fraction\\
+	$ t$ & time step (s) \\
+	$ x$ & cell size (m) \\ 
+	$$ & viscosity (Pa.s)\\
+	$$ & contact angle () \\	
+	
+	$$ & density ($kg/m^3$)\\
+	$$ & surface tension (N/m)\\ 
+	$$ & shear rate \\ 
+	$_n$ 	& radius of curvature\\
+	$ _ eff $ 	& effective viscosity ($Pa.s$)\\
+	$$ & stress tensor \\
+	
+	Subscripts\\
+
+	$w$ & water\\
+ $c$ & continuous phase\\
+ $d$ & dispersed phase\\
+ $D$ & droplet\\ 
+	$o$ & oil\\ 
+	
+
+References

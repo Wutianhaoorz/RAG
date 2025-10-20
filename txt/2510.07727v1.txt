@@ -1,0 +1,691 @@
+[
+ preprint, 
+
+ amsmath,amssymb,
+ aps, physrev,
+
+]revtex4-2
+
+[subfigure]justification=raggedright,singlelinecheck=false
+
+[most]tcolorbox
+cyan!40!
+
+ 
+
+[2] (#1 )^#2
+[1]$ #1$
+
+ 
+
+ 
+
+In this presentation, we address the challenge of determining the adequate grid resolution required for properly resolving all the length and time scales of the flow (interfacial and turbulent features) in a two-phase flow simulation. Currently, a grid scaling criterion exists for direct numerical simulations (DNS) of single-phase flows, defined based on the Kolmogorov scale. However, a similar criterion does not exist for two-phase flows. 
+
+This work leverages simulation data over a range of Weber and Reynolds numbers to propose a resolution requirement based on the Hinze scale of the flow. We keep track of the global interfacial area during the initial transient phase (where the dispersed phase undergoes rapid breakup and coalescence) and during the stationary state (where the breakup and coalescence balance each other). Additionally, we also calculate the PDF of the droplet size distributions during the stationary state. This proposed criterion demonstrated convergence of the interfacial and turbulent features for simulation cases with a Hinze scale above and below the Kolmogorov scale. This guarantees that numerical simulations will be well-resolved for all Weber and Reynolds numbers. 
+
+This criterion will be a valuable tool for determining grid resolution and time-step requirements a-priori for DNS of two-phase flows and for estimating the corresponding computational cost. This work provides guidelines and best practices for numerical simulations of two-phase flows, which will accelerate physics discovery and model development.
+
+In this work, important two-phase flow scalings are derived, which enable the quantification of grid-point and time-step requirements as functions of Reynolds ($Re$), Weber ($We$), and Capillary ($Ca$) numbers. The adequate grid resolution is determined in the inertia-dominated regime with the aid of high-fidelity simulations of stationary two-phase homogeneous isotropic turbulence by evaluating convergence of total interfacial area, size distribution, Sauter mean diameter (SMD), and curvature distribution. Although standards for direct numerical simulations (DNS) for single-phase turbulence flow exist, there is a lack of similar guidance in two-phase flows. Therefore, length scale ratios of the Kolmogorov-Hinze to the Kolmogorov scale of $_KH/ We_^-3/5Re_^3/4$ in the inertia-dominated regime and the Kolmogorov-viscous to Kolmogorov scale of $_KV/ Ca_^-1Re_^3/4$ for the viscous-dominated regime, are constructed. These scalings imply a computational cost increase like $We_^12/5$ and $Ca_^4$, in the inertia-dominated and viscous-dominated regimes, respectively. A novel dimensionless number, coined as the ratio of interface scales ($Ris$), defined as $Ris _KH/_KV=We_^2/5/Re_$, is proposed to aid in the classification of the turbulence regimes in the presence of an interface. 
+Convergence of the total interfacial area, size distribution, SMD, and curvature distribution are observed for grid resolutions of $k_ _KH 60$ for second-order schemes. Furthermore, it is observed that this lower bound is the minimum required to capture intermittent events responsible for the increase of instantaneous total interfacial area. 
+This criterion will be a valuable tool for determining grid resolution and time-step requirements a-priori for DNS of two-phase flows and for estimating the corresponding computational cost. This work provides guidelines and best practices for numerical simulations of two-phase flows, which will accelerate physics discovery and model development.
+
+ 
+
+Introduction
+
+High-fidelity numerical simulations, e.g., direct numerical simulations (DNS), of two-phase flows represent a viable alternative to experiments for the study of the interaction of wide-range of scale phenomena, such as turbulence with phase-separating surfaces undergoing drastic topological changes. One of the major implications of direct simulations of such bubble- and droplet-laden flows is the development of models for Reynolds-averaged Navier-Stokes (RANS) or large-eddy simulations (LES)~. More accurate models would result in enhancing the predictive capabilities of numerical simulations that are important for various applications in nature and engineering, such as, breaking waves~, rain formation~, efficient design of bubble columns in chemical reactors~, boiling heat exchangers~, atomization of liquid fuels~, to name a few.
+
+In DNS, the full range of spatial and temporal scales must be resolved on the grid in order to capture non-trivial interactions between the interface and all turbulence scales, and the resulting topological changes of the interface. On the other hand, in LES and RANS, the subgrid scales are modeled.
+It maybe is impractical to perform a ``true DNS" of two-phase flows, since the smallest scales in the flow can reach molecular level during topological changes, e.g., breakup events. Nevertheless, it can be still referred to as DNS when the simulations resolve the most important scales in the flow and can faithfully capture the primary quantities of interest~. 
+Therefore there is a need for proper guidelines on the spatial and temporal resolutions, required for accurate numerical simulations, and the corresponding simulation cost estimates as a function of the relevant non-dimensional numbers, such as, Reynolds number ($Re$), Weber number ($We$), and Capillary number ($Ca$).
+
+Resolution requirements for numerical simulations
+ 
+
+One of the first studies to provide estimates of the required number of grid points for LES of turbulent boundary layers, relevant for aerospace applications, was by Chapman in 1979~. This work proposed the use of nested grids and used the scaling relation of boundary layer thickness ($$) with $Re_x = Ux/$ to compute the grid estimates of $N_wm Re_L_x^2/5$ for wall-modeled LES (WMLES) and $N_wr Re_L_x^9/5$ for wall-resolved LES (WRLES), based on the flat-plate length in the streamwise direction $L_x$. Choi and Moin (2012)~ improved upon these estimates by updating the relations for $$ and skin friction coefficient $c_f$ to more realistic $Re_x$, and integrating $$ over the streamwise direction instead of using an average value proposed by Chapman. Their proposed estimates are $N_wm Re_L_x$, $N_wr Re_L_x^13/7$, and $N_DNS Re_L_x^37/14$, for WMLES, WRLES, and DNS, respectively. Yang and Griffin (2021)~ were able to relax the scalings of by introducing the concept of nested grids in all directions, improving the DNS scaling to $N_DNS Re_L_x^115/56$. Furthermore, they also provided guidelines for time-step requirements, which are directly related to the total computational cost of the simulations. The total number of time steps would scale as $N_t, WMLES Re_L_x^1/7$, $N_t, WRLES Re_L_x^6/7$, and $N_t, DNS Re_L_x^6/7$. 
+
+In addition to the grid count scalings with $Re$, the spatial grid resolution is also an important quantity that determines the total grid count and the cost of the numerical simulations. A customary grid spacing resolution of $k_max 1.5$ for turbulence~ and $ y^+ 1$ near walls for wall-bounded flows~ have been shown to be sufficient to capture low-order statistics, where $$ is the Kolmogorov scale, $k_max$ is the maximum resolvable wave number, and, $ y^+$ is the wall-normal grid spacing in the inner units (normalized by the viscous length scale $/u_ = / / $). However, for accurate prediction of extreme events of energy dissipation rate, enstrophy, and wall shear stress, higher resolutions may be required ~. 
+
+These grid count estimates and resolution requirements are all defined in the context of single-phase turbulence and wall-bounded flows. However, such guidelines are lacking in two-phase flows, where the presence of the interface with surface tension effects can introduce additional length and time scales to be resolved in the numerical simulations. 
+
+Scalings in two-phase flows
+
+In single-phase turbulence, the smallest length scale is the Kolmogorov scale ($$), which is determined by the fluid viscosity and energy dissipation rate. Nevertheless, for sufficiently high $Re$ in two-phase flows, there exists an additional length scale, known as the Kolmogorov-Hinze scale ($_KH$) , below which the turbulence is no longer strong enough to overcome surface tension and hence ceasing the breakup of bubbles and drops .
+
+The inclusion of this additional length scale imposes an extra set of constraints with respect to high-fidelity numerical simulations. For increasing $Re_=u'/$, the range of viscous length scales increases as $/ Re_^3/4$~, thus requiring grid spacing to be reduced, increasing the computational cost and demand for computer memory. In two-phase turbulence, as it will be shown later in this work, for increasing $We_ = u'^2 / $, the range of interface length scales increases as $/_KH We_^3/5$, this means that as the surface tension is reduced (e.g., smaller surface tension coefficient $$), smaller and smaller bubbles/droplets are generated, imposing harsher constraints to accurately capture the dispersed phase. When $We_$ is increased to a very high value, the bubbles/droplets become small enough that the viscous effects dominate and balance the surface tension instead of the inertia from the turbulence . A new length scale emerges in this regime, known as the Kolmogorov-viscous scale ($_KV$). Hence, there is a need for a systematic study on scalings in terms of $Re$, $We$, and $Ca$, in different regimes. 
+
+Figure~ illustrates the different reference length scales in single-phase, two-phase inertia-dominated, and viscous-dominated turbulence regimes. For the first, the limiting scale is only the Kolmogorov scale $$, where viscosity is strong enough to dissipate kinetic energy into internal energy. For the latter two, the presence of surface tension can introduce additional limiting scales. Depending on the combination of non-dimensional numbers, the interface scales may lie in the inertial or viscous regimes, respectively. In the inertial regime, the nature of bubbles/droplets can be distinguished by the Kolmogorov-Hinze $_KH$ scale, scales below which they are mostly spherical due to surface energy minimization and above which they can be highly corrugated/distorted. In the viscous regime, viscous stresses are likely to mostly deform the interface. 
+
+Quantities of interest in two-phase flows
+
+The main quantities of interest for two-phase flows targeted in this work are total interfacial area, size distribution, Sauter mean diameter (SMD), and curvature distribution. 
+
+Interfacial area is an important quantity that governs mass, momentum, and energy transfer across the interface, e.g., mass transfer during vaporization~ and heat transfer in boiling~. 
+It is important to accurately capture both the local and total interfacial area, otherwise mass and heat transfer predictions will be incorrect. 
+Because of the importance of this quantity, both physics-based models and phenomenological ones have been developed in the context of RANS and LES. The proposed estimates for high-fidelity simulations of two-phase flows would further aid in the development of these models in the future.
+
+Particles, sediments, bubbles, and droplets are statistically described via size distributions, $n(d)$ where $n$ is the number of bubbles/droplets of diameter $d$, even for atomizers that can produce the narrowest of the distributions~. Furthermore, based on the size distributions, one may compute the total interfacial area as $A = _d_^d_ d^2 n(d)$. Therefore, size distributions can also be used to quantify mass and heat transfer. Full-scale simulations of combustors oftentimes take experimentally-obtained distributions as boundary conditions of fuel injectors when using Lagrangian-tracked droplets~. These types of simulations often neglect primary breakup regions and inject the distribution of fully developed sprays, possibly missing interactions within this zone. High-fidelity simulations should aim for resolving both regions. This work aims to provide resolution requirements for capturing both regimes, both the early stage primary breakup dominated by interfacial corrugations and the later stage dominated by dispersed phase.
+
+A general expression for a diameter based on the distribution $n(d)$ can be defined as
+
+d_pq = d^q n(d),
+
+for instance, SMD is computed with $p=3$ and $q=2$, $d_32$. It is known as the volume-to-surface ratio diameter, since the total volume scales with $d^3$ and total surface with $d^2$~. It is commonly used as a quantity to compute average combustion or heat transfer characteristics, hence predicting performance~. It is noteworthy that although estimates may be obtained via average quantities such as SMD, with large-scale systems, size distributions vary in space, so does SMD~. 
+
+Accurate predictions of the transient state between liquid injection and fully broken spray cannot be described only using size distributions, since primary and secondary breakup are mostly characterized by corrugations and non-spherical structures, yielding size distributions meaningless. Curvature distributions were proposed to describe length scales associated with initial breakup, precursor to final size distributions~. Furthermore, in emulsions, curvature has been suggested to be one of the physical indicators of phase inversion~, which is a low-energy method for producing fine emulsions~.
+
+Therefore, the main objectives of this paper are to (a) analyze and derive relevant physical length scales in two-phase turbulence in different regimes and how they vary with non-dimensional numbers; (b) use the scalings to derive estimates of grid-point and time-step requirements for high-fidelity simulations; and (c) evaluate and verify spatial grid resolution requirements using numerical simulations based on the primary quantities of interest, such as, total interfacial area, size distributions, SMD, and curvature distributions. The remainder of the paper is structured as follows: in the Section~, scalings for the ratio of interface to turbulence length scales are derived; in the Section~, based on the scalings, grid-point and time-step requirements are derived as functions of spatial and temporal resolutions; in the Section~, the convergence of the two-phase quantities of interest are verified in stationary homogeneous isotropic turbulence (HIT), demonstrating resolution requirements for the numerical methods adopted herein; lastly in the Section~, 
+
+final remarks are presented.
+
+Scalings in two-phase flows
+
+In this section, first, the ranges of scales in two-phase turbulence are derived for both inertia- and viscous-dominated regimes in Section~ and Section~. Second, a discussion on the ratio of inertia- and viscous-dominated limiting scales is presented in Section~, along with a new non-dimensional number. 
+
+Inertia-dominated regime
+
+In what follows, the range of interface to turbulence scales in the inertia-dominated regime, $_KH/$, is constructed. This requires defining reference scales, such as energy-containing large scale, $$, Taylor microscale, $$, Kolmogorov scale, $$, and Kolmogorov-Hinze scale, $_KH$. Dimensionless numbers take reference scales as arguments, hence, yielding in explicit expressions for those scales in terms of Reynolds, $Re$, and Weber, $We$, numbers. Based on the explicit expressions of the scales, $l_ ref = l_ ref (Re, We)$, their ratios are obtained by division and algebraic manipulation, resulting in power law functions of $Re$ and $We$.
+
+In single-phase turbulence, the reference length scales are: the large scale representing the energy-containing eddies, $=k^3/2/$, where $k$ is the turbulent kinetic energy and $$ the energy dissipation rate; the Taylor microscale, $$; and the Kolmogorov scale, $=(^3/)^1/4$, where $$ is the kinematic viscosity~. The corresponding Reynolds numbers are: $Re_ = k^1/2/$; $Re_ = u'/$ (where $u'$ is the root-mean-squared velocity fluctuation); and $Re_ = u'/= O(1)$. Therefore, we may construct the range of viscous length scales, which provides an estimate for the grid requirements, since it characterizes the scaling of the so-dwindling small scales, still to be resolved by the computational grid points as $Re$ increases.
+
+ 
+ = ,
+
+. The corresponding large-scale Reynolds number, $Re_$, can then be written as
+
+ 
+ Re_ = = = .
+
+We can construct a relation between the large-scale, $$, and Taylor-microscale, $$, Reynolds numbers using Eq.~, $k=3u'^2/2$ (based on the root-mean-squared velocity fluctuation $u'$), and $/ = Re_^1/2/$~, as
+
+ 
+ & Re_ & = = 2 Re_l^1/2 = 2 Re_ Re_l^1/2, \\
+ \; & Re_ & = 3 Re_l = 3 = 3 ,
+
+where $u'$ is the root-mean-squared velocity fluctuation, $$ is the density, and, $$ and $ = / $ are the dynamic and kinematic viscosities, respectively.
+
+ 
+ Re_ = = 3 Re_.
+
+The range of viscous length scales provides an estimate for the grid requirements, since it characterizes the scaling of the 
+diminishing smaller scales, $$, still to be resolved by the computational grid points as $Re$ increases. Based on the definition of the Kolmogorov scale, $ = (^3/)^1/4$, the ratio of Kolmogorov to large scales can be written in terms of $Re_$ and $Re_$ as
+
+ 
+ Re_^-3/4 = (20 )^-3/4 Re_^-3/2.
+
+In two-phase turbulence, the presence of an interface introduces the effects of surface tension on the flow. It is described by the Weber number, for the large-scale, define its Weber number, $We_$, as~
+
+ 
+ We_ = ,
+
+which measures the ratio between the inertial, $ u'^2$, and surface tension, $ / $ forces (where $$ is the surface tension coefficient). 
+
+The large scale Weber number can then be written in terms of $k$ and $$, 
+
+as
+
+ 
+ We_ = 3 = 3 .
+
+ 
+ We_ = 
+ 3 .
+
+The comparison of turbulence and interface scales requires the definition of a characteristic interface length scale to be compared with the Kolmogorov scale, $$. 
+The turbulent Weber number is defined as 
+
+ 
+ We_t = ,
+ 
+
+where $u_D$ is the first-order structure function corresponding to the length scale $D$. By the Kolmogorov (1941)~ theory, one can express $u_D^2 ( D)^2/3$ in the inertial range. 
+Furthermore, from the Kolmogorov-Hinze theory~, further assuming homogeneous and isotropic turbulence and the bubble/drop diameter to be within the inertial range, i.e., $ D $, breakup is hypothesized to be driven by the dynamic pressure fluctuations caused by changes in velocity over distances at most equal to the diameter $D$. Therefore, it is expected to stop at a specific scale, denoted as the Kolmogorov-Hinze scale, $_KH$ with $We_t = O(1)$, similarly defined as in single-phase at an order-of-unity dimensionless number, e.g., $Re_ = O(1)$, $We__KH = We_t^c = O(1)$. 
+
+Thus, we can obtain an expression for the diameter of the smallest bubble/droplets in the inertial-range of turbulence, $D^c$, (also referred to as $_KH$) as
+
+ 
+ & We_t^c & ( D^c)^2/3 D^c = 2 l^2/3 D^c^5/3, \\
+ \; & D^c & ( u'^2 l^2/3 )^3/5.
+
+ 
+ We_t^c ( D^c)^2/3 D^c
+ \; \; D^c ( u'^2 ^2/3 )^3/5.
+
+Several studies have focused on determining the value of $We_t^c$~. For reference, experiments in microgravity by Risso and Fabre (1998)~ reported $We_t^c 4.5$ and lattice Boltzman simulations of HIT in a 3D periodic box by Qian et al. (2006)~ yielded a value of approximately $3$.
+
+The range of interface length scales similarly imposes an additional constraint on the grid requirements if the smallest bubbles and droplets are to be accurately resolved on the computational grid as $We$ increases. 
+Rewriting Eq.~ as a ratio of the Kolmogorov-Hinze to the large length scales, we obtain
+
+ 
+ l & & (We_t^c u'^2 l )^3/5 = (We_l )^3/5, \\
+ 
+ & & (We_t^c u'^2 l )^3/5 (We_ Re_ )^3/5.
+
+ 
+ (We_t^c u'^2 ^2/3 )^3/5 = (We_ )^3/5
+ (We_ Re_ )^3/5.
+
+Lastly, the relative ratio of interface and viscous scales can be constructed using Eqs.~ and~ as
+
+ 
+ = & & (We_ )^3/5 Re_^3/4, \\
+ & & (We_ Re_ )^3/5 Re_^3/2 = (We_ )^3/5 Re_^9/10.
+
+ 
+ = (We_ )^3/5 Re_^3/4 
+ (We_ )^3/5 Re_^9/10.
+
+Viscous-dominated regime
+
+For sufficiently weak surface tension, the length scale, at which breakup will cease, can be comparable or even smaller than the Kolmogorov length scale. In this regime, namely the viscous-dominated regime, breakup occurs under the action of viscous stresses~. Analogous to the turbulent Weber number, $We_t$, there exists a turbulent Capillary number, $Ca_t$, which describes the strength of viscous stresses compared to surface tension. There is also a corresponding critical Capillary number, $Ca_t^c$, which denotes the point of limiting breakup. First, define the turbulent Capillary number as
+
+ 
+ Ca_t = D.
+
+The corresponding critical diameter (also referred to as Kolmogorov-viscous scale, $_KV$) in the viscous-dominated regime is
+
+ 
+ D^c = .
+
+The range of interface length scales in the viscous regime imposes harsher resolution constraints for increasing $Ca$. 
+Constructing the ratio of Kolmogorov-viscous scale to the large turbulent scales, we get
+
+ 
+ & = & Ca_t^c = Ca_, \\
+ 
+ & = & Ca_t^c Ca_ Re_.
+
+ 
+ = Ca_t^c = Ca_ Ca_ Re_.
+
+The ratio between the Kolmogorov-viscous scale and viscous scales can be constructed using Eqs.~ and~ as
+
+ 
+ = & & Ca_ Re_^3/4, \\
+ & & Ca_ Re_ Re_^3/2 = Ca_ Re_^1/2 .
+
+ 
+ = Ca_ Re_^3/4 Ca_ Re_^1/2 .
+
+It is important to mention that the Capillary number is sufficient to describe length scales when the dispersed phase viscosity is on the order of or smaller than the carrier phase viscosity. When the viscosity of the dispersed phase is significantly larger than the viscosity of the carrier phase, the dispersed phase viscosity can act as a damping force, resisting the deformation. In this regime, Ohnesorge number, $Oh$, also needs to be considered in the analysis. 
+
+On the characterization of interface scales in turbulence
+
+Although we may calculate the range of inertial ($_KH$) and viscous ($_KV$) interface scales with respect to a single-phase reference, such as the large or Kolmogorov length scales, there is no explicit way to identify the interfacial flow regime using these length scale ratios, i.e., is the critical length scale in the viscous dissipative regime or inertial range of turbulence? Therefore, an expression for the turbulent-inertial to turbulent-viscous ratio of the interface scales, $_KH/_KV$, would be of interest, which is analogous to the role of the Reynolds number in single-phase turbulence. Now, taking the ratio of the Eqs.~ and~, we get
+
+ 
+ _KV = l _KV & & (We_l )^3/5 Ca_t^c \\
+ & & (We_ Re_ )^3/5 Ca_t^c = (We_ )^3/5 Ca_t^c Re_^2/5.
+
+ 
+ _KV = _KV (We_ )^3/5 Ca_t^c 
+ (We_ )^3/5 Ca_t^c Re_^2/5.
+
+We can construct an expression for the ratio of interface scales, $Ris$, (a new non-dimensional number) in turbulence, as
+
+ 
+ _KV & & ( u'^2 l )^3/5 \\
+ & & (Re_l^5 )^1/5 = Re_l = Nd
+
+ 
+ _KV ( u'^2 )^3/5
+ 
+ ^2/5Re_ Ris.
+ 
+ ^2/5Re_ Ris.
+ 
+
+If we define the Ohnesorge number, $Oh$, as
+
+ 
+ Oh_l = = Re_l,
+
+then the new non-dimensional number
+
+$Ris = We_^2/5/Re_$, can be related to the Ohnesorge number as follows
+
+ 
+ Ris^5/4 & = & Re_l^5/4 = Re_l^1/4 \\
+ Ris & = & ( Re_l )^1/5
+
+ 
+ Ris^5/4 = ^1/2Re_^5/4 = Re_^1/4
+ \; \; 
+ 
+ ^4Re_ )^1/5.
+ 
+ Ris = ( ^4Re_ )^1/5.
+ 
+
+The $Ris$ number can be interpreted as an extension of the $Oh$ number in the presence of turbulence. The Table~ summarizes the power law scalings of the relevant length scale ratios in two-phase turbulence as functions of $Re$, $We$, and $Ca$.
+
+Figure~ summarizes the different regimes of interface scales in turbulence. In the inertia-dominated regime in Fig.~ (a), $_KH $, for increasing $Re_$, the $_KH/$ ratio increases creating a wide enough range of scales such that $ D$ and $_KH $. On the other hand, for increasing $We_$, the ratio decreases as the surface tension weakens, departing from the inertial range. In the viscous-dominated regime in Fig.~ (b), $_KV $, for increasing $Re_$, the $_KV/$ ratio increases, weakening the effect of viscous stresses on the deformation of the interface. However, for increasing $Ca_$, the ratio decreases as the surface tension weakens, strengthening the effects of viscous stresses. In an attempt to unify the evaluation of interfacial regimes in turbulence, we present the new non-dimensional number, $Ris$, which represents the ratio of interface scales in turbulence. In the Fig.~ (c), the dotted line represents the demarcation of $Ris = 1$ such that $_KH _KV$. For higher $Re_$, where $Ris1$, the critical interface scale is in the inertial range. For higher $We_$, where $Ris1$, the critical interface scale is in the viscous dissipative range.
+
+Resolution requirements for direct simulations of two-phase flows
+
+Grid-point and time-step requirements are derived here in the context of two-phase flow simulations. First, in the Subsection~, single-phase grid-point requirements are extended to two-phase, considering the constraints imposed by the presence of the dispersed phase in a turbulent flow field. Second, time-step requirements are evaluated in the Subsection~ also taking into account the stability bounds imposed by the interface-tracking/capturing method.
+
+Grid-point requirement
+
+First, a generic derivation of the number of grid points, $N_ total, ref$, required for direct numerical simulations is presented for a reference length scale, $_ ref$. Second, the corresponding scalings are computed for single-phase/carrier turbulence, two-phase inertia-dominated, and viscous-dominated regimes.
+
+Direct numerical simulations of turbulent flows require the grid spacing to be on the order of the reference length scale, $_ ref$. 
+Oftentimes, this requirement is expressed in terms of the resolution $k_ _ ref$, where $k_$ is the maximum wavenumber resolved by the grid. The total number of grid points, $N_ total, ref$, is as follows
+
+ 
+ N_ total, ref = N_x, ref N_y, ref N_z, ref,
+
+where $N_x_i, ref$ is the total number of grid points in the $x_i$ direction imposed by the reference scale. For HIT, the requirements in all directions are the same, given the translation and rotation/reflection invariance of the flow field, hence, the total number of un-nested grid points simplify to
+
+ 
+ N_ total, ref = N_x, ref^3.
+
+It is then left to determine $N_x, ref$ as a function of the governing dimensionless numbers. By definition,
+
+ 
+ N_x = ,
+
+where $L_x$ is the domain size and $$ is the grid spacing. For a periodic dimension, the grid spacing can be expressed in terms of the resolution $k_ _ ref$
+
+ 
+ _ ref = k_ _ ref _ ref.
+
+Substitute Eq.~ in~ to obtain the number of grid points imposed by the reference length scales in the $x$ direction
+
+ 
+ N_x , ref = L_x _ ref _ ref = _x _ ref _x_ ref.
+
+Therefore, given the reference length scales for single-phase/carrier turbulence, $$, two-phase inertia-dominated, $_KH$, and viscous-dominated, $_KV$, regimes, the total number of grid points imposed by each scale can be computed using the scalings presented in Table~. The total number of grid points imposed by the viscous length scales in turbulence is
+
+ 
+ N_ total, turb = N_x, turb^3 &=& (_x )^3 ( )^3 Re_^9/4, \\
+ 
+ &=& (20 )^9/4 (_x )^3 ( )^3 Re_^9/2,
+
+where $/L$ is the ratio of the large to domain length scales.
+
+In single-phase turbulent flows the grid spacing is required to be on the order of the Kolmogorov length scale, $$, thus, $k_ $ is oftentimes taken to be at least 1.5~.
+
+Moreover, the total number of grid points imposed by the interface length scales, in the inertia-dominated regime, is
+
+ N_ total, surf &=& N_x, surf^3, \\
+ 
+ &=& (2 )^9/5 C_2^6/5 (_x )^3 ( _KH )^3 (We_t^c )^9/5, \\
+ 
+ &=& (800 )^9/10 C_2^6/5 (_x )^3 ( _KH )^3 (We_t^c )^9/5,
+
+where $C_2$ is the inertial range constant, $C_2 = u_r^2/( r)^2/3$ for $ r $. Herein, the parameter $k_ _KH$ is introduced, which will also be the object of the verification study.
+
+Lastly, the total number of grid points imposed by the interface length scales, in the viscous-dominated regime, is
+
+ N_ total, cap &=& N_x, cap^3, \\
+ 
+ &=& (_x )^3 ( _KV )^3 (Ca_t^c )^3, \\
+ 
+ &=& (200 )^3/2 (_x )^3 ( _KV )^3 (Ca_t^c )^3.
+
+The conservative approach is to take the total number of grid points as
+
+ 
+ N_ total = (N_ total, turb ; N_ total, surf ; N_ total, cap )
+
+Time-step requirement
+
+Estimation of time-step requirements follows the same approach as proposed by Yang and Griffin (2021)~. The total number of time steps is directly related to the cost of the simulation, since it dictates the number of iterations that the governing equations are required to be integrated in time, determining total number of FLOPS, thus cost. Within the context of stationary turbulent flows,
+
+ & \\
+& = .
+
+First, the time-step size is estimated based on the numerical stability criteria. For genericity, consider that all terms in the governing equations are treated explicitly, 
+therefore, 
+
+there will be 3 criteria: one for the convective, one for the diffusive, and one for the interface-tracking/capturing terms. In all cases, stability requires the Courant-Friedrichs-Lewy (CFL) number to be smaller than some $(1)$ number. For DNS of an incompressible two-phase flow solver with e.g., a phase-field model,
+
+the 3 CFL criteria are
+
+ 
+ CFL_conv &=& | dt, \\
+ CFL_visc &=& ^2, \\
+ CFL_surf &=& ^2, 
+
+where $$ is the kinematic viscosity, $=^o |u_|$ is the interface velocity, and $=^o $ is the interface thickness.
+In most interface-tracking/capturing methods, the $ CFL_surf$ can be expressed as $ CFL_surf = $. For example, in the accurate diffuse interface (ACDI)~ method, $ CFL_surf = ^o ^o CFL_conv$. Therefore, the convective and interface time-step requirements are related as, i.e., $dt_ surf = dt_ conv / $. The interface stability would be more restrictive if $ > 1$. Consider the general case, if we assume $ CFL 1$, then, from Eq.~,
+
+ 
+ dt ( |u_|; ).
+
+The remainder of the derivation of the total number of time-step, $N_t$, is rather long, since one has to consider all possible combinations of the three limiting grid resolutions with at least two time-step size restrictions, the convective/interface, and the viscous ones. Therefore, only scalings for $N_t$ are presented here (for the complete derivation of the minimum time-step sizes, as well as the total number of time steps to be integrated, see Appendix~).
+
+Total physical time to attain statistical convergence is estimated based on the eddy-turnover time~, $_e$,
+
+ 
+ _e = 3 = u' u'^2 = 3 u'^2/.
+
+Consider $C_t$ to be the number of $_e$ to be integrated such that the statistics are converged, hence, according to Eq.~, the total number of time steps,$N_t, ref$, based on a reference $dt_ ref$, is
+
+ 
+ N_t, ref = dt_ ref = 3 u'^2 dt_ ref/.
+
+Therefore, a lower bound for $N_t$ can be constructed based on all possible combinations of the minimum grid size and the minimum time-step size. Given all time step sizes derived in the Appendix~, substitute in Eq.~ to obtain the scalings (for the explicit expressions refer to the Appendix~) for the total number of time steps as functions of dimensionless number $Re$, $We$, $Ca$, and the resolutions for each regime $k_ $, $k_ _KH$, $k_ _KV$. All results are summarized in the Table~.
+
+Overall for increased $Re$, $We$ and $Ca$, the total number of time steps required for converged statistics increases, as expected. Although $C_t$ is likely not to change significantly with the governing parameters, $dt$ is required to be reduced because the range of scales increases with the decrease in the smallest length and their corresponding time scales. Therefore, it becomes computationally more intensive both in terms of memory and wall-clock time as $Re$, $We$, and $Ca$ are increased. Interestingly, for the total number of time steps imposed by the viscous CFL and the interface scales, $N_t$ is reduced with $Re$. This is due to the fact that both $_KH/$ and $_KV/$ are increasing functions of $Re$; therefore, as $Re$ increases, it is more likely that the carrier turbulence scale will become more restrictive than the interface scales, thereby reducing $N_t, visc, surf$ and $N_t, visc, cap$, and increasing $N_t, turb$, eventually becoming the most demanding.
+
+Verification using numerical simulations
+
+Governing equations
+
+This work focuses on incompressible two-phase turbulent flows with linear forcing to maintain the stationary state of the turbulence. The accurate conservative diffuse-interface/phase-field (ACDI) model~ is chosen as the interface-capturing method, written as
+
+ t + x_j = x_j ,
+
+ where $_m$ is the volume fraction of phase $m=1,2$, $u_i$ is the velocity component, and $a_m,i$ the interface-sharpening flux of the respective phase $m$ in the $i$ direction. The interface-sharpening flux maintains the interface equilibrium $$ profile. The definition of $a_m,i$ is
+
+a_m,i = [ x_j + 4 (1 - ^2 (2 ) ) n_j ], 
+
+ where $$ is the interface velocity, set as $(\|u_i\|)$, $$ is the interface thickness, $$ is an auxiliary sign-distance function defined as $ = [( + 10^-100)/(1- + 10^-100)]$, which varies more smoothly than $$ thus more accurately computing interface normals, $n_i$, and interface curvature, $$. The interface normal is defined as $ n_i = x_i / x_k x_k$.
+
+The divergence-free condition and the consistent momentum transport equations are 
+
+& x_i = 0, \\ 
+& 
+ t + x_j = & - x_i + x_j + x_j 
+ + x_i + F_i .
+
+In the momentum transport equation, $$ is the mixture density, $p$ is the pressure, $_ij$ are the viscous stresses defined as $_ij = ( u_i/ x_j + u_j/ x_i)$ for the corresponding mixture dynamic viscosity, $$. The consistent formulation of the phase-field model requires a momentum regularization term at the interface, $u_i f_j$, where $f_i = _1 a_1,i + _2 a_2,i = (_1 - _2) a_1,i$. 
+The surface tension force is modeled using the continuum
+
+surface force approach by Brackbill et al.~, where $$ is the surface tension and $$ the interface curvature. The latter is computed based on the gradient of the interface normal as $ = - n_i / x_i$, where $$ is used to compute the normals in the surface tension force, instead of $$, which has been shown to result in reduced spurious currents . The last term corresponds to linear forcing in physical space, defined as $F_i= A u_i$ .
+
+Computational setup
+
+A set of incompressible two-phase stationary homogeneous isotropic turbulence simulations are performed. The flow and all boundary conditions are periodic in the three dimensions. A finite-volume approach on a structured Cartesian grid is adopted for spatial discretization of the governing equations, where the velocity is staggered with respect to other variables to prevent pressure checkerboarding and to achieve discrete kinetic energy conservation. A low-dissipative second-order skew-symmetric with implicit kinetic energy preservation scheme is used, as it was shown to be robust even in the limit of infinite Reynolds number ($Re$)~. Time integration is performed with a fourth-order Runge-Kutta scheme. Continuity equation is enforced via a modified fractional-step method, where the pressure projects the velocity onto a divergence-free field at each sub-time step after temporal evolution of intermediate velocity field. Simulations are forced to maintain a stationary state using the approach of Jain and Elnahhas~, where the mixture turbulent kinetic energy is maintained constant. Simulations are performed using the in-house GPU-enabled ExaFlow3D solver~.
+
+A single-phase simulation is first performed for about $20_e$ and then the secondary phase is introduced into the domain. With the exception of the total area evolution where the initial transient of the simulation is considered, all statistics are collected after the simulations attain steady state by the balance of breakup and coalescence, i.e., total area fluctuates around an average value. Two combinations of Reynolds, $Re_$, and Weber, $We_l$, numbers are considered: $Re_ = 55, 87$, and $We_ = 6.5, 60$. The Weber numbers are chosen such that the breakup is allowed to occur, namely above the critical Weber number, $We_t^c$, which is approximately equal to 3~. The Taylor-scale Reynolds number is defined by $Re_ = $, which is based on the stationary turbulent kinetic energy, $k_ = 1$, and the energy dissipation rate, $_ = (2k_/3)^3/2/ 0.433$. Analogously, the large-scale Weber number is defined by $We_ = 2 k_^5/2 / 3 _$. 
+
+The delimiting grid resolution value is characterized by varying the value of $k_ _KH$ whilst maintaining turbulence well resolved, i.e., $k_ > 1.5$, except for the under-resolved cases A0 and B0. The grid resolution values are chosen to verify grid convergence between $k_ _KH=60$ and $120$, which approximately translates to a requirement of about $20$ grid points over the Kolmogorov-Hinze scale. This is consistent with the current practices in two-phase flows where $20$ points is assumed to be required across the diameter of drops/bubbles to accurately capture the forces on them~.
+
+Furthermore, all cases are performed with constant values for void fraction, $ _d = 0.065$, density ratio, $_d/_c = 1$ (for simplicity, $ = 1$), and, viscosity ratio, $_d/_c = 1$ ($$ adjusted based on $Re_$). All cases are shown in Table~. The parameter $_KH/$ highlights the relative ratio between the inertial-turbulent interface and single-phase scales. As this ratio decreases, the Kolmogorov-Hinze scale departs from the inertial range and viscous shear stress starts to interfere in the breakup processes. The resolution requirements may vary for viscous-dominated regimes, therefore, the ratio $_KH/$ is limited to sufficiently high values to be fully in the inertia-dominated regime. The time-step size is chosen such that the CFL number is about 0.5. The simulations are integrated for up to a minimum of $20$ eddy-turnover times ($_e = 2k_/3_$). The transient period spans approximately the initial $5 _e$, and statistics are collected over a minimum of $15 _e$.
+
+Results
+
+In order to determine and verify the adequate grid resolution for high-fidelity simulations of two-phase flows, convergence of several quantities of interest (interfacial area, size distribution, SMD, and curvature distribution) are evaluated in the following subsections.
+
+The first quantity of interest is the interfacial area, which is a parameter that governs mass, momentum, and energy transfer between the phases. Two regimes of interest are considered: transient and stationary. The transient evolution, although dependent on the initialization procedure, is useful to determine whether the breakup is being properly captured if its evolution is converged. Following the results from Jain and Elnahhas~, the velocity field is not changed from the single-phase forced turbulence state when adding the dispersed phase, since this was shown to yield in faster turnover to achieve stationary state, therefore reducing the overall simulation computational cost. The stationary regime represents a state of balanced breakup and coalescence. 
+
+Both regimes are presented in Figure~ for cases A and B from Table~, where plots of total interfacial area, normalized by their initial value, are labeled based on their grid resolution $k_ _KH$. For the proposed void fraction $ _d = 0.065$, the initial area is $A_0 = 4 r_0^2 = ^3$. 
+It is clear that for the under-resolved cases A0 and B0, with $k_ < 1.5$ and $k_ _KH = 15$, both transient and stationary regimes are not properly captured. For both sets of dimensionless parameters, initial breakup is slower since the grid resolution is not sufficient to allow surface corrugations to develop that would eventually yield in breakup. Moreover, total interfacial area at steady state is also underpredicted given that smaller and intermediate bubbles/droplets cannot be formed due to the lack of corrugations and unstable surface topologies.
+
+For both cases, the minimum resolution of $k_ _KH = 60$ is able to capture the breakup-dominated regime, as shown by the convergence between the 60 and 120 resolutions within $t/_e$ from 0 to 5. This is an initial indication that, within the range of dimensionless numbers studied and for the adopted numerical methods herein, breakup resulting in small bubbles/droplets contributing to more significant amounts of interfacial area are properly
+
+captured with $k_ _KH = 60$. 
+
+For $Re_ = 55$ and $We_ = 6.5$, the stationary regime can be claimed to be converged in the Figure~ (a), 
+although the $k_ _KH = 120$ grid resolution demonstrates some pronounced interfacial area fluctuations at longer time scales. For the second set of parameters $Re_ = 87$ and $We_ = 60$, during the first stationary 5 eddy-turnover times, $_e$, the total interfacial area between the resolutions $k_ _KH = 60$ and $120$ are well converged. 
+A similar behavior to the previous case occurs after $t/_e = 10$, where there is an increase in the total interfacial area for the finest resolution. It is likely that the increase in interfacial area to be linked with intermittency and extreme events of turbulence, which can also trigger further breakup of bubbles/droplets even at sub-Kolmogorov-Hinze scales (see, Appendix ). In later stages, $t 25 _e$, the proposed resolution of $k_ _KH = 60$ also demonstrates an instance of further breakdown and an increase in the total interfacial area, likely due to intermittency. Nonetheless, if the resolution is further reduced to $k_ _KH = 30$, then the grid resolution is no longer able to capture these events.
+Even though turbulence resolution of $k_ = 1.5$ has been used as reference given its convergence of low-order moments, in order to capture intermittency and extreme events it may not be sufficient~.
+
+Figure~ synthesizes the average values of the interfacial area in the stationary state, namely after $t = 5 _e$. 
+For both cases, the under-resolved simulations significantly underpredict the total interfacial area at steady state, approximately $50\
+
+For the cases A with lower $Re_$ and $We_$, steady state is reasonably converged since the average interfacial area for $k_ _KH = 60$ is within one standard deviation of the average value from $k_ _KH = 120$. For the cases B, it is clear that resolutions of $k_ _KH 30$ are not sufficient. For instance, the grid resolution of $30$ is approximately within 3 to 4 standard deviations, while the resolution of $60$ is within 1.5 standard deviations. 
+As seen in Figure~ (b), during the interval $t/_e [10, 15]$, the total interfacial area for the finest resolution is higher than the other two resolved due to intermittency, hence yielding a higher average value. After $t/_e=25$, the proposed resolution of $k_ _KH = 60$ also presents an increase in the total interfacial area. Therefore, it is expected that, for very long-time averaging, convergence between both the steady-state interfacial area values for the finer resolutions should improve.
+
+Visualization of the three-dimensional instantaneous flow field at $t/_e=10$
+is presented in Figure~ (this specific time is chosen since the total interfacial area between $k_ _KH = 60$ and $120$ at this state are approximately equal, as can be seen in Figure~ (b)). For the two sets of $Re_$ and $We_$, it is clear that the under-resolved resolutions fail to capture both turbulence and interface structures, resulting in a significant underprediction of the interfacial area. For the cases A, both grid resolutions of $60$ and $120$ seem to produce qualitatively similar structures and in approximately similar amounts. Besides the distinction between the resolved and under-resolved resolutions, the differences between other grid resolutions are less clear for cases B due to the smaller $_KH/$ ratio and higher $Re_$ and $We_$, i.e., the smaller bubbles/droplets are much smaller than the ones from the cases A. 
+
+In the stationary state, the size distribution, $n(d)$, describes how the interfacial area is divided along different scales by determining the number of bubbles/droplets of size $d$. Although limited to spherical and ellipsoidal shapes, it can accurately compute the contribution of different self-contained scales in mass, momentum, and energy transfer phenomena. In the inertial regime, super-Kolmogorov-Hinze scales, $d _KH$, cannot withstand pressure fluctuations due to turbulence, yielding a fragmentation cascade at least up to the Kolmogorov-Hinze scale~. For these sizes, dimensional analysis assuming locality yields in the $n(d) d^-10/3$ power-law scaling~. Sub-Kolmogorov-Hinze scaling, $d _KH$, does not have a well-established theoretical foundation, nevertheless, observations indicate that $n(d) d^-3/2$~.
+
+In addition to the convergence of the distributions themselves, the aforementioned scalings are used to facilitate grid resolution comparisons in Figure~. Here, size distributions are computed using the volume-corrected flood-fill algorithm that is known to account for the diffuse nature of the interface while computing the volumes and correcting for ellipticity, resulting in accurate size distributions~. 
+For the cases A in Figure~ (a), the under-resolved simulations clearly overpredict super- and underpredict sub-Kolmogorov-Hinze scales. This is due to the fact that the grid cannot capture scales smaller than the grid size itself without the use of a subgrid model.
+
+Furthermore, the sub-Kolmogorov-Hinze scaling is also poorly captured. On the other hand, for the grid resolutions of $k_ _KH = 60$ and $120$, the distributions are converged over a minimum of a decade, whilst predicting both super- and sub-Kolmogorov-Hinze scalings with a minor mismatch for the smallest bubbles/droplets. 
+
+For increased $Re_$ and $We_$, the range of scales is expected to increase, yielding in much finer turbulence scales and much smaller bubbles/droplets. For instance, compare for the same grid resolution in the Figure~ the differences in the cases A and B. In the Figure~ (b), the range of interface scales space is wider if compared to the Figure~ (a), which is due to the presence of much smaller sub-Kolmogorov-Hinze bubbles/droplets. Similarly to the cases A, the under-resolved simulation of the cases B, $k_ _KH = 15$, fails to predict the $d _KH$ regime and its scaling. Within the super- and first half decade of the sub-Kolmogorov-Hinze regimes, all three grid resolutions starting from $k_ _KH = 30$ are converged. The deviation from convergence is more prominent only for the very small bubbles/droplets, where the number density increases with grid resolution. 
+It is likely that intermittency, which has a greater turbulence resolution requirement, is playing a role in the breakup, therefore also yielding in the greater number density of very small sub-Kolmogorov-Hinze bubbles/droplets for $k_ _KH = 120$ (see, Appendix~). 
+Comparing the scalings in the $d _KH$ regime, $k_ _KH = 60$ is seen to be sufficient except for the drops at the smallest scale.
+
+Although there is some discrepancy in the size distribution at the smallest scale, we can evaluate whether the contribution of those scales to the total interfacial area is significant or not, thereby indicating how substantial the impact on interfacial exchange phenomena would be. By definition, the interfacial area for a specific scale, $a(D)$, may be computed based on the number of bubbles/droplets obtained from the size distribution $n(D)$ as follows
+
+ 
+ a(D) = n(D) D^2.
+
+The total interfacial area is the summation of the interfacial area contribution of all scales,
+
+ 
+ A = _D_^D_ a(D) = _D_^D_ n(D) D^2.
+
+The Figure~ depicts the percentage of the interfacial area contributed by each scale to the total interfacial area for the cases B, $Re_ = 87$ and $We_ = 60$. Based on the size distribution power law scalings for sub- and super-Kolmogorov-Hinze scales, one can also derive the interfacial area scalings for both regimes by considering the additional $D^2$ contribution from the surface area. Both sub- and super-Kolmogorov-Hinze area power laws are plotted for reference, which are $a(D<_KH) D^1/2$ and $a(D>_KH) D^-4/3$, respectively. Among the turbulence-resolved cases, it is clearer that $k_ _KH = 30$ is not sufficient to capture the sub-Kolmogorov-Hinze area scaling. When the grid resolution is increased to $k_ _KH = 60$, the scaling is improved. Furthermore, considering the finest grid resolution, the area contribution of the smallest scale corresponds to only $1\
+
+The Sauter mean diameter is a single reference scalar of the size distribution. By definition, it is also a function of the second and third moments of the distribution, thus, super-Kolmogorov-Hinze bubbles/droplets should have a higher contribution than the sub-Kolmogorov-Hinze ones. In Figure~, for the set of grid resolutions, the convergence of SMD is depicted for both pairs of $Re_$ and $We_$. Considering one standard deviation, for both cases A and B, all SMDs with grid resolution above $k_ _KH = 30$ are converged, mostly due to the contribution of larger bubbles/droplets in higher-order moments of the size distribution.
+
+The interface curvature characterizes the local deformation of bubbles and droplets and is also a well-defined quantity in transient states of atomization, indicating likely regions of breakup. Considering an outward normal for the dispersed phase, positive values represent convex surfaces, zero values flat surfaces, and negative values concave surfaces. Furthermore, the curvature distribution indicates the probability of deviations from the spherical equilibrium shape, highly positive values of curvature represent small bumps and ripples on the surface and highly negative values small dimples. These features can be characterized as corrugations on the interface and can also contribute to the overall interfacial area~. In the proposed setup of stationary HIT, the dispersed phase is expected to be composed of bubbles/droplets of spherical and ellipsoidal shapes with corrugations for those of larger scales. 
+
+The Figure~ shows the probability density functions (PDF) of the normalized interface curvature for cases A and B for varying grid resolutions. Qualitatively, for all cases and grid resolutions, the distributions are positively skewed as expected given the on-average convex nature of the dispersed phase. Nevertheless, there are significant differences with respect to the likelihoods of high-magnitude curvature values, corresponding to interface corrugations (both positive and negative curvatures) and very small bubbles and droplets (mostly positive curvature). In order to quantify the discrepancies in likelihood, horizontal lines are drawn to determine the curvature bounds for specified percentages of the definite integral of the PDF within these bounds, as done in~. Lines for percentages of 90\
+
+The discrepancy at very large values of positive curvature is probably due to the small amount of tiny bubbles and droplets at the finest grid, which typically do not contribute significantly to the interfacial area. 
+
+Discussion
+
+Similar to the estimates in terms of grid-points and time-step requirements proposed by W. C. Reynolds~, two-phase flow scalings derived in Section~ can be used to provide an outlook of the future of high-fidelity multiphase simulations. In single-phase flows, an increase by a factor of $10$ in $Re_$ requires approximately 180 times increase in the number of grid points and 5 times in the number of time steps, therefore, the corresponding cost, roughly computed as $N*N_t$~, is increased by 900 times, almost 2 orders of magnitude difference in the increase of $Re_$ and cost. For two-phase flows, in the inertia-dominated turbulent regime, an increase by a factor of $10$ in $We_$ requires approximately $60$ times more grid points and 4 times more time steps, thus, 240 times greater cost. For the viscous-dominated regime, given the $/_KV Ca_$, for an increase of 10 times in $Ca_$, the number of grid points is increased by 1000 times and the number of time steps by 10 times, resulting in a significant increase in cost of 10000 times.
+
+So far the verification studies were limited to the inertia-dominated regime due to the challenges with the very high resolution requirements and the computational power constraints to achieve the viscous-dominated regime whilst having a sufficiently large range of turbulent scales. In order to achieve such regime, surface tension has to be significantly reduced such that $_KV _KH$, i.e., $Ris 1$, which requires $We_>O(10^8)$ for $Re_=87$. Therefore, if one assumes $k_ _KH k__KV$, then, for the current numerical methods, one would require $N_x 2^25=O(10^7)$, thus, $N 2^75=O(10^22)$ or over Sextillion grid points.
+
+In the inertia-dominated regime, considering the current results for the cases B with $Re_=87$ and $We_=60$, a grid-resolution requirement of $k_ _KH=60$ was observed for the adopted low-dissipative second-order central scheme. First of all, as a remark, this value should not be considered as a strict bound for all other numerical methods, it should serve as a reference point. For instance, in the case of high-order schemes, the grid resolution could be slightly reduced. Second, based on the observed grid resolution requirement and the set of dimensionless numbers, estimates on the computation demand to achieve realistic regimes for real life applications can be deduced. Here, a grid of $512^3$ was required for $We_=60$ and $k__KH=60$. As two examples, consider breaking waves and fuel injection, the corresponding Weber numbers would be on the order of $10^4$~ and $10^3 - 10^4$~, respectively. Therefore, assuming only the increase in $We_$, from Eq.~, 
+
+realistic breaking waves and fuel injection would require from 158 to 10000 times more grid points, which translates to $2760^3$ and $11025^3$ grids, both of which would be currently achievable considering the boundaries realized for the single-phase turbulence simulations of $32768^3$~. Overall, a promising outlook. 
+
+Conclusions
+
+In this work, important two-phase flow scalings are derived in both inertia- and viscous-dominated regimes. Such results allow for the extension of grid-point and time-step cost estimates previously only limited to single-phase flows. For the inertia-dominated regime, the interface restricts the total number of grid points, $N$, to scale with $We_^9/5$ and the total number of time steps, $N_t$, when limited by the convective CFL, to scale with $We_^3/5$, thus, the computational cost $N * N_t$ approximately scales with $We_^12/5$. For the viscous-dominated regime, the capillary interface scale imposes $N Ca_^3$ and $N_t Ca_$, and the corresponding cost $N*N_t Ca_^4$. 
+
+In order to provide a clearer delimitation of the inertia- and viscous-dominated regimes, a new non-dimensional number is proposed, denoted as the ratio of interface scales ($Ris$). It is defined as the ratio of the Kolmogorov-Hinze to the Kolmogorov-viscous scales, $_KH/_KV$, which can be also expressed as $Ris = We_^2/5/Re_$. The smallest of the scales is the one to govern breakup at smallest bubbles/droplets. By definition, the inertia-dominated regime is characterized by $Ris 1$ and the viscous-dominated regime by $Ris 1$.
+
+In addition to the scalings, numerical simulations are performed to determine the grid resolution requirements in the inertia-dominated regime. Since, it is currently not achievable to perform resolved simulations in the viscous-dominated regime based on rough estimates of $N_KV O(10^75)$ or Sextillion grid points.
+
+For two pairs of $Re_$ and $We_$, the grid resolution $k_ _KH$ is varied and quantities of interest, such as total interfacial area, size distribution, SMD, and curvature PDF, are evaluated for convergence. Considering a low-dissipative second-order scheme and ACDI as the interface-capturing method, the results demonstrate $k_ _KH=60$ to be sufficient to capture the aforementioned quantities. As $Re_$ increases and extreme events increase in magnitude and frequency, very small bubbles/droplets, an order of magnitude smaller than $_KH$, are more likely to be formed. For the finest resolution evaluated herein of $k_ _KH=120$, the size distribution presents a greater number density of those scales if compared to the other resolutions. Scale by scale total interfacial area percentages are computed and the corresponding contribution from tiny bubbles/droplets is found to be approximately $1\
+
+The proposed resolution is also sufficient to capture intermittent states of increased energy dissipation and therefore increased number of small bubbles/droplets.
+
+As a final remark, we expect the current results to provide information and guidelines on the future of two-phase numerical simulations. 
+Resolution requirements should be intelligently translated to other methodologies, e.g., reduce $k_ _KH$ for high-order methods. 
+Furthermore, for the inertia-dominated regime, the future seems more promising in achieving more realistic levels of $We$. On the other hand, for the viscous-dominated regime, computational power is currently not sufficient.
+
+Authors acknowledge support from the George W. Woodruff School of Mechanical Engineering at Georgia Institute of Technology. 
+P.~J.~N. acknowledges financial support from the President's Undergraduate Research Award (PURA) at Georgia Institute of Technology and S.~S.~J acknowledges support by the donors of ACS Petroleum Research Fund under Doctoral New Investigator Grant 69196-DNI9 (S.~S.~J. served as Principal Investigator on ACS PRF 69196-DNI9). Authors also acknowledge the generous computing resources from the DOE's 2024 and 2025 ALCC awards (TUR147 \& BubbleLaden, PI: Jain). This research used supporting resources at the Argonne and the Oak Ridge Leadership Computing Facilities. The Argonne Leadership Computing Facility at Argonne National Laboratory is supported by the Office of Science of the U.S. DOE under Contract No. DE-AC02-06CH11357. The Oak Ridge Leadership Computing Facility at the Oak Ridge National Laboratory is supported by the Office of Science of the U.S. DOE under Contract No. DE-AC05-00OR22725.
+
+Useful formulas
+
+$$
+Re_ = 3 Re_ Re_ = 20 Re_^2
+$$
+
+$$
+We_ = We_ = We_ 10 = 200 We_ Re_
+$$
+
+$$
+Ca_ = Ca_ = Ca_ 10 = 200 Ca_ Re_
+$$
+
+Grid-point requirements
+
+Direct numerical simulation of single-phase turbulent flows require the grid spacing to be on the order of the Kolmogorov length scale, $$~. Oftentimes, this requirement is expressed in terms of the resolution, $k_ $, where $k_$ is the maximum wavenumber resolved by the grid. The total number of grid points, $N_ total$, is as follows
+
+ 
+ N_ total = N_x N_y N_z,
+
+where $N_x_i$ is the total number of grid points in the $x_i$ direction. For HIT, the requirements in all directions are the same, given the translation and rotation/reflection invariance of the flow field, hence, the total number of un-nested grid points simplify to
+
+ 
+ N_ total = N_x^3.
+
+It is then left to determine $N_x$ as a function of $Re$. By definition,
+
+ 
+ N_x = ,
+
+where $L_x$ is the domain size and $$ is the grid spacing. For a periodic dimension, the grid spacing can be expressed in terms of the resolution $k_ $
+
+ 
+ _ turb = k_ .
+
+Substitute Eq.~ in~ to obtain the number of grid points imposed by the viscous length scales in the $x$ direction
+
+ 
+ N_x , turb = L_x = _x _x.
+
+A final expression for the single-phase grid-point requirements follows from the viscous length scale ratio and identities in the Eq.~:
+
+ 
+ N_x , turb = _x Re_^3/4 = (20 )^3/4 _x Re_^3/2
+
+Therefore, the total number of grid-points imposed by the viscous length scales is
+
+ 
+ N_ total, turb = N_x, turb^3 &=& (_x )^3 ( )^3 Re_^9/4, \\
+ 
+ &=& (20 )^9/4 (_x )^3 ( )^3 Re_^9/2,
+
+where $/L$ is the ratio of the large to domain length scales.
+
+In the presence of a surface-tension-containing interface and sufficiently high $Re$, resolution requirements would also require one to consider how resolved the Kolmogorov-Hinze scale, $_KH$, is. Herein, the parameter $k_ _KH$ is introduced and will be object of the verification study. Under the same assumptions of single-phase turbulence, $N_ total = N_x, surf^3$, for which the grid spacing is expressed in terms of the grid resolution and $_KH$,
+
+ 
+ _ surf = k_ _KH _KH.
+
+Substitute Eq.~ in~,
+
+ 
+ N_x, surf = L_x _KH _KH = _x _KH _x_KH.
+
+An explicit expression for the inertial-dominated two-phase grid-point requirements follows from Eqs.~ and~,
+
+ 
+ N_x, surf &=& (2 )^3/5 C_2^2/5 _x _KH (We_t^c )^3/5, \\
+ &=& (800 )^3/10 C_2^2/5 _x _KH (We_t^c )^3/5,
+
+where $C_2$ is the inertial range constant, $C_2 = u_r^2/( r)^2/3$ for $ r $. Hence, the total number of grid-points imposed by the interface length scales, in the inertial range, is
+
+ N_ total, surf &=& N_x, surf^3, \\
+ 
+ &=& (2 )^9/5 C_2^6/5 (_x )^3 ( _KH )^3 (We_t^c )^9/5, \\
+ 
+ &=& (800 )^9/10 C_2^6/5 (_x )^3 ( _KH )^3 (We_t^c )^9/5.
+
+In the limit of very weak surface tension, viscous stresses would contribute to bubble/droplet breakup, therefore implying in resolution requirements based on the Kolmogorov-viscous scale, $_KV$. Consider the parameter $k_ _KV$ as a measure of resolution in this regime. One may follow the same procedure as the inertia-dominated regime with $N_ total = N_x, cap^3$.
+
+ 
+ _ cap = k_ _KV _KV.
+
+Substitute Eq.~ in~,
+
+ 
+ N_x, cap = L_x _KV _KV = _x _KV _x_KV.
+
+An explicit expression for the viscous-dominated two-phase grid-point requirements follows from Eqs.~ and~,
+
+ 
+ N_x, cap &=& _x _KV Ca_t^c, \\
+ &=& (200 )^1/2 _x _KV Ca_t^c.
+
+Hence, the total number of grid-points imposed by the interface length scales, in the dissipative range, is
+
+ N_ total, cap &=& N_x, cap^3, \\
+ 
+ &=& (_x )^3 ( _KV )^3 (Ca_t^c )^3, \\
+ 
+ &=& (200 )^3/2 (_x )^3 ( _KV )^3 (Ca_t^c )^3.
+
+The conservative approach is to take the total number of grid points as
+
+ 
+ N_ total = (N_ total, turb ; N_ total, surf ; N_ total, cap )
+
+Requirements for minimum step size and total number of iterations
+
+The time-step size, $dt$, can be normalized by $/u'^2$ in the Eq.~, which will be used in determining the total number of time steps for converged statistics.
+Consider first the viscous-restricted time step based on the small turbulence length scale, $_ turb$, constraint,
+
+ 
+ && ^2 = ( k_ )^2 ^2 ^2^2, \\
+ && 3 ( k_ )^2 Re_^1/2 = 15 ( k_ )^2 Re_.
+
+Moreover, with respect to the inertia-dominated interface length scale, $_ surf$, constraint,
+
+ 
+ && ^2 = ( k_ _KH )^2 ^2^2 ^2^2, \\
+ && (3 )^11/5 C_2^-4/5 ( k_ _KH )^2 (We_ )^6/5 Re_^2, \\
+ && 15^4/5 C_2^-4/5 ( k_ _KH )^2 (We_ )^6/5 Re_^14/5.
+
+Lastly, with respect to the capillary interface length scale, $_ cap$, constraint, 
+
+ 
+ && ^2 = ( k_ _KV )^2 ^2^2 ^2^2, \\
+ && 3 ( k_ _KV )^2 (Ca_ Re_ )^2 = ( k_ _KV )^2 (Ca_ Re_ )^2.
+
+Consider now the generic convective/interface-restricted time step as a function of the small turbulence resolution, $_ turb$, constraint.
+
+ 
+ && |u_ | = k_ |u_| , \\
+ && 3 k_ |u_| Re_^1/4 = ( 15 )^1/4 k_ |u_| Re_^1/2.
+
+Furthermore, with respect to the inertia-dominated interface length scale constraint, $_ surf$,
+
+ 
+ && |u_ | = k_ _KH |u_| , \\
+ && ( 3 )^11/10 C_2^-2/5 k_ _KH |u_| ( We_ )^3/5 Re_, \\
+ && 15^2/5 C_2^-2/5 k_ _KH |u_| ( We_ )^3/5 Re_^7/5.
+
+Lastly, with respect to the capillary interface length scale, $_ cap$, constraint,
+
+ 
+ && |u_ | = k_ _KV |u_| , \\
+ && 3 k_ _KV |u_| Ca_ Re_ = k_ _KV |u_| Ca_ Re_.
+
+In summary, the normalized time-step size scalings as a function of the several reference length scale and restricting numerical integration stability bounds are presented in the Table~. Considering only the power-law scalings, one may relate the convective/interface and viscous normalized time-step sizes for each reference length scale by $dt_ visc dt_ conv,surf^2$, since the inverse of the CFLs scale as $1/ CFL_conv,surf $ and $1/ CFL_visc ^2$.
+
+The total number of time steps is computed based on minimum time-step sizes previously defined for all combinations of numerical stability bounds and grid size resolutions due to different physics. Previously derived results for $u'^2 dt / $ are substituted in the Eq.~. First, consider the viscous CFL-limited total number of time steps. From Eqs.~,~,~, and~, for the carrier turbulence-, two-phase inertia-dominated-, and viscous-dominated-limited grid size resolutions, it follows $N_t$ respectively, 
+
+ 
+ N_t, visc, turb && . 3 C_t Re_ / 3 (k_ )^2 Re_^1/2 . \\
+ && 2 C_t ( )^2 Re_^1/2 = 20 C_t ( )^2 Re_,
+
+ 
+ N_t, visc, surf && . 3 C_t Re_ / (3 )^11/5 C_2^-4/5 (k_ _KH )^2 We_6/5 Re_^2 . \\
+ && 217/10 C_2^4/5 C_t ( _KH )^2 We_t^c6/5 Re_^-1 \\
+ && 2015^4/5 C_2^4/5 C_t ( _KH )^2 We_t^c6/5 Re_^-4/5,
+
+ 
+ N_t, visc, cap && . 3 C_t Re_ / 3 (k_ _KV )^2 (Ca_ )^2 Re_^2 . \\
+ && 2 C_t ( _KV )^2 ( Ca_t^c )^2 Re_^-1 = 20 C_t ( _KV )^2 ( Ca_t^c )^2.
+
+Second, consider the convective/interface CFL-restricted total number of time steps. From Eqs.~,~,~ and~, again for the carrier turbulence-, two-phase inertia-dominated-, and viscous-dominated-limited grid size resolutions, it follows $N_t$ respectively,
+
+ 
+ N_t, conv, turb && . 3 C_t Re_ / 3 k_ |u_| Re_^1/4 . \\
+ && C_t |u' Re_^3/4 = 203/4 C_t |u' Re_^3/2,
+
+ 
+ N_t, conv, surf && . 3 C_t Re_ / (3 )^11/10 C_2^-2/5 k_ _KH |u_| We_3/5 Re_ . \\
+ && (2 )^3/5 C_t C_2^2/5 _KH |u' We_t^c3/5 \\
+ && (2 )^3/5 2003/10 C_t C_2^2/5 _KH |u' We_t^cRe_3/5,
+
+ 
+ N_t, conv, cap && . 3 C_t Re_ / 3 k_ _KV |u_| Ca_ Re_ . \\
+ && C_t _KV |u' Ca_t^c = 20 C_t _KV |u' Ca_t^c Re_.
+
+The summary of the total number of time steps scalings are presented in the Table~.
+
+Effect of intermittency on interfacial area
+
+Considering the observation of increased interfacial area at $t/_e=15$ and $25$ time instance for the finer grid resolutions, $k_ _KH = 60$ and $120$, a closer qualitative comparison at the center $x-y$ plane for the proposed converged grid resolutions are presented in Figure~. Volume fraction contours over the turbulent flow field, represented by contours of enstrophy, are compared for the grid resolutions of $k_ _KH = 60$ and $120$ at three time instances $t/_e = 10$, $15$, and $25$, where the total interfacial area is approximately equal between both resolutions at $t/_e = 10$, higher for $k_ _KH = 120$ at $t/_e = 15$, and higher for $k_ _KH = 60$ at $t/_e = 25$. Overall, the size of the smallest bubbles/droplets is similar between both resolutions. For both time instances, it seems that the number density of small bubbles/droplets is initially higher for the finest grid resolution, being more pronounced at $t/_e=15$. Nevertheless, this behavior reverses at $t/_e=25$, indicating that the intermittent process occurs for both grid resolutions. 
+
+The Figure~ illustrates the fluctuations of the total interfacial area normalized by its mean value during the steady-state period in part (a), and the average energy dissipation rate normalized by its stationary value in part (b). One may observe that for grid resolutions of $k_ _KH 60$, there is a significant correlation between both quantities. For instance, at $t/_e 15$, when there is an increase in the interfacial area for the grid resolution of $k_ _KH = 120$, there is also a significant increase in the average energy dissipation rate. Similarly, at $t/_e 25$, there is a significant increase in the interfacial area and the average energy dissipation rate for the grid resolution of $k_ _KH = 60$. 
+
+The correlation between the dissipation rate and the interfacial area may be quantified using the Pearson's correlation coefficient, presented in Table~. For grid resolutions of $k_ _KH 30$, the correlation coefficient is greater than 0.95. However, the magnitude of the interfacial area fluctuations for $k_ _KH = 30$ are not as significant as the ones for $k_ _KH 60$. This is an indication that the proposed resolution of $k_ _KH = 60$ is able to capture a similar qualitative behavior in interfacial area fluctuations by the competing mechanisms of breakup and coalescence by the fluctuations in energy dissipation rate. 
+
+Resolution requirements for varying $_KH
+/$ ratio
+
+[inline]wait for results, but maybe not add in paper

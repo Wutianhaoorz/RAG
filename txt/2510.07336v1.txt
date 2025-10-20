@@ -1,0 +1,440 @@
+[a4paper,11pt]article
+
+	
+	
+[margin=1in]geometry 
+
+ 
+
+[breaklinks]hyperref
+
+ 
+
+[utf8]inputenc
+
+,
+	pdftitle=Linear and Nonlinear Dimensionality Reduction from Fluid Mechanics to Machine Learning,
+	pdfsubject=Linear and Nonlinear Dimensionality Reduction from Fluid Mechanics to Machine Learning,
+	pdfkeywords=article, template, simple,
+	pdfproducer=LaTeX,
+	pdfcreator=pdflatex
+	colorlinks=true,
+	citecolor=blue,
+	linkcolor=blue,
+	filecolor=magenta, 
+	urlcolor=blue,
+
+[most]tcolorbox
+
+,
+	commentstyle=[HTML]228B22,
+	basicstyle=,
+	emph=[2]from,import,pass,return, emphstyle=[2][HTML]DD52F0,
+	emph=[3]range, emphstyle=[3][HTML]D17032,
+	emph=[4]for,in,def, 
+	emphstyle=[4],
+	showstringspaces=false
+
+[sort&compress,authoryear,round]natbib
+
+ 
+ 
+
+$ 
+ Lorenzo Schena$^1,5$ 
+ Nicolas Coudou$^1$ 
+ Emanuele Garone$^2$ 
+ Miguel Alfonso Mendez$^1,3,4$
+
+	
+
+		
+		
+	
+This work presents a nonlinear system identification framework for modeling the power extraction dynamics of wind turbines, including both freestream and waked conditions. The approach models turbine dynamics using data-driven power coefficient maps expressed as combinations of compact radial basis functions and polynomial bases, parameterized in terms of tip-speed ratio and upstream conditions. These surrogate models are embedded in a first-order dynamic system suitable for model-based control. Experimental validation is carried out in two wind tunnel configurations: a low-turbulence tandem setup and a high-turbulence wind farm scenario. In the tandem case, the identified model is integrated into an adapted $K^2$ controller, resulting in improved tip-speed ratio tracking and power stability compared to BEM-based and steady-state models. In the wind farm scenario, the model captures the statistical behavior of the turbines despite unresolved turbulence. The proposed method enables interpretable, adaptive control across a range of operating conditions without relying on black-box learning strategies.
+		
+			
+
+: Wind Turbines, Wake Interaction, Nonlinear System Identification, Adaptive Control, Radial Basis Function Regression, Model-Based Control, Power Coefficient Estimation, Wind Tunnel Experimentation
+
+	
+
+Introduction
+
+Wind energy is the fastest-growing renewable sector and a cornerstone of global decarbonization efforts. In Europe, the installed capacity has doubled from 128 GW in 2014 to 255 GW today . To meet rising demand, turbines have grown over tenfold in size and are increasingly clustered into large wind farms . As wind speed varies, wind turbines are controlled to maximize energy capture at low wind speeds, while constraining power output and mitigating structural loads at high wind speeds .
+
+Control of wind turbines has received enormous attention in recent years, with research increasingly focusing on advanced strategies. Approaches such as Fuzzy Logic Control (FLC,~), Sliding Mode Control (SMC~), Maximum Power Point Tracking (MPPT~), and Model Predictive Control (MPC~)—have been proposed to enhance robustness and adaptability under varying conditions. However, their adoption remains limited due to practical challenges such as the need for expert tuning (FLC), high-frequency oscillations (SMC), sensitivity to wind fluctuations (MPPT), and computational demands (MPC). In recent years, AI-driven control approaches have emerged as a compelling alternative, leveraging data to design or adapt controllers capable of handling nonlinear, poorly modeled turbine dynamics . Methods based on Artificial Neural Networks (ANN,~), Adaptive Neuro-Fuzzy Inference Systems (ANFIS,~), Reinforcement Learning (RL,~), and Evolutionary Algorithms (GA,~, PSO~) have demonstrated promising performance in simulations. Nonetheless, their application in operational turbines remains constrained by stringent industry requirements for reliability, consistency, and certifiability . Emerging directions such as Safe Reinforcement Learning seek to address these barriers, although real-world deployment is still in its early stages.
+
+Despite the growing interest in advanced controllers, classical model-based strategies remain the standard in industrial wind turbines due to their robustness and simplicity . Power maximization is traditionally carried out with torque controllers following the so-called $K^2$ law, which adjust the generator torque while maintaining a fixed, optimal blade pitch, whereas load mitigation is typically assigned to a Proportional-Integral (PI) controller of the blade pitch to sustain rated power output . These typically rely on first-order nonlinear models, whose accuracy critically impacts performance. For example, the gain $K$ in the $K^2$ controller depends on the optimal tip-speed ratio , while PI controllers are tuned using linearized turbine dynamics . A persistent challenge is the identification of the rotor’s nonlinear aerodynamic behavior . Common approaches include generating aerodynamic maps via momentum theory—most notably the Blade Element Momentum (BEM) method—or using pre-defined functional forms (e.g., polynomials or sinusoids) calibrated from experimental data . Accurate aerodynamic modeling is critical for minimizing energy losses in wind turbine control, with errors potentially reducing large-scale production by up to 3\
+
+To address the limitations of first-principles models under real-world conditions, system identification techniques are increasingly employed in wind turbine control . These data-driven approaches replace detailed physical modeling with parameter estimation from operational data . Most methods adopt linear state-space representations around specific operating points . Examples include linear time-periodic (LTP) models identified via harmonic transfer functions using HAWC2 simulations , and linear time-invariant (LTI) models estimated through Predictor-Based Subspace Identification (PBSID) or Frequency Domain Decomposition of field data . Simple Auto-Regressive (AR) models have also shown competitive accuracy with minimal parameters . These linear models frequently support advanced control schemes such as Model Predictive Control (MPC) . Other strategies include adaptive second-order transfer functions and switching between LTI models across operating regions, with fuzzy logic used to smooth transitions .
+
+The limitations of linear control strategies under switching conditions are discussed in . Nonlinear models have demonstrated improved performance over traditional Gain-Scheduled PI controllers , motivating system identification efforts using techniques such as Variable-Order Fractional Neural Networks , fuzzy systems , and neural networks . Clustering-based piecewise affine models have also been explored for power regulation . However, concerns over generalization and reliability of these black-box methods have motivated hybrid methods that embed physical insights into data-driven models, improving robustness across operating conditions .
+
+A promising direction is the identification of physically interpretable quantities like power or thrust coefficients. Common approaches use polynomial models with Recursive Least Squares (RLS) for real-time updates , Reduced Multivariate Polynomial models , or observer-based methods for dynamic estimation . Adaptive systems such as ANFIS have also been applied to optimize power coefficient estimation and enhance performance . Most adaptive modeling efforts for estimating the power coefficient have focused on isolated turbines and relied on numerical simulations where the true coefficient is known . To the authors' knowledge, no studies have retrieved experimentally the power coefficient in the presence of turbine wakes, where conventional models typically fall back on simplified, low-fidelity wake descriptions . A notable exception is , who identified a two-turbine array offline using linear transfer functions from experimental data. However, real-time assimilation of the power coefficient in multi-turbine setups remains unaddressed.
+
+This study addresses this gap by proposing the real-time experimental assimilation of the power coefficient for a two-turbine system, with one turbine operating within the wake of the other. The approach identifies a nonlinear, first-order dynamic model of the wind turbine array configuration, suitable for model-based control applications. As a demonstrative application, we consider a small scale set-up of two 0.15 m diameter turbines, challenging the model to recover also low Reynolds number effects, and integrate the identified model into an adapted version of the $K^2$ controller. 
+
+This article is organized as follows. First, the system identification problem of a wind turbine is reviewed in Section while section introduces the proposed data driven closure laws with the identification strategy. Section described the experimental set up. Section presents the results while Section closes with conclusions and perspectives.
+
+System Identification Framework
+
+The configuration of interest is illustrated in Figure~. It consists of identical, aligned turbines with radius \(R\), spaced at a distance \(L\), rotating at angular velocities \(_i\), and subjected to an incoming flow with hub-height equivalent wind speeds \(u_i\). The subscripts \(i\) and \(i+1\) refer to the upstream and downstream waked turbines, respectively, while the subscript \(1\) refers to the first turbine facing the freestream wind speed. We assume that the turbines operate under a power maximization objective in the torque-controlled region; therefore, the only relevant control inputs are the generator torques \(_g,i\). 
+
+The aerodynamic torque generated by the turbines is usually related to the power coefficient $C_p$, so that the simplest (nonlinear) ODE model of each turbine can be written as 
+
+_1 = f(_1, u_1 , _g,1 ; C_p,1) \\
+C_p,1 = _1(_1, u_1 ;_1) \\
+_1(0) = _1,0
+
+ for turbine 1 and 
+
+_i = f(_i, u_i(u_1,C_p,i-1) , _g,i ; C_pi) \\
+C_p,i = _i(_i, u_i(u_1,C_p,i-1) ;_i) \\
+_i(0) = _i,0
+
+ for a generic waked turbine $i = 2, 3, $, where the parameters $_i ^n_q$ act as closure parameters. The dot denotes time derivatives. Notice that the hub-speed velocity $u_i$ for the waked turbine is linked to the free-stream velocity $u_1$ and the performance of the preceding turbine $i-1$, specifically through its power coefficient $C_p,i-1$.
+
+The function $f$ for the generic turbine $i$ reads 
+
+f(_i, u_1, _g,i; C_p,i) 
+&= J (_a,i - _g,i) \\
+&= J ( 
+ 2 R^2 _i u_1^3 
+ - _g,i 
+)
+
+ where $J$ is the rotor's moment of inertia [kg·m$^2$], $$ is the air density [kg·m$^-3$], and the generator is assumed to be directly coupled to the rotor (here, we assume unit efficiency $ = 1$ and no gear ratio $N_g = 1$).
+
+The power coefficient of a wind turbine depends nonlinearly on its operating conditions. For a given geometric configuration and blade pitch angle, and at sufficiently high Reynolds numbers \( = u_1 D / \), with \( \) denoting the air’s kinematic viscosity, the power coefficient is typically expressed as a function of the tip-speed ratio \( _i = _i R / u_1 \). In this work, we assume that the power available in the wake depends solely on the amount of power extracted by the preceding turbine. Since the extracted power is linked to the power coefficient of the preceding turbine, which in turn depends only on its tip-speed ratio, i.e., \( C_p,i-1 = C_p,i-1(_i-1) \), this modeling assumption allows us to express the power coefficient of a generic turbine as a function not only of its own tip-speed ratio \( _i \), but also directly of the tip-speed ratio of the upstream turbine \( _i-1 \).
+
+The nonlinear system identification problem addressed in this work consists in modeling the power coefficients \( C_P,i \) in and as general parametric functions \( _i(_i, u_1; _i) \). Denoting by \( = [_1, _2, ...] ^n_q \) the concatenated parameter vector of the total number of turbines, the joint identification is performed by minimizing the discrepancy between observed data and the predictions of the dynamical model defined in and .
+
+Following a traditional variational approach for nonlinear identification , the optimal parameters are those that minimize the integral cost functional:
+
+_w,i(_i) = T_0^T_0 _p(_i(t; _i), _i^*(t)) \, dt\,,
+ where \( _p \) denotes the Lagrangian quantifying the mismatch between the simulated state \( _i(t; _i) \) and the measured states \( _i^*(t) \). The time interval \( T_0 \) represents the observation window over which measurements are collected, also referred to as an episode, following the terminology in . As detailed in the following section, the identification for the different turbines is carried out independently by solving separate minimization problems.
+
+Power Coefficient Closure Laws
+ 
+
+The power coefficients $C_p,i$ in and are herein modeled as follows 
+
+C_p,1(_1,)=^N_n ^M_m w_1,m,n _n (_1;^*_m,c_m) _m (; n)\,,
+ and 
+
+C_p,i(_i,_i-1)=^N_n ^M_m w_i,m,n _n (_i;_m^*,c_m) _m (_i-1;n)\,.
+ where all the closure coefficients \( w_i,m,n \) are stored in the vector \( _i \) for each wind turbine, as previously described. The functions \(_n\) and \(_m\) denote radial basis functions (RBFs) and polynomial functions, respectively, as described in detail below. The integers \(M\) and \(N\) represent the total number of basis used.
+
+As demonstrated in the following, the proposed formulation allows for representing a realistic nonlinear power coefficient curve while maintaining a linear dependency on the model parameters, which greatly simplifies the identification procedure. The dependence on the Reynolds number for the first turbine arises from the small scale of the experimental models used (see ), but is known to be negligible for full-scale wind turbines . For the waked turbine, additional Reynolds number effects are assumed to be negligible, as experimental evidence suggests that its behavior is more strongly influenced by the upstream tip-speed ratio \( _i-1 \).
+
+The functions $_n(x,^*_m,c_m)$ and $_m(x,n)$ act as basis functions. The first is a basis of compact support Radial Basis Functions (RBFs) 
+
+_m(; _m^*, c_m)= 
+
+(1-c_m^2)^5 & |d_m| c_m \\
+0 & 
+
+ where $d_m(x) = - _m^*$ is the distance from the RBF center $_m^*$, and $c_m$ is the basis radius. Five of these bases were collocated in the range of admissible tip-speed ratios at centers $^*_m=[4,5,6,7,8]$ and having all the same shape factor $c_m=1.5$. The second is polynomial basis up to order $2$ was chosen, hence $_n(x,n)=x^n$ with $n=[0,1,2]$.
+
+Initial guess for model parameters
+
+An estimate of the coefficients $w_i,m,n$ can be computed using the standard least squares method, under the assumption of ideal steady-state condition $=0$. In this condition, from one has $_a,i=_g,i$, hence
+
+C_p,i= _i R^2 u_i^3 \,.
+
+Assuming that both $_i$ and $u_i$ are measured, equation can be used to compute $C_p,i$, allowing for deriving initial guesses to train the surrogate models in and via least squares regression. For instance, in the case of the first turbine in , collecting a grid of $n_ n_Re$ training samples, with $n_$ and $n_Re$ the number of tip speed ratios and Reynolds numbers in the grid, and enforcing in each of the grid points yields a matrix factorization of the form
+
+_p,1 = (_1) \, _1 \, ^T(),
+
+where $_p,1 ^n_ n_Re$ is the matrix of power coefficients computed from at all training points. The matrix $(_1) ^n_ 5$ is the radial basis function (RBF) matrix evaluated at the tip-speed ratios $_1$, while $() ^n_Re 3$ contains the polynomial basis evaluated at the Reynolds numbers $ ^n_Re$. The coefficient matrix $_1 ^5 3$, with entries $w_1,m,n$, contains the parameters to be identified in the surrogate model and de facto encodes the performances of the turbine under the dynamical system in -.
+
+These coefficients can be computed by pseudo-inverse on both sides of :
+
+_1,0 = (^T)^-1^T _p,1 (^T)^-1\,.
+ where \( _1,0 \) emphasizes that these are the initial guesses for the optimization.
+
+Considering that this estimate acts only as an initial guess, no regularization was used in the least square solution. On the other hand, taking into account the measurement uncertainties was found to significantly improve the initial guess. These were introduced using a classic weighted formulation on the regression of the RBF block, which reads 
+
+_1,0 = (^T)^-1^T _p,1 (^T)^-1\,, 
+ where the matrix $$ is an estimate of the measurement precision, giving more weight to points with lower uncertainty and defined as 
+
+ = ^2_
+
+^2_1 & 0 & & 0 \\
+0 & & 0 & \\
+ & 0 & & 0 \\
+0 & & 0 & ^2_n_j
+,
+
+where \( ^2_j \) is the variance of each measurement and \( _=\_i\ \). These were used by propagating the measurement uncertainties of $u_i$, $_g,i$ and $_i$ through using standard first order approach. The solution of the initial set of coefficients from is equivalent to first carry out a weighted least square regression of the model $= $, followed by a traditional least square regression of the model $^T= ^T_1,0$. 
+
+A note on stability
+
+In a physically valid wind turbine model, the loci of steady state solutions $_a,j=_g,j$ in must be asymptotically stable, since the net torque decreases with increasing rotor speed in the neighborhood of equilibrium. The stability of the steady state solutions implies that the Jacobian 
+
+d_i
+= J [
+2 R^3 u_i^2 d_i ( )_i )
+- d_i
+]
+ has to be negative regardless of the control law $_g$ in the steady state conditions. Although this stability condition could be enforced by formulating the identification of $C_p(,Re)$ in or as a constrained optimization problem, this added complexity proved unnecessary because the structure of the cost function inherently penalizes parameter choices that violate the stability condition. Specifically, parameter choices that violate this stability condition naturally result in turbine models where the desired steady-state solution is no longer the system's attractor. Instead, the system trajectories tend to converge to zero rotational speed, leading to large discrepancies with the data and, consequently, high identification cost. This implicitly discourages such parameter values without the need to explicitly enforce stability constraints during optimization.
+
+Adjoint Based Real Time Identification
+
+In this work, the Lagrangian in is defined as
+
+_p(_i) = ( _i^*(t) - _i(t; _i) )^2\,.
+
+The optimization for each turbine is performed independently. This is justified by the fact that the downstream turbine model depends solely on the tip-speed ratio of the upstream turbine, \(_i-1\), and is otherwise decoupled from its dynamics. The measured time series \(_i^*(t)\) is filtered using a $4^$ order Butterworth low-pass filter with a cut-off frequency of \(f_ = 2\,\) chosen based on the turbine's time response to attenuate high-frequency noise.
+
+The cost functions \( _w,i(_i) \) are optimized using the Adam optimizer , preferred over quasi-Newton alternatives such as the BFGS because of its higher robustness to gradient noise. The gradient \( _,i _w,i \) was computed via an adjoint-based formulation to avoid solving \( n_w \) additional ODEs per evaluation. The adjoint method computes the gradient as
+
+_ _w,i(_i) = _0^T_0 s_^T (t) ( ) \, dt
+
+where \( s_(t) \) are the adjoint variables. These are obtained by solving the adjoint terminal value problem 
+
+ dt = - ( _i)^ s_(t) 
+ - ( _p _i )^, \\[8pt]
+ s_(T_0) = 0
+
+ where all terms are evaluated at the current guess for the states \( _i(t; _i) \), which thus requires first a forward integration. We note that the transposition in is included for consistency with high dimensional problems and is irrelevant to the problem at hand since both Jacobians are scalars. The adjoint-based evaluation requires one forward pass and one backward pass, regardless of the number of unknown parameters $_i$. 
+
+Starting from the initialization as in , the gradient computation is used then to update the weight guess using the ADAM optimizer 
+
+ _i^(n+1) = _i^(n) - ^(n)^(n) + 
+
+where \( n \) is the iteration number, \( \) is the learning rate, \( \) is a small constant to prevent division by zero, and \( \) and \( \) are filtered momentum parameters computed as follows
+
+^(n) = ^(n-1) + (1 - _1) _ _w,i^(n)1 - _1^n
+
+^(n) = ^(n-1) + (1 - _2) [_ _w,i^(n)]^21 - _2^n\,,
+ were \( \) and \( \) are the first and second moment estimates of the gradient, while \( _1 \) and \( _2 \) are the decay rate coefficients for the moments. 
+
+Multiple restarts were employed to reset the optimization process whenever a sudden jump in the cost function occurred, typically occurring because the current parameter guess violates the stability condition in . In such case, the optimization is re-started to re-set the low-pass filtering of the gradient. Additionally, a learning rate schedule was designed to reduce the learning rate once the cost function falls below a predefined threshold. This approach allows the optimizer to take smaller steps and prevent overshooting.
+
+Experimental Methodology
+
+The detailed experimental setup used to acquire data and interact with the system in real time is described in Section~. The identification methodology is evaluated across multiple scenarios. The first, detailed in Section~, focuses on nonlinear system identification for two turbines operating under low turbulence conditions with varying set points. The second scenario, presented in Section~, simulates a wind farm environment with high turbulence intensity and fixed operating conditions. Finally, the robustness of the identified models is assessed through a control task, as described in Section~.
+
+Experimental set up
+
+The proposed methodology was experimentally validated using three-bladed wind turbine scale models, originally designed by . Each model features a rotor diameter of $D = 0.15\,$ and a hub height of $z_ = 0.13\,$. The rotor was designed based on Burton's optimal rotor theory and employs a low-Reynolds-number airfoil section (HAM-STD HS1-606). This design enables the turbines to achieve power and thrust coefficient performances comparable to those of full-scale turbines such as the Vestas V66-2MW offshore turbine, of which it represents a 1:440 scale version. A photograph of the turbines is shown in Figure~ together with the relevant dimensions and airfoil section. The total moment of inertia of the rotor has been estimated from the CAD model to be $J=2.5 10^-6$ kg\,m$^2$.
+
+Each rotor is directly coupled to a DC motor (Faulhaber 1331T006SR) operating as a generator. The blades are fixed hence the only actuation is through motor torque, adjusted via a variable resistance \( R_ \) connected to the generator. The generator torque \( _g \) is modeled electrically by relating it to the current \( i \) as:
+\[
+_g = k_ i
+\]
+where \( k_ \) is a motor constant. The back electromotive force (EMF) is assumed proportional to the rotor speed:
+\[
+V_ = k_ \,,
+\]
+with \( k_ \) also a motor-specific constant. Neglecting generator inductance \(L\) and applying mesh analysis to the equivalent circuit (Figure~), the generator torque becomes:
+
+_g = k_ R_ + R_
+
+where $R_ = R_ + R_$, with $R_$ and $R_$ representing the internal motor and cable resistances, respectively. This relation is used in to compute the mechanical torque on the turbine shaft.
+
+The experimental setup with sensors and controllers is illustrated in Figure~ for the case of two turbines. A Raspberry Pi 4 is employed for real-time data acquisition and turbines' control. Each turbine is equipped with an incremental encoder for measuring the rotational speed \(_i^*(t)\). These encoders feature 50 pulses per revolution (PPR), and the rotational speed is computed by an Arduino Nano through the measurement of the time interval between two consecutive pulses.
+
+The free-stream wind speed at hub height \(u_1(z_ , t)\) is measured using a Prandtl tube positioned 2 diameter upstream of the first rotor. The dynamic pressure $ p = 2 u_1^2$, defined as the difference between total $p^0$ and static pressure $p_s$, is acquired using an AMS 5812-0000-DB sensor, from which the wind speed is then derived $u_1 = /$. A thermocouple is installed to monitor air temperature and enhance the accuracy of air density estimations.
+
+Torque actuation is implemented by modulating the electrical load through a bank of 12 resistors, each controlled via MOSFETs. This configuration enables \(2^12\) discrete resistance values, ranging from 0.25~\(\) to 1024~\(\). A 12-bit binary signal \(a_bin\) is sent from the Raspberry Pi 4 to a shift register (SNx4HC595), which selects the active resistors. The corresponding resistance \(R_\) is retrieved from a precomputed lookup table.
+
+[h!]
+ 
+ [width=0.90]Figures/ExpSetup.pdf
+ Experimental setup in the low-turbulence scenario configuration, detailing the measurement of free-stream wind speed $u_1$, rotational speed $_i^*$ of each turbine, and torque actuation via variable resistance $R_v,i$ controlled by a 12-bit binary signal $a_bin,i$.
+
+Low Turbulence Scenario Identification
+
+The first scenario evaluates the proposed methodology for identifying the aerodynamical characteristics of two wind turbine models in a tandem configuration, where the operational conditions of both turbines are varied (Figure ). This identification under varying conditions is used for the control implementation, as discussed in . The two wind turbine models are separated by four rotor diameters ($4D 60$~cm). The experimental campaign was conducted in the VKI Wind Engineering facility L2-B, an open-circuit wind tunnel with a test section of dimensions $H = 0.5~$, $W = 0.5~$, and $L = 0.8~$, capable of generating uniform flow velocities up to $U_ = 35~$. The limited length of the test section prevents the development of a fully developed boundary layer representative of atmospheric conditions, resulting in low turbulence intensity. The blockage ratio is approximately 5\
+
+The system identification process was performed by analyzing the response of \(_i^*(t)\) to a combination of control steps in \(R_\) and gradually varying freestream velocities \(u_1(t)\). The upstream turbine model was trained using seven episodes, while the downstream turbine model relied on five episodes. Each episode, as described in Section~, corresponds to a time interval of \(T_0 = 32~\), with a data sampling frequency of \(f_s = 20~\). Both were then tested on four and three unseen wind/loading episodes respectively. The model identification for the two turbines was performed in separate episodes: first, the upstream turbine was trained, followed by the downstream turbine, which also utilized data from the first. This approach treats the identification as two distinct processes, even though, in principle, both turbines could be trained jointly. Figure~ illustrates the input signals used in three training episodes and two testing episodes. The left panel shows the free-stream velocity $u_1(t)$ applied during the training or testing of the upstream turbine ($u_1,1(t)$) and during the training or testing of the downstream turbine ($u_1,2(t)$). The right panel depicts the corresponding steps in generator resistance for the upstream turbine in the two cases ($R_1,1(t)$ and $R_1,2(t)$), as well as the generator resistance applied to the downstream turbine during the identification of the waked turbine model ($R_2(t)$).
+
+[t!]
+ 
+ [width=]Figures/Scenario1-compressed.pdf
+ Wind farm configuration in the VKI Wind Engineering Facility L-1B, with the three identified wind turbines highlighted in red.
+
+High Turbulence Scenario Identification
+
+The second scenario evaluates the proposed methodology in a wind farm configuration consisting of a \(3 3\) turbine array operating under high turbulence conditions. The experiments were conducted in the VKI Wind Engineering facility L1-B. This is a low-speed, closed-loop wind tunnel with a test section measuring $H = 2~$, $W = 3~$, and $L = 20~$, delivering a maximum wind speed of $U_ = 60~$. The length of the test section allows the development of a fully established turbulent boundary layer at the location of the wind farm, which is positioned at the downstream end of the tunnel and thus entirely within the boundary layer. Further details on how the boundary layer generated in the L1-B tunnel replicates atmospheric flow conditions can be found in .
+
+A schematic of the experimental setup is shown in Figure~. The turbine models were arranged with spanwise and streamwise spacings of 3D and 5D, respectively. For the nonlinear identification test, three turbines from the central row of the array were selected: one located in the freestream and two positioned in the wake region. This setup targets turbines operating near their optimal performance point under steady turbulent inflow, consistent with typical wind turbine control strategies. Notably, the freestream wind velocity was not measured directly at the first turbine. Instead, as shown in Figure~, a Prandtl tube was placed $d_1 = 1.2\,$ upstream in the streamwise direction, aligned with the first row of turbines in the spanwise direction.
+
+To maintain a consistent operating point, the resistance \(R_\) connected to the DC generator was fixed at \(R_ = 1~\), corresponding to a tip-speed ratio of \(_1 = 4.5\) for a reference inflow velocity of \(u_1 8.5~\). This value approximately maximizes the power coefficient, as shown in . The experimental setup and measurement procedure matched those described in previous sections. All signals were sampled at \(f_s = 20~\) over episodes lasting approximately \(T_0 = 20~\), with 80\
+
+[htbp]
+	
+	 
+	
+	
+	[b]0.48
+		
+		[width=]Figures/training_1_u1.pdf
+		
+	
+	
+	[b]0.48
+		
+		[width=]Figures/training_1_R1_R2.pdf
+		
+	
+	
+	
+	
+	
+	[b]0.48
+		
+		[width=]Figures/training_2_u1.pdf
+	
+	
+	[b]0.48
+		
+		[width=]Figures/training_2_R1_R2.pdf
+	
+	
+	
+	
+	
+	[b]0.48
+		
+		[width=]Figures/training_3_u1.pdf
+	
+	
+	[b]0.48
+		
+		[width=]Figures/training_3_R1_R2.pdf
+	
+	
+	
+	
+	
+	[b]0.48
+		
+		[width=]Figures/testing_1_u1.pdf
+	
+	
+	[b]0.48
+		
+		[width=]Figures/testing_1_R1_R2.pdf
+	
+	
+	
+	
+	
+	[b]0.48
+		
+		[width=]Figures/testing_2_u1.pdf
+	
+	
+	[b]0.48
+		
+		[width=]Figures/testing_2_R1_R2.pdf
+	
+	
+	.
+	
+
+Control under Low Turbulence Conditions
+
+To evaluate the accuracy of the identified models for control purposes, we return to the tandem configuration in section . For both turbines, we consider the classic \(K^2\) law, commonly used in Region 2 to maximize power extraction . This controller gives a quadratic torque law
+
+_g = K^2\,,
+
+where the constant \(K\) is defined as ():
+
+K = 2 A R^3 _^3\,,
+ where \(_\) denotes the tip-speed ratio corresponding to the maximum power coefficient \(C_P_\).
+
+In this work, the \(K^2\) controller is employed in terms of electrical generator resistance. Combining and with gives 
+
+R_ = K - R_tot\,.
+
+This model-based control strategy offers a valid test to assess the fidelity of the assimilated dynamic model, as the controller performance is inherently tied to the accuracy of the assumed \( C_P(, Re) \) distribution. Moreover, in the investigated scenario, the controller is not used under typical operational assumptions that is to track the tip-speed ratio maximizing power production. Instead, the setpoint in terms of tip-speed ratio is intentionally varied to stress-test the model across a wider operating range. 
+
+To ensure reliability of the sensor measurements, all input signals are filtered using a first-order Butterworth low-pass filter with a cutoff frequency of \(f_ = 2\)~Hz. The performance of the controller is evaluated using three different modeling approaches: (1) the model identified from data, (2) the parametric model obtained from steady-state data regression which offered the initial condition for the adjoint-based refinement, and (3) a model based on regression (following a procedure similar to that described in Section ) of Blade Element Momentum (BEM) simulation results. The motivation for using a BEM-based controller is that it is the standard tool for obtaining aerodynamic models for control in wind turbines. The BEM simulations were set up by first computing the aerodynamic performance of the airfoil in terms of lift and drag coefficients as a function of the angle of attack, using XFOIL at different Reynolds numbers. These aerodynamic polars were then used to compute the power coefficient through BEM simulations, implemented using the `CcBlade` module from the WISDEM Python package . This comprehensive evaluation enables a comparative analysis of controller performance under different modeling assumptions.
+
+Results
+
+The results are grouped into three subsections. First, Section presents the system identification results for the wake tandem configuration in low turbulence conditions described in Sec. . Section then moves to the identification results in the high turbulence scenario described in Sec. . Finally Section test the accuracy of the identified models for model based control purposes.
+
+[h!]
+	
+	[width=]Figures/CrossCoherencePlotLow.pdf
+	
+		Left: Time evolution of the hub-height wind velocity of the first turbine (\(_1\)) and its angular velocity (\(_1\)) for an example test case. Both signals are normalized by mean-centering and min-max scaling. Right: Scatter plot showing the correlation between the two signals. Data are from the ``low-turbulence'' scenario described in Section~.
+
+[h!]
+	
+	[width=]Figures/CP_surface_comparison_contour.png
+	
+	
+
+Identification in Low Turbulence
+
+In this scenario, turbulence fluctuations are small compared to the large-scale variations in the incoming wind velocity. Additionally, the wind velocity is measured at hub height, consistent with the definitions in Figure~. As a result, the nonlinear system identification is performed in ideal conditions, where the model in provides a reliable instantaneous relationship between the $_1(t)$ and $u_1(t)$ because these variables are reasonably correlated. This is only true if the torque on the generator of the first turbine remains constant during the episode; otherwise, changes in torque alter the rotational speed independently of the wind speed. Figure shows the time series of these signals, normalized with mean-centering and min-max normalization (scaled quantities denoted with hat) on the left, and a plot showing their strong correlation on the right. 
+
+Figure illustrates, on the left, the evolution of the cost function over the optimization iterations for both the upstream (first row) and downstream (second row) wind turbines using all the training episodes. The optimization clearly reduces both cost functions, thus improving the initial guesses from . Convergence is achieved within a relatively small number of episodes, highlighting the efficiency of the ADAM optimizer with the adjoint-based gradient computation. In the center, Figure shows the power coefficient curves obtained using the initial guesses for the optimization derived from , based on training grids of $n__1 n_Re$ and $n__2 n__1$ samples (indicated by red markers) in the $(_1Re)$ and $(_2_1)$ planes (as described in Section ). These training samples were selected to cover, as broadly as possible, the physical operating space of both wind turbines.
+
+On the right, Figure~ presents the final 2D regressions of the power coefficients: for the first turbine (top), as a function of tip-speed ratio and Reynolds number, and for the second turbine (bottom), as a function of the two tip-speed ratios. The scatter points show the states visited in the training dataset (red markers) and in the testing dataset (black markers). Overall, these provide good coverage, except in the region of low $_1$ and high $Re$ for the first turbine, and in the regions of (i) high $_1$ and (ii) simultaneously low $_1$ and low $_2$ for the second turbine. For the upstream turbine, this gap in the training data results in a nonphysical model in the unsampled region, highlighting the importance of covering a broad range of operating conditions during training. However, considering that the physical system is unable to reach these conditions (e.g., $_1 4$ with $Re 30000$) because of physical limitations, the lack of model accuracy in this area is inconsequential for both predictive and control purposes. It is worth stressing that the optimized curves do not necessarily reflect the true aerodynamic characteristics of the turbines but rather serve as surrogate models that best reproduce the experimental data, potentially absorbing effects such as measurement noise, generator model errors, or parameter uncertainties (e.g., from CAD estimates).
+
+Figures and show the time evolution of the measured rotational speed of the wind turbines, $_i^*(t)$, represented in black, along with the associated 95\
+
+Moreover, the comparison between the initial and optimized models shows that the main improvement lies in a significantly better representation of the system's stability properties. In some cases (Training Cases 2, 3, and Testing Case 2 for the upstream turbine), the initial parameter guess from leads the model to be undesirably and unrealistically attracted to the fixed point $=0$, resulting in shutdown-like behavior that does not match the collected data (see also Section~). This does not imply, however, that imposing the constraint in lacks merit. On the contrary, incorporating stability constraints could improve model robustness and restrict the search space during optimization. These aspects will be explored in future works.
+
+On a practical note, we emphasize that the cost function exhibits significant stiffness in regions of the parameter space where changes in stability properties occur. To help the ADAM optimizer adapt to these abrupt changes, we reinitialize it whenever a threshold is crossed (\( _w,i > 100 \)), effectively restarting the gradient smoothing procedure in . This re-initialization occurs, for instance, between iterations 3–4 and 6-7 in the upstream turbine case, as shown in the cost function evolution in Figure~. Additionally, we observe that once the cost function falls below a small threshold (\( _w,i < 10 \)), the momentum term becomes detrimental to convergence. In such cases, reducing the learning rate by a factor of 10 improves convergence by enabling finer adjustments in promising regions of the parameter space.
+
+Identification in High Turbulence
+
+[h!]
+	
+	[width=]Figures/CrossCoherencePlotHigh.pdf
+	 ($_1$) and the dimensionless rotational speed of the first turbine ($_1$). Right: Scatter plot showing the low correlation inflow conditions and turbine dynamics.
+	
+
+[h!]
+	
+	[width=]Figures/CP_surface_comparison_contour_2nd.pdf
+	 for their position). The second row shows the power coefficient curves obtained from the initial guess and the optimized weights for the high-turbulence scenario, as well as those corresponding to the low-turbulence scenario.
+	
+
+As in the previous section, we begin by analyzing the correlation between the normalized incoming velocity $_1(t)$ and the rotational speed of the upstream turbine $_1(t)$, shown in Figure . This test case corresponds to stationary conditions with high turbulence, where wind speed fluctuates between 7 and 11 m/s. As a consequence that the velocity measurement is not taken at the hub of the turbine, the variables $u_1(t)$ and $_1(t)$ exhibit no meaningful correlation, meaning that it impossible to reconstruct the turbine’s rotational speed time series as done in the previous case. Nonetheless, the objective here is to capture the time-averaged signal, even in the absence of short-term correlation. This average remains indicative of incoming fluctuations occurring at spatial and temporal scales much larger than the duration of the episode through which the identification is carried out, and it can thus still provide valuable information for control strategies at the wind farm level.
+
+Figure~ (top) presents the sampled pairs \( Re - _1 \) for the first (upstream) turbine and \( _i - _i+1 \) for the downstream (waked) turbines. Samples from the training and test phases are indicated with red and black markers, respectively, while the blue markers represent the states visited by the model when attempting to track the test cases. The orange star indicates the mean value. The dashed line shows the direction of the leading principal component in the sample space. 
+
+Two main observations arise. First, although the model does not perfectly reproduce the instantaneous values, the predictions remain well within the distribution of the observed data, with the mean value largely preserved. Second, the correlation in the sample space is significantly higher for the waked turbines compared to the upstream one. This suggests that, in terms of input/output behavior, the wind farm acts as a low-pass filter on the incoming turbulence.
+
+Figure~ (bottom) shows the predicted power coefficient along the principal component of the sampled space, comparing the initial guess and the optimized solutions for both the high-turbulence case and a previous low-turbulence scenario. The observed discrepancy in performance across the three turbines is expected, as wake effects lead to notably lower power coefficients in the downstream turbines. The substantial difference between the initial and optimized predictions in the high-turbulence case highlights the effectiveness of the optimization process. Of particular interest is the sensitivity of the upstream turbine’s power curve to turbulence intensity: high-frequency fluctuations are filtered out by the turbine dynamics, and thus a model trained in low-turbulence conditions---mainly influenced by large-scale fluctuations---tends to yield overly optimistic and potentially nonphysical predictions. Conversely, for the waked turbines, turbulence enhances wake recovery, although only slightly under these conditions, as the increase in the power coefficient relative to the initial guess in the low-turbulence scenario is modest. Consequently, models trained under high-turbulence conditions yield more accurate predictions than those trained in calm flows.
+
+Regarding the shape of the identified power coefficient curves, it is important to consider the sample distribution used for model identification. For example, the apparent double-peaked shape in the upstream turbine’s power curve is likely nonphysical and results from insufficient data in the regions \( _1 < 4 \) and \( _1 > 6 \). However, since these operating conditions are rarely visited, this has little impact on the model's predictive performance. Overall, the strong sensitivity of the identified performance curves to the turbulence conditions in the training data underscores the value of continuously adapting the model over the turbine’s operational life. This aligns well with the proposed episodic system identification framework, where the model is not trained once for all but is periodically updated in episodes, each time incorporating newly observed operational data to improve accuracy and robustness.
+
+Finally, Figure shows the model predictions and measured rotational speeds for all three turbines in the test dataset. As in previous figures, adaptive model predictions are plotted in continuous red, experimental measurements in black, and the associated uncertainty as a gray confidence band. The high turbulence environment results in substantial fluctuations in rotational speed across all turbines. For each case, the right panel presents the probability density function (PDF) of the measured data and that predicted by the optimized model. In all cases, the mean is accurately captured, while the standard deviation is slightly underestimated for the upstream turbine, likely due to weaker input–output correlation in the training data (see Figure , top left). Interestingly, the model reconstructs the distributions more accurately for the waked turbines.
+
+Control performance from identified models
+
+The identified model is integrated in the $K^2$ control law as described in for both the upstream and downstream turbine in the low turbulence scenario.
+The control challenge consist in keeping a reference trajectory in terms of tip-speed ratio, hence define a time varying reference $$ (and associated power coefficient) in rather than the power maximization. 
+
+The results for the upstream turbine are shown in Figure~. The top plot displays the dynamic set point alongside the actual tip-speed ratio for three controllers based on different models: (1) the Blade Element Momentum (BEM)-regressed model (green), (2) the initial guess power coefficient curve assuming steady-state conditions (orange), and (3) the adapted model obtained after the identification process (blue). The middle plot shows the control action, i.e., the variation in generator resistance applied by each controller, while the bottom plot presents the incoming wind velocity during the three control tests, which remained relatively similar. It is worth noting that the large variations in set point were not intended to mimic a realistic control task—which would typically aim to track the optimal power coefficient—but were instead designed to stress-test the controllers.
+
+The superior performance of the controller driven by the adapted model is evident. The large steady-state errors and excessive actuation observed in the BEM-driven controller can be attributed to model deficiencies, stemming from the uncertain prediction of low-Reynolds-number effects. These uncertainties affect the airfoil performance estimates at small testing scales, which are then used as inputs to the BEM to compute the power coefficient. Although these could be corrected by more sophisticated control laws, it is interesting to note that the adaptive formulation yields excellent tracking performances with the simplest $K^2$ controller. 
+
+The difference in control performances of the initial and adapted model appears minor in comparison. After all, as described in the previous section, the initial guess yields overall satisfactory models as long as the stability properties are preserved. Nevertheless, the difference is appreciable. Considering the impact of power curve modeling on energy production , and considering that wind turbine dynamics change over their lifespan due to factors such as mechanical wear, environmental conditions, and blade fouling, the ability to adapt and refine the model remains essential for maintaining optimal performance and long-term efficiency.
+
+Finally, a similar analysis is presented for the waked turbine in Figure~, a scenario well beyond the reach of traditional modeling approaches due to strong inflow unsteadiness and limited flow characterization. Time-dependent set points are prescribed for both turbines. The top plot shows the tracking performance of the upstream turbine, while the second plot presents the response of the downstream turbine, alongside an uncontrolled baseline scenario. The uncontrolled response clearly reveals the wake effect on the second turbine when the upstream set point $_1$ is changed at $t=25$ s and $t=50$ s. The third plot shows the control input, with a visible actuation step triggered by the set point change, as well as the downstream response to upstream variation.
+
+The key result is highlighted in the second plot: the controller, based on the identified model, successfully mitigates the impact of upstream disturbances (at $t=25$ s and $t=50$ s) and accurately tracks the reference step change (at $t=32$ s). Although some oscillations appear in the controlled $_2$ signal, the overall results demonstrate excellent tracking and disturbance rejection performance within the model bandwidth, even in the presence of wake-induced disturbances. These oscillations can be attributed to an inherent limitation of the $K^2$ controller, which, by design, assumes steady-state operating conditions (see ) and lacks feedback control command from the incoming wind velocity. Consequently, its tracking performances degrade under rapidly changing wind conditions because changes in wind velocity are only sensed via changes in rotor speed, which are lagged due to inertia. This limitation is visible for the wakes turbine but not for the upstream one, which operates in low turbulence and slow variations of the wind speed. 
+
+Conclusions
+ 
+In this work, we proposed and experimentally validated a system identification approach for free-stream and waked wind turbines based on the real-time estimation of nonlinear power coefficient curves. By combining compactly supported radial basis functions with low-order polynomial regressor, the method achieves accurate and physically interpretable representations of turbine performance under dynamic conditions. The methodology was tested on both low and high turbulence scenarios using small-scale wind turbines, with the identified models showing strong agreement with experimental measurements.
+
+The adaptive models were successfully integrated into the $K^2$ controller, demonstrating enhanced performance over conventional control strategies based on BEM or steady-state regressions. In a controlled tandem configuration, the adaptive controllers were able to mitigate wake-induced effects on a downstream turbine, validating the potential of this framework for coordinated wind farm operation. Moreover, the ability of the model to adapt to different operating regimes, including noisy and turbulent conditions, highlights its robustness and practical applicability. The proposed identification process, based on adjoint gradient computation and ADAM optimization, enables real-time adaptability while remaining computationally efficient. Importantly, the models can be directly embedded into already existing model-based industrial controllers without requiring architectural changes.
+
+Future developments could explore the integration of this adaptive modeling approach into more advanced control strategies such as Model Predictive Control (MPC), as well as its extension to full-scale wind farms with lidar-based wind measurements. Overall, this study illustrates a practical, data-driven pathway toward improved wind turbine performance through interpretable and flexible model identification.
+
+Acknowledgments
+
+This research was initially developed as part of the research master’s project of Sebastiano Randino, supported by a VKI NATO Fellowship. It was subsequently refined and extended during the PhD work of Sebastiano Randino, funded by a FNRS FRIA Fellowship (Fellowship number 40029825). Lorenzo Schena is funded by an FWO Fellowship (number 1567925N). The authors gratefully acknowledge the contribution of Jacquet Charles, who worked on the farm testing in the framework of his research master project. This work is part of the RE-TWIST project, which has received funding from the European Research Council (ERC) under the European Union’s Horizon Europe programme (grant agreement No 101165479). The views expressed are those of the authors and do not necessarily reflect those of the European Union or the ERC.

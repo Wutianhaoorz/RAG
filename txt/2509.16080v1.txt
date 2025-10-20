@@ -1,0 +1,542 @@
+[10pt,a4paper]article
+
+[margin=1in]geometry
+
+[utf8]inputenc
+ 
+
+: A Python Library for Idealized Two-Dimensional\\
+Incompressible Kelvin-Helmholtz Instability
+
+[1,2]S. H. S. Herho
+[3,*]N. J. Trilaksono
+[3,5]F. R. Fajary
+[4,5]G. Napitupulu
+[2,5]I. P. Anwar
+[5]F. Khadami
+[6]D. E. Irawan
+
+[1]Department of Earth and Planetary Sciences, University of California, Riverside, CA, USA
+[2]Samudera Sains Teknologi (SST) Ltd., Bandung, West Java, Indonesia
+[3]Atmospheric Science Research Group, Bandung Institute of Technology, Bandung, West Java, Indonesia
+[4]Coastal Hazards and Energy System Science Laboratory, Hiroshima University, Hiroshima, Japan
+[5]Applied and Environmental Oceanography Research Group, Bandung Institute of Technology, Bandung, West Java, Indonesia
+[6]Applied Geology Research Group, Bandung Institute of Technology, Bandung, West Java, Indonesia
+[*]Corresponding author. E-mail: jpatiani@itb.ac.id
+
+We present an open-source Python library for simulating two-dimensional incompressible Kelvin-Helmholtz instabilities in stratified shear flows. The solver employs a fractional-step projection method with spectral Poisson solution via Fast Sine Transform, achieving second-order spatial accuracy. Implementation leverages NumPy, SciPy, and Numba JIT compilation for efficient computation. Four canonical test cases explore Reynolds numbers 1000--5000 and Richardson numbers 0.1--0.3: classical shear layer, double shear configuration, rotating flow, and forced turbulence. Statistical analysis using Shannon entropy and complexity indices reveals that double shear layers achieve 2.8$$ higher mixing rates than forced turbulence despite lower Reynolds numbers. The solver runs efficiently on standard desktop hardware, with 384$$192 grid simulations completing in approximately 31 minutes. Results demonstrate that mixing efficiency depends on instability generation pathways rather than intensity measures alone, challenging Richardson number-based parameterizations and suggesting refinements for subgrid-scale representation in climate models.
+
+: Boussinesq approximation, fractional-step method, Kelvin-Helmholtz instability, mixing efficiency, stratified turbulence
+
+Introduction
+
+The study of stratified shear flows traces its origins to the pioneering observations of Hermann von Helmholtz in 1868 and Lord Kelvin in 1871, who independently recognized that velocity discontinuities across density interfaces could generate wave-like instabilities . These early theoretical insights, derived from linearized stability analysis of idealized velocity profiles, established the foundation for understanding turbulent mixing in geophysical fluids. The subsequent century witnessed gradual refinement of stability criteria, culminating in the seminal contributions demonstrating that the Richardson number fundamentally controls instability growth through the competition between destabilizing shear and stabilizing stratification . This theoretical framework, developed through mathematical analysis of simplified configurations, remains central to modern understanding of atmospheric and oceanic mixing processes.
+
+Experimental investigations revealed that Kelvin-Helmholtz (KH) billows undergo a characteristic life cycle from initial exponential growth through nonlinear saturation to eventual turbulent breakdown . Laboratory experiments in stratified tilt tanks demonstrated that mixing efficiency peaks during the transition from laminar billows to three-dimensional turbulence, with irreversible density changes occurring primarily during the collapse phase . These controlled experiments, while necessarily limited in scale and parameter range, provided crucial validation of theoretical predictions and revealed unexpected phenomena including billow pairing, secondary instabilities, and asymmetric mixing patterns absent from linear theory . The development of particle image velocimetry (PIV) and laser-induced fluorescence (LIF) techniques in the 1990s enabled quantitative measurements of velocity and density fields simultaneously, revealing the detailed structure of mixing events .
+
+Field observations in natural environments demonstrate both the ubiquity and complexity of KH instabilities across scales from meters to hundreds of kilometers. Atmospheric manifestations range from cloud billows visible in satellite imagery to clear-air turbulence affecting aviation safety . Oceanic examples span from estuarine mixing to equatorial undercurrents . However, these observations reveal systematic departures from laboratory-based scaling laws, particularly in environments with multiple shear interfaces, rotational effects, or time-dependent forcing. The mixing efficiency, defined as the ratio of buoyancy flux to turbulent kinetic energy dissipation, varies by an order of magnitude across different geophysical contexts, challenging universal parameterizations based solely on Richardson number . Recent measurements using modern observation systems have documented intermittent mixing events that dominate time-averaged fluxes, highlighting the importance of rare but intense instability events .
+
+The computational investigation of KH dynamics evolved from early finite-difference solutions in the 1960s to contemporary spectral and finite-volume methods capable of resolving the full range of dynamical scales . Initial numerical studies employed two-dimensional domains with periodic boundaries, revealing the fundamental mechanisms of vortex roll-up and pairing. The extension to three-dimensional simulations in the 1980s, enabled by vector supercomputers, demonstrated the critical role of spanwise perturbations in triggering transition to turbulence . Modern direct numerical simulations achieve Reynolds numbers approaching geophysical values but require billions of grid points and thousands of processor hours, limiting systematic parameter exploration . Large-eddy simulations (LES) reduce computational demands through subgrid-scale modeling but introduce closure assumptions that yield order-of-magnitude variations in predicted mixing rates .
+
+The mathematical formulation of stratified shear flows relies on the Boussinesq approximation, which treats density variations as dynamically important only in buoyancy terms while maintaining constant density in inertial terms. This simplification, rigorously justified through scale analysis when density variations remain below approximately ten percent, reduces the compressible Navier-Stokes equations to an incompressible system with buoyancy forcing . The resulting equations admit analytical solutions only for highly idealized configurations, necessitating numerical approaches for realistic parameter regimes. The two-dimensional restriction, while excluding certain three-dimensional instabilities, captures the primary mixing mechanisms since linear stability analysis demonstrates that the fastest-growing KH modes are inherently two-dimensional . This dimensional reduction enables high-resolution simulations at moderate computational cost, facilitating parameter studies impossible in fully three-dimensional configurations.
+
+Recent advances in scientific computing, particularly the development of just-in-time (JIT) compilation and optimized array libraries, enable high-performance simulations using interpreted languages previously considered unsuitable for computational fluid dynamics (CFD) . Python, with its extensive scientific ecosystem and emphasis on code readability, provides an ideal platform for developing transparent, reproducible simulation tools . The combination of NumPy for array operations, SciPy for spectral transforms, and Numba for performance optimization achieves high computational efficiency while dramatically improving code accessibility . The fractional-step projection method provides a robust algorithm for solving the incompressible flow equations while maintaining the divergence-free constraint essential for physical accuracy .
+
+This study presents , an open-source Python implementation designed to democratize access to high-fidelity KH simulations for research and educational applications. The solver addresses the gap between simplified analytical models and computationally intensive three-dimensional simulations by providing an efficient, transparent framework for investigating idealized two-dimensional configurations. Four canonical test cases systematically explore parameter dependencies across Richardson numbers from 0.1 to 0.3 and Reynolds numbers from 1000 to 5000, spanning regimes from marginal stability to fully developed turbulence. Comprehensive statistical analysis employing Shannon entropy, complexity indices, and nonparametric tests quantifies the evolution of flow structures beyond traditional mean and variance metrics . The implementation achieves sufficient computational efficiency to enable parameter studies on standard desktop hardware, with detailed documentation and visualization tools facilitating both research applications and pedagogical use. By providing open access to validated simulation capabilities, this work aims to accelerate understanding of fundamental mixing processes relevant to climate modeling, ocean dynamics, and atmospheric transport phenomena.
+
+Methods
+
+Mathematical Formulation
+
+The mathematical description of KH instability in geophysical fluids—encompassing atmospheric boundary layers, oceanic thermoclines, and planetary atmospheres—requires a systematic derivation from first principles. The analysis begins with the fundamental postulates of continuum mechanics and proceeds through careful approximations justified by the physical scales characteristic of geophysical flows.
+
+Consider an infinitesimal fluid element in three-dimensional space. Let $ = (X^1, X^2, X^3)$ denote the Lagrangian coordinates labeling material particles at initial time $t_0$, and $ = (x^1, x^2, x^3)$ represent the Eulerian coordinates at time $t$. The motion of the continuum is described by the mapping 
+
+ = (, t), = (, t_0).
+
+The deformation gradient tensor, fundamental to describing local material deformation, is defined as,
+
+F_iA = X^A, J = (F_iA) > 0,
+
+with $J$ representing the Jacobian ensuring non-interpenetration of matter.
+
+The velocity field in the Lagrangian description follows from the time derivative holding material coordinates fixed:
+
+(, t) = (, t) t|_.
+
+Transforming to the Eulerian description, where we follow fixed spatial points rather than material particles, the velocity field becomes
+
+(, t) = (^-1(, t), t).
+
+The material derivative, connecting Lagrangian and Eulerian rates of change, emerges from the chain rule:
+
+Dt = t|_ = t|_ + u^i x^i,
+
+where Einstein summation convention is employed for repeated indices.
+
+Mass conservation requires that the total mass within any material volume $_m(t)$ remains constant. For density $(, t)$, the principle states
+
+Dt__m(t) \, dV = 0.
+
+Applying Reynolds transport theorem, which relates the rate of change of an integral over a moving volume to the integrand's behavior:
+
+Dt__m(t) \, dV = __m(t) [ t + ()] dV.
+
+Since equation must hold for any arbitrary material volume, the integrand must vanish identically:
+
+ t + () = 0.
+
+Expanding the divergence term:
+
+ t + u^i x^i + x^i = Dt + = 0.
+
+Newton's second law for a continuum states that the rate of change of momentum equals the net force. For the material volume $_m(t)$ with surface $_m(t)$:
+
+Dt__m(t) u^i \, dV = __m(t) t^i \, dS + __m(t) f^i \, dV,
+
+where $t^i$ represents the traction vector and $f^i$ the body force per unit mass.
+
+Cauchy's stress principle relates the traction to the stress tensor through 
+
+t^i = ^ijn_j,
+
+where $^ij$ is the Cauchy stress tensor and $n_j$ the outward unit normal.
+
+Applying Reynolds transport theorem to the left side and Gauss divergence theorem to the surface integral:
+
+__m(t) Dt \, dV = __m(t) x^j \, dV + __m(t) f^i \, dV.
+
+Since the volume is arbitrary, we obtain the local form of the momentum equation:
+
+Dt = ( t + u^j x^j) = x^j + f^i.
+
+The constitutive equation for a Newtonian fluid relates stress to deformation rate. The most general linear isotropic relation is 
+
+^ij = -p^ij + ^ijD^kk + 2 D^ij,
+
+where $p$ is thermodynamic pressure, $$ and $$ are viscosity coefficients, and the rate-of-deformation tensor is
+
+D^ij = 2( x^j + x^i).
+
+For geophysical flows, the incompressibility approximation applies when flow velocities are much smaller than sound speed. In the atmosphere, typical wind speeds ($ 10$ m/s) are negligible compared to sound speed ($ 340$ m/s). In the ocean, currents ($ 0.1$–$1$ m/s) are far below the sound speed in water ($ 1500$ m/s). This justifies setting
+
+ = x^i = 0.
+
+Under incompressibility, $D^kk = 0$, eliminating the bulk viscosity term. The stress tensor simplifies to
+
+^ij = -p^ij + 2 D^ij = -p^ij + ( x^j + x^i).
+
+Substituting into the momentum equation and using incompressibility to simplify the viscous term:
+
+( t + u^j x^j) = - x^i + x^j x^j + f^i.
+
+Geophysical flows exhibit density stratification due to temperature variations (atmosphere), salinity gradients (ocean), or compositional differences (planetary atmospheres). Following Milhajan , we performed a systematic scale analysis. Let $'$ denote density variations and $_0$ a reference density:
+
+(, t) = _0 + '(, t), |_0| = 1.
+
+The small parameter $$ typically ranges from $10^-3$ in strong oceanic thermoclines to $10^-2$ in atmospheric fronts. Substituting into equation :
+
+(_0 + ')( t + u^j x^j) = - x^i + x^j x^j + (_0 + ')f^i.
+
+The Boussinesq approximation systematically expands in powers of $$. To leading order, density variations were retained only where multiplied by gravity, as demonstrated through scale analysis . The inertial terms scale as $_0U^2/L$, while buoyancy terms scale as $g'$. Their ratio yields the Richardson number:
+
+ = _0U^2 = U^2 = O(1),
+
+confirming that buoyancy effects remain significant despite small $$.
+
+Neglecting $O()$ terms in inertia but retaining them in buoyancy:
+
+_0( t + u^j x^j) = - x^i + x^j x^j + (_0 + ')f^i.
+
+The gravitational body force acts vertically: $f^i = -g^i3$. The pressure was decomposed into hydrostatic and dynamic components:
+
+p(, t) = p_0(z) + p'(, t),
+
+where the reference pressure satisfies hydrostatic balance:
+
+dz = -_0 g.
+
+This decomposition removed the dominant balance, isolating dynamically relevant gradients. Substituting and using equation :
+
+ t + u^j x^j = -_0 x^i + x^j x^j - _0g^i3,
+
+where $ = /_0$ is kinematic viscosity.
+
+The density perturbation evolves through advection-diffusion. From conservation of a scalar quantity $$ (potential temperature, salinity, or chemical concentration) with $' = -_0$ where $$ is the expansion coefficient:
+
+ t + u^j x^j = x^j x^j,
+
+where $$ represents molecular diffusivity.
+
+The two-dimensional restriction was justified through linear stability analysis showing that the most unstable KH modes are spanwise-invariant . Setting $/ y = 0$ and $v = 0$:
+
+ x + z &= 0, \\
+ t + u x + w z &= -_0 x + ( x^2 + z^2), \\
+ t + u x + w z &= -_0 z + ( x^2 + z^2) - _0g, \\
+ t + u x + w z &= ( x^2 + z^2). 
+
+Non-dimensionalization employed characteristic scales: shear layer thickness $$, velocity jump $ U$, and density jump $$:
+
+ = , = , = , = U, = U, = _0 U^2, = .
+
+The final non-dimensional system (dropping tildes) governing KH instability in the velocity-pressure formulation:
+
+ &= 0, \\
+ t + ( ) &= - p + ^2 - \,\,_z, \\
+ t + &= ^2, 
+
+where $_z$ is the unit vector in the vertical direction.
+
+The governing parameters—Reynolds number $ = U/$, Richardson number $ = g/(_0 U^2)$, and Prandtl number $ = /$—characterize the flow regime across atmospheric, oceanic, and astrophysical applications.
+
+For diagnostic purposes, the spanwise vorticity component, measuring local rotation rate, is computed from the velocity field :
+
+_z = x - z,
+
+which reveals the characteristic billow structures that define the instability's nonlinear evolution.
+
+Numerical Implementation
+
+The numerical solution of the governing equations -- requires careful treatment of the nonlinear advection terms, viscous diffusion, and the pressure-velocity coupling inherent in incompressible flows. Our implementation draws inspiration from the Fortran 95 solver developed by K\"ampf , which demonstrated the feasibility of simulating KH instabilities using a fractional-step approach with Successive Over-Relaxation (SOR) iteration for the pressure Poisson equation. However, we depart significantly from that implementation by employing spectral methods for the pressure solver rather than iterative techniques. Where K\"ampf's solver requires 8000 SOR iterations per time step to achieve convergence with tolerance $10^-3$, our Fast Sine Transform approach achieves machine precision in $O(N N)$ operations without iteration. This spectral method, originally developed by Swarztrauber et al. , exploits the periodic boundary conditions to diagonalize the discrete Laplacian operator, reducing the computational cost by approximately two orders of magnitude for typical grid resolutions. Furthermore, while the Fortran implementation employs a sophisticated Total Variation Diminishing (TVD) advection scheme with flux limiters, we adopt first-order upwind differencing that, despite its simplicity, provides sufficient numerical diffusion to stabilize sharp gradients characteristic of KH billows without requiring explicit slope limiting.
+
+The implementation leverages modern Python scientific computing libraries including NumPy for array operations, SciPy for spectral methods, and Numba for JIT compilation, achieving performance comparable to compiled languages while maintaining development flexibility. This represents a fundamental shift from traditional Fortran-based CFD codes toward more accessible, maintainable implementations. Where K\"ampf's solver outputs formatted ASCII files requiring post-processing for visualization, our framework generates self-describing NetCDF-4 files with CF metadata conventions, enabling direct integration with modern analysis tools. The fractional-step projection method we employ, originally developed by Chorin and rigorously analyzed by Temam , decouples the pressure-velocity coupling through operator splitting following the same mathematical principles as K\"ampf's implementation but with enhanced computational efficiency through spectral methods. Additionally, our adaptive time-stepping algorithm automatically balances CFL and viscous stability constraints, eliminating the need for manual parameter tuning required in fixed time-step implementations, thereby enabling robust parameter studies across diverse Richardson and Reynolds number regimes without user intervention.
+
+The projection method, comprehensively reviewed by Guermond et al. , decomposes the time advancement into a predictor step that ignores pressure gradients followed by a correction step that enforces incompressibility. Beginning with the dimensional momentum equations --, we introduce an intermediate velocity field $^* = (u^*, w^*)$ through the fractional steps:
+
+^* - ^n t + (^n )^n &= ^2^n - _0g_z, \\
+^n+1 - ^* t &= -_0 p^n+1, \\
+ ^n+1 &= 0, 
+
+where superscript $n$ denotes the discrete time level $t^n = n t$, with $ t$ representing the time step, $^n = (u^n, w^n)$ the velocity field at time $t^n$, and $_z$ the unit vector in the vertical direction.
+
+Taking the divergence of equation and enforcing the incompressibility constraint yields the pressure Poisson equation:
+
+^2 p^n+1 = t ^*. 
+
+The computational domain $ = [0, L_x] [0, L_z]$ is discretized using a uniform Cartesian grid with spacing:
+
+x_i &= i x, i = 0, 1, , N_x-1, x = N_x-1, \\
+z_j &= j z, j = 0, 1, , N_z-1, z = N_z-1, 
+
+where $N_x$ and $N_z$ denote the number of grid points in the horizontal and vertical directions, respectively. Let $q_i,j^n q(x_i, z_j, t^n)$ represent the discrete approximation of any field variable $q \u, w, , p\$ at grid point $(i,j)$ and time level $n$.
+
+The nonlinear advection terms demand special treatment to ensure numerical stability near sharp gradients characteristic of KH billows. Following the pioneering work of Courant et al. and the high-resolution schemes of Harten , we employ first-order upwind differencing that maintains monotonicity through directionally-biased stencils. For a generic scalar field $q$ advected by velocity $(u,w)$, the discrete advection operators are:
+
+(u x)_i,j &= 
+
+u_i,j - q_i-1,j x & u_i,j > 0, \\[0.5em]
+u_i,j - q_i,j x & u_i,j < 0,
+ \\
+(w z)_i,j &= 
+
+w_i,j - q_i,j-1 z & w_i,j > 0, \\[0.5em]
+w_i,j - q_i,j z & w_i,j < 0.
+ 
+
+This upwind scheme, while introducing numerical diffusion of order $O(|| x)$, acts as implicit subgrid-scale dissipation that stabilizes the solution without requiring explicit filtering, as demonstrated in the flux-corrected transport algorithms of Boris et al. . The discrete advection update for any transported quantity $q$ becomes:
+
+q_i,j^* = q_i,j^n - t[_x(u^n, q^n)_i,j + _z(w^n, q^n)_i,j], 
+
+where $_x$ and $_z$ denote the upwind operators defined in equations --.
+
+The viscous diffusion terms are discretized using second-order central differences, yielding the discrete Laplacian operator:
+
+^2 q_i,j = - 2q_i,j + q_i-1,j x^2 + - 2q_i,j + q_i,j-1 z^2. 
+
+For computational efficiency, the implementation adaptively switches between explicit and implicit time integration schemes based on the diffusive stability criterion. When the following stability constraints are satisfied:
+
+ x^2 < 4 z^2 < 4, 
+
+we employ the explicit forward Euler update:
+
+q_i,j^n+1 = q_i,j^n + t^2 q_i,j^n. 
+
+For larger time steps that would violate conditions , we switch to an implicit backward Euler scheme solved iteratively through the Jacobi method:
+
+q_i,j^(k+1) = ^n + (q_i+1,j^(k) + q_i-1,j^(k)) + (q_i,j+1^(k) + q_i,j-1^(k))1 + 2 + 2, 
+
+where $ = t/(2 x^2)$, $ = t/(2 z^2)$ are the dimensionless diffusion numbers, and superscript $(k)$ denotes the iteration level within the Jacobi solver.
+
+The pressure Poisson equation with homogeneous Neumann boundary conditions ($ p/ n = 0$ on $$) is solved using the Fast Sine Transform (FST) method developed by Swarztrauber et al. , achieving machine precision with $O(N N)$ computational complexity. The pressure field is expanded in discrete sine basis functions that automatically satisfy the boundary conditions:
+
+p_i,j = _k=1^N_x-2_l=1^N_z-2 _k,l (N_x-1)(N_z-1), 
+
+where $_k,l$ are the spectral coefficients in Fourier space.
+
+Substituting expansion into the discrete Laplacian transforms the Poisson equation into an algebraic system in spectral space:
+
+_k,l = _k,l_k,l, 
+
+where $_k,l$ represents the Fourier coefficients of the divergence field $ ^*$, and the eigenvalues of the discrete Laplacian are:
+
+_k,l = -4[ x^2 + z^2]. 
+
+The implementation employs SciPy's optimized DST routines , which utilize FFTPACK algorithms for efficient computation on modern architectures.
+
+The time step selection ensures numerical stability through adaptive constraints on both advective and diffusive processes. The Courant-Friedrichs-Lewy (CFL) condition for advection stability requires:
+
+ t_ = C_ (|u|, |w|), 
+
+while the diffusive stability constraint imposes:
+
+ t_ = C_ (, ), 
+
+where $C_ = 0.4$ and $C_ = 0.2$ provide safety margins below theoretical stability limits. The actual time step is chosen as:
+
+ t = ( t_, t_). 
+
+The spanwise vorticity component $_z$, essential for visualizing KH roll-up patterns and coherent structures, is computed as a diagnostic quantity using second-order central differences:
+
+_i,j = - w_i-1,j2 x - - u_i,j-12 z. 
+
+This quantity directly measures the local rotation rate and reveals the characteristic billow structures that define the instability's nonlinear evolution.
+
+The computational performance is dramatically enhanced through Numba's JIT compilation , which translates Python functions into optimized machine code at runtime. The decorator enables automatic loop vectorization and multi-threading via OpenMP, achieving 10--50$$ speedup compared to pure Python implementations . Memory access patterns are optimized through contiguous array layouts that maximize cache efficiency, while the construct enables embarrassingly parallel operations across grid points.
+
+Boundary conditions reflect the physical configuration appropriate for shear layer studies. Periodic conditions in the streamwise ($x$) direction:
+
+u(0, z, t) = u(L_x, z, t), w(0, z, t) = w(L_x, z, t), (0, z, t) = (L_x, z, t), 
+
+allow the instability to develop without artificial confinement. No-slip walls at the vertical ($z$) boundaries:
+
+u(x, 0, t) = u(x, L_z, t) = 0, w(x, 0, t) = w(x, L_z, t) = 0, 
+
+represent channel flow configurations commonly used in turbulence studies .
+
+The complete algorithm integrates these components through the following sequence: (i) computation of the intermediate velocity $^*$ via equations and or , incorporating advection and diffusion operators; (ii) solution of the pressure Poisson equation using the discrete sine transform ; (iii) projection of the velocity field through equation to enforce incompressibility; (iv) update of the density field using the same advection-diffusion scheme applied to equation ; and (v) computation of diagnostic quantities including vorticity via equation . 
+
+The simulation output employs NetCDF-4 format , the standard for geophysical data storage, providing self-describing, platform-independent storage with CF metadata conventions that ensure compatibility with analysis tools including xarray and NCL. The hierarchical HDF5-based structure enables transparent compression, typically reducing storage requirements by 40--60\
+
+Animated GIF visualizations complement the archival data by revealing temporal evolution of coherent structures essential for understanding mixing processes . The dual-panel layout showing vorticity ($_z$) and density ($$) fields simultaneously facilitates analysis of instability growth, billow pairing, and baroclinic vorticity production that govern mixing efficiency . The perceptually uniform colormaps (RdBu for vorticity, viridis for density) ensure accurate interpretation while maintaining accessibility . This numerical framework provides accurate, stable, and efficient simulations of KH instability across the wide range of Reynolds and Richardson numbers relevant to geophysical applications, from laminar laboratory flows to turbulent atmospheric and oceanic shear layers.
+
+Numerical Experiments
+
+To demonstrate the solver's capability in simulating geophysically relevant flows, we present four idealized test cases that capture fundamental aspects of KH instability in atmospheric and oceanic contexts. Each scenario employs the numerical framework described in equations -- on a standardized domain of $L_x = 2.0$ m by $L_z = 1.0$ m, facilitating direct comparison of dynamical evolution across different physical regimes. The density field $$ represents the local fluid density normalized by a reference value $_0$, with variations arising from temperature differences in atmospheric flows or salinity gradients in oceanic environments, following the Boussinesq approximation detailed in equation .
+
+The canonical KH instability emerges from velocity discontinuities across density interfaces, representing the fundamental mechanism for mixing in stratified geophysical flows ranging from cloud-top entrainment to deep ocean thermocline erosion . The velocity field initialization employs a hyperbolic tangent profile that smoothly transitions between opposing flows:
+
+u(z) = u_ + (u_ - u_) 2[1 + ()], 
+
+where the shear layer thickness $ = 0.05$ m is selected to adequately resolve the predicted instability wavelength while maintaining computational tractability. The prescribed velocities $u_ = 1.0$ m/s and $u_ = -1.0$ m/s generate a velocity jump $ U = 2.0$ m/s representative of strong shear zones observed in atmospheric jet streams and oceanic western boundary currents.
+
+The density stratification incorporates a two-layer structure with $_ = 1.0$ kg/m$^3$ representing warm, fresh surface water or heated atmospheric air, while $_ = 1.2$ kg/m³ corresponds to cold, saline deep water or dense cool air masses. This 20\
+
+The selection of critical Richardson number ensures examination of the competition between shear production that generates turbulent kinetic energy and buoyancy forces that suppress vertical motion, a balance central to understanding mixing efficiency in geophysical flows . Instability initiation requires seeding through small-amplitude perturbations:
+
+u'(x,z) = (4 x/L_x) [-()^2], 
+
+where $ = 0.01 U$ provides sufficient amplitude for growth while remaining within the linear regime, and the wavelength $ = L_x/2$ matches the most unstable mode predicted by stability analysis for this parameter regime . Operating at $ = 1000$ places the flow in a transitional regime where initial laminar billows undergo secondary instabilities leading to turbulent breakdown, analogous to processes observed in nocturnal atmospheric jets and tidally-driven oceanic shear layers .
+
+Geophysical flows frequently exhibit multiple shear interfaces due to complex stratification patterns, necessitating understanding of interaction dynamics between adjacent unstable layers. Atmospheric examples include the dual jet structure where subtropical and polar jets create multiple critical layers , while oceanic manifestations appear in equatorial undercurrents with alternating velocity maxima . The velocity profile incorporates two hyperbolic tangent interfaces:
+
+u(z) = u_[() - () - 1], 
+
+with interface positions $z_1 = L_z/2 - s/2$ and $z_2 = L_z/2 + s/2$ separated by distance $s = 0.3$ m, approximately six shear layer thicknesses ensuring initial independence while permitting subsequent interaction. The reduced thickness $ = 0.04$ m compared to the single-layer case maintains adequate resolution of individual interfaces despite the increased complexity.
+
+The density configuration adopts a three-layer stratification with heavy fluid ($ = 1.5$ kg/m$^3$) occupying the upper and lower regions while light fluid ($ = 1.0$ kg/m$^3$) resides in the central jet region. This arrangement replicates atmospheric temperature inversions where warm air masses become trapped between cooler layers, commonly observed in urban heat islands and frontal systems where differential advection creates complex thermal structures . The inverted density gradient at each interface promotes symmetric instability development with opposing buoyancy forces, enabling investigation of billow interaction mechanisms including vortex pairing, amalgamation, and competitive growth observed in laboratory experiments and field observations .
+
+Operating parameters $ = 2000$ and $ = 0.1$ create strongly shear-dominated conditions where instability growth occurs rapidly with minimal buoyancy suppression. The enhanced Reynolds number relative to Test Case 1 captures increased nonlinear interactions arising from proximity effects between developing billows, while the reduced Richardson number ensures vigorous turbulent transition with enhanced mixing rates characteristic of high-shear environments . This configuration elucidates momentum transport mechanisms in complex shear flows where traditional single-interface assumptions break down.
+
+Planetary rotation introduces fundamental modifications to shear instability through the Coriolis force, affecting both linear growth rates and nonlinear evolution pathways in geophysical flows . Although the two-dimensional formulation precludes explicit rotation terms, we incorporate rotational effects through a background geostrophic shear that approximates the influence of planetary vorticity:
+
+u(x,z) = u_(z) + f (z - L_z/2), 
+
+where the base shear profile $u_$ follows equation and the linear term with coefficient $f = 0.5$ s$^-1$ represents an effective Coriolis parameter scaled to the domain dimensions, corresponding to mid-latitude conditions at approximately 45$^$ latitude when accounting for aspect ratio effects.
+
+Enhanced density stratification with $_ = 1.0$ kg/m$^3$ and $_ = 1.3$ kg/m$^3$ produces a 30\
+
+Configuration parameters $ = 1500$ and $ = 0.3$ place the flow above the canonical stability threshold, accounting for rotational stabilization that shifts the marginal stability boundary to higher Richardson numbers. The intermediate Reynolds number balances resolution requirements with computational cost while capturing essential dynamics of rotationally-influenced mixing relevant to submesoscale oceanic processes where balanced and unbalanced motions interact . This idealized framework provides insights into mixing suppression mechanisms in rotating stratified environments characteristic of atmospheric boundary layers at mid-latitudes where inertial oscillations modulate turbulent transport .
+
+Geophysical turbulence rarely exists in isolation but rather maintains quasi-equilibrium through continuous energy injection balancing dissipative losses, whether from wind stress at the ocean surface, breaking internal waves in the thermocline, or convective instability in the atmospheric boundary layer . Stochastic forcing represents these energy sources through a spectrum of large-scale modes:
+
+F_u(x,z,t) &= _k_x=1^N_f_k_z=1^N_f (2 k_x x/L_x + _k_x,k_z) (2 k_z z/L_z), \\
+F_w(x,z,t) &= _k_x=1^N_f_k_z=1^N_f (2 k_x x/L_x) (2 k_z z/L_z + _k_x,k_z), 
+
+where $N_f = 5$ modes concentrate energy injection at scales exceeding the natural instability wavelength, preventing direct interference with billow formation while maintaining energy cascade toward dissipation scales.
+
+The forcing amplitude $A_f = 0.1$ m/s² is calibrated to sustain turbulent fluctuations without overwhelming stratification effects, analogous to moderate wind forcing in the ocean mixed layer or thermal convection in atmospheric boundary layers. Random phases $_k_x,k_z$ ensure statistical homogeneity while maintaining divergence-free forcing consistent with incompressibility constraint . The spectral distribution following $k^-1$ scaling in amplitude concentrates energy at large scales, mimicking atmospheric storm systems injecting momentum into ocean surface layers or internal wave breaking cascading energy to smaller scales .
+
+Weak stratification with $_ = 1.0$ kg/m³ and $_ = 1.1$ kg/m³ represents a 10\
+
+Enhanced resolution using a $384 192$ grid at $ = 5000$ and $ = 0.15$ enables resolution of an extended inertial range spanning approximately two decades in wavenumber space, sufficient for examining cascade dynamics and spectral flux characteristics in stratified turbulence . The moderate Richardson number below the critical threshold ensures sustained turbulence without relaminarization, facilitating investigation of mixing efficiency dependencies relevant to parameterization development for climate models where subgrid-scale turbulent fluxes must be represented . Extended integration to $t_ = 30$ s allows statistical equilibrium establishment where forcing, cascade, and dissipation balance, providing ensemble-averaged quantities for comparison with theoretical predictions and observational scaling laws.
+
+Each test case employs adaptive time-stepping via criterion ensuring numerical stability across varying flow conditions while maximizing computational efficiency. Integration periods of $t_ = 10$, $15$, $20$, and $30$ seconds for respective cases capture complete instability life cycles from linear growth through nonlinear saturation to turbulent decay or statistical equilibrium. The vorticity field computed through equation provides primary visualization of coherent structures and turbulent eddies, while density evolution quantifies irreversible mixing fundamental to diapycnal transport in stratified geophysical systems . These idealized experiments establish a hierarchy of complexity from simple shear layers to forced turbulence, enabling systematic investigation of parameter dependencies governing mixing efficiency in atmospheric and oceanic flows .
+
+Data Analysis
+
+Following completion of the four numerical experiments, a post-processing statistical analysis framework was implemented to quantify the dynamical evolution of KH instabilities across the parameter space explored. This analysis operates independently of the numerical solver, processing the NetCDF output files generated from each test case to extract quantitative measures of flow complexity, mixing efficiency, and statistical properties. The framework leverages NumPy for array operations, SciPy for statistical functions, and xarray for efficient manipulation of the multi-dimensional NetCDF datasets produced by the solver.
+
+The analysis begins by loading the stored velocity fields $u(x,z,t)$ and $w(x,z,t)$, density field $(x,z,t)$, and computed vorticity $_z(x,z,t)$ from each of the four test cases: Classical Shear Layer (Test Case 1), Double Shear Layer (Test Case 2), Rotating Shear Layer (Test Case 3), and Forced Turbulence (Test Case 4). For each field variable $$, representing either the density perturbation $$ or spanwise vorticity $_z$ consistent with the formulation in equations (32)--(35), Shannon entropy serves as the fundamental measure of spatial disorder following established applications in geophysical fluid dynamics . The spatial entropy is computed as:
+
+H() = -_i=1^N_ p_i p_i, 
+
+where $p_i$ represents the probability in bin $i$, computed as:
+
+p_i = N_, 
+
+with $n_i$ being the count in bin $i$, $ b$ the bin width from a 50-bin histogram, $N_$ the total number of valid grid points excluding boundary regions, and $N_ = 50$. This metric quantifies information content in the spatial patterns emerging from the KH instability, with higher values indicating increased complexity as the flow transitions from the organized laminar billows characteristic of early evolution to the chaotic turbulent states observed in the mature phase, particularly evident in the forced turbulence scenario (Test Case 4) as demonstrated by for small-scale universality in turbulence.
+
+Beyond simple entropy, a comprehensive complexity index was developed specifically for these four test scenarios to capture multiple aspects of flow structure evolution, addressing the absence of established complexity metrics tailored for KH instabilities in current literature . This weighted metric combines gradient-based spatial variability computed from the velocity and density fields, statistical moments, and entropy through:
+
+() = w_1 H() + w_2 _() + w_3 () + w_4 (1 + |()|), 
+
+where the gradient complexity quantifies spatial variability through:
+
+_() = ( x)^2 + ( z)^2), 
+
+The normalized standard deviation provides scale-independent variance assessment:
+
+() = _ - _ + , 
+
+with $ = 10^-10$ preventing division by zero, and the excess kurtosis captures departure from Gaussian behavior:
+
+() = ^4 - 3, 
+
+characteristic of intermittent turbulence. The weights $(w_1, w_2, w_3, w_4) = (0.3, 0.3, 0.2, 0.2)$ were selected to balance contributions from different complexity aspects, emphasizing equally the information-theoretic content and local gradient variations while incorporating global statistical properties relevant to each test case's distinct dynamics.
+
+The gradients required for complexity calculations, consistent with the spatial discretization employed in the numerical solver (equations 40--41), utilize second-order central differences implemented through NumPy's gradient function:
+
+( x)_i,j &= - _i,j-12 x, \\
+( z)_i,j &= - _i-1,j2 z, 
+
+where $ x = L_x/(N_x - 1)$ and $ z = L_z/(N_z - 1)$ match the grid spacings from the computational domain discretization. This numerical differentiation scheme maintains consistency with the second-order accuracy of the solver while providing efficient computation for the large datasets generated from each test case, particularly the high-resolution forced turbulence simulation with its $384 192$ grid.
+
+Basic statistical characterization employs standard moments computed for each field at selected time snapshots throughout the simulation duration. For each test case, the mean:
+
+() = N_i=1^N _i, 
+
+standard deviation:
+
+() = N-1_i=1^N (_i - )^2, 
+
+skewness:
+
+_1() = N_i=1^N []^3, 
+
+and excess kurtosis:
+
+_2() = N_i=1^N []^4 - 3, 
+
+provide comprehensive distributional characterization, where $N$ represents valid non-NaN data points from the interior domain excluding boundary regions. These moments enable detection of departures from Gaussian behavior as turbulence develops differently in each test case, with skewness indicating asymmetry in mixing processes and kurtosis revealing intermittency in energy dissipation, particularly pronounced in the forced turbulence scenario .
+
+Normality assessment employs multiple complementary tests to characterize the evolution from near-Gaussian initial conditions imposed by equations (58)--(59) to the heavy-tailed distributions characteristic of developed turbulence observed in all four test cases. The Shapiro-Wilk test, optimal for sample sizes up to 5000 points , computes the statistic:
+
+W = ^n a_i x_(i))^2_i=1^n (x_i - )^2, 
+
+where $x_(i)$ are the ordered statistics and $a_i$ are tabulated coefficients maximizing power for detecting non-normality. The Anderson-Darling test provides superior sensitivity to tail deviations critical for the intermittent turbulence observed particularly in Test Cases 2 and 4 , computing:
+
+A^2 = -n - _i=1^n n[ F(Y_i) + (1-F(Y_n+1-i))], 
+
+where $Y_i$ are ordered observations and $F$ represents the standard normal cumulative distribution function after standardization. The Jarque-Bera test:
+
+JB = 6[_1^2 + 4], 
+
+specifically targets skewness and kurtosis departures, while D'Agostino's $K^2$:
+
+K^2 = Z_1^2(_1) + Z_2^2(_2), 
+
+provides an omnibus test through standardized transformations . This battery of tests ensures robust detection of non-Gaussian behavior across the different flow regimes represented by the four test cases.
+
+Given the consistently non-Gaussian nature of turbulent fields revealed by normality tests across all scenarios, nonparametric statistical comparisons prove essential for inter-scenario analysis between the four test cases. The Kruskal-Wallis test enables simultaneous comparison across all four scenarios without distributional assumptions , computing:
+
+H = N(N+1)_j=1^k n_j - 3(N+1), 
+
+where $R_j$ represents the sum of ranks for scenario $j$:
+
+R_j = _i=1^n_j r_ij, 
+
+with $n_j$ being the sample size for scenario $j$ (extracted from each test case output), $N = _j=1^k n_j$ the total sample size across all four test cases, and $r_ij$ denoting the rank of observation $i$ in scenario $j$. This test, asymptotically $^2$ distributed with $k-1 = 3$ degrees of freedom for our four test cases, identifies whether significant differences exist among the scenarios' statistical properties. Subsequently, pairwise Mann-Whitney U tests isolate specific differences between test case pairs through the statistic:
+
+U_1 = n_1 n_2 + 2 - R_1, 
+
+providing robust comparisons unaffected by outliers common in turbulent data . The Friedman test:
+
+_r^2 = nk(k+1)_j=1^k R_j^2 - 3n(k+1), 
+
+complements these analyses for repeated measures when examining temporal evolution within each test case.
+
+Mixing efficiency quantification follows simplified formulations appropriate for the two-dimensional simulations produced by our solver, where full three-dimensional energy budgets cannot be computed from the fields $u$, $w$, and $$. The instantaneous mixing parameter:
+
+(t) = _(t) _(t), 
+
+where the density standard deviation:
+
+_(t) = (), 
+
+and root-mean-square vorticity:
+
+_(t) = , 
+
+with angle brackets denoting spatial averaging over the domain, captures the essential coupling between stratification and vortical motions driving irreversible mixing. This formulation proves particularly relevant for comparing the baseline shear layer (Test Case 1) with the enhanced mixing observed in forced turbulence (Test Case 4), while more sophisticated measures incorporating background potential energy evolution exist , this formulation provides computational efficiency suitable for extensive parameter studies while maintaining physical relevance to the mixing processes observed across our four test scenarios .
+
+Temporal evolution analysis tracks all metrics across the simulation time spans: $t_ = 10$s for Test Case 1, 15s for Test Case 2, 20s for Test Case 3, and 30s for Test Case 4. This enables identification of distinct dynamical stages characteristic of KH evolution , defined as early $(t [0, 0.25 t_])$, growth $(t (0.25 t_, 0.50 t_])$, mature $(t (0.50 t_, 0.75 t_])$, and late $(t (0.75 t_, t_])$ phases, corresponding to linear instability, nonlinear saturation, fully developed turbulence, and viscous decay or equilibrium phases respectively. The entropy growth rate:
+
+ = ) - H(t_0)t_ - t_0, 
+
+quantifies the rate of disorder increase for each test case, while the stage-weighted overall complexity:
+
+_ = _s S w_s _s, 
+
+with weights $(w_, w_, w_, w_) = (0.15, 0.25, 0.35, 0.25)$ emphasizing the mature turbulence phase where mixing efficiency peaks, provides a scalar metric for comparing the four test scenarios.
+
+All post-processing computations incorporate data preprocessing to handle numerical artifacts from the solver output and ensure statistical validity. The data flattening with NaN removal:
+
+_ = \_i,j : _i,j \, \\, 
+
+eliminates undefined values that may arise from boundary conditions or numerical instabilities in the simulation. When dataset sizes from the high-resolution simulations (particularly Test Case 4) exceed computational feasibility for certain statistical tests, random subsampling without replacement to:
+
+N_ = (N_, 10000), 
+
+points maintains statistical significance while ensuring tractability, following standard practices in turbulence statistics where spatial correlations decay rapidly beyond the integral scale .
+
+This statistical framework, implemented as a separate post-processing pipeline operating on the NetCDF outputs from our four demonstration test cases, provides robust quantification of the complex spatiotemporal dynamics characterizing KH instability evolution across the explored parameter space of Reynolds numbers ($ = 1000$--5000) and Richardson numbers ($ = 0.1$--0.3) representative of diverse geophysical flow regimes.
+
+Results
+
+The numerical experiments were conducted on a Fedora Linux 39 (Budgie) system equipped with an Intel i7-8550U processor (8 cores at 4.000 GHz) and 32 GB of RAM. All simulations utilized the Python-based solver implementation with NumPy array operations and Numba JIT compilation for computational efficiency. The four test cases were executed sequentially with varying spatial resolutions and temporal integration periods to capture the distinct dynamics of each KH instability configuration.
+
+Table presents the computational parameters employed across the four test scenarios. The Basic Shear Layer simulation utilized a $256 128$ grid over a $2.0 1.0$ m domain, integrating for 10.0 seconds with Reynolds number 1000 and Richardson number 0.25. Total computation time including post-processing was 149.12 seconds, with the core simulation requiring 76.41 seconds. The Double Shear Layer configuration maintained the same grid resolution but extended the integration period to 15.0 seconds, operating at Re=2000 and Ri=0.1, completing in 222.82 seconds total time. The Rotating KH Instability case increased the simulation duration to 20.0 seconds with Re=1500, Ri=0.3, and rotation rate $f=0.5$ s$^-1$, requiring 368.14 seconds for completion. The Forced KH Turbulence simulation employed enhanced resolution of $384 192$ grid points, running for 30.0 seconds at Re=5000 and Ri=0.15 with forcing amplitude 0.1 m/s$^2$, necessitating 1863.37 seconds total computation time.
+
+Statistical analysis of the density fields revealed consistent non-Gaussian distributions across all test cases and time snapshots. The Basic Shear Layer exhibited initial density mean of 1.100 kg/m$^3$ with standard deviation 0.095 kg/m$^3$, evolving to mean 1.066 kg/m$^3$ and standard deviation 0.083 kg/m$^3$ by $t=7.47$s. Spatial entropy increased from 1.667 at initialization to 2.340 at the final measurement time, indicating progressive disorder development. The complexity index evolved from 0.811 to 0.945, reaching maximum value of 0.950 at $t=1.414$s. All normality tests (Shapiro-Wilk, Anderson-Darling, Jarque-Bera, and D'Agostino K$^2$) consistently rejected the null hypothesis of normality with p-values less than 0.001, confirming the fundamentally non-Gaussian nature of the turbulent density distributions.
+
+The Double Shear Layer configuration demonstrated more complex statistical behavior with initial three-layer density stratification yielding mean 1.352 kg/m$^3$ and standard deviation 0.228 kg/m$^3$. The configuration evolved through pronounced mixing phases, achieving maximum density complexity of 1.005 at $t=3.221$s. Spatial entropy increased substantially from 0.608 to 1.982 over the 15-second simulation period. The density field exhibited persistent negative skewness ranging from $-0.862$ to $-1.568$, indicating asymmetric mixing favoring lower density values. Vorticity statistics revealed extreme intermittency with kurtosis values reaching 24.889 at $t=3.72$s, substantially exceeding Gaussian expectations.
+
+The Rotating KH Instability case incorporated rotational effects through a linear background shear with coefficient 0.5 s$^-1$. Initial conditions featured enhanced density stratification with 30\
+
+The Forced KH Turbulence simulation exhibited sustained turbulent characteristics through continuous energy injection via spectral forcing across five modes. Initial density stratification of 10\
+
+Temporal evolution metrics revealed distinct growth characteristics across scenarios. The Basic Shear Layer achieved maximum vorticity complexity of 2.994 at $t=1.717$s with entropy growth rate of 0.067 per second for density and $-0.064$ per second for vorticity. The Double Shear Layer demonstrated enhanced mixing with mean mixing efficiency of 1.287, substantially exceeding single-interface configurations. Maximum vorticity complexity reached 3.278 at $t=0.101$s, indicating rapid initial instability development. The Rotating case showed suppressed entropy growth rates of 0.026 per second for density and $-0.030$ per second for vorticity, confirming rotational stabilization effects. The Forced Turbulence case maintained the lowest entropy growth rate of 0.012 per second for density, consistent with sustained equilibrium conditions.
+
+Inter-scenario statistical comparisons using the Kruskal-Wallis test confirmed significant differences in density field distributions across all four cases (H-statistic $p<0.001$). Pairwise Mann-Whitney U tests revealed significant differences ($p<0.001$) between all scenario combinations for density fields. Vorticity field comparisons showed more nuanced results, with no significant difference between Basic Shear Layer and Double Shear Layer ($p=0.126$) or between Basic Shear Layer and Forced Turbulence ($p=0.096$), while all other pairwise comparisons yielded significant differences ($p<0.001$).
+
+Normalized complexity indices computed across evolutionary stages demonstrated consistent patterns. Early stage complexity ($t<25\
+
+Discussion
+
+The emergence of non-Gaussian distributions with extreme kurtosis values demonstrates the intermittent nature of stratified turbulence within these idealized configurations . These statistical signatures arise from coherent structure dynamics rather than random fluctuations, characteristic of the simplified two-dimensional framework employed. The pronounced negative skewness in density distributions indicates asymmetric entrainment processes, wherein lighter fluid preferentially penetrates heavier layers through mechanisms documented in laboratory investigations . While these idealized test cases exclude three-dimensional effects and realistic boundary conditions present in geophysical flows, they isolate fundamental mixing mechanisms that remain obscured in more complex simulations. The controlled parameter space enables systematic investigation of Richardson and Reynolds number dependencies without confounding factors inherent in field observations or comprehensive numerical weather prediction models.
+
+Richardson number variations fundamentally alter the mixing dynamics through modification of the shear-to-buoyancy ratio, as demonstrated across the four canonical configurations. The enhanced mixing efficiency at Ri=0.1 with dual interfaces derives from constructive interference between adjacent instability zones . Vortex pairing across separated shear layers generates secondary circulations absent in single-interface configurations, amplifying cross-gradient transport beyond linear superposition predictions. External forcing paradoxically diminishes mixing efficiency despite elevated Reynolds numbers, revealing fundamental distinctions between autonomous instability development and imposed turbulence . Continuous large-scale energy injection disrupts the natural cascade sequence, preventing formation of optimally-sized billows that maximize buoyancy flux. This mechanism, observable only in idealized simulations where forcing parameters remain precisely controlled, explains observations of reduced mixing efficiency in wind-driven oceanic layers compared to internal shear events at equivalent dissipation rates .
+
+Rotational constraints manifest through modified entropy evolution rates, confirming theoretical predictions of geostrophic adjustment within the limitations of two-dimensional dynamics . The imposed horizontal rigidity redirects energy into barotropic modes, suppressing vertical transport essential for diapycnal mixing. Vorticity concentration in filamentary structures, evidenced by extreme statistical moments, characterizes rotationally-constrained turbulence wherein horizontal anisotropy dominates the energy cascade . While the two-dimensional formulation cannot capture baroclinic instabilities or inertial waves that modulate mixing in three-dimensional rotating flows, it isolates the fundamental competition between rotation and stratification effects. The simplified framework enables direct comparison with theoretical predictions unavailable for fully three-dimensional turbulent flows where analytical solutions remain intractable.
+
+Complexity index evolution delineates distinct dynamical phases corresponding to linear instability theory, validated through these controlled numerical experiments. Early-stage rapid growth follows exponential amplification predicted by stability analysis, with growth rates maximized near the marginal stability threshold . The accelerated transition in multi-interface configurations confirms theoretical predictions of mode coupling between adjacent unstable regions . Convergence of mature-phase complexity values across diverse initial conditions reveals universal turbulence characteristics emerging from idealized configurations. The anisotropic energy cascade, characterized by horizontal $k^-5/3$ scaling and steeper vertical slopes, emerges independently of forcing mechanisms . This universality, clearly observable in simplified test cases, indicates that developed stratified turbulence reaches canonical energy distributions regardless of generation pathways.
+
+The computational implementation leveraging NumPy array operations and Numba JIT compilation demonstrates the feasibility of high-resolution simulations on modest hardware platforms. The Fedora Linux system with 32 GB RAM successfully executed all test cases, with the most demanding forced turbulence simulation requiring approximately 31 minutes for 30 seconds of physical time on a $384 192$ grid. The fractional-step projection method maintains second-order accuracy while the FST solver achieves machine precision for the pressure Poisson equation with $O(N N)$ complexity. The adaptive time-stepping algorithm balances accuracy and efficiency, automatically adjusting between CFL and viscous stability constraints. This computational efficiency enables parameter studies previously requiring supercomputing resources, democratizing access to fundamental fluid dynamics research. The Python implementation provides transparency and reproducibility often lacking in legacy Fortran codes, while Numba optimization achieves performance within a factor of two of compiled languages.
+
+Statistical distribution differences between scenarios exceed parametric test capabilities, necessitating nonparametric approaches validated through these idealized cases. Density field distinctions across all configurations contrast with partial vorticity field similarities, suggesting greater universality in rotation generation than scalar transport mechanisms. This dichotomy parallels three-dimensional simulations wherein vorticity statistics exhibit enhanced self-similarity compared to mixing properties . Reynolds number scaling exhibits non-monotonic mixing efficiency relationships, contradicting classical turbulence theory but consistent with the pathway-dependent mechanisms isolated in these test cases . Alternative instabilities, particularly the Holmboe mode, achieve superior mixing through asymmetric structures that enhance diapycnal transport .
+
+Thermodynamic considerations reconcile apparent entropy paradoxes in vorticity evolution observed across all idealized scenarios. Local organization into coherent structures decreases configurational entropy while global dissipation increases thermal entropy . This duality characterizes geophysical turbulence wherein structure formation and irreversible mixing proceed simultaneously. Current parameterization schemes inadequately represent the identified mixing dependencies revealed through systematic parameter variation in controlled conditions. Richardson number-based formulations assuming monotonic relationships fail to capture multi-interface enhancement and forcing-induced suppression . Accurate subgrid-scale representation requires encoding turbulence generation mechanisms beyond instantaneous flow properties .
+
+The idealized two-dimensional framework deliberately excludes spanwise secondary instabilities that amplify mixing in natural flows, enabling isolation of primary instability mechanisms. Three-dimensional perturbations increase mixing efficiency through additional overturning modes absent in planar simulations . Rotational cases particularly benefit from spanwise instabilities that generate helical structures capable of enhanced vertical transport despite Coriolis constraints . Nevertheless, the two-dimensional results provide essential baseline understanding and computational benchmarks for more complex three-dimensional simulations. The developed complexity metrics provide quantitative benchmarks for model validation beyond conventional statistical measures. LES frequently misrepresent intermittency characteristics, propagating errors into mixing predictions . The composite metrics incorporating entropy, gradients, and higher moments enable comprehensive fidelity assessment throughout instability evolution stages, establishing standards for future model development and validation protocols.
+
+Conclusion
+
+This study presents , a Python-based numerical framework for investigating idealized two-dimensional KH instabilities across diverse parameter regimes relevant to geophysical fluid dynamics. The implementation successfully captures fundamental mixing mechanisms through four canonical test cases spanning Reynolds numbers from 1000 to 5000 and Richardson numbers from 0.1 to 0.3, demonstrating that modern Python scientific computing tools can achieve computational efficiency comparable to traditional compiled languages while maintaining code transparency and accessibility. The systematic statistical analysis reveals non-monotonic relationships between flow parameters and mixing efficiency, with double shear layer configurations achieving 2.8 $$ higher mixing rates than forced turbulence despite lower Reynolds numbers, indicating that instability pathways play a crucial role in determining mixing effectiveness beyond simple intensity measures. The developed complexity metrics combining Shannon entropy, gradient variability, and higher-order statistical moments provide quantitative benchmarks for model validation that complement conventional mean and variance comparisons, offering additional tools for assessing turbulence parameterizations in climate and ocean models. While the two-dimensional framework deliberately excludes three-dimensional secondary instabilities and realistic boundary conditions, this simplification enables isolation of primary mechanisms that may be obscured in comprehensive simulations, contributing useful baseline understanding for interpreting more complex flows. The open-source implementation facilitates access to high-fidelity instability simulations, enabling researchers and students with modest computational resources to investigate fundamental questions in stratified turbulence that traditionally required more extensive computing facilities. Future extensions should incorporate three-dimensional effects, non-Boussinesq dynamics, and variable diffusivities to bridge the gap between these idealized configurations and realistic geophysical fluid dynamics applications, while maintaining the computational efficiency and transparency that characterize the present framework.
+
+Author Contributions
+
+S.H.S.H.: Conceptualization, Methodology, Software, Validation, Formal analysis, Investigation, Data curation, Writing – original draft, Writing – review \& editing, Visualization, Project administration. N.J.T.: Conceptualization, Methodology, Writing – review \& editing, Supervision. F.R.F.: Methodology, Investigation, Writing – review \& editing. G.N.: Formal analysis, Investigation, Writing – review \& editing. I.P.A.: Resources, Writing – review \& editing, Supervision, Funding acquisition. F.K.: Resources, Writing – review \& editing, Funding acquisition. D.E.I.: Conceptualization, Writing – review \& editing, Supervision, Funding acquisition. All authors have read and approved the final manuscript.
+
+Open Research
+
+The source code is available at under the WTFPL license, with the package distributed via PyPI at . NetCDF output files and animated GIF visualizations generated for the four test cases presented in this study are archived at under a CC-BY Attribution 4.0 International license. The Python scripts used for statistical analysis and figure generation are available at under the WTFPL license. All computational results presented herein are fully reproducible using the provided code and data.

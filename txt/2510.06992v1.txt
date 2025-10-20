@@ -1,0 +1,28 @@
+[reqno]amsart
+
+ 
+[hidelinks]hyperref 
+[foot]amsaddr
+
+ 
+2.5cm
+[1][size=,author=MARIA,backgroundcolor=magenta!10!white]#1 
+[1][size=,author=DAVIDE,backgroundcolor=teal!20!white]#1 
+
+[1] [MS - #1]
+[1] [DO - #1]
+
+[NN for parametric RANS at full and reduced levels]Machine Learning enhanced parametric Reynolds-averaged Navier-Stokes equations at the full and reduced order levels
+[D. Oberto, M. Strazzullo, S. Berrone]Davide Oberto$^1,*$, Maria Strazzullo$^2,*$ and Stefano Berrone$^2,*$
+
+@polito.it
+
+ In this contribution, we focus on the Reynolds-Averaged Navier-Stokes (RANS) models and their exploitation to build reliable reduced order models to further accelerate predictions for real-time applications and many-query scenarios. Specifically, we investigate how machine learning can be employed to enhance the predictive capabilities of the model, both at the Full Order Model (FOM) and Reduced Order Model (ROM) levels.
+ We explore a novel integration of these two areas. We generate the FOM snapshots, essential for ROM construction, using a data-driven RANS model: the $_t$-Vector Basis Neural Network. This is the first time that these machine learning procedure generalizes a large parametric variation, and we propose tailored training strategies to increase the accuracy of the FOM model. At the ROM level, we compare the results obtained by standard Proper Orthogonal Decomposition in an intrusive Galerkin setting (PODG) and POD Neural Network approach (PODNN). The numerical validation is based on a classic turbulent flow benchmark: the flow in a square duct. 
+ Our investigation reveals that the PODG method, proves unstable and inaccurate for turbulent flow prediction, while PODNN demonstrates superior performance in terms of accuracy and computational efficiency. 
+
+Acknowledgements
+
+All authors are members of the Gruppo Nazionale Calcolo Scientifico-Istituto Nazionale di Alta Matematica (GNCS-INdAM). SB kindly acknowledges financial support by PNRR M4C2 project of CN00000013 National Centre for HPC, Big Data and Quantum Computing (HPC) CUP: E13C22000990001. DO acknowledges the support provided by the European Union-NextGenerationEU, in the framework of the iNEST-Interconnected Nord-Est Innovation Ecosystem (iNEST ECS00000043– CUP G93C22000610007) consortium.
+Moreover, this study was carried out within the ``20227K44ME - Full and Reduced order modelling of coupled systems: focus on non-matching methods and automatic learning (FaReX)" project – funded by European Union – Next Generation EU within the PRIN 2022 program (D.D. 104 - 02/02/2022 Ministero dell’Università e della Ricerca).
+DO and MS thank the INdAM-GNCS Project “Metodi numerici efficienti per problemi accoppiati in sistemi complessi” (CUP E53C24001950001). MS thanks and the ECCOMAS EYIC Grant ``CRAFT: Control and Reg-reduction in Applications for Flow Turbulence".

@@ -1,0 +1,666 @@
+[
+
+ amsmath,amssymb,
+ aps,showkeys
+
+]revtex4-2
+[normalem]ulem
+
+HTML191586
+HTML5E1111
+[1]#1
+[1]#1
+[1]#1
+
+[1]
+[1]k_,#1
+[1]k_,#1
+[1]k_
+[1]_
+
+*
+*
+*
+*
+
+ 
+
+Aurélie Astoul
+
+Adrian J. Barker
+
+Inertial waves transport energy and momentum in rotating fluids and are a major contributor to mixing and tidal dissipation in Earth's oceans, gaseous planets, and stellar interiors.
+However, their stability and breakdown mechanisms are not fully understood. We examine the linear stability and nonlinear breakdown of finite-amplitude propagating plane inertial waves using Floquet theory and direct numerical simulations. 
+The Floquet analysis generalizes previous studies as it is valid for arbitrary perturbation wavelengths and primary wave amplitudes.
+We find that the wavenumber orientation of the most unstable perturbations depends strongly on the wave frequency and weakly on the wave amplitude. 
+The most unstable perturbations have wavelengths that are small relative to the primary wave wavelength for low wave amplitudes, but become comparable for large wave amplitudes.
+We then use direct numerical simulations to follow the nonlinear breakdown of the wave and examine how the wave energy is either dissipated in a forward cascade or accumulated into long-lived geostrophic modes. Simulations reveal that the conversion efficiency into geostrophic modes increases with increasing wave amplitude, as expected for pumping of geostrophic modes by nearly-resonant triadic interactions. We also find that the conversion efficiency increases with decreasing primary wave frequency, which may be due to the more efficient coupling of quasi-2D waves to geostrophic modes. 
+These results on the stability and breakdown of single plane inertial waves provides additional foundation for understanding the role of inertial waves in rotating turbulence, transport properties of inertial wave beams, and inertial wave propagation in more complex environments such as those with magnetic fields or shear flows.
+
+Rotating fluids support internal waves known as inertial waves (IWs), which result from the interaction between fluid inertia and the Coriolis force . In a fluid with a rotation rate $>0$, IWs are transverse, dispersive waves with frequencies $|| 2$ determined only by the angle of propagation relative to the rotation axis. They are fundamental in rotating flows because they mediate turbulent mixing and non-locally transport angular momentum and energy , thereby affecting long-term dynamical evolution of rotating fluid bodies. 
+
+The excitation, propagation, and dissipation of IWs has been studied in many natural systems, including stars, planets, and moons. Tidally excited IWs in star-planet systems can meditate angular momentum exchange as they propagate in convective cavities and dissipate through wave-wave or wave-shear flow instabilities . In planet-moon systems, dissipation of tidally-driven IWs can provide significant internal heating , in addition to affecting their orbital and rotational evolution [e.g.][]Kerswell2002,OL2004,OL2007,BM2016,LC2020,B2020,B2022. In terrestrial contexts, near-inertial waves in the upper oceans are a major contributor to the turbulent mixing that controls the depth of the oceanic mixed layer, impacting atmosphere-ocean coupling and the climate . Observational studies have successfully identified IWs in several natural systems, including the solar convective envelope , Earth's outer core [e.g.][]Aldridge1987, and Earth's oceans [e.g.][]fu1981observations,hummels2020surface,zulberti2022mean. 
+
+Although IWs are important in geophysical and astrophysical applications, they have been less well studied than internal gravity waves (IGWs),
+which propagate in stably stratified fluids and also contribute to mixing in Earth's oceans [e.g.][]Staquet2002 and stellar interiors [e.g.][]BO2011. Fortunately, many of the techniques used to study IGWs can be applied to IWs because these waves represent different limits of the same internal wave branch in a rotating and stratified incompressible fluid. As a result, they share many properties and, in particular, both are subject to triadic resonance instabilities (TRI) of small-amplitude waves, which transfer energy and momentum from a ``primary wave" to pairs of ``daughter waves" that satisfy temporal and spatial resonance conditions. Early studies of IGW stability focused on a subset of TRI known as parametric subharmonic instabilities (PSI) where the daughter wave frequencies are roughly half of the primary wave frequency [for plane propagating IGWs, e.g.][]Mied1976,Drazin1977,Klostermeyer1982,Sonmor1997. One of the most comprehensive studies of IGW stability employed a numerical Floquet method applicable for any finite amplitude of the primary wave . This approach also allows exploration of the stability of perturbations with wavelengths comparable to (or larger than) the primary wave, rather than being restricted to infinitesimally small wavelengths.
+
+Some similar efforts have been made to analyze the stability of IWs. Early work showed that standing IWs are generically unstable in both Cartesian and cylindrical geometries . IW attractors in 2D geometries have also been studied experimentally, numerically, and theoretically , where unstable perturbations were restricted to the plane of the rotation axis and the attractor. Relaxing this 2D assumption, found that IW attractors are broadly unstable to 3D modes. Recently, the first analytical and experimental stability analysis of plane propagating IWs by found that the TRI for small-amplitude propagating IWs is also generally 3D---unstable modes efficiently redistribute energy into the horizontal plane normal to the rotation axis. Most recently, extended the linear stability analysis to finite-amplitude waves using a local stability approach, characterizing the amplitude dependence of infinitesimally short-wavelength perturbations. 
+
+In this work, we extend the linear stability analysis of finite-amplitude, plane, propagating IWs to arbitrary wavelength perturbations and examine the nonlinear breakdown of IW. We utilize the Floquet method of for the stability analysis in Section~ and supplement with asymptotic analysis using the method of multiple timescales [e.g.][ Appendix ]Kerswell2002,OL2013,BO2014,CuiLatter2022. We then use direct numerical simulations (DNS) of propagating IWs in Section~ to cross-validate the Floquet theory and examine the ultimate nonlinear breakdown of the wave, with a focus on the conversion efficiency of the wave energy into geostrophic modes.
+
+Floquet stability analysis of an inertial wave
+
+Model and setup for the linear stability analysis
+ 
+We introduce Cartesian coordinates $(x,y,z)$ and consider a homogeneous, incompressible fluid with density $$ that is rotating at a constant rate $=$ around the unit vector $$. The Navier-Stokes equation governing the fluid velocity field $ ( ,t )$ in the rotating coordinate system is
+
+ t + u u +2 u &=- p +^2 u, =(u,v,w), 
+
+where $$ is the (constant) kinematic viscosity, and the pressure $p$ (which incorporates the centrifugal potential) is determined from the incompressibility condition $ =0$. Plane IWs are exact nonlinear solutions of Equation~(). In the inviscid limit, their velocity field is ,
+
+ =[A_se^i( - t ))], _s=+is, = ||, s=1,
+
+where $A$ is the constant amplitude of the wave and $$ is the unit vector in the direction of the wavevector $$ (with magnitude $k=||$). One can see that individual wave solutions have a vanishing nonlinear advection term, $ =0$, and hence are exact solutions for any amplitude. The real frequency $$ satisfies the dispersion relation
+
+ =s 2 =s2, s=1,
+
+which depends only on the wave helicity $-s$ (defined based on the sign of $( ) $) and the angle $$ between $$ and $$. For each wavevector $$, there are two waves with opposite helicities. Waves with $s=1$ are right/left handed with a phase velocity along $$ and, in both cases, the velocity vector $$ is in the plane orthogonal to $$
+and at each point $$ rotates in time with rate $-2( )$. 
+
+We are interested in the stability of plane IWs, viewing their flow (and pressure) field as a spatially and temporally periodic base flow. Linear stability analysis is most convenient in a frame translating with the phase velocity of the wave. By rotating the vertical axis to align with $$ and applying a velocity boost along $$ with the phase speed $/k$, the base flow transforms from a periodic function of space and time coordinates in the rotating frame, $=( - t)$, to a periodic function of a single ``phase" variable $= - t$ in the comoving frame, $'='()$.
+
+The explicit transformation to the comoving frame is carried out as follows. Without loss of generality, consider a primary wave with a wavevector $ k=(k_x,0,k_z)$ in the $x $-$z $ plane, and with a real amplitude $A$. The units for space and time in the comoving coordinates are chosen based on the wavenumber and frequency of the primary wave. The transformation from the rotating frame coordinates $(x ,y ,z )$ to the comoving dimensionless coordinates $(x',y',)$ (with unit vectors $$, $$, and $$) is then 
+
+ 
+ &x'=k_zx -k_xz ,\; y'=ky ,\; =k_xx +k_zz - t ,\; t'=|| t , \;k=,\\
+ 
+ &u'=||(k_z u -k_x w ),\; v'=||v,\; w'=||(k_x u +k_z w)-||, \;p'=^2p.
+
+Transforming the Navier-Stokes equation to the comoving frame yields
+
+ 
+ ' t'+'' u'+ ' ('+||)=- ' p\,'+^'2', '=( x', y', ),
+
+where $= k^2/||$ is the Ekman number of the primary wave. A minor expense of using the comoving coordinates is a misalignment between the coordinate axes and the dimensionless rotation vector $'=2/||=(-k_x+k_z)/|k_z|$. 
+However, the inviscid base flow $'$ of a plane IW is now simplified:
+
+ U'&=A' (), \; V'=s A'(),\;W'=-||,\; A'=||.
+
+The new dimensionless amplitude $A'$ (which we take to be real and positive) is essentially a Rossby number of the wave, quantifying the ratio of the advective rate $ A\,k$ to the wave frequency $$. The horizontal components of the velocity field ($U',V'$) trace out a right/left-handed corkscrew along $$ for $s=1$, while the vertical component corresponds to a uniform motion along the $$ axis. Viscous effects on the primary wave have again been ignored (the limit $ Ek 0$, and hence $$) because we are interested in the regime in which the growth rates of perturbations considerably exceed the viscous damping rate of the primary wave. Hereafter, viscous effects on the primary wave are neglected, which also enables the use of Floquet theory for the linear stability analysis.
+
+We now consider the evolution of perturbations $'$ with small amplitudes $|'| |A'|$ on top of the base flow $'$. 
+Substituting $'='+'$ and dropping quadratic terms $O(|'|^2)$ gives the governing equations at first order for the perturbations,
+
+ 
+ ' t'+ U'()''+'' U'()+ ' '&=-' \,'+^'2'.
+
+The partial differential equations in Equation () can be analyzed as follows. Note that their non-constant coefficients vary only with the $$ variable. Hence, the horizontal $x'$ and $y'$ directions, and time $t'$, can be simplified by seeking solutions of the form
+
+ '= [f^()e^i( x'+ y')+ t'],
+
+where $'$ is one of $'$, $'$, $'$, $\,'$, and $f^$ is to be determined. The horizontal wavenumbers $$ and $$ are real while the frequency $$ is complex in general. Unstable modes are those with $[]>0$. Substitution of Equation~ reduces the system to a set of coupled ordinary differential equations in $$:
+
+ (S- L_2)u^+w^ U'-|k_z|v^&=-i p^,\\
+ (S- L_2)v^+w^ V' +|k_z|u^+|k_z|w^&=-i p^,\\
+ (S- L_2)w^-|k_z|v^&=- p^ ,\\
+ i u^+i v^+ w^ &=0, 
+
+where $S=+i U'+i V'+W' $, $L_2=-^2-^2+(+)^2$, and the last equation is the incompressibility constraint. 
+The coefficients $U'$ and $V'$ are $2-$periodic, so Floquet theory implies that $f^$ takes the form 
+
+ f^()=e^i ()=e^i _n=-^n= f'_n e^in.
+
+where $()$ is a $2-$periodic function that has been expanded in Fourier modes with constant complex coefficients $f'_n$. Floquet theory allows $f^$ to be aperiodic since $$ need not take an integer value. However, $$ must be real for physical solutions that are bounded along $$. Substitution of the Floquet ansatz (Equations and ) and the base flow (Equation ) into the governing equations for the perturbations (Equation ) reduces the problem to a set of coupled algebraic equations. Dropping the prime notation for perturbations going forward, we obtain
+
+ 
+ (- L_2n) u_n+2(u_n+1+u_n-1)-2 (u_n+1-u_n-1)-&||(+n)u_n-2 (w_n+1-w_n-1)
+ \\
+ &-|k_z|v_n =-i p_n,\\\\
+ 
+ (- L_2n) v_n+2 (v_n+1+v_n-1)-2(v_n+1-v_n-1)-&||(+n)v_n +2 (w_n+1+w_n-1)\\
+ &+|k_z|u_n+|k_z|w_n=-i p_n,\\\\
+ 
+ (- L_2n) w_n+2 (w_n+1+w_n-1)-2 (w_n+1-w_n-1)-&||(+n)w_n-|k_z|v_n=-i(+n)p_n,\\ \\
+ 
+ 
+ i u_n+i v_n+i(+n) w_n&=0,
+
+where $L_2n-^2-^2-(+n)^2$. The linear stability of the wave can now be determined by solving this algebraic eigenvalue problem for the complex frequency $$ as a function of the parameters of the primary wave $\A',,s\$, the horizontal wavenumbers of the perturbations in the comoving frame $\,\;\$, and the Floquet parameter $$. For completeness, the energy conservation equation for this Floquet system is derived in Appendix~.
+
+The eigenvalue problem given by Equations -- has several symmetries that reduce the parameter space over which to search for unstable modes. Several symmetries are shared with the Floquet system for IGWs , which has three symmetries: 1) symmetry for eigenvectors $_n [u_n,v_n,w_n,p_n]_n^*$ (where $*$ denotes the complex conjugate and $^*_n=_-n$), $(,,) (-,-,-)$, and $ ^*$, 2) invariance of $$ to integer shifts in the Floquet parameter $ +1$, 3) invariance of $$ in the $$-plane, $-$ and $v_n-v_n$. The Floquet system for IWs satisfies the first two symmetries, but lacks the third because the non-zero $V'0$ component of the base flow interacts with perturbations that have $0$ (unlike for IGWs where $V'=0$). As a result, the Floquet system for IWs must be explored in the upper (or lower) half of the $-$ plane and for all $0<1$.
+
+Floquet Solutions
+
+Solutions of the Floquet system in Equations ()-() are examined below using a numerical solver. 
+The numerical solution to the infinite set of coupled equations is obtained by truncating the sum over $n$ with a finite number of modes $N$ in the range $-N/2< n N/2$. The system is further reduced to $3N$ equations in the variables $u_n,v_n,w_n$ by eliminating the pressure $p_n$ using the incompressibility constraint in Equation~(). The resulting system is a sparse $3N3N$ matrix whose eigenvalues and eigenvectors can be found using standard numerical software. The number of modes $N$ is chosen to be large enough that the eigenvector components are negligible near the truncation mode $|n| N/2$. The Ekman number $$ is chosen to be sufficiently low such that the viscous damping rate at all horizontal wavenumbers is much smaller than the typical instability growth rate $ (^2+^2) A'||$, which can be written as the condition $ A' k^2/(^2+^2)$.
+We focus on how the amplitude and frequency of the primary IW affects the growth rate and wavenumber orientation of the most unstable perturbations. 
+
+We first examine the effect of varying the dimensionless wave frequency $/2$, or equivalently the angle $$ between $$ and $$. Figure shows Floquet stability diagrams for primary waves with frequencies $/2=0.17,0.71,0.98$, (angles $=80^,45^, 10^$), all with the same amplitude $A'=0.3$ and helicity $s=1$. The Floquet diagrams show the maximum growth rate $^$ obtained at each horizontal wavenumber $,$ using the numerical Floquet solver with $N=128$ modes. The growth rate is normalized by $A'||$ and the Floquet parameter is fixed to $=0$. A characteristic feature of these plots is the ribbon patterns of the most unstable horizontal wavenumbers. The center of each ribbon corresponds to an exact resonance of the PSI at small amplitudes $A'1$, which is confirmed by an asymptotic analysis in Appendix (see Fig. ). One can see that the orientations of the most unstable horizontal wavenumbers has a strong dependence on the primary wave frequency. Lower frequency waves ($ k$ nearly orthogonal to $$) are more unstable to perturbations with wavevectors in the $$ direction (with $0$), orthogonal to the $ k-$ plane. In contrast, higher frequency waves ($ k$ nearly parallel to $ $) are unstable to perturbations whose wavenumbers orientations are more isotopically distributed in the plane perpendicular to $ k$. This is in agreement with the linear stability analysis in the short-wavelength limit in [][see also Appendix~]Mora2021. While these results are shown only for $=0$, we have found that $0$ slightly changes the locations of the ribbons but does not change the observed trends with $$ and $A'$.
+
+We note a few additional properties of the Floquet diagrams that we have observed numerically. The diagrams all appear symmetric across the $=0$ axis, despite no obvious symmetry for $-$ in the Floquet system --. We also find that the most unstable perturbations always have $=0$ and that the local maxima in $^/A'||$ on the $-$axis are independent of the wave frequency, which we confirmed with extra numerical scans. The main effect of increasing the wave frequency is thus the increase in the growth rates of perturbations with finite $$, resulting in more isotropic ribbon patterns. Lastly, we note that the Floquet diagrams are unchanged when flipping the primary wave helicity $s-s$.
+
+Next, we vary the primary wave amplitude $A'$. Figure shows Floquet stability diagrams for primary waves with amplitudes $A'=0.03,0.3,3.0$, all with the same frequency $=$ (angle $=60^$) and helicity $s=1$. The main effect of moderately increasing the wave amplitude is the increased widths of the ribbons, as one can see by comparing panels (a) and (b) with $A'=0.03$ and $A'=0.3$, respectively. However, the predictions of the PSI break down at large amplitudes $A'1$. This is evident in the case with $A'=3.0$ in panel (c), where the observed patterns no longer match the ribbons seen at low $A'$ and the fastest growing perturbations have horizontal wavenumbers $=0$, $ 1$ that are comparable to those of the primary wave.
+
+An interesting feature of the Floquet solutions is that the maximum value of the normalized growth rate $^/A'||$ across all $,$ is nearly independent of both $A'$ and $/2$, even for $A' 1$. It robustly has a magnitude of $ 0.3$. A broader scan of the parameter space $(A',/2)$ confirms this feature. Figure~ shows the maximum normalized growth rate across a range of primary wave amplitudes $0.1 A'3$ and frequencies $0.1/20.9$. At low wave amplitudes, its nearly constant value matches the maximum PSI growth rate $_ PSI/A'||=3/16 0.325$ [][see also Appendix ]Mora2021. At high wave amplitudes, the maximum normalized growth rate deviates remarkably little from the PSI prediction (derived for $A'1$), decreasing only slightly to $ 0.28$ for wave amplitudes of $A'3$. For even larger $A' 3$, the instability growth rate exceeds the primary wave frequency $^>$, implying that propagating IWs with such large amplitudes would be difficult to observe in any application. 
+
+Simulations of Plane Inertial Waves
+
+Investigating the nonlinear saturation of the instabilities of a propagating IW and the subsequent turbulent evolution of the flow requires using DNS. We carry out DNS in both the comoving and the rotating frames, leveraging the numerical advantages of each frame. Simulations in the comoving frame enable a cross-validation between the DNS and the Floquet solvers. The discrete horizontal wavenumbers in the comoving frame of the DNS correspond exactly to the $,$ used in the Floquet analysis, allowing a direct verification of the Floquet theory. Simulations in the rotating frame are better suited to follow the nonlinear evolution of the flow. The rotating frame has the rotation vector exactly aligned with the numerical grid, allowing geostrophic modes with $k_z=0$ be exactly captured. Our focus will be to examine how the energy of the primary wave is partitioned into the geostrophic and the non-geostrophic components of the turbulent flow as the wave breaks down. 
+
+The Navier-Stokes equation for the velocity field is solved as an initial value problem using the Dedalus code . The domain is a cube of side length $L=16$ with periodic boundary conditions, and the flow is represented as a truncated sum of Fourier modes $=__(t)(i )$. Time stepping is carried out with a third-order, implicit-explicit Runge-Kutta method where linear terms are treated implicitly, non-linear terms are treated explicitly, and the timestep $dt$ is set as a small fraction of the shortest growth timescale, $dt1/^$. The nonlinear terms of the Navier-Stokes equations are evaluated in real space with the standard $2/3$ dealiasing rule. All runs use a spectral resolution of $N=256^3$ Fourier modes. 
+
+For simulations in the comoving frame, the time-independent base flow $'()$ is initialized following Equation~(), which fits $L/2=8$ wavelengths along the vertical $$ direction. The wave frequency, $/2=s$, is controlled by the tilt of the rotation vector $'=(-+)/||$. For simulations in the rotating frame, the base flow $(,t=0)$ is initialized following Equation~(). This excites an IW with a time-dependent flow field $(,t)$ propagating inside the domain. The wave frequency is controlled by the choice of wavenumber $ k=(k_x,0,k_z)$ in the $x$--$z$ plane, where only certain frequencies $/2=sk_z/k$ (here $k=$) can be chosen based on the discrete Fourier grid. We choose wavenumbers such that $kL/2 8$ to achieve a similar scale separation between the wavelength and the box scale as in the comoving frame.
+In both setups, the Ekman number is chosen to damp unstable modes at the largest wavenumbers in the box $k_= N/L$ by setting $=C A'/k_^2$, where $C1$ is an adjustable ``safety" factor used to control the level of damping. The helicity of all primary waves studied below is $s=1$. 
+
+Verification of Linear Theory with DNS in the Comoving Frame
+
+We first cross-validate the DNS in the comoving frame and the Floquet solver by comparing the growth rates obtained independently by the two methods. The growth rates in the DNS are measured by fitting the exponential growth of the energy in the discrete horizontal Fourier modes, which correspond to the horizontal wavenumbers ($,$) in the Floquet analysis after they have been rescaled by a multiplicative factor of $8$, equal to ratio of the box scale to the wavelength of the primary wave. The energy $E_,(t)$ at each $(,)$ is computed by summing over all vertical wavenumbers $k_z$, that is $E_,(t)=0.5_k_z |'_(,,k_z,t)|^2$. The growth of $E_,(t)$ is dominated by the fastest growing perturbation with the given $(,)$ and should closely match the value of $2^(,)$ predicted by Floquet theory. The fitting is done over a time interval where the velocity field perturbations grow from an initial amplitude of $| u'| 10^-8A'$ to a final amplitude of $| u'| 10^-2A'$. The initial velocity field is a Gaussian random noise field in real space whose solenoidal component is projected away. 
+
+The comparison of $^$ in the $-$ plane is shown in Figure~ for a primary IW with $A'=0.3$, and $/2=0.71$ (angle $=45^$). The figure shows only the zoomed-in region $0,2$ for clearer visual inspection. Although the measurement of the growth rates in the DNS can be somewhat noisy (in particular for the slower growing modes), the DNS result and the Floquet predictions are in good agreement. Note that all available $0<1$ can be excited and the Floquet solver searches over $=j/8$ with all possible integers $0 j<8$ that exist on the numerical Fourier grid (by contrast, Figure~ and ~ only showed the maximum growth rate among perturbations with $=0$). We find that the different ribbon structures associated with each $$ end up almost completely covering the $-$ plane. 
+Perturbations with nearly every horizontal wavenumber ($,$) have a significant growth rate, with the exception of the low horizontal wavenumbers around $ 0.5$ whose wavelengths are larger than the wavelength of the primary IW.
+
+The Floquet theory prediction for how the primary wave frequency affects the wavenumber orientation of the most unstable perturbations can also be confirmed by examining the energy spectra $E_,$ for the three fiducial frequencies $/2=0.17,0.71,0.98$, as shown in Figure~. The energy spectra are computed at similar times during the linear phase of each simulation and the $,$ with the largest energies corresponds to the perturbations that have grown the fastest from their initial values of $E_, 10^-16$. One can see that the energy spectra in Figure~ qualitatively have the same features and dependence on $/2$ as the Floquet predictions in Figure~. 
+The wavenumber orientations of unstable perturbations shift from being preferentially aligned with the $'$ direction for lower frequency waves to being more isotropically distributed for higher frequency waves. The energy in horizontal wavenumbers larger than $ 8$ is small because the viscous damping at these large wavenumbers becomes significant for the Ekman number $ 10^-3$ needed to resolve these simulations.
+
+The anisotropy of the wavenumber orientation of the most unstable perturbations can also be confirmed in real-space visualizations of the flow. Figure~ shows the vorticity of the perturbations along the rotation vector $' '$ (where $'='$) for the three fiducial simulations. One can see that the perturbations disturbing the base flow of the low frequency wave $/2=0.17$ have small structures along the $'$ direction, with extended structures that are nearly invariant in the $'$ direction. Perturbations of the intermediate frequency wave $/2=0.71$ also have variations primarily in the $'$ direction, but also have significant structure in the $'$ direction. By contrast, there is no obvious anisotropy in the perturbations of the high frequency wave with $/2=0.98$.
+
+Nonlinear Evolution in the Rotating Frame
+
+As an IW propagates, unstable perturbations grow at the expense of the wave's energy, eventually disrupting the flow of the IW and draining its energy. In a rotating fluid, the energy can be converted into two qualitatively different channels. One channel is a forward cascade on dynamical timescales $1/A'||$ wherein nonlinear interactions progressively transfer energy to smaller scales, ultimately converting the energy into heat through viscous dissipation. The other channel is conversion of the energy into geostrophic modes, which are 2D flows invariant along the rotation axis, with $ =0$.
+This conversion in our model must occur through near-resonant triadic or resonant quartic interactions, since exact triadic resonances cannot transfer energy from IWs to geostrophic modes due to Greenspan's theorem [e.g.][]smith1999transfer,Greenspan1969. The geostrophic motions then inverse cascade through mergers of 2D vortices and decay on long viscous timescales due to their lack of variation in the vertical direction and large horizontal scales [e.g.][]Godeferd2015. Below, we explore the evolution of the flow and the partition of the initial wave energy between the geostrophic flow and the forward cascade after the primary IW has broken down.
+
+Simulations of propagating IWs are carried through the nonlinear phase of their evolution in the rotating frame. A visualization of a representative simulation is shown in Figure~ for a primary IW with $A'=0.3$ and $/2=0.17$. The flow evolution is split into three distinct phases. First, the linear phase occurs at early times $ t 180$ when the unstable perturbations grow exponentially (not shown). The viscous damping of the primary wave during this phase is seen as the slow decrease of the IW energy $E_ IW=0.5|_, IW|^2$ in panel (a).
+At the end of the linear phase, the unstable perturbations develop significant amplitudes, as seen in panel (b). They become nonlinear and saturate during a turbulent phase $180 t500$ when the primary wave energy is drained. The primary wave flow is disrupted early on during this phase, as seen in panel (c) at $ t=210$ when the flow has both small scale features characteristic of a forward cascade and vertically-stretched features characteristic of geostrophic motions. The energy in the geostrophic modes $E_ gs=_\;(k_z=0)|u_|^2$ grows rapidly until $ t220$ when the primary wave energy is fully drained. Afterwards, $E_ gs$ remains nearly constant while the energy in the non-geostrophic flow $E_ tot-E_ gs$ (the separation between the blue and green curves) decays through a forward cascade on longer timescales until $ t500$. The last phase of evolution occurs for $ t 500$ when $E_ gs E_ tot$ is dominated by the dynamics of merging geostrophic vortices, as is seen in panel (c) at $ t=600$. Eventually, the vortices will reach the box scale and decay on slow, viscous timescales. Similar behavior has been observed in simulations of the elliptical and precessional instabilities [e.g.][]BL2013,B2016,Pizzi2022,Nils2023, which continually excite IW unlike the decaying case here.
+
+The three phases of evolution can also be examined in the 1D horizontal energy spectra $E(k_ h)$ shown in Figure~, where $k_ h=$. At early times $ t 180$, the spectrum has peak at $k_ hL/2 6$ corresponding to the energy in the primary wave. The energy at other wavenumbers is determined by the growth rates of the unstable perturbations. As the unstable perturbations saturate and the wave breaks down, the spectrum begins to flatten out during the most turbulent part of the flow evolution, which extracts almost all of the primary wave energy within a few wave periods. However, the spectrum remains far from a Kolmogorov scaling $E(k_ h) k_ h^-5/3$. At later times, the energy spectrum approaches the $E(k_ h) k_ h^-3$ scaling expected for geostrophic turbulence [e.g.][]smith1999transfer, which appears as a flat compensated spectrum.
+
+To examine how the nonlinear saturation depends on the properties of the primary IW, we run a set of simulations varying the frequency in a range $0.17/20.98$ for two amplitudes $A'=0.3,1.0$. 
+The resulting fraction $E_ gs/E_0$ of the initial wave energy $E_0$ trapped in the geostrophic component of the flow after wave breakdown is compiled in Figure~. 
+The measurement of $E_ gs/E_0$ is done at the end of every simulation when $E_ gs$ contains at least $95\
+One can see that lower frequency waves ($||$) tend to have a larger portion of their energy transferred into the geostrophic flow, upwards of $E_ gs/E_010\
+
+The conversion fraction $E_ gs/E_0$ also depends on the wave amplitude.
+Lower amplitude waves tend to have a smaller conversion fraction, at least for higher frequency waves with $/20.3$. This trend is consistent with some of the proposed mechanisms that can transfer energy into geostrophic modes with a rate $_ gs A'^2$ when $A'1$, which include near-resonant triadic and resonant four-mode interactions . These mechanisms have been used to explain the steady-state fraction of energy in the geostrophic component of forced rotating turbulence, and we expect that these same mechanisms operate during the breakdown of a single IW. The scaling $_ gs/_ PSI A'$ suggests that at sufficiently low wave amplitudes, the pumping of geostrophic modes will be too slow to meaningfully operate within the timescale for wave breakdown $1/_ PSI$. However, we leave exploration of the saturation of lower amplitude waves with $A' 0.1$ for future work due to the increased computational cost of simulating flows with low Ekman numbers, including the longer run time required for the instabilities to grow and saturate.
+
+Conclusion
+
+Our analysis combined a comprehensive numerical Floquet method (complemented with an analytical asymptotic analysis) with direct numerical simulations to investigate the linear stability and nonlinear saturation of propagating plane inertial waves. We found that the fastest-growing unstable perturbations have a non-dimensional growth rate $^/(A\,k) 0.3 $ that is nearly independent of the wave amplitude, where $A$ is the velocity amplitude and $k$ is the wavenumber. This rate closely matches the growth rate of the parametric subharmonic instability at low amplitudes $A||/k$ (where $_/(A\,k) 0.325 $) and decreases only slightly by around $15\
+
+We then used DNS to study the breakdown of propagating IWs in a triply-periodic domain. Our simulations first cross-validated the Floquet theory and then explored the nonlinear evolution of the flow. When the primary IW breaks down, its energy can be transferred into two complementary channels. It can either be dissipated through a forward cascade on dynamical timescales or accumulated in slowly evolving geostrophic modes. The relative efficiency of these two channels depends on the interactions between the primary IW and the saturating unstable perturbations. We found that lower-frequency waves generally convert a larger fraction of initial wave energy into geostrophic motions (e.g., a fraction of more than $10\
+
+The turbulence resulting from breakdown of a single IW may share aspects of forced rotating turbulence, which pumps geostrophic modes when the Rossby number is above a threshold value. As geostrophic modes cannot gain energy from triadic resonance interactions in this triply-periodic model, the accumulation of energy in geostrophic modes likely occurs through near-resonant triadic interactions or higher-order resonant interactions , which become less efficient at lower Rossby numbers. We suggest that studying the breakdown of IWs could be a cleaner numerical experiment for understanding these processes. Discerning the threshold Rossby number (wave amplitude) and the mechanisms for pumping geostrophic modes during breakdown of a single IW requires future work. 
+
+The linear stability problem and simulations can also be extended in future work to include more realistic backgrounds, such as stable stratification, differential rotation, or magnetic fields. Stratification is particularly important in oceanic environments where IWs are excited predominately by wind stresses and are a major source of mixing in the upper oceans , impacting oceanic biogeochemistry and the climate . In astrophysical contexts, IWs excited by planet-star tidal interactions can propagate in the convection zones of their host stars (or inside giant planets themselves) where differential rotation and/or large-scale magnetic fields modify wave propagation and instability [e.g.][]OL2007,AB2022,AB2023,AB2025. In close orbits or when excited in resonance, IWs are expected to achieve large amplitudes, and understanding their general propagation, stability, and dissipation is key for predicting tidal evolution.
+
+We note that in realistic physical systems, either in experimental or natural fluids, IWs are typically excited in beams of finite width. The linear instability analysis in our triply-periodic model is applicable when unstable daughter waves, whose group velocities would be misaligned with the primary wave beam, have a growth timescale that is shorter than the time it takes them to travel out of the beam. It is well known that finite-size effects in IGW beams restrict the wavenumber space of unstable modes that can cause wave breakdown and thus affects how far an IGW beam propagates before disrupting and depositing its energy and momentum. Our results for the linear stability of IWs can be similarly extended to understand the propagation of finite-amplitude IW beams and their transport properties.
+
+AA was supported by a Leverhulme Trust Early Career Fellowship and by STFC grant ST/S000275/1. AJB was supported by STFC grants ST/S000275/1, ST/W000873/1 and UKRI1179. We would like to thank the Isaac Newton Institute for Mathematical Sciences, Cambridge, for support and hospitality during the programmes DYT2 and “Anti-diffusive dynamics: from sub-cellular to astrophysical scales”, supported by EPSRC grant no EP/R014604/1. We would like to thank the Kavli Summer Program In Astrophysics 2021: Fluid dynamics of the Sun and Stars, during which this project was initiated.
+
+Data Availability
+
+The data underlying this article will be shared on reasonable request to the corresponding author.
+
+ Energy conservation equation for Floquet system
+
+The evolution equation for the kinetic energy of the perturbations $K'()=(| u|^2+| v|^2+| w|^2)/2$ is obtained by first using the Floquet ansatz (Eq. ()) in the momentum equation (Eqs.~, , and ) to express it in terms of periodic $ f$ variables, and then multiplying by the complex conjugates of the velocity components $ u^*$, $ v^*$, and $ w^*$, respectively. This gives
+
+ 2[]K'+W'K'=&-[ u^* w]U'-[ v^* w]V'-[ p^* u+ p^* v+ p^* w]-[ p^* w]\\
+ &+\,[ u^*L_2 u+ v^*L_2 v+ w^* L_2 w ], 
+
+where $$ and $$ are the real and imaginary parts. 
+This equation is similar to the energy transfer equation for propagating IGWs derived in [Eq. (20)]LR1996, except without buoyancy fluxes. The first two terms on the right-hand side of Eq. () are shear production or extraction terms, which can act to transfer energy between the primary wave and the perturbations. By contrast, the advective term on the left-hand side ($ W'$) and the two pressure terms on the right-hand side are conservative and vanish when integrated over one wavelength.
+Carrying out the integration gives the relation between the growth rate and the various source and sink terms:
+
+2[]=-[ u^* w]U'_-[ v^* w]V'_+\,[ u^*L_2 u+ v^*L_2 v+ w^* L_2 w ]_, 
+
+where we have normalized by the average kinetic energy density $ K'_$ with $_=^2_0\,\,/(2 K'_)$. The growth rate can be positive when the shear terms are positive (extracting energy from the primary wave) and the viscous dissipation term is relatively small. 
+
+Theory for small amplitude waves: TRI and PSI
+
+The stability of a propagating IW can be analyzed analytically for small wave amplitudes ($A'1$) using the method of multiple scales (for a similar approach in other problems, see ~). The method takes advantage of the large timescale separation between the short oscillation period of the primary wave and the long growth timescale of infinitesimal perturbations, which turn out to also be IWs. As our focus is to obtain the maximum growth rates of perturbations, viscous effects are neglected in the analysis below. 
+
+We work in the comoving frame where the perturbed velocity field $ u$ satisfies Equation~(), reproduced below:
+
+ 
+ &(_t+W_)+ ' + p=-_p u- U_p.
+
+The prime notation for the coordinates and the velocity field in the comoving frame has been dropped, and the primary wave flow has been redefined as
+
+ =_p+W, _p=
+ (U,V,0).
+
+The multiple-scale analysis formally introduces a ``slow" timescale $= t$ that is treated as if it is independent of the ``fast" timescale $t$ throughout the calculation, until replacement in the final solution. The ordering parameter $ 1$ quantifies the smallness of the wave amplitude $A'$. We seek a regular asymptotic expansion of the form 
+
+&=_0(x,y,,t,)+ _1(x,y,,t,)+.
+
+Substituting the above ansatz into Equation~(), taking $A'= O( )$, and using $_t _t + _$, the zeroth $(1)$ and first-order $()$ terms in the momentum equation are
+
+^0: (_t+W_)_0+ ' _0+ p_0=& 0, \\
+
+^1: (_t+W_)_1+ ' _1+ p_1=&-, =_ _0+_p u_0+_0 U_p.
+
+The dynamical equation at each order of $$ can be conveniently rewritten in the form of a Poincar\'e-like equation, where the pressure is eliminated using the incompressibility constraint. Taking the curl twice and applying the derivative operator $-(_t+W_)$ at each order gives their Poincar\'e-like form:
+
+^0: _0&= 0, \\
+
+^1: _1&=(_t+W_) + '( )(_0),
+
+where $$ is a source term and $$ defines the linear operator 
+
+ 
+ (_t+W_)^2^2+( ')^2.
+
+The general solution to the zeroth order equation () is a linear superposition of plane-wave solutions oscillating on fast timescales with amplitudes evolving on slow timescales. This can be written in the form 
+
+&_0=_X X() u_X E_X( x,t)+c.c., E_X^i(-_X t + _X x),
+
+where $c.c.$ denotes the complex conjugate and $X$ denotes a given wave. Each wave satisfies the dispersion relation
+
+&(_X-Wk_X,)^2-' _X)^2k_X^2=0, k_X^2=k_X,x^2+k_X,y^2+k_X,^2.
+
+This is simply the dispersion relation for IWs in the comoving frame, where the frequency is Doppler-shifted by the factor $W _X$. The corresponding eigenvector (arbitrary amplitude chosen for convenience) is given by
+
+_X=(1,
+_X k_X,yk_X,-k_X,x('_X)-_X k_X,xk_X,+k_X,y('_X),
+_X k_X,k_X,y+k_X,x('_X)-_X k_X,xk_X,y-k_X,('_X)), _X_X-Wk_X,.
+
+Determining the amplitude evolution on slow timescales (e.g. finding $X()$) requires substitution of $_0$ into $$ in the first-order equation () and examining the solvability conditions for the first-order solution to maintain $_1=O()$ at all times. This requires $(_0)$ to not contain terms proportional to homogeneous solutions of the linear operator $_1=0$, which are terms proportional to $E_X$. 
+
+The solvability condition can lead to unstable solutions (whose amplitudes $X()$ grow exponentially) in the particular case of a triadic resonance, which we focus on below. This occurs when $_0$ is the superposition of two waves ($_a,_a$) and ($_b,_b$) (with flow $_0 = a() _a E_a +b() _b E_b + c.c$) that satisfy temporal and spatial resonance with the primary wave $(_p,_p)$. The resonance conditions are given by
+
+ _p_a_b=0,\; _p_a_b=.
+
+In the comoving reference frame where $_p=0$ and $_p=(0,0,1)$, these become 
+
+ 
+ _a&=_b, \; k_a,x=k_b,x,\; k_a,y=k_b,y,\;k_a,=k_b,-1.
+
+where we have chosen plus in front of $a$ and minus in front of $b$ throughout without loss of generality (note that $_a,b$ and $_a,b$ can be of either sign). 
+
+Computing $(_0)$ requires the intermediate step of computing $(_0)$, which we find is
+ 
+
+ (_0)=& (_ a) _a E_a + a[(_p_a)_aE_p+(^*_p_a)_aE_p^*+(_a_p)_pE_p-(_a_p)^*_pE_p^*]E_a \\ &
+ +(_ b) _bE_b + b[(_p_b)_bE_p+(^*_p_b)_bE_p^*+(_b_p)_pE_p-(_b_p)^*_p E_p^*]E_b + c.c.
+
+where we have defined $_p=(A'/2)(1,-s,0)$ so that $_p=_p E_p+^*_p E_p^*$. This can then be used to find the terms $$ and $ $ needed to compute $$. Note that $$ (and its derivatives) only contains terms $E_a, E_b, E_aE_p, E_aE_p^*, E_bE_p, E_bE_p^*$ which are related by the products $E_pE_a=E_b$ and $E_p^*E_b=E_a$, since $E_XE_X^*=1$. 
+
+Gathering terms, one can write
+
+ (_0) = _a E_a+_bE_b +,
+
+where $_a$ and $_b$ contain only constants, $a()$ and $b()$, and their slow time derivatives. The three dots correspond to terms proportional to $E_p^*E_a$ or $E_pE_b$
+that do not satisfy a resonance condition.
+We find
+
+_a =& -2_a k_a^2_ a_a+ b\-' _a[
+(^*_p_b) _a _b - (_b_p) _a ^*_p]. \\
+&
+.+_a[
+(_p^* _b)( (_p_b)_a+k_a^2_b) + (_b_p)( (_b^*_p)_a-k_a^2_p^*)]
+\,
+ 
+
+where we have used the resonance condition $_b-_p=_a$. The result is similar for $_b$, but with the replacements $a b$, $_p _p^*$, and $_p -_p$. 
+
+The solvability condition requires the components of $_a$ and $_b$ to vanish, giving
+
+ _ a - C_ab b=0, \;_ b + C_ba a=0,
+
+where $C_ab$ and $C_ba$ are determined from the coefficients in $_a$ and $_b$ (i.e., Equation~()). 
+An exponential solution $a,b ( )$ has growth rate, where either $k_a,x==0$ or $k_a,y==0$, we found that the coefficients $C_ab$ and $C_ba$ (and hence $$) are both real. We have also confirmed this numerically for selected values of $, $ and $$ when evaluating the growth rate based on the analysis in this appendix. $=_ba$ such that the dimensional growth rate is $= C_baA'||$, where we have equated $$ with the primary wave amplitude. The derivation leading to Eq.~ is straightforwardly valid as long as the coefficient of $_ a$ in Eq.~() does not vanish, in which case we must consider it more carefully. This coefficient reduces to $-2_a k_a^2 u_a$, which vanishes when $_a=k_a, W$, corresponding to the perturbation comoving with the primary wave, somewhat like a ``corotation resonance".
+
+For small $A'$, we expect that the fastest growing instabilities will be those for which the resonance conditions in Eq.~() are most precisely satisfied, which is generally easier at large $^2$ and $n^2$. In this limit with $_a _b$, the TRI reduces to the PSI where the daughter waves have half the frequency of the primary wave in the rotating frame. For simplicity, and motivated by our numerical results, we consider modes with $=0$ and $s=1=k_z/|k_z|$ (so $W=-1$) such that $_a=(0,,n)$ and $_b=(0,,n+1)$, thus satisfying the resonance condition Eq.~(), with $k_a^2=^2+n^2$ and $k_b^2=^2+(n+1)^2$. The eigenvectors ($X=a,b$) simplify to
+
+_X=(1,-_X k_X,'_X,_X k_X,y'_X)=(1,-_X ,k_X),
+
+From the dispersion relation Eq.~(), the frequencies are given by $_a^2=n^2/k_a^2$ and $_b^2=(n+1)^2/k_b^2$ since $'_a=n$ and $'_b=n+1$. To satisfy the resonance conditions, we decide to set $_a=-n/k_a$ and $_b=(n+1)/k_b$. The expressions for $C_ab$ and $C_ba$, and hence $$, can then be obtained as a function of $$ and $n$. The large wavenumber limit of the product $C_abC_ba$ can be taken by fixing the wavevector orientation $r=/n$ for a constant ratio $r$ and then taking the limit $$ (or equivalently, $n$). We obtain
+
+ C_ba 4(1+r^2+),
+
+The maximum growth rate occurs for $r $ and has a dimensional value of
+
+_ = 16A'||.
+
+This growth rate for PSI is consistent with the results obtained in .
+They find $_=0.25 _2(1+_2)A'||=(3/16)A'||$ with the inclination angle of the wavevector $_2=/3$ corresponding to $=r=$. Hence, our results are in agreement. Note that this PSI limit does not necessarily lead to the fastest growth rate over all possible modes -- in that we have not proven that it is the optimum growth rate over all $$ and $n$, though we expect this to be the case.
+
+Math and Equations
+
+Inline math may be typeset using the +$+ delimiters. Bold math
+symbols may be achieved using the +bm+ package and the
+++ command it supplies. For instance, a bold $$ can
+be typeset as +$$+ giving $$. Fraktur and
+Blackboard (or open face or double struck) characters should be
+typeset using the ++ and ++ commands
+respectively. Both are supplied by the package. For
+example, +$$+ gives $$ and
++$$+ gives $$
+
+In \ there are many different ways to display equations, and a
+few preferred ways are noted below. Displayed math will center by
+default. Use the class option +fleqn+ to flush equations left.
+
+Below we have numbered single-line equations; this is the most common
+type of equation in Physical Review:
+
+_+(p)2| p|(| p|+p_z) ]^-1/2
+(
+c
+| p|+p_z\\
+px+ip_y
+)\;,
+\\
+\
+ 234567890abc1231234556
+ _bA^2
+\
+.
+
+Note the open one in Eq.~().
+
+Not all numbered equations will fit within a narrow column this
+way. The equation number will move down automatically if it cannot fit
+on the same line with a one-line equation:
+
+\
+ ab12345678abc123456abcdef1234556
+ _bA^2
+\.
+
+When the ++ command is used [cf. input for
+Eq.~()], the equation can be referred to in text without
+knowing the equation number that \ will assign to it. Just
+use ++, where +#1+ is the same name that used in
+the ++ command.
+
+Unnumbered single-line equations can be typeset
+using the +\[+, +\]+ format:
+\[g^+g^+ g^+g^+g^+g^+ ~,~~q^+q^+
+q^+g^+g^+ ~. \]
+
+Multiline equations
+
+Multiline equations are obtained by using the +eqnarray+
+environment. Use the ++ command at the end of each line
+to avoid assigning a number:
+
+ M=&&ig_Z^2(4E_1E_2)^1/2(l_i^2)^-1
+__1,-_2
+(g__2^e)^2_-_2(p_2)\\
+&&
+[_jl_i_i]__1__1(p_1),
+
+ M^_g ^2&=&g^2n-4_S(Q^2)~N^n-2
+ (N^2-1) \\
+ & & ( _i<j)
+ _
+ S_12
+ S_12
+ _ c^f_~.
+
+ Note: Do not use ++ on a line of a multiline
+equation if ++ is also used on that line. Incorrect
+cross-referencing will result. Notice the use ++ for
+using a Roman font within a math environment.
+
+To set a multiline equation without any equation
+numbers, use the ++,
+++ format:
+
+ M^_g ^2&=&g^2n-4_S(Q^2)~N^n-2
+ (N^2-1)\\
+ & & ( _i<j)
+ (
+ _S_12S_23S_n1
+ )
+ S_12~.
+
+To obtain numbers not normally produced by the automatic numbering,
+use the ++ command, where +#1+ is the desired
+equation number. For example, to get an equation number of
+(),
+
+g^+g^+ g^+g^+g^+g^+ ~,~~q^+q^+
+q^+g^+g^+ ~. 
+
+s 
+++ requires the package. 
+Place the ++ command before the ++, if any. 
+The numbering produced by ++ does not affect 
+the automatic numbering in REV; 
+therefore, the number must be known ahead of time, 
+and it must be manually adjusted if other equations are added. 
+++ works with both single-line and multiline equations. 
+++ should only be used in exceptional cases---
+do not use it to number many equations in your paper. 
+Please note that this feature of the package
+is not compatible with the (6.77u) package.
+
+Enclosing display math within
+++ and ++ will produce
+a set of equations that are labeled with letters, as shown in
+Eqs.~() and () below.
+You may include any number of single-line and multiline equations,
+although it is probably not a good idea to follow one display math
+directly after another.
+
+ M=&&ig_Z^2(4E_1E_2)^1/2(l_i^2)^-1
+(g__2^e)^2_-_2(p_2)\\
+&&
+[_i]__1__1(p_1).
+
+\
+ abc123456abcdef1234556
+ _bA^2
+\,
+
+Giving a ++ command directly after the ++, 
+allows you to reference all the equations in the environment. 
+For example, the equations in the preceding subequations environment were
+Eqs.~().
+
+The equation that follows is set in a wide format, i.e., it spans the full page. 
+The wide format is reserved for long equations
+that cannot easily be set in a single column:
+
+ R^()=
+ g__2^e
+ (
+ Q_12^2-M_W^2
+ +Q_13^2-M_W^2
+ )
+ + x_WQ_e
+ (
+ Q_12^2-M_W^2
+ +Q_13^2-M_W^2
+ )\;. 
+ 
+
+This is typed to show how the output appears in wide format.
+(Incidentally, since there is no blank line between the environment above 
+and the start of this paragraph, this paragraph is not indented.)
+
+Cross-referencing
+
+REV will automatically number such things as
+sections, footnotes, equations, figure captions, and table captions. 
+In order to reference them in text, use the
+++ and ++ commands. 
+To reference a particular page, use the ++ command.
+
+The ++ should appear 
+within the section heading, 
+within the footnote text, 
+within the equation, or 
+within the table or figure caption. 
+The ++ command
+is used in text at the point where the reference is to be displayed. 
+Some examples: Section~ on page~,
+Table~,
+
+and Fig.~.
+
+Floats: Figures, Tables, Videos, etc.
+
+Figures and tables are usually allowed to ``float'', which means that their
+placement is determined by , while the document is being typeset. 
+
+Use the environment for a figure, the environment for a table.
+In each case, use the ++ command within to give the text of the
+figure or table caption along with the ++ command to provide
+a key for referring to this figure or table.
+The typical content of a figure is an image of some kind; 
+that of a table is an alignment.
+
+Use the figure* environment to get a wide
+figure that spans the page in formatting.
+
+This is a wide table that spans the full page
+width in a two-column layout. It is formatted using the
+ environment. It also demonstates the use of
+ in rows with entries that span
+more than one column.
+
+ccccc
+ &c$D_4h^1$&c$D_4h^5$\\
+ Ion&1st alternative&2nd alternative&lst alternative
+&2nd alternative\\ 
+ K&$(2e)+(2f)$&$(4i)$ &$(2c)+(2d)$&$(4f)$ \\
+ Mn&$(2g)$4$.
+ &$(a)+(b)+(c)+(d)$&$(4e)$&$(2a)+(2b)$\\
+ Cl&$(a)+(b)+(c)+(d)$&$(2g)$[1]
+ &$(4e)^$\\
+ He&$(8r)^$&$(4j)^$&$(4g)^$\\
+ Ag& &$(4k)^$& &$(4h)^$\\
+
+Insert an image using either the or
+ packages, which define the ++ command.
+(The two packages differ in respect of the optional arguments 
+used to specify the orientation, scaling, and translation of the image.) 
+To create an alignment, use the environment. 
+
+The best place to locate the or environment
+is immediately following its first reference in text; this sample document
+illustrates this practice for Fig.~, which
+shows a figure that is small enough to fit in a single column. 
+
+In exceptional cases, you will need to move the float earlier in the document, as was done
+with Table~: 's float placement algorithms need to know
+about a full-page-width float earlier. 
+
+Fig.~
+has content that is too wide for a single column,
+so the environment has been used.
+
+The content of a table is typically a environment, 
+giving rows of type in aligned columns. 
+Column entries separated by +&+'s, and 
+each row ends with . 
+The required argument for the environment
+specifies how data are aligned in the columns. 
+For instance, entries may be centered, left-justified, right-justified, aligned on a decimal
+point. 
+Extra column-spacing may be be specified as well, 
+although REV~4 sets this spacing so that the columns fill the width of the
+table. Horizontal rules are typeset using the ++
+command. The doubled (or Scotch) rules that appear at the top and
+bottom of a table can be achieved enclosing the 
+environment within a environment. Rows whose
+columns span multiple columns can be typeset using the
++#2#3+ command (for example, see the first
+row of Table~).
+
+Tables~, , , and 
+
+show various effects.
+A table that fits in a single column employs the 
+environment. 
+Table~ is a wide table, set with the environment. 
+Long tables may need to break across pages. 
+The most straightforward way to accomplish this is to specify
+the +[H]+ float placement on the or
+ environment. 
+However, the \ package allows headers and footers to be specified for each page of the table. 
+A simple example of the use of can be found
+in the file that is included with the REV~4
+distribution.
+
+There are two methods for setting footnotes within a table (these
+footnotes will be displayed directly below the table rather than at
+the bottom of the page or in the bibliography). The easiest
+and preferred method is just to use the ++
+command. This will automatically enumerate the footnotes with
+lowercase roman letters. However, it is sometimes necessary to have
+multiple entries in the table share the same footnote. In this case,
+there is no choice but to manually create the footnotes using
++[#1]+ and +[#1]#2+.
+ is a numeric value. Each time the same value for
+ is used, the same mark is produced in the table. The
++[#1]#2+ commands are placed after the 
+environment. Examine the \ source and output for
+Tables~ and 
+for examples.
+
+Video~ 
+illustrates several features new with REV4.2,
+starting with the environment, which is in the same category with
+ and .
+
+ 
+
+ 
+ 
+ Students explain their initial idea about Newton's third law to a teaching assistant. 
+ Clip (a): same force.
+ Clip (b): move backwards.
+ 
+
+The ++ command causes the title of the video to be a hyperlink to the
+indicated URL; it may be used with any environment that takes the ++
+command.
+The ++ command has the same significance as it does in the context of
+the package: the second argument is a piece of text to be 
+typeset in your document; the first is its hyperlink, a URL.
+
+To start the appendixes, use the ++ command.
+This signals that all following section commands refer to appendixes
+instead of regular sections. Therefore, the ++ command
+should be used only once---to setup the section commands to act as
+appendixes. Thereafter normal section commands are used. The heading
+for a section can be left empty. For example,
+
+will produce an appendix heading that says ``APPENDIX A'' and
+
+Background
+
+will produce an appendix heading that says ``APPENDIX A: BACKGROUND''
+(note that the colon is set automatically).
+
+If there is only one appendix, then the letter ``A'' should not
+appear. This is suppressed by using the star version of the appendix
+command (+*+ in the place of ++).
+
+A little more on appendixes
+
+Observe that this appendix was started by using
+
+A little more on appendixes
+
+Note the equation number in an appendix:
+
+E=mc^2.
+
+You can use a subsection or subsubsection in an appendix. Note the
+numbering: we are now in Appendix~.
+
+Note the equation numbers in this appendix, produced with the
+subequations environment:
+
+E&=&mc, 
+\\
+E&=&mc^2, 
+\\
+E&& mc^3. 
+
+They turn out to be Eqs.~(), (), and ().

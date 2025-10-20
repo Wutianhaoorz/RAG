@@ -1,0 +1,674 @@
+Lemma
+Corollary
+[1]
+
+[caption=false]subfig
+[subfloat]farskip=-1mm,captionskip=-2mm
+
+rgb1,0.5,0
+rgb0.6,0.4,0.8
+rgb0.99,0.93,0.0
+rgb1.0,0.13,0.32
+rgb0.0, 0.5, 0.0
+
+[1]#1
+[1]#1
+[1]#1
+[1]#1
+[1]#1
+
+[1][#1]
+[1][#1]
+[2][#1,#2]
+
+, Beverley J. McKeon Llu\'is Jofre
+
+Department of Fluid Mechanics, Universitat Polit\`ecnica de Catalunya $$ BarcelonaTech (UPC), Barcelona 08019, Spain,
+Department of Mechanical Engineering, Stanford University, Stanford 94305, CA, USA
+
+High-pressure transcritical fluid flows are central to modern energy and propulsion systems. A key challenge lies in confined configurations, where optimizing performance requires a deep understanding of the coupled hydrodynamic and thermodynamic nonlinearities that govern such flows. In this regard, low-order decomposition techniques, particularly resolvent analysis, offer an interpretable framework to quantify how nonlinear forcings drive coherent responses and amplify key flow structures.
+This work, thus, pursues two main objectives: (i) establish a resolvent-based framework tailored to high-pressure transcritical fluid flows, and (ii) characterize the spatio-temporal sensitivity of the resolvent operator using data-driven turbulent base flows. These analyses identify the flow responses and forcings that optimally enhance mixing and heat transfer, along with their characteristic scales.
+The results of the resolvent framework reveals that amplification is dominated by streamwise-elongated structures with spanwise periodicity, associated with peak singular values near (normalized) spanwise wavenumbers of order unity. Unlike ideal-gas or incompressible/isothermal flows, the dominant forcings arise from thermodynamic fluctuations in the pseudo-boiling region. Moreover, when the turbulent mean flow is used as input, this results in intensified responses manifesting as coherent counter-rotating vortex pairs.
+The energetic scale motions are constrained by the nature of the low-Reynolds-number regime considered, with a single dominant spectral mode reaching streamwise lengths comparable to those in the instantaneous fields. Data-driven analyses further reveal coherent structures propagating at phase speeds absent from classical incompressible wall-bounded turbulence. These structures are intensified near the pseudo-boiling region and constrained toward the hot wall, in strong agreement with resolvent-mode predictions of near-wall scale motions.
+
+Data-Driven Methods, Resolvent Analysis, Supercritical Fluids, Turbulent Flow 
+
+Introduction
+ 	
+
+On the one hand, high-pressure transcritical fluids operate within thermodynamic regimes where supercritical gas-like and liquid-like states can be distinguished across the pseudo-boiling line~. This transition region is characterized by a pronounced nonlinear phase change, particularly within the pressure range $1 < P/P_c < 3$~, where $P_c$ corresponds to critical pressure.
+Unlike subcritical two-phase flows, single-component high-pressure transcritical fluids undergo a continuous (second-order) phase transition between gas-like and liquid-like states. This behavior arises due to the small Knudsen numbers (i.e., $K\!n 1$) typical of supercritical fluid conditions, which result from significantly reduced mean free paths~.
+Supercritical fluids have long been utilized in thermo-fluid engineering applications, including liquid rocket engines, gas turbines, and supercritical water-cooled reactors~. More recently, direct numerical (DNS) and large-eddy simulation (LES) studies have been employed to explore the potential of high-pressure transcritical fluids to generate microconfined turbulence~, which can significantly enhance mixing and heat transfer in microfluidic systems.
+The flow physics in these regimes differs markedly from classical incompressible turbulent wall-bounded flows due to the large variations of thermophysical properties and the emergence of localized baroclinic torques. These torques lead to enhanced vorticity generation, destabilizing the flow, and transferring rotational energy across a broad range of scales via vortex stretching.
+However, the underlying mechanisms governing these phenomena are still not fully comprehended neither systematically characterized.
+
+On the other hand, a detailed understanding of the driving mechanisms in turbulent flows, particularly regarding the statistical scaling and structural coherence of their fluctuations and base flow, remains incomplete. Moving beyond the classical near-wall scaling hypothesis, recent studies have proposed that the nature of scale motions depends significantly on outer-scale variables~.
+In this regard, instead of relying on complex models that attempt to predict the large degrees of freedom inherent in fluid dynamics, modal analysis techniques offer an efficient alternative by decomposing the flow field into a linear combination of modes. This approach effectively captures the dominant dynamical structures of the system.
+Modal analysis methods can be broadly categorized into data-driven and operator-based techniques. Data-driven methods include low-order approaches such as proper orthogonal decomposition (POD), spectral POD (SPOD), and dynamic mode decomposition (DMD). In contrast, operator-based techniques derive from linearizations of the equations of fluid motion, including linear stability analysis, which relies on eigenvalue decompositions, and resolvent analysis accounting for the effect of nonlinear ``forcing'' terms.
+With growing interest in using resolvent analysis to elucidate input-output relationships across various flow configurations, it has been widely applied to numerous internal and external flow problems. Examples include channel flows~, pipe flows~, boundary layers~, airfoil wakes~, turbulent jets~, and combustion applications~.
+Fundamentally, resolvent analysis corresponds to the state-space system representation widely used in dynamical systems and control theory. It naturally provides a framework for designing active and passive flow control strategies, leveraging spatially or temporally periodic actuation to optimize performance metrics such as drag reduction, lift enhancement, mixing, or noise suppression. Moreover, resolvent analysis serves as a basis for estimating flow dynamics and identifying dominant coherent structures.
+Thus, this methodology represents a valuable complement to both computational simulations and experimental investigations by offering profound insights into the fundamental physics and modeling of fluid flows. Furthermore, understanding the processes that sustain and amplify distinct turbulent length scales can improve comprehension of the laminar-to-turbulent transition, inform the selection of relevant length and time scales for flow control, and enhance the development of reduced-order models.
+
+In general terms, the resolvent operator is defined as a linear transfer function that relates control inputs (namely, the nonlinear terms of the linearized equations, referred to as forcing) to their associated output responses through uniform Fourier transforms in both space and time. Specifically, the linear operator captures energy amplification, while the nonlinear forcing represents the mechanisms responsible for energy redistribution.
+The singular value decomposition (SVD) of this operator reveals modes corresponding to both forcing and response, ranked by the magnitude of their singular values, which represent the operator’s linear gain. Consequently, the response can be reconstructed if the forcing terms are known. Even relying solely on the mean flow, several important features can be extracted; most notably, the gain of the leading mode, often described as low-rank behavior~. This property facilitates a low-dimensional representation of turbulent flows~. For example, predicted the streamwise velocity spectra by utilizing the largest response mode amplitude, thereby reducing the discrepancy between measured and predicted profiles; however, caution is warranted when truncating energy contributions from the remaining modes~.
+Moreover, surveyed coherent turbulent motions evident in the energy spectra, such as near-wall streaks (NWS), large-scale motions (LSMs), and very-large-scale motions (VLSMs). In incompressible wall-bounded turbulence, NWSs typically consist of quasi-streamwise structures and counter-rotating vortices located approximately $15$ inner units above the wall, responsible for the highest turbulent kinetic energy (TKE) production. LSMs are characterized by hairpin vortices~ and, particularly at low Reynolds numbers, extend from the wall to the boundary layer edge. VLSMs occupy the logarithmic region with characteristic lengths of roughly $30$ outer units~, and their wavelength energy-containing motions align with the energy peak observed in the premultiplied velocity fluctuation spectra. Additionally, developed a model consistent with the streamwise energy spectrum and amplification gains from the linearized equations of fluid motion, identifying instantaneous turbulent structures associated with different scale motions.
+
+Coherent structures play a fundamental role in the dynamics of turbulent flows, influencing momentum transfer, energy cascades, and scalar transport across a wide range of scales~. In wall-bounded turbulence, these structures often organize into wave-like packets that propagate with characteristic phase speeds, driving key phenomena such as bursting, energy amplification, and large-scale modulation~. Accurately capturing and analyzing these structures is especially critical in high-pressure transcritical fluid regimes, where turbulence is further complicated by strong nonlinear interactions arising from steep thermodynamic gradients, pseudo-boiling transitions, and non-ideal fluid behavior due to tightly coupled pressure, temperature, and density fields~. These factors introduce new challenges to classical turbulence modeling and modal decomposition, motivating the development of more specialized analytical frameworks.
+One effective strategy for extracting coherent structures involves applying Fourier transforms in both space and time, often combined with phase speed filtering to isolate traveling wave packets at specific convective velocities~. This approach facilitates the study of wave-like motions and their amplification mechanisms. In particular, spectral filtering at fixed phase speeds enables the decomposition of the flow into dynamically relevant components without relying on strict statistical convergence.
+Alternatively, data-driven methods such as DMD and SPOD have been widely employed to approximate linear operator behavior and extract dynamically significant modes from simulations or experiments~. While DMD is often used as a surrogate for computing resolvent modes~, its sensitivity to broadband content and lack of an explicit forcing; response framework can limit accuracy, particularly in compressible flows~ and high-pressure transcritical fluid regimes. In contrast, SPOD provides frequency-resolved orthogonal modes consistent with the resolvent operator under assumptions of stochastic forcing~, and has been successfully applied in both incompressible and compressible flows~.
+In this context, POD remains a widely used tool for identifying the most energetic modes in turbulence~, particularly in complex multiphysics flows. For example, POD has been applied to study coherent structures in jets~, channel flows~, and high-speed flows with significant thermodynamic coupling~. Although POD does not explicitly resolve frequency content, its strength in capturing spatial energy distributions makes it a valuable complement to spectral filtering techniques.
+
+Although resolvent analysis has long been an attractive tool for flow modeling and control, research efforts have predominantly focused on incompressible flows. Recently, provided a comprehensive summary of a resolvent analysis framework tailored for compressible flows, detailing both physics-based and data-driven approaches to constructing and analyzing the resolvent operator.
+The intrinsic limitations of transient growth models have motivated extensions of resolvent methods to more accurately capture the influence of nonlinear terms on flow responses. Specifically, transient growth approaches rely solely on identifying the initial disturbance that leads to maximum amplification~, effectively using these forcing quantities to predict the optimal input in resolvent analysis that maximizes the output response. However, the resolvent framework typically assumes that the nonlinear forcing statistics are spatially uncorrelated and lack detailed structure, necessitating complementary techniques based on flow statistics for improved accuracy~.
+Accordingly, the primary objective of this work is to develop a resolvent analysis framework for wall-bounded, high-pressure transcritical fluid flows driven by turbulent base states. The study focuses on a non-isothermal Poiseuille flow defined using a similar setup as a DNS of a high-pressure transcritical turbulent channel flow~. Within this setup, the resolvent operator is characterized by analyzing gains, forcings, and response sensitivities relative to the ideal-gas case, with particular emphasis on the sensitivity of singular values in wavenumber space for a fixed frequency.
+Furthermore, a detailed coherent structure analysis of the high-pressure transcritical turbulent channel flow is conducted using a hybrid approach. This approach combines Fourier decomposition in space and time with phase speed filtering to isolate coherent structures traveling at specific convective velocities~, followed by variable-specific POD mode extraction. This filtering isolates wave-like structures that are otherwise obscured in the full flow field, enabling identification and characterization of traveling structures as well as assessment of their spatial organization and energy content. Subsequently, POD is applied to different thermodynamic and kinematic variables to localize the energetic content within these filtered modes. This systematic decomposition enables physically interpretable isolation of traveling wave components.
+Thus, the proposed methodology offers a physically grounded framework for mode extraction in high-pressure transcritical flows, where conventional methods often face challenges. The resulting insights advance understanding of coherent dynamics influenced by real-fluid effects and provide valuable guidance for reduced-order modeling in complex thermodynamic regimes.
+
+To this end, the structure of this work is outlined as follows.
+First, Section~ introduces the flow physics modeling, covering the equations of fluid motion, real-fluid thermodynamics, and high-pressure transport coefficients.
+Next, Section~ presents the resolvent analysis framework, detailing the linearized equations and normalization, the discretization method, the resolvent operator, and the SVD approach used to compute gains, responses, and forcing quantities.
+In addition, data-driven methods (including spatio-temporal Fourier transforms and POD) are theoretically introduced in Section~.
+Following, the setup and parameters of the computational experiments performed (non-isothermal Poiseuille flow and wall-bounded high-pressure transcritical turbulent flow) are described in Section~.
+The results of the resolvent operator sensitivity and data-driven analyses are shown and discussed in Section~. This section defines the resolvent operator for high-pressure transcritical fluid flows, followed by a sensitivity analysis and coherent structure examination. These results are compared and validated using spatio-temporal Fourier transform techniques to identify near-wall scale motions. Additionally, energetic modes obtained through POD are evaluated.
+Finally, Section~ offers concluding remarks and outlines future research directions arising from this work.
+
+Flow Physics Modeling
+ 	
+
+The framework utilized in terms of (i) equations of fluid motion, (ii) real-fluid thermodynamics, and (iii) high-pressure transport coefficients is detailed below.
+
+Equations of fluid motion
+ 	
+
+The flow motion of supercritical fluids is described by the following set of dimensionless equations of mass, momentum, and total energy.
+
+ t^ + ^ ( ^ ^ ) & = 0, \\
+ ^ ) t^ + ^ ( ^ ^ ^ ) & = -^ P^ + Re ^ + ^, \\
+ t^ + ^ ( ^ ^ E^ ) & = - Re Br ^ ^ -^ (P^ ^) \\
+ & + Re^ ( ^) + ^ ^, 
+
+where superscript $()^$ denotes dimensionless quantities, and the corresponding dimensional variables are the density $$, the velocity vector $$, the pressure $P$, the viscous stress tensor $ = ( + ^T ) + ( )$ with $$ the dynamic viscosity and $ = - ( 2/3 )$ the bulk viscosity, the total energy $E = e + ||^2/2$ with $e$ the internal energy, the Fourier heat flux $ = - T$ with $$ the thermal conductivity and $T$ the temperature, and a body force to drive the flow in the streamwise direction $$.
+
+The resulting set of scaled equations includes two dimensionless numbers: (i) the Reynolds number $Re = _bU_r/_b$ characterizing the ratio between inertial and viscous forces, where subscript $()_b$ refers to bulk quantities, $$ is the channel half-height, and $U_r$ is a reference velocity, defined as the centerline streamwise velocity for the isothermal laminar base flow, or as the bulk velocity for the turbulent flow obtained from DNS results; and (ii) the Brinkman number $Br = _b U_r^2 / (_b T_b) = Pr Ec$ quantifying the ratio of viscous heat generation to external heating through the walls.
+The Brinkman number can also be expressed as the combination of Prandtl number $Pr =_b c_P_b / _b$ expressing the ratio between momentum and thermal diffusivity, where $c_P$ is the isobaric specific heat capacity, and Eckert number $Ec = U_r^2/(c_P_b T_b)$, which accounts for the ratio between advective mass transfer and heat dissipation potential.
+
+The set of dimensionless equations is based on the following set of inertial scalings~
+
+ x^ & = , u^ = U_r, ^ = _b, T^ = T_b, P^ = _b U_r^2, \\ 
+ E^ & = U_r^2, ^ = _b, ^ = _b, ^ = _b^2 , t^ = U_r, 
+
+where $x$ represents the position vector.
+
+Real-fluid thermodynamics
+ 	
+
+The thermodynamic space of solutions for the state variables pressure, temperature, and density is described by an equation of state.
+At supercritical pressures, a rapid transition from supercritical liquid-like to gas-like behavior occurs at the pseudo-boiling temperature $T_pb$, which corresponds to the point where a second-order (continuous) phase transition occurs characterized by a peak of $c_P$.
+Therefore, a popular choice for systems at high pressures is the equation of state.
+In general form, it can be expressed in terms of the compressibility factor $Z = P/( R^ T)$, where $R^$ is the specific gas constant, which in dimensionless form reads
+
+ P^ = T^_b M\!a^2, 
+
+where $ Z (c_P / c_V) [(Z + T ( Z / T)_)/(Z+T( Z / T)_P)]$ is an approximated real-fluid heat capacity ratio~ with $c_V$ the isochoric specific heat capacity.
+As it can be noted, the dimensionless Mach number $M\!a = U_r / c_b$ appears, where $c_b$ is the bulk speed of sound, which represents the ratio of flow velocity to speed of sound.
+In addition, real-fluid thermodynamics need to be supplemented with the corresponding high-pressure thermodynamic variables (e.g., internal energy, heat capacities) based on departure functions~ calculated as a difference between two states.
+These functions operate by transforming the thermodynamic variables from ideal-gas conditions (low pressure - only temperature dependent) to supercritical conditions (high pressure).
+The ideal-gas components are calculated by means of the NASA 7-coefficient polynomial~, while the analytical departure expressions to high pressures are derived from the Peng-Robinson equation of state as detailed, for example, in~.
+
+However, within the resolvent analysis framework, empirically based models are preferred due to the sensitivity of modal analysis to nonlinear thermodynamic effects~. Notable examples include the NIST~ and the open-source CoolProp~ libraries, which offer accurate representations of the non-ideal thermodynamic behavior characteristic of high-pressure transcritical fluids.
+Thermodynamic properties in these libraries are derived from the Helmholtz free energy equation of state. The accuracy of CoolProp has been benchmarked against NIST reference data~, and its influence on linear stability results has been evaluated by~.
+Accordingly, this study employs the CoolProp library for the resolvent analysis, while the Peng–Robinson equation of state is used for the data-driven analysis to maintain consistency with the model adopted in the DNS computations.
+
+High-pressure transport coefficients
+ 
+
+The high pressures considered in this work preclude the use of simplified relations for calculating dynamic viscosity and thermal conductivity. Standard methods for Newtonian fluids at high pressures typically rely on empirical correlations proposed by~, which depend on properties such as the critical temperature $T_c$, critical density $_c$, molecular weight $W$, acentric factor $$, association factor $_a$, and dipole moment $$, along with thermophysical data from the NASA 7-coefficient polynomial~. Additional details can be found in works such as and .
+However, consistent with the treatment of thermodynamic quantities, transport properties in the resolvent analysis framework are modeled using the open-source CoolProp library~, while the empirical correlations by Chung et al. are adopted for the data-driven analyses. Comparative assessments of transport models (specifically those from Chung et al., NIST, and CoolProp) have been thoroughly discussed by .
+
+Resolvent analysis framework
+ 	
+
+The objective of this section is to outline the resolvent operator. First, the linearized equations and linear theory operators are presented based on previous modal stability studies~ in conjunction with the discretized Chebyshev method. Consequently, the resolvent operator and its weighted normalization are elaborated upon. Lastly, the SVD approach is introduced to define the gains, forcings (inputs) and responses (outputs) of the transfer function.
+
+Linearized equations
+
+The flow field can be decomposed into the base state and the fluctuation [hereafter denoted with subscript $()_0$ and superscript $()^$, respectively] as
+
+ = _0 + ^, 
+
+where vector $$ is composed of the velocity components ($u$, $v$ and $w$) and the independent thermodynamic variables ($$ and $T$).
+This decomposition yields a perturbation vector $^ = (^, u^, v^, w^, T^)^T$ whose corresponding steady-state flow vector is assumed to be parallel to the walls, and consequently only function of the wall-normal direction $y$ as $_0 = [_0(y), u_0(y), 0, 0, T_0(y)]^T$. From this point forward, superscript $()^$ is omitted and assumed that all equations and variables are in dimensionless form for the brevity of exposition.
+
+The selection of the two main thermodynamic variables $$ and $T$ enforces the perturbations of the remaining thermophysical variables ($E, P, , )$ to be expressed as a function of this pair of quantities by means of a Taylor expansion with respect to the base flow.
+For example, by neglecting higher-order terms, the pressure perturbation can be approximated by expanding the base flow pressure as
+
+P^ = . _0_T_0 ^ + . T_0__0 T^ + (), 
+
+with the resulting error of the approximation to be of the order of the amplitude ($$) of the infinitesimal perturbations~.
+Thus, by substituting Eq.~ into the dimensionless equations of fluid motion (Eqs.~-), linear stability equations are derived as a function of the perturbation vector $^$; extensive derivation of the equations is covered in~.
+They can be cast in compact form as
+
+ ^ t & + ^ x + ^ y + ^ z + ^ \\
+ & + ^ x^2 + ^ y^2 + ^ z^2 + 
+ ^ x y + ^ x z + ^ y z = , 
+
+where the non-linear terms not presented in Eq.~ (i.e., partial derivatives of multiple perturbation variables) have been grouped into $ = (f_, f_u, f_v, f_w, f_T)^T$, and $$, $$, $$, $$, $$, $$, $$, $$, $$, $$, and $$ correspond to the Jacobian matrices of the base flow and thermophysical properties.
+In detail, the Jacobian matrices are of size $55$, corresponding to each field of the perturbation vector $^$. 
+The particular form of these matrices are detailed in related works~, which are obtained by inspection of the linearized equations derived.
+
+Discretization method
+ 
+
+The discretization of the linearized equations is based on Chebyshev collocation~ with a domain spanning the interval $0 y/ 2$ and discretized as
+
+ y_j = ( 1 - N ), j = 0, , N,
+
+where $N$ corresponds to the total number of collocation points.
+In this regard, Chebyshev differentiation matrices are utilized to obtain the discretized equations and define the operators of the linear stability eigenvalue problem.
+Particularly, the mesh size selected for this work is $N = 200$, which provides grid-independent results based on the convergence of the S-shaped Mack branches (viz. eigenspectrum). The error of the results scales with $(h^2)$ where $h = H / N$ and $H = 2 $ is the channel height. In particular, further increasing the grid size by $50\
+Moreover, the system of equations is subjected to $u^ = v^ = w^ = T^ = 0$ boundary conditions for both walls.
+
+Resolvent operator
+
+By assuming a homogeneous mean flow in streamwise and spanwise directions and time, Fourier decomposition is applied to the perturbation vector
+
+ (x,y,z,t) = _-^ (y; k_x, k_z, ) e^i(_x x + _z z - t) dk_x dk_z d, 
+
+which by subsequent integration along the wavenumber parameter space, it can be expressed in normal-mode form as
+
+ (x,y,z,t) = (y) e^(i _x x + i _z z - i t), 
+
+where $_x$ and $_z$ are the prescribed streamwise and spanwise wavenumbers, respectively, $$ is the normalized temporal frequency [which can be written in terms of normalized phase speed $c$ as $ = c _x$~] whose real and imaginary parts correspond, respectively, to the wall-normal angular frequency and its local growth rate; the superindex $$ denotes Fourier transform.
+Hence, by substituting Eq.~ into Eq.~, the following response equation is obtained
+
+ (- i & + i _x + D + i _z + \\
+ & - _x^2 + i _x D - _x_z + D^2 + i _z D - _z^2 ) = , 
+
+where $D = d/dy$ is the derivative operator of the Chebyshev discretization.
+Typically, in linear stability theory (LST), Eq.~ can be solved either in the temporal (prescribed $_x$ and $_z$) or spatial (prescribed $$) domain, where $ = 0$.
+However, in resolvent analysis, there is no distinction, and the operator is built in the same manner for both cases.
+In particular, the transport equations presented above have been rearranged to express the linear terms by means of a forcing $$, allowing for the derivation of the transfer function resolvent operator ($$) for the flow in input-output format.
+This forcing term represents the non-linear terms of the equations.
+Additionally, $^$ is considered homogeneous in the streamwise and spanwise directions, and in time for the Fourier transforms, leading to the general expression form~
+
+ = (k_x, k_z,) + (k_x, k_z,) ]^-1_(k_x, k_z,) , 
+
+where $(k_x, k_z,)$ $ ^5Nx5N$ and $(k_x, k_z,)$ $ ^5Nx5N$ are the linear operators, and the transfer kernel $$($k_x, k_z, $) $ ^5Nx5N$ is the resolvent operator of the flow that maps the non-linear terms $$ with the state variables $$; viz. it is the spatio-temporal frequency response of the system.
+Matrix $$ contains the finite-dimensional approximations of the linearized equations, which can be obtained by inspection of Eq.~ to map the temporal partial derivatives of Eq.~ and $$ in the form
+
+ = i _x + D + i _z + \\
+ - _x^2 + i _x D - _x_z + D^2 + i _z D - _z^2 , \\ 
+ = , 
+
+where the linear operator $$ defining $$ reads 
+
+ = 
+
+1 & 0 & & & 0 \\
+u_0 & _0 & & & \\
+0 & 0 & _0 & & \\
+0 & & & _0 & 0 \\
+e_0 + _0 T_0 & 0 & & 0 & _0 T_0
+.
+ 
+
+Before performing the resolvent analysis, a norm needs to be selected. It is known that for compressible flows the Chu norm~ is a well-suited candidate~ defined as
+
+ (q) = [ (u^^ u^ + v^^ v^ + w^^ w^) + m_ ^^ ^ + m_T T^^ T^ ] dV, 
+
+where $()^$ denotes the complex conjugate. For ideal-gas thermodynamics, selecting the Mack's energy norm with $m_ = T_0 / (_0^2 M\!a^2)$ and $m_T = 1/[( - 1 )T_0 M\!a^2]$ is commonly employed.
+However, for supercritical fluid flows the results are robust when $m_ = m_T = 1$~.
+Hence, the Chu norm is incorporated with a weight matrix $$ giving the discrete inner product $<_1,_2> = _1^ _2^$, assuming that the response and forcing weight matrices are equivalent~; i.e., $<_1,_2> = _1^ _2^$. Thus, Eq.~ can be rewritten as
+
+ = ^1/2 (k_x, k_z,) ^-1/2 ]_(k_x, k_z,) , 
+
+where $(k_x, k_z,)$ is the normalized resolvent operator.
+Typically, the numerical integration weights are chosen to be equal, and based on the state variable vector $$ and the selected norm, the matrix $$ can be expressed as
+
+ = (m_, 1, 1, 1, m_T ). 
+
+Singular value decomposition
+ 
+
+A SVD is utilized to analyze the resolvent operator $(k_x, k_z,)$. This technique identifies the inputs and their corresponding outputs. It also offers a low-rank approximation of the input-output dynamics of the entire system; high-gain inputs are useful for flow control applications as they indicate where the actuation produces the largest impact on the flow~.
+In detail, the SVD of the resolvent operator can be expressed as
+
+ (k_x, k_z,) = _i=1^5N _i(y) _i _i(y), 
+
+where $_i$ are the singular values arranged in descending order, $_i$ are the singular vectors of the resolvent response modes, and $_i$ are the singular vectors of the forcing modes.
+Consequently, a forcing to the resolvent operator along $_i$ gives a response along $_i$ amplified by a factor $_i$. Based on the ordering criteria, the most sensitive forcing direction corresponds to $i = 1$.
+
+Therefore, based on this operator, for a particular frequency $$, the maximum amplification $$ of any forcing is determined as~
+
+ = ^ ^^ ^.
+
+The response to harmonic forcing is assumed to take the form $(y,t) = (y) e^-i t$, and, under the assumption of linear stability, the resulting flow response also becomes harmonic after a sufficiently long time, expressed as $(y,t) = (y) e^-i t$.
+
+Data-driven methods
+ 	
+
+This section presents the mathematical framework underlying the data-driven methods employed in this work. A total of $2000$ flow field snapshots were collected at equidistant time intervals; representing a trade-off between computational cost and statistical convergence, consistent with prior studies~. This sampling captures approximately $7.5$ flow-through time (FTT) units, defined as $t_c = L_x / u_b$.
+First, the spatio-temporal fast Fourier transform (FFT) approach is described. Due to memory constraints, it is applied to two-dimensional ($x$–$y$) slices of the domain. Subsequently, the POD framework is introduced, in which the energetic modes are extracted in three dimensions.
+
+Spatio-temporal Fourier transform
+
+To isolate coherent structures convecting at a specific phase speed, a spatio-temporal FFT of the velocity field is employed. This approach is motivated by the challenging nuances encountered when trying to reconstruct a data-driven resolvent operator using the method proposed by~; developing a framework suitable for such nonlinear flows is left for future work.
+Accordingly, the conventional FFT is briefly described. Consider a scalar component \( u(x, y, z, t) \) defined over a time interval \( [0, T] \) and a spatial domain \( = [0, L_x] [0, L_z] \), corresponding to the homogeneous directions \( x \) and \( z \). The Fourier transform is then defined as
+
+(_x, y, _z, ) = 
+T L_x L_z
+_0^T _0^L_x _0^L_z
+u(x, y, z, t) \,
+e^-i (_x x + _z z - t) 
+\, dz dx dt,
+
+where \( _x \) and \( _z \) are the streamwise and spanwise wavenumbers, and \( \) is the angular frequency.
+Therefore, in FFT space, the phase speed can be masked by computing the local phase speed for each spectral component, given by the following expression
+
+c(_x, _z, ) = 
+.
+
+To isolate components convecting within a target phase speed band \( c [c_, c_] \), a spectral mask is applied in the form
+
+(_x, _z, ) =
+
+1, & c_ c_, 0, \\
+0, & ,
+
+with \( = \). The filtered field in spectral space, then, becomes
+
+_(_x, y, _z, ) = 
+(_x, _z, ) (_x, y, _z, ).
+
+Finally, the inverse Fourier transform reconstructs the filtered signal in physical space as
+
+u_(x, y, z, t) = 
+__x __z _
+_(_x, y, _z, )
+\, e^i (_x x + _z z - t).
+
+This operation extracts spatio-temporal structures associated with the prescribed phase speed range, allowing further analysis such as modal decomposition or conditional averaging.
+In practice, the spatial Fourier transforms were performed along the homogeneous directions with wavenumbers defined from the discrete Fourier frequencies. The temporal transform was applied to the complete sequence of snapshots over the interval $[0,T]$, without additional windowing (i.e. employing a rectangular window). 
+This procedure extracts spatio-temporal structures associated with the prescribed phase-speed range, allowing further analysis such as modal decomposition or conditional averaging.
+
+Proper orthogonal decomposition
+
+POD has become a fundamental tool for extracting coherent structures in complex fluid flows~. The method relies on matrix diagonalization to decompose the flow field into a linear combination of time-dependent coefficients and space-dependent eigenvectors.
+In this work, a POD-based analysis is applied to high-pressure transcritical wall-bounded flow with the aim of identifying dominant energetic regions within the domain and investigating their interaction with the pseudo-boiling region. Specifically, the flow field is projected using the energy normalization matrix defined in Eq.~, which incorporates energy-weighted information across all relevant physical variables.
+POD can be performed using either eigenvalue decomposition or SVD. The former is more general and numerically robust, making it the preferred method when the full snapshot matrix is available. In contrast, SVD is typically employed in the ``method of snapshots'', which is more computationally efficient when the number of snapshots is significantly smaller than the size of the state vector.
+
+To extract energetically significant modes, an inner product that reflects the physical energy of the system is defined for two states \( _i \) and \( _j \). In detail, the energy-weighted inner product reads
+
+ _i, _j _
+= _ _i^() \, () \, _j() \, d,
+
+where \( () ^5 5 \) is a positive symmetric weighting matrix that reflects local kinetic and thermal energy, whose definition is presented in Eq.~ with $( m_, m_u, m_v, m_w, m_T )$ non-dimensional unitary scaling parameters resulting from the energy norm defined in Eq.~.
+
+The definition of the snapshot matrix is constructed for the number of snapshots $M$ as
+
+ =
+
+^1 & ^2 & & ^M
+
+ ^N M,
+
+where each column \( ^k ^N \) is the discretized state vector at time \( t_k \), and \( N = 5 N_x N_y N_z \) with \( N \) the number of spatial grid points in each spatial direction.
+Therefore, the energy-weighted covariance matrix is then expressed as
+
+ = ^ ^M M.
+
+Based on these matrices, the eigenvalue problem is solved to obtain the POD modes defined as
+
+ \, _k = _k \, _k,
+
+where \( _k \) is the energy associated with the \( k \)-th mode, and \( _k ^M \) is the corresponding time coefficient vector.
+The spatial POD modes \( _k ^N \) are then recovered in the form
+
+_k = \, \, _k.
+
+These modes are orthonormal with respect to the energy inner product defined in Eq.~, and they capture the most energetic structures of the flow field.
+For completeness, the low-rank approximation of the POD operator is evaluated in Appendix~. Based on the datasets analyzed, it is found that $k = 379$ modes are required to capture $95\
+All POD modes presented in this work follow this decomposition described and were computed under the same flow conditions (DNS dataset described in Section~).
+
+Computational experiments
+ 
+
+The resolvent operator is first examined using a non-isothermal Poiseuille flow under similar working conditions as the high-pressure transcritical turbulent channel flow investigated by~. Subsequently, the corresponding DNS data are used for the data-driven analyses.
+Accordingly, this section describes both: (i) the non-isothermal Poiseuille flow configuration, and (ii) the DNS setup, from which the turbulent mean (base) flow is extracted.
+
+Non-isothermal Poiseuille flow
+
+The plane Poiseuille flow is employed to isolate oblique three-dimensional effects from the analysis. A temperature difference is imposed between the walls to ensure the fluid operates along transcritical thermodynamic trajectories, analogous to those in the DNS case.
+Figure~ presents the converged, analytically derived laminar base flows for both high-pressure (HP) and ideal-gas (IG) conditions, along with the ensemble-averaged DNS results, referred to as the turbulent mean flow (i.e., the base flow used for the analytical resolvent analysis in this work). 
+Notable differences are observed across the cases. The Poiseuille flows are based on laminar profiles, whereas the DNS provides a turbulent mean profile. As it can be observed, the ideal-gas case does not present important thermophysical variations. Additionally for the high pressure cases, the pseudo-boiling region, identified by a peak in isobaric specific heat capacity, appears at $y/ 1.5$ for the Poiseuille flow and at $y/ 1.9$ for the DNS case. Further details regarding the derivation of these base flows and the corresponding validation can be found in~.
+Finally, to match the flow conditions of the DNS, the Brinkman number was adjusted to $Br 5.6 10^-6$, resulting in a reference velocity of $U_r 1$.
+
+	
+ [][width=0.325]Poiseuille_vs_DNS_streamwise.jpeg 
+ [][width=0.332]Poiseuille_vs_DNS_T.jpeg 
+ [][width=0.322]Poiseuille_vs_DNS_c_p.jpeg \\ 
+	 
+ 
+
+DNS of high-pressure transcritical channel flow
+ 
+
+The DNS of high-pressure transcritical channel flow, conducted following the methodology outlined by~ using the RHEA flow solver~, is briefly introduced. The system operates with N$_2$ at a supercritical bulk pressure of $P_b/P_c = 2$, confined between isothermal cold/bottom ($cw$) and hot/top ($hw$) walls; the system is periodic in the streamwise and spanwise directions. These walls are separated by a distance $H = 2$, with $ = 100$ representing the channel half-height. The wall temperatures are set to $T_cw/T_c = 0.75$ and $T_hw/T_c = 1.5$, where subscript $()_c$ denotes critical conditions.
+Time-averaged DNS results are used to extract the turbulent mean flow fields, which serve as the base state for the subsequent resolvent sensitivity analysis. A schematic of the setup is shown in Figure~.
+
+The non-isothermal configuration considered forces the fluid to follow a transcritical thermodynamic trajectory across the pseudo-boiling region, as shown in Figure~(c).
+The friction Reynolds number at the cold wall ($_,cw$) is set to $100$ to ensure fully developed turbulent conditions. The corresponding dimensional parameters and computational domain represent a DNS with spatial resolutions of $ x^+ = 9.8$ and $ z^+ = 3.3$ (normalized by the cold-wall friction velocity), and non-uniform stretching in the wall-normal direction. The vertical grid spacing ranges between $0.2 y^+ 2.1$ at the cold wall and $0.5 y^+ 5.6$ at the hot wall.
+The flow is initialized following the procedure described by~, and statistical data is collected after reaching statistically steady conditions (defined by convergence in the first- and second-order flow statistics and the skin-friction coefficient) over approximately 50 FTTs, where FTT is defined as $t_b = L_x/u_b /u_,bw$.
+The computational solution of the equations of fluid motion follows the numerical scheme developed by~. For time integration, a CFL number of approximately 0.9 is selected to ensure stability of the solution and proper extraction of data snapshots.
+
+Figure~ depicts the normalized mean streamwise velocity and TKE, calculated from Favre-averaged fluctuations, along the wall-normal direction for the cold and hot walls. As it can be observed, the velocity profile at the hot (top) wall deviates from canonical turbulent boundary layer behavior, with suppressed velocities relative to the cold (bottom) wall (distance from the wall expressed in viscous units). In this regard,~ noted limited success near the hot (top) wall with violent density fluctuations.
+Moreover, the locations of maximum TKE for the cold and hot walls correspond to $y_cw^+ 10$ and $y_hw^+ 20$, respectively.
+Finally, although all mean-base flow quantities are time-averaged and denoted by $$, the overbar notation is omitted in the following sections for clarity in the presentation of the resolvent analysis results.
+
+	
+	[][width=0.49]DNS_U_Statistics.jpeg 
+ [][width=0.495]DNS_TKE_inner.jpeg \\ 
+	 
+ 
+
+Results \& Discussion
+ 
+
+This section presents and discusses the results.
+It begins with an introduction to the near-wall scale motions identified through the analytical resolvent operator.
+Subsequently, turbulent structures at various phase speed levels (revealed by the resolvent framework) are examined using Fourier transform-based data-driven techniques, alongside the most energetic modes obtained from POD.
+
+Analytical resolvent analysis
+ 
+
+This subsection presents the results of the analytical resolvent analysis, with a focus on: (i) the dominant resolvent modes associated with the highest amplification, and (ii) the corresponding coherent structures arising at specific wavelengths and phase speeds.
+
+ 
+
+The resolvent operator is constructed by linearizing the equations of fluid motion around the turbulent mean flow, obtained from ensemble-averaged DNS data.
+In this case, the Reynolds number used for the operator is the bulk value extracted from the DNS data, $Re_b = 3625$, with the corresponding mean flow yielding a Brinkman number of $Br_b 5 10^-5$.
+It is important to note that the body force driving the flow is set to $F = 0$, as it is intrinsically handled by the feedback loop controller within the simulation.
+Figure~ presents the amplification associated with the leading singular value. While the amplification patterns exhibit slight variations compared to the laminar base flow case, the optimal wavenumber locations remain largely consistent.
+However, both the optimal forcings and their corresponding responses differ markedly from those observed in the high-pressure laminar-based resolvent analysis, as shown in Figure~. Near the hot/top wall, the forcing is influenced by the pseudo-boiling region, where strong density and spanwise velocity fluctuations give rise to a pair of counter-rotating vortices elongated in the wall-normal direction.
+As illustrated in Figure~, the topology of the structures are biased toward the cold/bottom wall. The associated response, visualized in the $x$–$y$ plane, is dominated by a single streamwise-aligned structure that follows the wall-normal profile [Figure~(a)] and is advected downstream.
+
+	
+	[width=0.52]Sigma_Map_HP_Turbulent_PR_c_1_Br_5.0024e-05_Re_1000_bluered.jpeg 
+	 
+ 
+
+	
+	[width=0.488]Response_HP_Turbulent_PR_c_0.0001_alpha_0.0001_beta_2.jpeg 
+ [width=0.502]Forcing_HP_Turbulent_PR_c_0.0001_alpha_0.0001_beta_2.jpeg \\ 
+	 
+ 
+
+	
+ [][width=0.495]ResponsePattern_rho_HP_Turbulent_Sigma_1_Alpha_0.0001_Beta_2.jpeg 
+ [][width=0.495]ResponsePattern_u_HP_Turbulent_Sigma_1_Alpha_0.0001_Beta_2.jpeg \\ 
+	 
+ 
+
+ 
+
+Coherent structures provide a foundational framework for analyzing turbulent flows, particularly through SVD applied to spatio-temporal domains to isolate motions at distinct scales~. In this study, the relevant flow scales are first identified via resolvent analysis, using representative wavenumber triplets corresponding to characteristic motions [namely: large-scale motions (LSMs), very-large-scale motions (VLSMs), and near-wall small-scale motions (NWSMs)].
+The spectral signatures of these structures are evident in the premultiplied energy spectra presented in Appendix~, supported by one-dimensional streamwise and spanwise spectra.
+These spectra highlight distinct energy peaks: small-scale features dominate the near-wall region, while larger-scale structures emerge in the outer layer. However, under the low-Reynolds-number transcritical regime studied here, partial overlap between these bimodal features is observed.
+
+Figure~ illustrates representative LSM and VLSM structures in the $x$-$y$ plane, highlighting the downstream evolution of coherent motions. Notably, both LSMs and VLSMs align with the same physical wavelength, indicating a shared optimal wavenumber associated with peak energy content in the turbulent spectra. It is important to note that LSMs and VLSMs are classically distinguished by their streamwise wavelengths, with VLSMs extending $6$–$10$ $$ longer than the $()$ scales associated with LSMs~. In the present study, however, the resolvent analysis at low-Reynolds numbers yields only a single energetic wavelength, consistent with the peak of the turbulent spectra. This is interpreted as a Reynolds-number limitation, reflecting insufficient spectral separation to clearly distinguish between LSM and VLSM amplification scales, rather than evidence that both structures collapse to the same physical wavelength.
+These scale-specific motions are concentrated near the hot (top) wall and confined by the pseudo-boiling region, emphasizing a physically significant mechanism localized around $y/ 1.9$. Unlike symmetric isothermal wall-bounded flows, the mean shear here does not support large-scale motions around the channel centerline. This asymmetry reflects the influence of the fluid’s thermophysical properties and the specific flow conditions present in this high-pressure transcritical regime.
+Despite sharing the optimal wavenumber, LSM sand VLSMs structures differ markedly. The VLSMs appear as elongated, ellipsoidal structures primarily aligned in the streamwise direction, while the LSMs exhibit pronounced wall-normal displacement in their streak organization. Additionally, the LSMs feature vortical structures inclined along the mean flow direction, suggesting vertical redistribution of energy and momentum; consistent with the altered mean shear environment.
+
+Figure~ presents NWSMs structures at the hot/top wall, shown in both inner and outer scaling. At the cold/bottom wall, NWSMs are only weakly captured, consistent with the energy spectra, and linked to wavenumbers prone to numerical instability. Nevertheless, the second resolvent mode reveals structures at scales comparable to those near the hot/top wall, suggesting a degree of symmetry in the resolved dynamics despite the asymmetric energy distribution.
+Notably, the NWSM structures exhibit qualitative similarities to the VLSMs, particularly in their pattern of alternating high- and low-speed streaks centered around $y^+ 5$ at the hot/top wall. This indicates that the pseudo-boiling region significantly influences the dynamics of coherent structures, especially in low-viscosity zones where such motions are more readily sustained.
+To further explore these features, a data-driven analysis is proposed below to characterize the modal properties and energy content of the scale-specific motions. This approach aims to verify the presence of coherent structures propagating at phase speeds atypical of classical isothermal wall-bounded turbulence~, thereby offering new insights into the unique dynamics of high-pressure transcritical flows.
+
+	
+ [width=0.78]ScaleMotion_LSM_Sigma_1_Alpha_6.2832_Beta_12.5664.jpeg \\ 
+ [width=0.78]ScaleMotion_VLSM_Sigma_1_Alpha_0.62832_Beta_6.2832.jpeg \\ 
+	 based on Table~. 
+ 
+
+	
+ [width=0.80]ScaleMotion_NWSM_tw_Sigma_1_Alpha_3.7378_Beta_16.8201.jpeg \\ 
+ [width=0.80]ScaleMotion_WallUnits_NWSM_tw_Sigma_1_Alpha_3.7378_Beta_16.8201.jpeg \\ 
+	$–$y^+$ plane with a semi-logarithmic $y$-axis. Triplet definition $(_x^+,_z^+,c+)$ is detailed in Appendix~ based on Table~. 
+ 
+
+Spatio-temporal characterization of turbulent structures
+ 
+
+This subsection presents the analysis of turbulent structures using data-driven methods, focusing on: (i) coherent structures extracted via FFT-based filtering techniques, and (ii) energized flow regions identified through POD to highlight dominant energetic modes.
+Notably, amplified responses occur at a relatively slow wavespeed, $c^+=1$. Although such low-speed responses are not typically associated with energetic motions in canonical wall turbulence, the resolvent analysis reveals that they are amplified in the transcritical case. The corresponding singular values ($_1 2.9$) confirm this enhanced amplification, emphasizing the altered scaling and energetic pathways characteristic of this regime.
+
+The filtered fields presented in Section~ are obtained via a data-driven decomposition of the full space–time turbulent dataset using targeted phase-speed windows. By applying spatio-temporal Fourier transforms, the data are selectively reconstructed in physical space to isolate coherent structures propagating at prescribed convective velocities ($c^+ = 1,5,10,15,20$), expressed in viscous units relative to the hot/top wall. This methodology is intended to extract dynamically relevant flow features consistent with resolvent-based predictions~, which are often obscured in conventional, unfiltered turbulence fields.
+Figure~ presents the streamwise velocity fluctuations reconstructed at each phase speed. The wall-normal axis is scaled in hot/top wall viscous units, referencing the thermodynamically active side of the channel; viz. nearest to the pseudo-boiling region.
+At the lowest phase speed, $c^+ = 1$, the filtered fields reveal near-wall, streak-like structures confined below the pseudo-boiling layer. These features emphasize the dominance of hot/top-wall thermodynamic effects in this regime. Structurally, they resemble the self-sustaining motions characteristic of the viscous sublayer and buffer region. However, here they are identified on the basis of propagation speed rather than spatial wavelength, enabling the detection of slow-moving modes that may arise from strong local thermodynamic forcing. Their tight confinement to the hot/top wall vicinity supports the presence of non-canonical, low-speed motions that are not typically observed in classical incompressible wall-bounded turbulence~.
+
+As the phase speed increases, the filtered structures become increasingly elongated in the streamwise direction and shift upward in the wall-normal coordinate, while remaining confined below the pseudo-boiling region. The coherence and spatial organization of these motions highlight the role of the pseudo-boiling layer as a dynamic modulator, which delineates the vertical extent of energetic structures and potentially acts as a phase-selective barrier or waveguide.
+For intermediate phase speeds ($c^+=10–15$), the structures resemble large-scale wavepackets extending into the logarithmic region, yet they remain bounded above by the pseudo-boiling zone. At the highest phase speed ($c^+=20$), the reconstructed motions occupy a broad wall-normal range, consistent with outer layer resolvent modes. Nonetheless, a pronounced hot/top wall asymmetry persists, shaped by the geometry and location of the pseudo-boiling region.
+
+In contrast to the velocity field, Figure~ shows the filtered density fluctuations expressed in outer units, revealing the full channel height and highlighting the flow’s asymmetric configuration. The pseudo-boiling line, marked by a dotted contour in each subplot, is situated closer to the hot/top wall. At the lowest phase speed ($c^+=1$), density fluctuations are highly localized near the hot/top wall and display small-scale, thermally driven features, likely associated with baroclinic modes that are highly sensitive to steep thermodynamic gradients near the pseudo-boiling line.
+For intermediate phase speeds ($c^+=5-10$), the structures become more elongated and coherent in the streamwise direction, aligning with the pseudo-boiling line geometry and suggesting coupling between density fluctuations and the local thermodynamic state. At $c^+=15$, wave-like density perturbations emerge that closely follow the pseudo-boiling contour, indicating potential baroclinic interaction with the stratified layer. At the highest phase speed ($c^+=20$), the fluctuations appear broader and more dispersed across the channel height, consistent with fast-propagating outer-layer modes. Despite their increased spatial extent, these fluctuations remain biased toward the hot/top wall, underscoring the persistent influence of the pseudo-boiling layer on the organization and vertical distribution of turbulent energy.
+
+Overall, the velocity and density reconstructions across phase speeds reveal a continuous spectrum of convecting coherent motions, spanning from slow, near-wall structures to fast, outer-layer modes, all asymmetrically shaped by the pseudo-boiling region. This region acts as a phase-selective boundary, modulating or confining structures according to their convective velocity and thermodynamic sensitivity. Such behavior reflects the distinctive physics of high-pressure transcritical turbulence, where classical wall-bounded flow mechanisms are intricately coupled with strong real-fluid effects. For completeness, analogous reconstructions of streamwise velocity in outer scalings are provided in Appendix~, offering a global perspective on the spatial extent and asymmetry of the filtered motions.
+
+	
+	[width=0.9] XY_u_c_plus_target_1_tw_0_wall.png \\ 
+ [width=0.9]XY_u_c_plus_target_5_tw_0_wall.png \\ 
+ [width=0.9]XY_u_c_plus_target_10_tw_0_wall.png \\ 
+ [width=0.9]XY_u_c_plus_target_15_tw_0_wall.png \\ 
+ [width=0.9]XY_u_c_plus_target_20_tw_0_wall.png \\ 
+	 
+ 
+
+	
+	[width=0.89] XY_rho_c_plus_target_1_tw_0.png \\ 
+ [width=0.89]XY_rho_c_plus_target_5_tw_0.png \\ 
+ [width=0.89]XY_rho_c_plus_target_10_tw_0.png \\ 
+ [width=0.89]XY_rho_c_plus_target_15_tw_0.png \\ 
+ [width=0.89]XY_rho_c_plus_target_20_tw_0.png \\ 
+	 
+ 
+
+To complement the phase-speed-filtered reconstructions and accurately identify spatial locations of peak energy amplification, POD has been performed on the full dataset. This approach enables precise quantification of the dominant energetic modes by first isolating regions of maximal energy content, followed by a detailed modal decomposition of the independent fluctuation variables ($$), thereby characterizing the coherent structures that govern the flow dynamics.
+In this regard, Figures~– present the modal energy spectra for the $10$ leading POD eigenvalues. The first mode captures the largest-scale, most energetic structures, predominantly localized near the cold/bottom wall, which is consistent with classical near-wall turbulence dynamics. This is evidenced by strong energy peaks in mode 1 concentrated at the cold wall, reflecting shear-driven motions typical of canonical turbulent channel flows. However, higher-order modes are preferred to isolate coherent features more relevant to turbulence dynamics and flow physics~.
+Notably, the modal shapes exhibit pronounced asymmetry about the channel centerline, arising directly from the thermodynamic and dynamic asymmetry induced by the proximity of the pseudo-boiling front near the hot/top wall. The vertical confinement and asymmetry of these energetic POD modes further emphasize the role of the pseudo-boiling region as a dynamic boundary-like layer that enhances thermofluid coupling.
+
+The fifth mode reveals a prominent energy peak near the hot/top wall, where its localized energy exceeds that of the first mode, highlighting smaller-scale energetic motions concentrated closer to the wall. In contrast, mode six exhibits energetic structures extending across nearly the entire wall-normal direction, with substantial amplitude spanning from the cold/bottom to the hot/top wall. This broad vertical support suggests the presence of large-scale, channel-spanning oscillations or global modes, likely influenced by real-fluid thermodynamic effects; phenomena that are typically absent in isothermal wall-bounded flows.
+It is worth noting that global, channel-spanning modes have been reported in both isothermal channel~ and Couette flows~; here, however, their amplitude and wall-to-wall coherence are markedly enhanced, highlighting the distinctive characteristics of the transcritical case.
+Similarly, the seventh mode displays a pronounced energy peak near the hot/top wall, whereas the tenth mode concentrates its largest energy near the cold/bottom wall. These observations underscore the vertical heterogeneity of coherent motions throughout the channel, reflecting complex interactions between wall effects and transcritical thermodynamics.
+Higher-order modes retain comparable spatial support but exhibit subtle phase shifts and modulations in their vertical extent, reinforcing the conclusion that a significant portion of the flow energy organizes into coherent structures adjacent to the pseudo-boiling region.
+
+Collectively, the POD and phase-speed-filtered analyses underscore the emergence of energetically dominant structures that classical isothermal wall-bounded turbulence models fail to capture adequately. The coexistence of near-wall shear-driven modes (e.g., mode $1$), localized pseudo-boiling-driven structures (e.g., modes $5–7$), and channel-wide oscillations (mode $6$) reveals a flow regime where coherent organization arises from the complex interplay of wall-driven shear, and high-pressure transcritical thermodynamics. These findings imply that accurate modeling of transcritical fluid turbulence necessitates incorporation of localized production mechanisms and structural asymmetries, as conventional isothermal-based approaches are unlikely to represent the unique dynamics induced by the pseudo-boiling region.
+
+	
+	[width=0.9] POD_Energy_Mode_0_Map.png \\ 
+ [width=0.9]POD_Energy_Mode_1_Map.png \\ 
+ [width=0.9] POD_Energy_Mode_2_Map.png \\ 
+ [width=0.9]POD_Energy_Mode_3_Map.png \\ 
+ [width=0.9] POD_Energy_Mode_4_Map.png 
+	 
+ 
+
+	
+ [width=0.9]POD_Energy_Mode_5_Map.png \\ 
+ [width=0.9] POD_Energy_Mode_6_Map.png \\ 
+ [width=0.9]POD_Energy_Mode_7_Map.png \\ 
+ [width=0.9] POD_Energy_Mode_8_Map.png \\ 
+ [width=0.9]POD_Energy_Mode_9_Map.png \\ 
+	 
+ 
+
+Figures~ and~ present the spatial structures of the first and second POD modes, decomposed by fluctuation variables. Additional higher-order modes are provided in Appendix~ for completeness.
+The first mode, which carries the highest energy content and aligns closely with the mean flow, is primarily dominated by density and temperature fluctuations. These fields exhibit strong spatial asymmetry across the channel, reflecting the influence of the imposed thermal gradient and its impact on fluid properties. The concentration of fluctuations near the pseudo-boiling region underscores the coupling between energy transport and the local thermodynamic state.
+Interestingly, despite its kinematic nature, the streamwise velocity fluctuation also displays a coherent structure in this region. Its localization between the hot/top wall and the pseudo-boiling line suggests an indirect modulation of momentum transport by thermal gradients, likely mediated by variations in local density and/or viscosity.
+Furthermore, the wall-normal and spanwise velocity components exhibit alternating banded patterns near both walls; features reminiscent of classical ejection and sweep events. However, these structures are noticeably asymmetric, reflecting the strong thermal stratification inherent to the high-pressure transcritical flow regime.
+
+The second mode further accentuates these features: viz. the spatial coherence of the thermodynamic fluctuations becomes more pronounced and increasingly confined near the pseudo-boiling region. This suggests the influence of a secondary mechanism, potentially linked to convective instabilities or intensified property gradients, that enhances coupling in this region. Additionally, the velocity components of the second mode exhibit greater phase complexity in the streamwise direction and finer-scale structures, particularly in the wall-normal and spanwise components, indicating the emergence of smaller, more localized energetic motions not captured by the leading mode.
+These trends persist in the higher-order modes (Appendix~), where increased localization and sharper gradients in the fluctuation fields further underscore the critical role of near-wall thermodynamic phenomena in driving small-scale structures. Collectively, the POD results identify the pseudo-boiling region as a hotspot of coupled thermal–hydrodynamic activity across multiple energetic modes.
+Moreover, the pronounced asymmetry of the modal structures about the channel centerline reflects the combined effects of thermodynamic stratification, pseudo-boiling-induced property variations, and wall-shear interactions. This asymmetry, which is absent in classical isothermal wall-bounded turbulence, reveals a fundamentally different organization of coherent structures in high-pressure transcritical channel flows.
+
+	
+	[width=0.9] POD_Mode_0_var_0.png \\ 
+ [width=0.9]POD_Mode_0_var_1.png \\ 
+ [width=0.9] POD_Mode_0_var_2.png \\ 
+ [width=0.9]POD_Mode_0_var_3.png \\ 
+ [width=0.9] POD_Mode_0_var_4.png \\ 
+	 
+ 
+
+	
+ [width=0.9]POD_Mode_1_var_0.png \\ 
+ [width=0.9] POD_Mode_1_var_1.png \\ 
+ [width=0.9]POD_Mode_1_var_2.png \\ 
+ [width=0.9] POD_Mode_1_var_3.png \\ 
+ [width=0.9]POD_Mode_1_var_4.png \\ 
+	 
+ 
+
+Conclusions
+ 
+
+A resolvent analysis framework tailored for high-pressure transcritical wall-bounded flows has been developed and applied to a turbulent base flow obtained via an iterative solution of the linearized equations of fluid motion. This study, thus, aimed to bridge the gap between classical isothermal low-order decomposition methods and the complex dynamics of high-pressure transcritical flows through a comprehensive sensitivity analysis of resolvent operators, identifying the most responsive velocity modes to harmonic excitation. Singular value decomposition of the resolvent operator revealed that the largest amplification occurs at spanwise wavenumbers on the order of unity, consistent across laminar and turbulent regimes; however, the structure of forcings and responses differs markedly. Notably, the pseudo-boiling region plays a dominant role, particularly in the turbulent flow regime, where strong density and spanwise velocity forcings intensify response streaks that extend across the channel height. The identified scale motions highlight the constraining influence of the pseudo-boiling layer on large-scale structures, especially under low Reynolds number conditions. Complementary phase-speed-filtered analyses uncovered energetic turbulent structures propagating at anomalously low speeds, which are absent in incompressible wall-bounded turbulence. Furthermore, POD modes are predominantly localized between the hot/top wall and the pseudo-boiling region, indicating that this layer acts effectively as a pseudo-wall, modulating viscous damping and momentum transfer within the flow.
+
+The sensitivity analysis of the resolvent operator confirmed that the transfer function exhibits a pronounced optimum at spanwise wavenumbers, while the streamwise wavenumber and temporal frequency act as low-pass filters favoring lower values for maximal amplification. The largest singular value ($_1$), evaluated at a phase speed corresponding to the bulk flow velocity, demonstrated parameter-space optima that behave analogously to transient growth with exponentially increasing energy amplification rates. Forcing structures are dominated by two pairs of counter-rotating vortices separated by the pseudo-boiling region: viz. weaker vortices reside above, while stronger, elongated vortices extend toward the cold/bottom wall. Based on the mean turbulent flow, the pseudo-boiling region significantly governs the sensitivity, where the optimal resolvent mode manifests as a high-energy ellipsoidal structure in the wall-normal direction.
+Coherent structure analysis revealed the coexistence of large-scale motions near the wall and in the outer region, though their clear distinction was hindered by the relatively low friction Reynolds number. These scale motions remain confined by the pseudo-boiling layer, with large-scale motions exhibiting downstream tilt and vertical growth, while being narrower than very-large-scale motions. Data-driven spatio-temporal Fourier transform analyses corroborated these findings, highlighting energetic structures propagating at low phase speeds and confined between the hot/top wall and the pseudo-boiling zone, becoming progressively elongated in the streamwise direction.
+POD further identified dominant energetic modes: while the most energetic structures are near the cold/bottom wall consistent with incompressible turbulence, lower-order modes localize high energy near the hot/top wall and pseudo-boiling region. Notably, the spatial coherence between streamwise velocity and density fluctuations underscored the interplay of hydrodynamic and thermodynamic mechanisms driving the flow dynamics.
+
+Future investigations will focus on extending the FFT-based methodology to fully three-dimensional domains to enable a comprehensive characterization of spanwise-elongated flow structures. Although three-dimensional POD has been applied in the present study, further detailed analysis of energetic and fluctuating modes (especially within the spanwise–wall-normal $y$–$z$ plane) remains an important avenue for exploration. To enhance the temporal resolution of coherent structures and validate POD results, advanced modal decomposition techniques, such as DMD and SPOD, could be employed.
+Concurrently, significant effort will be devoted to developing a data-driven resolvent analysis framework capable of addressing large-scale, nonlinear flow regimes. This initiative aims to extend and generalize existing linear frameworks to better predict and interpret complex flow dynamics in high-pressure transcritical conditions.
+Ultimately, the goal is to optimize flow interactions along the pseudo-boiling region to improve mixing and heat transfer efficiency. To support this, new direct numerical simulation datasets will be generated under a wider range of operating conditions. These datasets could facilitate the construction of reduced-order models capable of real-time tracking of the instantaneous pseudo-boiling region through the superposition of resolvent mode iso-surfaces and scale-resolved flow structures, or via reconstruction using POD modes to obtain its representation within the full flow field.
+
+[Supplementary data]Supplementary material and movies are available at .
+
+[Acknowledgements]The authors acknowledge support from the Formaci\'o de Professorat Universitari scholarship (FPU-UPC R.D 103/2019), the SGR program (2021-SGR-01045) of the Generalitat de Catalunya (Catalonia), and the PID2023-150840OA-I00 grant of the Agencia Estatal de Investigación (AEI, Spain).
+
+[Funding]This work is funded by the European Union (ERC, SCRAMBLE, 101040379). Views and opinions expressed are however those of the authors only and do not necessarily reflect those of the European Union or the European Research Council. Neither the European Union nor the granting authority can be held responsible for them.
+
+[Declaration of interests]The authors report no conflict of interest.
+
+[Data availability statement] 
+The analytical resolvent analysis presented in this work was conducted using an in-house code named High-Pressure Resolvent Analysis (). 
+The source code is openly available at: .
+ is designed as a flexible tool for performing resolvent analyses under both ideal-gas and real-fluid thermodynamic conditions. It includes built-in wrappers for the and libraries. The code is thoroughly commented for readability, and the repository contains a complete description, user instructions, and a setup guide.
+The resolvent operator can be interrogated via a triplet-sweep (in temporal frequency and wavenumbers) or along a user-specified parameter space. While the code is currently configured for Poiseuille flow, it can be easily adapted to other wall-bounded flow configurations (e.g., Couette flow) by modifying the initial and boundary conditions.
+The weighted operator formulation follows the definition presented in this paper, although the code is structured to allow easy customization if needed.
+ depends on two additional packages that require installation beforehand: the High-Pressure Compressible Flow Solver (), available at , and the High-Pressure Linear Stability Analysis (), found at , which provide supporting functionality and thermodynamic models required by .
+In parallel, the data-driven methods (referred to as ) used in this study are implemented in and provided in a separate repository: . This package includes class definitions and functionalities for: (i) the data-driven resolvent operator; (ii) FFT-based phase speed gating and generation of flow-field slices and movies; and (iii) POD techniques for mode extraction, eigenvalue/eigenvector analysis, and reconstruction of flow fields and energetic structures.
+
+[Author ORCIDs]Marc Bernades, https://orcid.org/0000-0003-3761-2038; Beverley J. McKeon, https://orcid.org/0000-0003-4220-1583; Llu\'is Jofre, https://orcid.org/0000-0003-2437-259X.
+
+[Author contributions]Marc Bernades: Conceptualization, Formal analysis, Investigation, Software, Writing – original draft; Beverley J. McKeon: Conceptualization, Investigation, Writing – review \& editing; Llu\'is Jofre: Conceptualization, Funding acquisition, Investigation, Writing – review \& editing.
+
+Pre-multiplied spectra of turbulent kinetic energy
+ 
+
+Figure~ depicts the ensemble-averaged pre-multiplied TKE spectra of the streamwise velocity component across the entire dataset for reference.
+
+	
+	[width=0.49]TKE_y_plus_tw_1.png
+ [width=0.49]TKE_y_plus_tw_10.png \\
+ [width=0.49]TKE_y_plus_bw_1.png
+ [width=0.49]TKE_y_plus_bw_10.png \\ 
+	
+
+In addition, to serve as a basis for coherent structures, the most energetic spatial wavenumbers $k_x$ and $k_z$ of the turbulent channel flow are identified by means of the spectrum in the periodic dimensions of the channel. Multiple datasets have been time-averaged and the subsequent Fourier transformations for stream- and spanwise directions at different $y$-planes.
+Thus, Figure~ illustrates the spectrum at various wall-normal locations for streamwise normalized kinetic energy component $E_uu$ (denoting spectral density). In brief, streamwise energy spectra are predominant, hence, further decomposition on $E_vv$ and $E_ww$ is found in~ along with the generalized turbulent kinetic energy spectra.
+Moreover, Table~ quantifies the wavenumbers and associated wavelengths ($ = 2 / k$) corresponding to the most energetic regions of the spectra, utilized to compute resolvent modes of Section~.
+The phase speed of each mode is determined from the power spectral density (PSD) of temporal probe signals, combined with the corresponding mean velocity profile at each wall-normal location~. Notably, the extracted physical parameters deviate from canonical scale hierarchies in wall-bounded turbulence~.
+
+To this extent, a distinct peak is noticeable in the near-wall region, specially at $y_w^+ = 10$ which approximately coincides with the turbulence production peak also, at wavelengths of $_x,cw^+ = 130$ and $_x,hw^+ = 430$. This indicates that most energetic streamwise velocity fluctuations are principally of this length due to the viscous-scaled near-wall structure of elongated high- and low-speed regions~.
+At sufficient high-Reynolds-numbers, the length scales of the energetic peak at half-channel height are considerably larger, commonly referred as the outer peak~. Nonetheless, this bimodal composition is not observed due to the broad nature of such low-Reynolds-regimes, which result in diminished energy levels in the outer site. Regardless, the near-wall wall structure obscures any prominent secondary peak.
+The energy of the viscous sublayer is comparatively low relative to the buffer sublayer and log-law region, especially at the bottom wall.
+Likewise, the wavelength shift between outer and inner peaks is noted in spanwise direction with length scale of $5$ at the channel center.
+In this regard, based on these results, the triplet definition to reproduce the coherent structures presented in Section~ has been assigned as follows. First, although a priori there is no distinction between LSM and VLSM, the resolvent operator has been interrogated for (i) LSM at $(1,0.5,0.96)$ corresponding to the phase speed at channel center, and (ii) VLSM $(10,1,1.09)$ noting the velocity at pseudo-boiling line height ($y/ 1.9$) in outer scales ($_x,_z,c$). Next, the NWSM has been determined in viscous units ($_x^+,_z^+,c^+$) as $(200,50,0.5)$ and $(450,100,10)$ for cold/bottom and hot/top walls respectively.
+
+	
+	[width=0.495]Energy_Spectra_E_uu_k_x.jpeg 
+ [width=0.49]Energy_Spectra_E_uu_k_z.jpeg \\ 
+	$) at different $y$-planes on stream- (left) and spanwise direction (right). The solid- and dashed-lines denote $y_bw^+$ and $y_tw^+$ respectively with same color legend. 
+ 
+
+FFT-filtered coherent structures and POD modes
+ 
+
+Supplementary figures of data-driven structures filtered by phase speed (via FFT) and POD modes are provided in this appendix.
+
+Phase-speed-filtered coherent structures via FFT
+
+Figure~ shows the filtered velocity in outer scalings, complementing the results presented in Section~.
+
+	
+	[width=0.87] XY_u_c_plus_target_1_tw_0.png \\ 
+ [width=0.89]XY_u_c_plus_target_5_tw_0.png \\ 
+ [width=0.89]XY_u_c_plus_target_10_tw_0.png \\ 
+ [width=0.91]XY_u_c_plus_target_15_tw_0.png \\ 
+ [width=0.91]XY_u_c_plus_target_20_tw_0.png \\ 
+	 
+ 
+
+POD modes of fluctuating variables
+
+The following multi-panel figures present the third through sixth POD modes of the fluctuation variables, which were omitted from Section~ for brevity; only the first and second modes are shown in Figures~– in the main text.
+Figures~ and~ display the third and fourth POD modes for each fluctuation variable. These higher-order modes exhibit increasingly fragmented and localized structures compared to the dominant modes discussed earlier. In particular, $^$ and $T^$ reveal finer-scale patterns characterized by pronounced streamwise waviness and steeper gradients near the pseudo-boiling region. The velocity components (especially $u^$ and $w^$) demonstrate streak-like formations with noticeable phase shifts and increasing asymmetry across the channel height.
+Collectively, these modes highlight the emergence of smaller-scale coherent motions and reinforce the dominant role of the pseudo-boiling region in shaping the energetic structure of the flow. The persistence of this influence across the modal hierarchy underscores the conclusion that near-wall and pseudo-boiling dynamics are key drivers of both large- and small-scale turbulence under wall-bounded high-pressure transcritical conditions.
+
+Moreover, Figures~ and~ present the fifth and sixth POD modes of the normalized fluctuation variables, which exhibit increasingly fragmented and spatially localized structures compared to modes $3$ and $4$. Notably, $^$ and $T^$ continue to display pronounced asymmetry, with enhanced fine-scale patterns concentrated near the hot/top wall, reflecting the sustained influence of the pseudo-boiling region on density and thermal fluctuations. The velocity fluctuations, particularly $u^$ and $v^$, reveal complex streak- and wave-like structures characterized by shorter streamwise wavelengths and intensified phase shifts across the channel height. Moreover, $v^$ and $w^$ exhibit multiple zones of alternating positive and negative fluctuations, indicative of intricate wall-normal and spanwise motions likely linked to secondary instabilities or the breakdown of larger-scale structures seen in lower modes.
+These observations confirm the progression toward richer small-scale dynamics deeper into the modal hierarchy, while underscoring the pseudo-boiling layer as a persistent organizing feature. Overall, modes $5$ and $6$ illustrate the ongoing cascade of coherent motions driven by near-wall and pseudo-boiling turbulence mechanisms, thereby extending and reinforcing the conclusions drawn from the leading energetic modes.
+
+	
+	[width=0.9] POD_Mode_2_var_0.png \\ 
+ [width=0.9]POD_Mode_2_var_1.png \\ 
+ [width=0.9] POD_Mode_2_var_2.png \\ 
+ [width=0.9]POD_Mode_2_var_3.png \\ 
+ [width=0.9] POD_Mode_2_var_4.png \\ 
+ 
+ 
+
+	
+	[width=0.9] POD_Mode_3_var_0.png \\ 
+ [width=0.9]POD_Mode_3_var_1.png \\ 
+ [width=0.9] POD_Mode_3_var_2.png \\ 
+ [width=0.9]POD_Mode_3_var_3.png \\ 
+ [width=0.9] POD_Mode_3_var_4.png \\ 
+ 
+ 
+
+	
+ [width=0.9]POD_Mode_4_var_0.png \\ 
+ [width=0.9] POD_Mode_4_var_1.png \\ 
+ [width=0.9]POD_Mode_4_var_2.png \\ 
+ [width=0.9] POD_Mode_4_var_3.png \\ 
+ [width=0.9]POD_Mode_4_var_4.png \\ 
+	 
+ 
+
+	
+ [width=0.9]POD_Mode_5_var_0.png \\ 
+ [width=0.9] POD_Mode_5_var_1.png \\ 
+ [width=0.9]POD_Mode_5_var_2.png \\ 
+ [width=0.9] POD_Mode_5_var_3.png \\ 
+ [width=0.9]POD_Mode_5_var_4.png \\ 
+	 
+ 
+
+Low-Rank POD modes and flow reconstruction
+ 
+
+POD modes are obtained from the eigenvalues of the correlation, or covariance matrix, of the dataset. The energy associated with each mode is proportional to its eigenvalue, and the cumulative energy convergence is defined as
+$(r) = (_i=1^r _i)/(_i=1^N _i)$, where $r$ is the truncation rank. Figure~ illustrates this energy convergence, showing that $95\
+
+	
+ [][width=0.48]Energy_convergence.png
+ [][width=0.48]Eigenvalue_spectrum.png \\ 
+	 
+ 
+
+Based on this truncation rank, the original POD field for a given snapshot is compared to the reconstructed field for the streamwise velocity component. As shown in Figure~, the reconstruction error remains within approximately $10\
+This discrepancy arises because energy content does not directly translate to reconstruction accuracy in turbulent flows: (i) small-scale structures, despite their low energy, contribute significantly to point-wise errors, and (ii) POD optimally minimizes the global $L^2$ projection error rather than local fluctuations or sharp gradients.
+Specifically, while large-scale structures are well-represented, finer details are not fully captured. Consequently, reduced-order model (ROM) approaches are suitable for analyzing overall flow structures or performing reduced simulations but lack the precision needed to resolve instantaneous turbulent features accurately. Achieving a full-fidelity representation would require either a significantly higher number of modes, which may be computationally prohibitive, or the use of nonlinear techniques such as DMD for more efficient lower-rank reconstructions.
+
+	
+	[width=0.95]XY_POD_original_u_0.png \\ 
+ [width=0.95]XY_POD_reconstructed_u_0.png \\

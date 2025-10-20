@@ -1,0 +1,239 @@
+[aps,twocolumn, pre,longbibliography, superscriptaddress]revtex4-2
+
+ 
+
+ 
+
+[export]adjustbox
+
+[normalem]ulem
+
+[utf8]inputenc
+V
+
+Lemma
+Corollary
+
+[english]babel
+
+*arg\,max
+*arg\,min
+[1][#1]
+
+[1]@xdef\@thefnmark\@footnotemark
+
+^4
+
+ 
+ 
+
+_
+
+u_o
+_o
+e_z 
+
+_c
+_n
+_m
+_n
+
+_n
+_m
+
+^2
+^2
+^4
+ t
+ t
+ T
+ T
+ X
+ Y
+ x
+ y
+
+ x
+ x^2
+ x^2
+ Y
+ X
+
+ X
+ Y
+ x
+ X
+ Y
+ Y
+ x
+
+ t
+ T
+ x
+ x^2
+ T
+ T
+
+A^\n\
+A^\n+1\
+A^\n-1\
+A^\m\
+^\n\
+^\n+1\
+^\n-1\
+^\m\
+
+e^ 
+e^- 
+
+ y
+
+ X
+ X^2
+ Y
+ Y^2
+ Y^4
+
+ X
+ Y
+ Y
+ Y^4
+ Y^4
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+e_x 
+e_y 
+
+[2]
+@write \@auxout #1#2
+
+[1]$$
+
+thnitzer Strae 38, 01187 Dresden, Germany
+
+thnitzer Strae 38, 01187 Dresden, Germany
+
+ 
+thnitzer Strae 38, 01187 Dresden, Germany
+
+licher 
+thnitzer Strae 38, 01187 Dresden, Germany
+e 108, 01307 Dresden, Germany
+
+We study phase-separating fluid mixtures as they demix in the presence of chemical reactions that maintain them away from thermodynamic equilibrium. We show that in such chemically active emulsions the interplay of chemical reactions, phase separation, and hydrodynamics effects complex self-organisation and pattern formation that can give rise to spatiotemporal chaos. This chaotic dynamics, unlike in classical turbulence, is not due to fluid inertia we analyse the system in the Stokes flow regime and it is different from the turbulence of active nematics at low Reynolds number, for our fluid mixtures lack any orientational order. To explore the generic features of nonlinear
+dynamics in our system, we derive amplitude equations which we find to be identical to those obtained for Rayleigh-Benard convection with mean flow and stress-free conditions at the top and bottom plates. Chemically active emulsions possessing no internal order, we thus establish, can exhibit chaoticity that is driven by interfacial stresses in the fluid mixture.
+
+Active emulsions are phase-separating mixtures that are maintained away from thermodynamic equilibrium by energy input at small scales . Unlike passive emulsions which typically reach a thermodynamically equilibrated macrophase-separated state, active emulsions can display intriquing non-equlibrium dynamics such as suppression and even reversal of the ripening process . Active emulsions also provide a general framework to study the principles of self-organisation of multicomponent fluids inside living cells. Cells need to organise complex biochemical reactions within their confines and do so by creating distinct chemical environments in the form of compartments. Some of these compartments, such as the mitochondria --``the powerhouse of the cell'' , have membranes, while others, like centrosomes which control shape, division and motility of the cells , do not. Why then the compartments without membranes just not mix with their surroundings? This is because many membraneless organelles are, in fact, liquid droplets formed via phase separation inside cells . Their liquid-like properties such as viscosity and surface tension have been measured experimentally in several cases . In contrast to droplets in passive emulsions though, droplets inside cells are present in non-equilibrium environment where chemical reactions can actively regulate their size and composition.
+
+The unravelling of liquid-liquid phase separation in biology requires understanding the coupled physics of active chemical reactions and phase separation. The interplay between them has indeed been a focus of current research . In this context, however, hydrodynamic flows have often been neglected, or in other words, the viscosity of the phase-separating fluid mixture assumed infinite. Which begs the question: How does the viscosity of a chemically active phase-separating mixture affect its dynamics? After all, we know that in passive phase separation, viscosity alters the kinetics of the separation process and the morphology of its transient structures . The motivation behind the present article is to explore the importance of fluid mechanics in phase-separating mixtures with active chemical reactions.
+
+We study an incompressible binary fluid mixture with components A and B which undergo reversible chemical reactions $ $ with constant forward and backward reaction rates $_f$ and $_b$, respectively. Having constant reaction rates in a phase-separating system is inconsistent with the thermodynamic condition of detailed balance and implies an active system (vid.\ ). An important remark is already in place here. When fluid flows are neglected, as they are in many previous studies on active emulsions, the coarse-grained model of the binary active emulsion that we have just described is equivalent to the model of spinodal decomposition of diblock copolymers, which is an equilibrium problem . This mapping onto an equilibrium system breaks down when fluid flows are accounted for, thereby highlighting the flows' importance in effectuating the non-equilibrium dynamics.
+
+In this Letter, we highlight the most intriguing aspects of our minimal system, a binary mixture with the simplest of chemical reactions. We show that active chemical reactions drive persistent flows. When these flows are weak, e.g. for low reactions rates and high viscosities, the system reaches a steady state that is either stationary or travelling with a constant drift velocity . When the flows are strong, the system exhibits chaotic dynamics. This chaotic dynamics is novel in that it is neither due to fluid inertia nor like the turbulence of active nematics: we analyse the system in the Stokes flow regime and contra nematics, our system lacks any orientational order and is a scalar mixture.
+
+Minimal model of an active emulsion with flows The dynamics of passive phase separation of an incompressible binary fluid is governed by model H of Hohenberg and Halperin . The model comprises of the Navier-Stokes equations for fluid momentum and mass conservation, and an equation for conserved order parameter $$. We choose $$ as the local molecular composition of the mixture: $ = n_A - n_B/ n_A + n_B$, where $n_A, B$ represents the concentration of molecules of A, B . We describe the phases using the Ginzburg-Landau free-energy 
+ $F[] (V ( ) + ( )^2/2)\, d$ with
+$ V ( ) -a ^2/2 + b ^4/4 $, which has a double-well structure with minima at $ _b$ where $_b $, and $a$, $b$ and $$ are positive constants.
+ The equations that we study are
+
+& t + = M\;^2 - R ( - _s ),
+\\
+-& p + ^2 = = 0,
+
+where, expecting small inertial forces compared to viscous forces at the scale of biological cells, we have considered only the Stokes equations. The fluid components A and B here have, for simplicity, the same mass density $$ and viscosity $$ but an interfacial tension $ $ between them. The field $$ is convected by the flow velocity $ v$, and $p$ is the Lagrange multiplier imposing
+incompressibility of the flow field, $ = 0 $. The chemical potential is defined as $ F/ $ and the mobility $M$ is chosen to be constant. The force density -$$ equals the divergence of the equilibrium
+stress stemming from interfacial tension between the two fluids, in accordance with the Gibbs-Duhem relation. The chemical reactions make the system active and drive it towards a spatially-averaged value of $ = _s$, where $_s (_b - _f)/ R $ and $R _f + _b$ .
+
+It is instructive to work with dimensionless quantities: we therefore scale lengths with $ w/$ where $w $ characterizes the interface width, time with $ w^2/D$ where $D 2 a M$ is the effective diffusion constant at late times , and $$ by $_b$ to obtain
+
+ t + &=^2 (- + ^3 - ^2 ) - ( - m),
+\\
+- p + ^2 &= (- + ^3 - ^2 )
+
+along with $ = 0$, where the variables now and henceforth represent scaled and dimensionless quantities.
+The dimensionless parameters $ R $, $ 3 /2 w$, and $m _s/_b$ represent the strength of activity, of hydrodynamic flows, and of asymmetry in the composition, respectively, and control the dynamics of the system.
+We solve the equations numerically using the Fourier pseudospectral method in two spatial dimensions with a square box of side $256$ and periodic boundary conditions. The number of grid points in each spatial direction is initially $512$, in other words two points per interface width, and $1024$ at late times, including when quantifying chaos. The time integration is performed using the Runga-Kutta (2, 3, 3) implicit-explicit scheme . As we have a cubic non-linearity in the equations, we use 1/2-dealiasing (truncation) scheme to eliminate the aliasing error . We initialise the simulations with a fully mixed state of $ = m$ plus a small random noise to destabilise it.
+
+Results and discussion 
+Even as phase separation tends to demix the components, the chemical reactions mix them. As we stated above, the active emulsion model of and but without hydrodynamic flows, i.e.\ $ = $, is equivalent to an equilibrium model for diblock copolymers with competing local and nonlocal interactions . This system will eventually reach an equilibrium state. In two spatial dimensions, the global free-energy minima of the hydrodynamics-absent system can be (i) a homogeneous state with uniform concentration $=m$, (ii)
+periodic stripe patterns and (iii) periodic patterns with hexagonal symmetry . Typically, small values of $ m $ lead to stripes, large values close to the value $ m = 1$ lead to uniform states. Hexagonal patterns
+are stable for intermediate values of $m$ . The charateristic size of the patterns is inversely proportional to the reaction rate . When hydrodynamic flows are present, the active emulsion model can no longer be mapped onto the equlibrium problem due to the different definition of chemical potential in the active emulsion and diblock-copolymer models. Since the gradient of chemical potential enters the Stokes equation, the fluid flows in the two systems will be different.
+
+In order to explore the effect of fluid flows, we consider a wide range of viscosity values such that $$ ranges from 0.05 to 500, three different values for the strength of reactions $$, namely, 0.008, 0.04, 0.08, and two values of $m$, 0 and -0.2 corresponding to 50:50 and 40:60 component ratio, respectively. These values of $$ correspond to molecular diffusion across the interface being faster than the interconversion rate of the components. Physical systems such as oil-water mixtures will have $$ around $10$ with $w 1$ , $ 10^-2$ , $ 10^-3$ , and $D 10^-9$ . For soft colloidal liquids or biocondensates inside biological cells, it may vary from $10^-4$ to $0.1$ . It is important to remember, however, that intracellular mixtures undergoing phase separation can hardly be called binary and enzymatic chemical reactions are rarely as simple; our motivation in studying the minimal model is only to uncover the basic principles that may underlie real systems.
+
+ [width = 01]Figure1.jpeg
+ (10^5)$ for some values of $$ and $$. The grey line separates the steady patterns from chaotic ones. Colorbar same as in b). b) A steady $$ pattern (left) and the underlying vorticity (right) for $ = 0.008$ and $ = 200$. c) Plot showing values of the maximal Lyapunov exponent for different $$ and $$. Contrary to the dynamics of Swift-Hohenberg equation with mean flow a system related to Rayleigh-Benard convection, we find the spiral defects to be stable whereas it is the target patterns that populate the chaotic state.
+ 
+
+The presence of fluid flows brings in fundamentally new dynamics. For low values of $$ and $$, the system reaches a steady-state with patterns whose morphology is dependent on these values. For symmeteric mixtures ($m = 0$), in addition to the lamellae and stripes of the no-hydrodynamic case we now also find spiral and target patterns (see figure a), as was previously reported in for chemically reactive binary mixtures. Fluid flows underpin these steady patterns, as can be seen in figure b. If the hydrodynamics were to be turned off, the patterns would become unstable and decay towards the stripe pattern which is the global energy minimizer in the absence of hydrodynamics in symmetric mixtures. Importantly, however, not every trajectory of the system leads to a steady state. At high $$ and $$, the patterns show chaotic dynamics, which we ascertain by calculating the maximal Lyapunov exponent $$. Positive values of $$ indicate unpredictability and in figure c we find these for high values of $$ and $$. In brief, we use the procedure described in to calculate the exponent. We begin the procedure after pattern statistics have fully developed, and denote with $ (0)$ the state of the concentration field at the procedure's start; $(t)$ then represents the state after time $t$, $ (t) = ^t [ (0) ]$, where $^t$ is the time-$t$ map due to the dynamics of the system. Next, we add a random perturbation $ (0)$ to the initial state $ (0)$ according to $ (0) = (0) $, where $$ is a small real positive value and $ $ represents the $L_2$ norm. We then march $ (t)$ and $ (t) + (t) $ in parallel in time. After every time span of $_$, we rescale the perturbation such that $ (n _ ) = (n _) $, where $n = 1, 2,3 $. The maximal Lyapunov exponent is then estimated as $ N_ __n=1^N_ ^_[ (n _) + (n _) ] - ^_[ (n _) ] (n _ ) $. We have used $_ = 0.25$ and $= 10^-4$ and verified that these parameters had no significant bearing on the results by increasing and decreasing $$ by an order of magnitude, and halving and doubling the value of $_$. $N_$ was chosen as $2.4 10^5$ and in figure c, we plot the average values and errorbars of $$ for the last $1.2 10^5$ rescalings. We did not see any long time trends in the exponent values, and the errorbars in the figure are smaller than the symbol size, indicating convergence of values.
+
+While the ensuing fluid flows are stronger in symmetric mixtures owing to the continuous nature of the phase domains , we also observe chaotic dynamics for asymmetric mixtures. In figure , we highlight the dynamics of a 40:60 mixture. Here, we initially see double phase separation and shell formation in a few drops. These shells then grow adding layers onto themselves from the material of the surrounding drops, collide, collapse and reform, and so the process continues. Conversely, in the absence of hydrodynamics, the pattern would be one of arrested drops, ideally on a hexagonal lattice .
+
+With the aim of understanding the generic features of the dynamics of our model, we
+derive amplitude equations which describe the effects of non-linearities at
+large scales and long times on some simple steady-state patterns. In particular, we focus on stripes and hexagonal spots that appear in the absence of hydrodynamics as noted before, and show how hydrodynamics can affect the evolution of these near the threshold of pattern-forming instability.
+
+We study the system near the threshold of instability which occurs when the reaction-diffusion lengthscale (dimensional) $ (D/R)^1/2$ becomes similar to the length scale (dimensional) $w$ characterizing the interface width
+of the phase-separating domains.
+We proceed by defining $u - $ in and , and use the stream function $$ to write
+$ (x, y) = $, exploiting the two-dimensional spatial nature of the problem.
+
+We first discuss the linear stability of the uniform state, $u = 0$. For $u = ( + t)$, the dispersion relation is
+
+ (k) = (1 - 3^2 ) k^2 - k^4 - .
+
+The wave vector $k_c$ for which $d/dk=0$, and therefore $k_c^2=(1-3m^2)/2$, gives the fastest growing mode provided that $ m < 1/$. The instabiliy of this mode occurs at $=_c$ where $_c=k_c^4$, so that $ = - (k^2 - k_c^2 )^2 +_c-$. We study the dynamics near this bifurcation point, i.e.
+when $_c-= r ^2$, where $$ is $( 1)$ and $r$ is the control parameter . 
+
+We then proceed systematically to derive the amplitude equations . Looking first at the slow dynamics of stripe patterns
+ aligned perpendicular to, say the x-axis, 
+ we write
+ 
+ 
+ u(x,y,t) &= A ( x, ^1/2 y, ^2 t ) e^ k_c x + O(^2) \\
+ (x,y,t) &= ^3/2 B ( x, ^1/2 y, ^2 t ) +O(^5/2)
+ 
+ 
+ where $A(X,Y,T)$ is complex and $B(X,Y,T)$ is real and $ X = x, \: \: Y = y, \: \: T = ^2 t$ are the slow scales.
+The dynamics of the amplitude $A$ at the lowest order in $$ is then given by
+
+ & T = r A - 3 A A^2 k_c^2 + 4 k_c^2 ( X
+ - 2k_c Y^2)^2 A - ik_c Y A\\
+ & Y^4 = 2 k_c^2 [ ( ( - 2k_c ) A ) ] 
+ \
+ 
+ 
+ 
+where $$ is complex conjugate of $A$. These equations are identical in form to those obtained for the stability of rolls at low Prandtl number Rayleigh-Benard convection with stress-free boundary conditions .
+
+Similarly, for hexagon patterns at leading order we write $u(,t) = _n=1^3 A_n ( , ^2 t) e^i k_n $ with $(,t)= B( , ^2 t)$
+where $_1 = k_c $, $_2 = k_c ( - + )/2$ and $_3 = k_c (- - )/2$. For a systematic derivation now, however, we must substitute $3m = s$ and $ = h$ where $s$ and $h$ are constants . The resulting amplitude equations are
+ 
+
+ T &= r A_n + 4 ( )^2 A_n
+ - 2 s k_c^2 [ A_n-1 A_n+1 ]
+ \\
+ & -3k_c^2 [ A_n ^2 + 2 A_n+1^2 + 2 A_n-1^2 
+ ] A_n - A_n B\\
+^4 B&= _m=1^32 h [( ) ( ) A_m^2 ],
+
+where $n-1$ and $n+1$ are understood modulo 3. $$ acts on $(X, Y)$ and $$ are obtained from $ k_m$
+by an anticlockwise rotation of $/2$. Again, equations are of the same form as those obtained for the evolution of hexagon patterns in non-Bousinessq Rayleigh-Benard convection with mean flow .
+
+These amplitude equations, unlike the Newell-Whitehead-Segel equation that governs the dynamics in the absence of hydrodynamic flows , do not have a Lyapunov functional and therefore can admit oscillatory solutions . The identical nature of Ginzburg-Landau type equations in Rayleigh-Benard and chemically active emulsions suggests that the latter also offer rich dynamical behaviour, and this behaviour can be further investigated through insights developed for the well-studied former problem.
+
+Conclusion and outlook We studied binary fluid phase separation in the presence of active chemical reactions, and found that the reactions drive persistent fluid flows. When these flows are weak, the system reaches a steady state; when strong, spatiotemporal chaos emerges. By deriving the amplitude equations, we showed that the weakly non-linear dynamics of our system is related to Rayleigh-Benard convection. However, in the numerical simulations of the governing equations, we did not observe the typical spiral defect chaos of the convection problem , instead the chaotic states were dominated by target patterns. We note that similar patterns and an unsteady dynamics were reported for phase-field crystal model (a conserved version of the Swift-Hohenberg equation) with mean flow , where unlike in our system a neutrally stable Goldstone mode is present (vid. ). Binary fluid mixtures de-mixing under gravity and a continuously ramped temperature that creates a buoyancy effect have also shown oscillatory dynamics . The similarities and differences of these systems inspire our future work.
+
+It is important that we contrast our system with others that are similar. Previously, in convective Cahn-Hilliard models of the form $_t + = ^2 $ were considered, where the velocity $ $ was assumed to be $G $ with the constant $G$ representing the intensity of a driving force. The authors of these studies found that while the system showed coarsening dynamics for weak driving $G 0$, as $G $ chaotic structures typical of Kuramoto-Sivashinsky equation emerged. In the present work, we do not assume a form of velocity field but instead solve the fully coupled Stokes-Cahn-Hilliard equations driven via active chemical reactions. Chemical reactions have also been known to drive hydrodynamic flows in various non-phase-separating systems, for example, in the canonical Belousov—Zhabotinskii reaction . In these systems, however, the chemical reactions contribute to fluid momentum through local variations of bulk quantities like fluid density and viscosity . This is different to the case we considered here where reactions contribute to fluid forces via constant generation of interfacial stresses, through the term $ $ in the Stokes equation. Additionally, our model is still different, both in spirit and form, to the active phase-separating model Active Model H that presents a continuum theory for self-propelled particles . In that model, although activity manifests itself at interfaces, it is added phenomenologically through terms that break time reversal symmetry in chemical potential and fluid stresses and are different to those that emerge here due to chemical activity.
+
+In the end, it is worth emphasizing that we have studied only a minimal model of active emulsions. We did not consider fluid inertia
+along with any differences in the density and viscosity of the components, all of which can generate richer dynamics . We ignored the Langevin noise of the original model H , when noise in active emulsions may play an important role. Moreover, many real systems are multicomponent systems which behave fundamentally differently from binary mixtures . While biological emulsions are often rheologically complex , showing properties such as viscoelasticity, which brings in a new time scale to the problem , as a first step, we restricted our analysis to only Newtonian fluids. We believe that this work will stimulate further exploration of the hydrodynamics of active emulsions.
+
+Acknowledgements C.D. is grateful to Alexander Morozov of University of Edinburgh for discussions. All authors acknowledge support from the Max Planck Society.

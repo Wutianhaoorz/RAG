@@ -1,0 +1,256 @@
+[inkscapelatex=false]svg
+
+[backend=biber,sorting=none]biblatex
+
+[T1]fontenc
+
+[colorlinks,allcolors=blue]hyperref
+
+Theorem[section]
+[theorem]Lemma
+
+[theorem]Remark
+[theorem]Example
+section
+
+T1pzcmit
+
+ ,
+ top=25mm,
+ 
+
+The accurate and efficient prediction of flow fields across airfoils is crucial for advancing aerodynamic design methodologies of many engineering systems. Computational Fluid Dynamics (CFD) techniques, particularly those based on Reynolds-averaged Navier-Stokes (RANS) equations, are currently used to model flow behaviour . However, the numerical complexity of these equations necessitate computationally expensive simulations, making them a bottleneck in iterative design and optimization processes. As a result, surrogate modelling approaches have gained traction as an effective means to balance computational efficiency and predictive accuracy. Deep learning approaches have demonstrated significant promise in approximating RANS solutions across a wide range of flow conditions . Diffusion models are a class of generative models that have been used more recently in flow field predictions, as an alternative to more established deep learning surrogate modelling methodologies, such as Convolutional Neural Networks (CNNs) and standalone U-Net models . 
+
+ CNNs have played significant roles in flow field prediction due to their ability to efficiently extract spatial features . CNNs have been used for real-time modelling of non-uniform steady laminar flow, achieving velocity predictions four orders of magnitude faster than CFD solvers with a minor trade off in accuracy . Similarly, they have also been utilized to extract geometric parameters from airfoil shapes, which along with the Reynolds number and angle of attack, were fed into a Multilayer Perceptron (MLP) to approximate flow fields . Advancements with encoder-decoder architectures, such as the CNN-FOIL , have enabled efficient transonic flow field predictions by enhancing shared feature extraction across multiple aerodynamic parameters. Furthermore, the integration of attention mechanisms and U-Net architectures has significantly improved information capture and predictive accuracy in airfoil flow field models .
+
+ The growing success of deep learning in fluid dynamics has been further propelled by the rise of generative models, which have achieved remarkable results in various applications, including image synthesis , material design , and turbulence generation . In the context of CFD, Generative Adversarial Networks (GANs) models have been applied to turbulence field resolution and flow field prediction using Variational Autoencoders (VAEs) . Diffusion models, in particular, have emerged as a powerful alternative offering stable training and enhanced mode coverage compared to GANs . 
+
+ Recent studies have demonstrated the effectiveness of denoising diffusion models over standalone CNNs and U-Nets in capturing complex fluid dynamics . Currently, diffusion models applied to the task of airfoil flow field prediction rely on attention augmented U-Nets or standard diffusion transformers as the model backbones . Each approach comes with certain strengths and limitations. U-Nets are effective at capturing local dependencies and features but struggle with long-range dependencies . Attention-augmented U-Nets omit the feed-forward sublayers that are fundamental to standard Transformer blocks, rather using the attention gates to compute attention coefficients by comparing encoder feature maps with gating signals from the decoder . As a result, while they are capable of identifying where long-range interactions should occur, they often lack depth necessary to encode these dependencies into globally coherent representations of fluid dynamics. In contrast, transformer-based diffusion models, such as Diffusion Transformers (DiT) , have demonstrated improved generalization capabilities, relying on the global modelling ability of Vision Transformers (ViTs) , to yield high fidelity predictions. DiTs introduce separated encoders and decoders which are often separately trained to encode inputs to latent space, which stand to benefit from U-Net-style connections at each resolution layer . 
+
+ To address these limitations, we introduce FoilDiff. The FoilDiff backbone combines the benefits of a connected encoder-decoder with a latent transformer. Additionally, we provide deep conditioning to the latent bottleneck representation to enable more accurate modelling. Finally, FoilDiff employs the Denoising Diffusion Implicit Model (DDIM) accelerated sampling strategy to enhance computational efficiency while maintaining predictive accuracy .
+
+ To evaluate FoilDiff, we assess its ability to predict steady-state flow fields around the RAF30 airfoil across a range of Reynolds numbers and angles of attack. We compare performance against state-of-the-art diffusion models with U-Net and attention-augmented U-Net backbones. FoilDiff outperforms these baselines in both predictive accuracy and uncertainty modelling. We further conduct ablation studies to isolate the contributions of each architectural enhancement, highlighting their role in improving model efficiency and expressiveness.
+
+ The rest of this article is structured as follows: Section 2 provides an overview of diffusion models, detailing the underlying architecture and enhanced sampling strategies. Section 3 outlines the proposed model architecture, training dataset and configurations. Section 4 presents experimental results, comparing the performance of our approach to existing models. Finally, Section 5 concludes the paper with key findings and potential directions for future research.
+
+Preliminary Background on Diffusion Models
+
+Diffusion models are inspired by the principles of non-equilibrium thermodynamics . These models operate in a two-process framework: a forward process where noise is added to the data in a gradual process, and a reverse process, in which the model learns how to generate the original data from the noisy input. 
+
+Denoising Diffusion Probabilistic Models (DDPMs)
+
+In DDPMs , the objective, as depicted in Figure , is to learn the conditional distribution \( p_(_t-1 | _t) \), an estimate of an ideal \( q(_t-1 | _t) \), which reverses the forward process \( q(_t | _t-1) \).
+
+ In the forward process, noise is progressively added to the data vector \(_0\) across a number of time steps \(T\) , transitioning from 
+\( _0 \) to \( _1 \) to \( \) to \( _T \). This progression follows a Gaussian conditional distribution defined as:
+
+q(_t | _t-1) = (_t; _t-1, _t I),
+
+ where \( _t-1 \) is the mean, \( _t I \) represents the covariance matrix, \( I \) is the identity matrix, and \( _t (0, 1) \) is the noise level parameter set according to a predefined schedule such that \( _1 < _2 < < _T \). 
+
+ As the forward process proceeds, the parameter \( _t \) increases, causing the mean \( _t-1 \) to drift farther from the previous state \( _t-1 \) and the variance \( _t I \) to increase. Thus, as \( t \) approaches \( T \), the data \( _t \) becomes increasingly noisy. This process is represented as a Markov chain , adhering to the property that each state depends only on its immediate predecessor:
+
+q(_t | _t-1, _t-2, , _0) = q(_t | _t-1)
+
+ Therefore, the joint distribution across all states in the forward process can be expressed in the form: 
+
+q(_1:T | _0) = _t=1^T q(_t | _t-1),
+
+ where \( _1:T \) represents all intermediate states from \( _1 \) to \( _T \), and \( _0 \) is the original data. The state $_t$ can then be expressed as:
+
+_t = _0 + 
+
+ a linear combination of $_0$ and a noise variable $$, where $_t$ denotes the cumulative product.
+
+_t = _i=1^t (1 - _i)
+ 
+
+ Sampling begins with a noisy input and iteratively generates less noisy samples, continuing until \( _0 \) is reached from \( _T \).
+
+p_(_0:T) = p(_T) _t=1^T p(_t-1 | _t)
+
+ To achieve this goal, a network with parameters \( \) is used to model each step of the reverse process, 
+p_(_t-1 | _t) = (_t-1; _(_t; t), _(_t; t)),
+
+ where \( _(_t; t) ^d \) and \( _(_t; t) ^d d \) are the mean and covariance of the distribution at step \( t \), respectively . The forward process only requires adding noise to the data; it does not involve any learning and remains fixed. As a result, only the reverse process needs to be trained in diffusion models. This distinguishes diffusion models from VAEs . 
+
+ The objective remains to learn the conditional distribution, \( p_(_t-1 | _t) \), an estimate of the true posterior \( q(_t-1 | _t) \), which reverses the forward diffusion process \( q(_t | _t-1) \). Since the exact posterior is intractable, the model is trained to minimize the Kullback-Leibler (KL) divergence between the learned and true distributions, ensuring that the reverse process closely follows the true generative trajectory. The training objective is given by:
+
+ _ = _q(_0:T) _t=1^T D_( q(_t-1 | _t) p_(_t-1 | _t) ),
+
+ where \( D_(q p) \) denotes the KL divergence between the true and approximated distributions. The training of this generator model focuses on its ability to iteratively produce a denoised output \(_t-1\) from a given noisy input \( _t \). Following formulation in Equation , the prediction for \(_t-1\) based on $_t$ can be expressed as a function of $_$, the output of the noise predictor neural network parameterised by $$.
+
+_t-1 = (_t - _)
+
+ This reverse process is integral to reconstructing the original data distribution from noise. In the canonical process for training these models effectively , a minibatch is created by randomly sampling a data point \( _0 \) from the dataset, selecting a time step \( t \), and introducing noise \( \) drawn from a standard normal distribution \( (0, I) \). These steps collectively produce a noisy sample \( _t \) at the chosen time step, as visualized in Figure . The training objective is then to minimize the discrepancy between the actual noise \( \) and the noise predicted by the model, represented as \( _(_t, t) \). This objective is formalized using the loss function:
+
+L_ = _, (0, I) [ \| - _(_t, t) \|^2 ]
+
+ By minimizing this loss function, the model, parameterised by \( \), learns to accurately estimate the noise component within a noisy sample \( _t \). This training process is pivotal as it equips the model with the capability to progressively reduce noise and approach the true data distribution during the reverse diffusion process. The training framework reinforces the model’s denoising capability, which is essential for generating high-quality samples in the reverse process. This step-by-step denoising operation ensures that the model not only learns to replicate the distribution of the original data but also excels at generating new samples that closely align with the target distribution. Consequently, diffusion models trained under this paradigm serve as powerful generative models capable of producing realistic and coherent data samples. 
+
+Non-Markovian Inference
+
+The Markovian nature of the conventional diffusion process introduces certain limitations. The step-by-step denoising operation requires a large number of iterative steps to generate high-quality samples. To address these limitations, researchers have proposed alternative approaches that relax the Markovian assumption, leading to more efficient and expressive generative processes. Since the generative model approximates the reverse of the inference process, rethinking the inference process is key to reducing the number of iterations required during generation. Non-Markovian (see Figure ) inference introduces dependencies across multiple time steps rather than restricting transitions to adjacent steps . This innovation allows for faster sampling since fewer iterations are required to traverse the latent space while still capturing the complexity of the target distribution. This forward process is expressed as:
+
+q(_1:T | _0) = _t=2^T q(_t-1|_t , _0),
+
+ 
+where $q (_T|_0) = ( _0 (1-_T)I)$, for all $t>1$. With the mean given by:
+
+q(_t-1 | _t) = (_0 + _t - _0, _t^2 I),
+
+chosen to ensure that Equation remains true. One can generate a sample \( _t-1 \) from:
+
+_t-1 = 
+
+ ( _t - \ _(_t) )
+
++ 
+ - _t^2 _(_t)
+
++ _t 
+
+ In this context, \( (0, I) \) represents standard Gaussian noise, which is independent of \( _t \). The selection of \( _t \) values dictates the nature of the generative process, enabling diverse configurations without necessitating the re-training of the model noise predictor \( _ \). Specifically, when \( _t = ) / (1 - _t) \) for all \( t \), the forward process adheres to the Markovian property, and the generative process aligns with a DDPM. Conversely, when \( _t = 0 \) for all \( t > 1 \), the forward process becomes deterministic, relying solely on \( _t-1 \) and \( _0 \), with the exception of \( t = 1 \). In this case, the coefficient associated with the random noise \( _t \) reduces to zero, removing stochasticity from the generative process.
+
+ This approach is formalized as the Denoising Diffusion Implicit Model (DDIM) , an implicit probabilistic model , generating samples deterministically by transitioning from latent variables \( _T \) to \( _0 \). Despite departing from the traditional stochastic diffusion process, DDIM is trained using the same objective function as DDPM. As the model does not share parameters across time steps \( t \), the \( L_1 \) objective introduced in Equation can serve as a surrogate for the variational objective. This substitution allows for consistent reuse of the noise predictor across all time steps, thereby simplifying the generative process while preserving predictive accuracy.
+
+ DDIMs reduce computational cost by observing that the denoising objective depends only on \( q(_t _0) \). This allows defining forward processes with fewer steps and enables non-Markovian sampling over a subset rather than the full set \( _1, , _T \). As a result, DDIM achieves 10--50$$ faster inference without additional training , providing efficiency crucial for practical use.
+
+Noise Predictor in Diffusion Models
+
+The noise predictor, defined in Equation , plays a crucial role in the reverse diffusion process. Diffusion models inherently model conditional distributions \( p(_t-1|_t) \), where conditioning enables external information including class labels, captions, or physical parameters to influence the generative process . Lyu et al. introduced a formulation where physical parameters are integrated as conditions \( \) in the noise predictor, resulting in the modified loss function: 
+
+L_NN() = _, (0, I) [ \| - _(_t,, t) \|^2 ].
+
+ U-Net and Transformer-based neural networks have become the predominant architectures for noise prediction in diffusion models. Originally introduced for biomedical image segmentation , the U-Net architecture has since become a popular network architecture for noise prediction in diffusion-based models , due to its ability to reconstruct fine-grained details. A wide range of conditioning mechanisms can be seamlessly integrated into the U-Net architecture, enabling the model to incorporate external information such as class labels, physical parameters, or auxiliary modalities . The U-Net structure consists of a contracting path and an expanding path, connected via skip connections. The contracting path reduces spatial resolution while increasing feature depth, enabling hierarchical feature extraction. Conversely, the expansive path reconstructs the output back to its original resolution with skip connections to retain spatial details. This structure ensures a balance between global context understanding and fine-detail preservation, which is crucial for denoising accuracy .
+
+ Although convolutional backbones like U-Net remain widely used, transformer-based architectures have emerged as strong alternatives for noise prediction in diffusion models. Diffusion Transformers (DiT) demonstrate superior generalization over U-Net based approaches, especially in large-scale generative tasks . Their core advantage lies in capturing long-range dependencies through self-attention, formulated as: 
+
+ (, , ) = (^),
+
+ 
+
+ where \(Q, K,V\) represent query, key, and value matrices derived from the encoded conditioning information
+and input features, and $d_v$ is the dimension of the value matrix. The self-attention mechanism dynamically weighs different regions of an input feature map, allowing transformers to model complex dependencies beyond local receptive fields. 
+
+ Beyond standard conditioning, integrating attention mechanisms within the U-Net framework enhances diffusion models' adaptability. Inspired by transformer architectures , attention gates in U-Net layers enable flexible multimodal conditioning, improving synthesis quality and domain-specific performance . Regardless of the architectural choice, the efficiency of diffusion models heavily depends on sampling strategies. Optimizing the number of denoising steps remains crucial, as each step requires running the noise predictor multiple times. 
+
+Model Architecture and Configuration
+
+ The FoilDiff framework integrates a hybrid model architecture, structured dataset, and efficient inference procedures to predict airfoil flow fields across diverse aerodynamic regimes. The overall design as seen in Figure leverages a latent transformer, with U-Net-style connected encoder-decoder paths, trained under the canonical denoising diffusion probabilistic modelling paradigm . Our implementation explores two separate latent transformer architectures and an accelerated DDIM sampling strategy to reduce the number of inference steps required while preserving predictive fidelity . 
+
+ The model is conditioned on encoded physical parameters, including airfoil geometry, Reynolds number, and angle of attack. These parameters are further reinjected into the latent transformer to enable improved generalization across a wide range of aerodynamic conditions. The combination of hybrid architectural design, domain-aware conditioning, and efficient inference enables FoilDiff to achieve improved accuracy and uncertainty estimation compared to existing U-Net-based baselines.
+
+ The following subsections detail each component of the model architecture, training pipeline, and data preparation process.
+
+Encoder and Decoder
+
+ The encoder and decoder components of FoilDiff are designed with U-Net-style skip connections to support a latent transformer. The encoder comprises a sequence of convolutional downsampling blocks, each consisting of two convolutional layers with group normalization and GELU activation, followed by a $2 2$ strided convolution for spatial reduction. Positional encodings and a multi-headedself-attention mechanism are added at each resolution level to retain spatial context throughout the hierarchy.
+
+ The decoder mirrors the encoder structure, employing transposed convolutional blocks for spatial upsampling, interleaved with convolutional layers. To further enhance feature retention, skip connections are incorporated from the encoder to the decoder. These connections facilitate the transfer of spatial information between the contracting and expansive paths, mitigating information loss during downsampling. Mathematically, the residual mapping introduced by the skip connections is given by:
+
+ f() = + H(),
+
+ where \( \) is the input feature map, \( H() \) represents the learned transformation (a series of convolutional layers), and the output \( f() \) is the element-wise sum of the input and its transformed counterpart.
+
+ These skip connections improve gradient flow during training, preventing vanishing gradient issues and aiding in the reconstruction of fine-grained flow structures. Studies have shown that such architectural enhancements lead to improved convergence rates and more stable training in deep learning-based fluid dynamics simulations.
+
+Latent Transformer
+
+ At the core of FoilDiff are latent vision transformer blocks, positioned at the bottleneck of the U-Net-like architecture. These enable better global context modelling, and deeper conditioning of the latent by allowing all spatial locations in the latent feature map to attend to one another and the conditions, addressing the limited receptive field of strictly convolutional networks. 
+
+ The latent representation, obtained after a series of downsampling operations in the encoder, is first reshaped into a sequence of flattened patches. Each patch is linearly projected into an embedding space and augmented with learnable positional encodings to retain spatial order. These embeddings are then passed through a stack of transformer encoder layers as seen in Figure , each composed of multi-head self-attention and feed-forward sublayers, interleaved with layer normalization and residual connections scaled, reshaped, and modulated by the physical conditions, ensuring that the generative process remains grounded in the specified physical scenario.
+
+ In addition to the standard transformer encoder, we also investigate a latent transformer based on the Unified Vision Transformer (U-ViT) architecture in Figure (b) by applying skip connections between downstream and upstream blocks. The downstream blocks of the U-ViT require a resolution of the skip connections in the form:
+\[
+ = [ \, \| \, _ ],
+\]
+
+ the application of a linear layer to the concatenation of the $$ and the upstream skip $_skip$ in order to maintain the dimension of $$. Following the final transformer block, the processed sequence is reshaped back into its original spatial dimensions and passed to the decoder for reconstruction.
+
+Training and Inference
+
+ The final stage of the model is the evaluation step, which during training is carried out by minimizing the loss defined in Equation between the predicted noise and the noise added during the diffusion process. While the FoilDiff framework is compatible with alternatives, such as the $x$ and $v$ parametrisations , all architectures, including both the baseline U-Net variants and the proposed FoilDiff model, are trained using the canonical denoising diffusion process with the standard $$-parametrisation . This decision is motivated by the need to isolate the effect of architectural modifications, ensure a fair comparison with existing airfoil flow field diffusion models, and preserve the intended focus and scope of this study.
+
+ During inference, the iterative nature of diffusion models creates a central concern regarding efficiency. We implement a DDIM sampler with strided time step selection strategy defining a reduced subset with elements \( s \) from the original full set \( _1, , _T \), where the selection is based on an increment \( n \), in the sequence :
+
+\[
+ 1, 1+n, 1+2n, , 1+kn,
+\]
+
+ where \( n \) is the stride (i.e., the step size between selected time steps), and \( k \) is the number of selected time steps. \( k \) is the largest integer such that
+
+\[
+1 + kn T,
+\]
+
+ meaning the last selected index \( \) remains within bounds of trained time steps 
+ \(T\). Mathematically, the reduced subset can be expressed as:
+
+\[
+\ _s S = 1 + kn, k _0, S T \,
+\]
+
+ where \(S\) is the final element of the sampling sequence. This sampling method reduces the number of evaluations needed during inference while preserving generative fidelity. The resulting gains in computational efficiency support the practical application of FoilDiff to high-resolution airfoil flow field prediction. 
+
+Dataset and Preprocessing
+
+The dataset used for training consists of flow field simulations around airfoils across a range of Reynolds numbers and angles of attack . Each sample comprises a structured grid representation of the flow field, including pressure and velocity vectors, alongside the corresponding airfoil geometry \( () \), Reynolds number \( (Re) \), and angle of attack \( () \), and the resulting CFD data. To ensure a compact and numerically stable representation, the Reynolds number and angle of attack are transformed into a parametric encoding using \( (Re()) \) and \( (Re()) \), respectively. These normalized physical parameters are embedded as additional channels alongside a mask of the airfoil geometry (\( \)) in a three-channel tensor, which conditions the model . 
+
+ The corresponding CFD case data is a three-channel tensor with the first channel encoding the dimensionless pressure field:
+
+p_i = |_f|^2
+
+ and the remaining two channels corresponding to the normalized velocity components:
+
+(u_x,i, u_y,i) = ( |_f|, |_f| ),
+
+ where $p_i$ is the normalized pressure at location $i$, $p_i,$ is the reference (freestream) pressure, $|_f|$ is the freestream velocity magnitude used for normalization, and $u_x,i$ and $u_y,i$ are the $x$- and $y$-components of the velocity at $i$. These are concatenated with the conditions, resulting in the six channel \([3232]\) tensor shown in Figure . These normalized representations enhance stability during training and ensure consistency across varying flow conditions. The dataset incorporates multiple simulations of identical input configurations to capture aleatoric uncertainty inherent in turbulent flow simulations . For each Reynolds number in the dataset, we compute the pointwise mean and standard deviation from 20 simulations under identical input conditions. The resulting fields, shown in Figure , serve as a reference for both qualitative and quantitative evaluation of predictive uncertainty in our generative framework.
+
+Results and Discussion
+
+To evaluate the predictive accuracy and computational efficiency of the proposed model, we evaluate test cases using the RAF30 airfoil geometry across a range of Reynolds numbers, as summarized in Table with cases in regions of high and low uncertainty within and beyond the training range. Training and inference are performed on a single NVIDIA A100 GPU. The goal is to assess the model’s ability to generate high-fidelity flow field predictions under varying aerodynamic conditions and capture the epistemic uncertainty present. This is measured via the mean squared error (MSE) on both the mean prediction field $(MSE_)$ and predicted uncertainty field $(MSE_)$.
+
+Flow Field Prediction Analysis
+
+ The flow field predictions encompass critical aerodynamic structures, including vortices, boundary layers, wakes, and shock waves, which are essential for assessing aerodynamic performance. The trained model was evaluated on the test cases in Table~, and its predictions were compared against CFD-generated ground truth data. As illustrated in Figure~, the flow fields predicted by FoilDiff closely align with the reference data, reproducing both large-scale features and localized flow phenomena.
+
+ Regions of higher epistemic uncertainty and error bands are concentrated near the leading and trailing edges, as well as in wake regions where flow separation occurs. To quantify predictive accuracy, we benchmark FoilDiff with a standard DiT backbone against a scaled-up state-of-the-art model, Aifnet . Table~ reports the mean squared error (MSE) of both the mean predictions ($MSE_$) and the predicted uncertainty fields ($MSE_$) across uncertainty categories.
+
+ FoilDiff achieves substantial improvements in both interpolation and extrapolation regimes. In interpolation cases, FoilDiff reduces $MSE_$ by 42.0\
+
+ These results demonstrate that FoilDiff not only provides higher-fidelity mean flow predictions but also offers more reliable uncertainty calibration compared to Aifnet. The gains are particularly pronounced in challenging extrapolation scenarios, underscoring the importance of the hybrid backbone and deep conditioning mechanisms for robust generalization across unseen flow conditions. The rationale for using a scaled-up version of Aifnet, Aifnet (Extra Large), is discussed in the following section on computational efficiency.
+
+Computational Efficiency
+
+FoilDiff achieves high predictive accuracy while maintaining a favourable balance of computational cost in both training and inference. Due to computational budget constraints, the models in this study were not trained for the 12.5 million iterations reported in the original Aifnet paper . Instead, all variations of FoilDiff and Aifnet were trained for 150,000 iterations. At this iteration count, FoilDiff not only surpasses the recommended Aifnet configuration for the \([3232]\) dataset but also achieves performance superior to that reported in the original Aifnet study . Requiring over 83 times fewer training iterations with a trade-off in inference time with a model only 10 times larger.
+
+ While the recommended Aifnet is computationally light, its predictive capacity on the \([3232]\) dataset is limited as shown in Figure . This makes it an insufficient baseline against which to evaluate our hybrid transformer-based approach. To address this, we benchmark against a scaled-up version of Aifnet originally designed for the \([128128]\) dataset. Scaling up improves Aifnet’s predictive accuracy, but FoilDiff still far outperforms this larger model after the same number of training iterations, as shown in Figure . 
+
+ The efficiency trade-offs are summarized in Table . Compared to the scaled-up Aifnet, FoilDiff with a DiT backbone has approximately 38\
+
+ 
+
+Ablation Studies
+
+ To assess the individual contributions of FoilDiff’s architectural and algorithmic components, we conducted ablation experiments in which specific elements were selectively removed or replaced. The full FoilDiff model was compared against a variant in which the latent transformer was replaced by a strictly convolutional U-Net mid-block resulting in a significant MSE increase, indicating the importance of the latent transformer and deep conditioning in capturing aerodynamic flow structures. A further variant excluded the U-Net-like skip connections between the encoder and decoder resulting in a standard latent diffusion transformer. This omission produced poorer performance with the same number of training iterations.
+
+ Contrary to our initial expectation, the U-ViT latent transformer underperformed relative to the standard DiT backbone in FoilDiff. Across the test range, Figures and show consistently higher MSE for the U-ViT variant, despite its larger capacity. One possible reason is that cross-scale information routing, which is effective in convolutional architectures, does not transfer directly to ViT networks. Accordingly, we adopt DiT as the default latent transformer in FoilDiff.
+
+ Table summarizes the results of the ablation study. Overall, the largest accuracy gains are attributable to the hybrid backbone and deep conditioning, while DDIM sampling primarily contributes to efficiency. The combination of all three components yields the best balance between accuracy, generalization, and computational cost.
+
+Conclusion
+
+ This paper introduced FoilDiff, a hybrid diffusion model for predicting airfoil flow fields with improved accuracy and uncertainty estimation. By integrating U-Net-style skip connections in the encoder and decoder of a latent transformer, FoilDiff captures both local and global flow features, enabling more accurate predictions across a range of Reynolds numbers and aerodynamic conditions.
+
+ FoilDiff outperforms existing state-of-the-art diffusion-based models for airfoil flow prediction while requiring significantly fewer training iterations. Our architecture achieves both high predictive accuracy and well-calibrated uncertainty estimates, marking a step forward in model design. However, these achievements alone do not establish FoilDiff as a practical tool for real-world fluid simulation. A general challenge to diffusion models is their large parameter counts and the disproportionate computational resources they require for relatively simpler tasks such as 2D airfoil flow field prediction compared to several other deep learning techniques. For any diffusion-based framework, to transition from promising research to practical implementation, further progress is needed in several key areas: improving computational efficiency, and advancing integration with physics-informed or hybrid modelling approaches. Only through such developments can the promise of diffusion models be fully realized in more complex tasks. 
+
+ Future work will require an expansion and rethinking of the scope beyond the current limitations of this paper. Investigating the application of diffusion models to more complex problem spaces including unsteady and three-dimensional flows, the modelling of rotational interactions and airfoil cascades, and multitask systems and aeromechanics. A central objective would be to determine if the scientific value justifies the compute and where the most compute gains could be against CFD techniques, which requires careful accounting of wall-clock training time, energy usage, and memory footprint relative to accuracy gains. A suggestion would be the investigation of physics-informed constraints that enforce conservation laws, symmetries, and boundary conditions; performance-efficient methodologies and development of hybrid pipelines that couple generative priors with other deep learning models, reduced-order models or classical solvers. Equally important would be rigorous assessment beyond mean error and calibrated uncertainty to include sensitivity to meshing and geometry parametrisation, and more systematic ablations that expose failure modes. The overall goal is to make diffusion models not only high performing but also credibly interpretable, resource conscious, and practically deployable alternatives to conventional CFD. 
+
+There are no financial, professional, contractual, or personal relationships or situations that could be perceived to influence the presentation of this work.
+
+The dataset is available at https://dataserv.ub.tum.de/index.php/s/m1459172
+
+The research meets all ethical guidelines, including adherence to the legal requirements of the study country.
+
+ Writing original draft: Kenechukwu Ogbuagu (manuscript), Sepehr Maleki (supervision and sections). All authors approved the final submitted draft.

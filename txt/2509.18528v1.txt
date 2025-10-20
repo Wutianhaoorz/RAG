@@ -1,0 +1,426 @@
+[aps,physrev,preprint,superscriptaddress]revtex4-2
+
+[version=3]mhchem
+
+[caption=false]subfig
+[subfloat]
+font=footnotesize,
+labelformat=empty,labelsep=space,
+listofformat=subparens
+
+[usenames]xcolor
+
+[acronyms]glossaries
+CO2carbon dioxide
+sCO2Supercritical carbon dioxide
+LESlarge eddy simulation
+FDAFood and Drug Administration
+DNSdirect numerical simulation
+EGSEnhanced Geothermal Systems
+CFDcomputational fluid dynamics
+RANSReynolds-averaged Navier-Stokes
+SGSsubgrid-scale
+SRK EoSSoave-Redlich-Kwong Equation of State
+PR EoSPeng-Robinson Equation of State
+EoSEquation of State
+NISTNational Institute of Standards and Technology
+HPChigh-performance computing
+SMDdynamic Smagorinsky
+PPMpiecewise parabolic method
+NRELNational Renewable Energy Laboratory
+rmsroot mean square
+AMRadaptive mesh refinement
+ECPExascale Computing Project
+DOEDepartment of Energy
+HMHWhalf-mean half-width
+TKEturbulent kinetic energy
+SDCSpectral Deferred Correction
+MOLMethod of Lines
+ODEordinary differential equation
+PDEpartial differential equation
+MISDCmulti-implicit spectral deferred correction
+CFLCourant-Friedrichs-Lewy
+NSCBCNavier-Stokes Characteristic Boundary Conditions
+QSSAquasi-steady state assumptions
+MPImessage passing interface
+
+HTMLF15A60 
+HTML7AC36A 
+HTML5A9BD4 
+HTMLFAA75B 
+HTML9E67AB 
+HTMLCE7058 
+HTMLD77FB4 
+HTML737373 
+
+HTMLEE2E2F 
+HTML008C48 
+HTML185AA9 
+HTMLF47D23 
+HTML662C91 
+HTMLA21D21 
+HTMLB43894 
+HTML010202 
+
+[2]#2
+[2]#2
+
+[1]
+ 
+ [subfigure]labelformat=empty
+ [][]#1
+ 
+
+[1]
+ 
+ \@secondoftwo
+ 
+ 
+ doi:
+ 
+ 
+ 
+
+[]Marc.HenrydeFrahan@nrel.gov
+
+[]Shashank.Yellapantula@nrel.gov
+
+[]Michael.Martin@nrel.gov
+
+[]sussman@math.fsu.edu
+
+[]Ray.Grout@nrel.gov
+
+Supercritical carbon dioxide is of interest in a wide range of engineering problems, including carbon capture, utilization, and storage as well as advanced cycles for power generation. Non-ideal variations in physical properties of supercritical carbon dioxide impact the physics of these systems. It is important to understand how drastic changes in thermodynamic properties influence these flow physics to aid and optimize the design of future technologies related to carbon capture and sequestration. In this study, we simulate turbulent supercritical carbon dioxide jets to gain a better understanding of these physics. Of particular interest is the impact of pseudo-boiling on supercritical flow dynamics. We use a second-order finite volume discretization method with adaptive mesh refinement as implemented in the reacting flow solver, PeleC, to perform a large eddy simulation of three turbulent jets of supercritical carbon dioxide. We use the Soave-Redlich-Kwong equation of state to close the system and more accurately incorporate the departure from ideal gas behavior into the turbulent flow physics. We find that the isothermal supercritical jet exhibits many similar flow characteristics compared to ideal gas round turbulent jets, with minor differences seen in the decay and spreading rate of the jet and in a noticeable anisotropy between resolved turbulent kinetic energy components. The non-isothermal jet excluding the pseudo-boiling point exhibits only small difference compared to the isothermal case. The non-isothermal case involving the pseudo-boiling point displays markedly different behavior, with evidence indicative of increased Kelvin-Helmholtz-like instabilities and much faster jet decay and disintegration. These factors impact the degree of mixing in the transition region of the jet, leading to finer-scale vortices and faster transition to ambient properties, indicating a potential for larger heat transfer and more rapid combustion dynamics.
+
+Introduction
+
+ is a highly coveted alternative working fluid in many different applications, and is one of the most widely used supercritical fluids along with water . One application of interest is the use of as the working fluid in advanced cycles for power generation. In the traditional Brayton cycle, air is used as the working fluid through which the cycle of adiabatic compression and expansion and isobaric heat addition and rejection occurs . The Allam cycle is a specialized, high-pressure Brayton cycle that utilizes transcritical carbon dioxide as the working fluid . When compared to the conventional Brayton cycle, studies show that the Allam cycle has much higher efficiency . Additionally, the carbon footprint for the Allam cycle is negligible, allowing for produced from the system to be stored underground or used elsewhere, thereby aiding in carbon sequestration efforts . Another significant area of research includes using as the working fluid for high flux thermal management . The use of in jet impingement cooling for micro-structures can eliminate dry-out issues and enhance heat transfer rates . To further develop these supercritical fluid technologies, a growing importance has been placed on understanding the underlying physics of these systems.
+
+Physics relating to the round turbulent jet are particularly important for applications involving injection technologies. The high densities associated with the liquid-like behavior of supercritical fluids coupled with the relatively low gas-like viscosity associated with them typically results in a high Reynolds flow, resulting in a turbulent system. Understanding the turbulence physics of these jets is crucial in developing machinery for these systems. Current experimental research is mainly application-oriented. Research into the jet's rock breaking ability has been of primary importance to applications , with additional focus being given to pipeline leakage and flow dynamics upon wall impact . These studies do not explore the underlying turbulence statistics of the flow. Chemical engineering design aspects of injection are more focused on solubility dynamics, in the context of molecular beam extraction and polymer collapse , as opposed to turbulence. Other experiments focus on similar application specific quantities of interest, such as heat transfer and mixing, which is related in part to the turbulence dynamics , but they also note the difficulty in experimental design for investigating these aspects of the flow under the conditions needed to replicate those in real applications . Thus, numerical simulations are necessary to further explore the turbulence statistics of these flows.
+
+The challenges of simulating flows, as well as other new combustion technologies has led to an increased interest in the development of appropriate numerical methods for these systems . However, model validation is often complicated by the lack of experimental data at these extreme pressures and temperatures. Studies using have been implemented to help establish benchmark test cases for other types of numerical schemes. Ruiz et al. use 2D to simulate a mixing layer created by two streams of supercritical oxygen and gaseous nitrogen, using two different solvers to add confidence to their results . A 3D is used by Ries at al. to simulate a round nitrogen jet for comparison with experimental data produced by Mayer et al. . However, this study requires a reduction in Reynolds number from $1.62 10^5$, based on the injection diameter, to $5300$ to feasibly execute the computations. Li also utilizes a low Reynolds number of $1750$ to study a round turbulent jet with a preconditioning scheme . The approach has also been implemented utilizing theory from the ideal gas case , but with the goal of ascertaining a more general understanding of why specifically 's rock-breaking ability is better than that of water. 
+
+To maintain a high Reynolds flow and better capture the effects of the supercritical nature of the fluid on the turbulence dynamics, the use of has been explored. The impact of models in capturing transcritical and supercritical dynamics of cryogenic nitrogen have been analyzed through comparison with the Mayer et al. experiment and highly accurate data . Schmitt et al. does a similar investigation using , then extending their investigation to include after validation with the Mayer et al. data . However, this investigation uses low-pressure jets and does note the models might need additional contributions to handle non-linearities and the pressure regime. 
+
+Many of the numerical investigations cited thus far consider cryogenic nitrogen in order to compare with the Mayer et al. experiment on supercritical jet turbulence . However, molecular structure can have a significant impact on flow characteristics; for example, heat-transfer correlations vary across species and experiment with no general trend having been identified for the supercritical fluid regime . A wide variety of numerical investigations into jet turbulence using exist but typically explore other parameter regimes of interest or application-specific quantities of interest. Examples of turbulent adjacent quantities of interest include fluctuation characteristics based on inlet conditions , effects of nozzle and aperture differences on pressure and velocity decay and wave features , mixing between and other fluid phases , and energy dissipation . These studies all involve high-pressure jets and are commonly found in applications involving rock fracturing. Related configurations are also studied, such as the swirling-round jet , turbulent jet-in-crossflows , slot jet impingement , and channel flow .
+
+While much of the literature thus far has explored the impact of different numerical methods on modeling supercritical fluid flows and has aimed to strengthen the validity of these simulations in spite of the lack of experimental data available in the current landscape, a general consensus has still not been reached on how the supercritical nature of these fluids impacts the turbulence physics of these models. Thus, there remain open questions for understanding the fundamental flow behavior of turbulent jets in a supercritical environment, especially near the supercritical point, where both experimental and numerical investigations are still a challenge.
+
+Our objective is to use to further explore the pseudo-boiling region of the pseudo-critical zone and analyze the influence of extreme thermodynamic fluctuations on turbulence statistics and flow dynamics within the flow field. Using the compressible Navier-Stokes equation solver, PeleC , closed with the , we consider three cases to examine various quantities of interest associated with classical turbulence mechanics. These three cases are chosen to capture different areas around a peak in specific heat that is associated with the pseudo-critical region. The rest of the paper is as follows. We first present the physical model and numerical methods used for the investigation. We then present the simulation setup of the round turbulent jet as implemented in the code. Next we present the results of the turbulent jet and our analysis of the turbulence statistics. 
+
+Physical model and numerical methods
+
+Simulation of turbulent supercritical flows requires combining appropriate governing equations and turbulent closures withe an equation of state that accurately represents the thermodynamics properties of supercritical carbon dioxide in the regime being simulated, and transport property correlations that are accurate in the regime being simulated.
+
+Governing equations
+
+We consider the three-dimensional compressible Navier-Stokes equations as interpreted in their Favre-filtered form:
+ 
+
+ t + x_j ( ) = 0, 
+ 
+ 
+ t ( ) + x_j ( + _ij - ) = - x_j, 
+ 
+ 
+ t ( ) + x_j (( + ) + - )&& \\ = - x_j ( c_v _j + 2 _j )&&, 
+
+where $$ is the density (g/cm$^3$), $u_j$ is the velocity (cm/s) for the $x_j$ direction, $p$ is the pressure (Ba), $E = e + 2$ is the total energy, $e = c_v T$ is the internal energy, $T$ is the temperature (K), $c_v$ is the heat capacity at constant volume (Erg/(g $$ K)), and $ = c_v$, with $c_p$ being the specific heat capacity at constant pressure. $$ denotes the filtered variables, with $ = $ defining the Favre-filter operation. 
+
+Turbulence Models
+
+Under appropriate assumptions , the filtered diffusive fluxes are given by:
+ 
+ = 2 - 3 _ij \\, 
+ = - x_j \\,
+
+where
+$S_ij = 2( x_j + x_i )$ is the strain-rate tensor, $$ is the dynamic viscosity (P), $$ is the thermal conductivity (Erg/(cm $$ s $$ K)), and $_ij$ is the Kronecker delta. Terms arising from the Favre filtering procedure include the stress $_ij$, heat flux $_j$, and turbulent diffusion $_j$. These terms are modeled with the as detailed in , with use of a three-point box filter and filter-grid ratio of two for calculating model coefficients. Note that while the equations given in represent the system discretized within PeleC, in practice, we evolve these filtered quantities without explicitly filtering the solution. Here, the grid acts as the filter for the , while the impact of an explicit filter choice is incorporated instead through these model coefficients for the terms. External forces such as gravity are not included in this study. 
+
+Equation of state
+
+The system is closed using the to relate pressure, density, and temperature as follows: 
+ 
+	p = V_m - b - V_m(V_m + b), \\
+	a = P_c, 
+	b = P_c, \\
+	 = ( 1 + ( 0.48508 + 1.55171 - 0.15613 ^2 ) 
+ ( 1 - T_r^0.5 ) )^2, \\
+	T_r = T_c,
+
+where $R$ is the ideal gas constant (Erg/(K $$ mol)), $T$ is the absolute temperature, $V_m$ is the molar volume of the species (cm$^3$/mol), $T_c$ and $P_c$ are the critical temperature and pressure of the species, respectively, and $$ is the acentric factor of the species. Additionally, $a$, $b$, and $$ are all species-specific parameters calculated from the given species thermodynamic properties as listed above. All cases are run with a single species, that being . This equation is used in conjunction with approximations to ideal gas behavior provided by NASA Polynomial fits , where the then contributes the behavior attributed to real gas effects. The and Chung high pressure corrections are commonly used models for thermodynamic and transport properties in simulations of turbulent systems related to advanced cycles for power generation . Though higher order exist and provide better accuracy, as a cubic , the provides a good balance between accuracy while incorporating real gas effects and computational efficiency. It has been shown to outperform other cubic and would serve as a better baseline for further development . Multiple works have compared the use of different in simulation applications . Additionally, work has gone into improving the computational efficiency of these high-cost regimes, though the extension to multi-species mixtures is still underway .
+
+While many of the investigations referenced earlier note that models may need modification to deal with supercritical flows , it is noted by Muller et al. that the impact of modeling and numerical flux discretization is primarily limited to second-order moments when using a sufficiently refined grid while the choice in thermodynamic modeling is a key component in capturing first-order moments . With that, they also note that the choice in model and numerical flux discretization had a larger than expected effect on resolved Reynolds stress profiles . Specifically, the constant Smagorinsky model yielded decaying fluctuation magnitudes early in the jet evolution, resulting in the transition to a fully turbulent mixing zone beginning from lower turbulence levels. However, their results did agree with the jet break-up location they obtained from mean density profiles, which were shifted slightly downstream by comparison to other models . We will be using the compressible version of the dynamic Smagorinksy closures for our investigation, with further consideration of any influence of model on our quantities of interest being noted later on. 
+
+Transport properties
+
+Transport coefficients include real gas behavior through Chung's high pressure corrections :
+ 
+ q = q_k + q_p,
+
+where $q$ is the transport coefficient of interest (e.g., $$), $q_k$ is the low-pressure component relating to ideal gas behavior, and $q_p$ is the high-pressure deviation from ideal behavior. Ideal gas behavior $q_0$ is approximated with EGLib functions for use in $q_k$:
+ 
+ = _n=1^4a_q,n((T))^n-1,
+
+where $a_q,n$ are pre-calculated polynomial fit coefficients for transport coefficient $q$. Additional details regarding this formulation can be found in Appendix A
+
+Discretization
+
+To discretize and evolve the system of partial differential equations -, we use PeleC , a highly scalable compressible hydrodynamics code for reacting flows developed as part of the through the . While full details regarding PeleC can be found in the works cited, a brief summary of key features is mentioned here for convenience. PeleC uses a second-order, conservative finite volume formulation with data stored at cell centers. Cell-centered data is interpolated to cell faces with a second-order for use with an approximate Riemann solver. A standard second-order predictor-corrector approach is used for temporal discretization. The time step is dynamically limited using a Courant number of 0.9 for scaling and minimizing between advective and diffusive restrictions. PeleC leverages AMReX for , using linear cell conservative interpolation and sub-cycling between refinement levels. An example of the adaptively-generated grid at a slice in the domain is presented in Figure . Modeling of transport terms and thermodynamic quantities as described above are done through PelePhysics , a library for complex physics, including chemical reactions, non-ideal options, and higher fidelity transport models.
+
+Computational Implementation
+
+In this section, we discuss key components of the computational cases, including discretization and considerations, handling of the jet inflow and boundary conditions, operating values for parameters of interest, and post-processing data slicing and averaging procedures. 
+
+Adaptive Mesh Refinement Specification
+
+Our target simulation is a 3D with a grid size that is 100 times larger than the smallest scale of the turbulent flow. The smallest scale of these turbulent flows, known as the Kolmogorov scale , can be approximated as:
+ 
+	 = ( )^1/4,
+
+where $ = $ is the kinematic viscosity and $ = ^3d$ approximates the average rate of dissipation of turbulent kinetic energy per unit mass, where $v_in$ is the reference inflow velocity in the axial direction $y$ and $d=cm$ is the jet diameter. For these turbulent jets, $ = cm$. Figure provides a 2D schematic of the computational domain. The length in each direction is $x = 25d$, $y = 62.5d$, and $z = 25d$. To keep the calculation tractable and achieve an adequate grid size, we implement four levels of refinement, with a refinement ratio of two, leading to 80, 200, and 80 cells on the coarsest level in the $x$, $y$, and $z$ directions, respectively. This results in an initial mesh size of $ x_0= y_0= z_0=0.3125 d$, leading to $ x_3= y_3= z_3=d$, where the subscript denotes the level. The full four levels of refinement are implemented in a box around the inlet of lengths $x=z=4d$ and $y=2d$ to ensure high refinement at the inflow. These four levels are then adaptively refined based on the given refinement criterion in the region outward from the jet inlet up to a distance of $20d$ in the $x$ and $z$ direction and $60d$ in the $y$ direction. 
+
+The grid refinement criterion is given by the vorticity, specifically with $ 5000^2l$, where $$ is the magnitude of the vorticity and $l$ is the level. For the first ten flow-throughs of the simulation, mesh refinement only occurs up to one level within the refinement region to establish the flow pattern. Thereafter, the simulation proceeds with the four levels of mesh refinement for ten more flow-throughs. After that, statistics are collected over the next two flow-throughs for analysis, where a steady state is assumed to have been reached.
+
+Initial and Boundary Conditions
+
+Our inlet consists of an opening centered in the $xz$-plane with diameter $d=cm$ through which the jet is initialized. The pressure in the jet at the inlet is the same as that of the quiescent background fluid and it is given by $p_in=p_=Barye$. The ambient fluid remains at rest while the jet is initialized with an inflow velocity of $v_ref = cm.s^-1$, leading to a Reynolds number of the initialized jet of $Re_ref = 22910$, with $v_ref$ and $d$ being the reference velocity and length scale respectively. For the jet temperature and pressure conditions given, the inflow density is $_in=$ g.cm^-3, as calculated via the in PeleC. To implement a turbulent inflow, we formulate our mean velocity and values by scaling, interpolating, and adding noise to a predetermined velocity profile calculated via , with jet diameter $D$, axial velocity $v_$, and values given by $v^_ = v_^2 ^1/2$. For quantities, $(u,v,w)$ values are in the $(r,v,)$ direction. Finalized values are converted to Cartesian values for the simulation. We begin by scaling the values with our reference jet velocity and length values:
+ 
+	
+		r_,\ scaled &= d ( D )_, \\
+		v_,\ scaled &= v_ref v_, \\
+		v^_,\ scaled &= v_ref v^_, \\
+		u^_,\ scaled &= v_ref u^_, \\
+		w^_,\ scaled &= v_ref w^_. 
+	
+ 
+These values are then linearly interpolated onto our grid values $r(i)$ with: 
+ 
+
+f_1 = ,\ scaled(i) r_,\ scaled(i+1) - r_,\ scaled(i), 
+
+f_2 = ,\ scaled(i+1) r_,\ scaled(i) - r_,\ scaled(i+1), 
+
+_,\ inter = f_1\ (i) + f_2\ (i+1), 
+
+where $$ is each of the velocity components mentioned in Equations . Finally, noise is added to each cylindrical component of the velocity as follows before conversion back to Cartesian coordinates for use in the boundary inflow:
+ 
+	
+		&&v_in,\ cyl = v_,\ inter + \\ 
+ &&( v^_, inter + v^_, inter 	_1 ) _2 , 
+ 
+ 
+		u_in,\ cyl = u^_, inter + u^_, inter _3, 
+ 
+ 
+		w_in,\ cyl = w^_, inter + w^_, inter _4, 
+	
+ 
+where $ = 0.1$ and each $_i$ and $_k$ value is randomly generated as follows:
+ 
+	
+		r_i &= , \\
+		_k &= 2 X_k ,
+	
+
+where $X_n$ are random uniformly distributed numbers between 0 and 1. The inflow parameters are finalized as $_in$ after being converted to Cartesian coordinates $(r,y,) (x,y,z)$. 
+
+We implement zero-gradient boundary conditions for all boundaries not involving the jet inflow with first order extrapolations. Additionally, is halted at a distance of $2.5d$ from the boundary in the $x$ and $z$ directions, and that of $5d$ in the axial direction. This low-refinement perimeter is implemented to act in a similar fashion to a sponge with the goal of dissipating waves and thus reducing the chance of spurious reflections from the boundaries.
+
+Operating Conditions
+ 
+Three cases are investigated in this study. The first case pertains to an isothermal jet, in which the jet conditions match that of the ambient fluid for all quantities aside from velocity. The other two cases consider non-isothermal jets, in which the ambient fluid is adjusted to no longer match the temperature of the jet inflow. All three cases consider the same inflow conditions, with ambient fluid conditions varying for each case. Temperatures for the ambient fluid in the non-isothermal cases are chosen such that the ambient fluid is supercritical but the temperature for each case falls on either side of the peak in specific heat seen near the critical point. This peak is associated with the pseudo-boiling phenomenon seen in supercritical fluids, whereupon crossing the Widom line, the supercritical fluid experiences a shift from being more gas-like to more liquid-like in nature, although distinct phase separation between the two is not present. A summary of the conditions for each case can be seen in Table , including values for the sound speed $C_s$, compressibility factor $Z$, and reference Mach number $M_ref$; subscripts denote values at the inlet ($in$) vs the ambient fluid ($$).
+
+The goal in choosing the ambient temperature in this way is to investigate the impact of large thermodynamic changes on the flow field of the supercritical jet. An example of this can be seen with the sharp peak in constant pressure specific heat in Figure . This choice differs from similar studies, which typically involve transcritical injection. 
+
+Post-Processing Procedures
+
+Post-processing procedures were written in Python and primarily leveraged the yt and pandas libraries. Original 3D data at each data output time were sliced in three different ways using yt: along the centerline to create 1D data, normal to the jet axis at various points down stream to create 2D data, and along the axial direction at $z=0$ to create 2D data. A graphic depicting these different slicing regimes can be seen below:
+
+For time averaging, a basic discrete averaging procedure was implemented over $i$ saved plot files from the final 2 flow-throughs of the simulation, with 100 plots saved per flow-through:
+ 
+_avg,\ slice = 200 _i=1^200 _i,\ slice.
+
+For each slice normal to the jet axis, radial averages are approximated with $r = 0$ lying in the center of the $xz-$plane with $r = $. The $N$ points nearest to each fixed $r$ distance away from the center were then averaged together:
+ 
+_avg,\ r = N _k=1^N _k,\ r.
+
+For quantities that were averaged both temporally and radially, temporal averaging was performed first, with the radial average then taken of the time averaged slice data. Fluctuating quantities are calculated on 2D slices as follows:
+ 
+'_i,\ slice = _avg,\ slice - _i,\ slice.
+
+These perturbations can then be used to calculate average resolved Reynolds stresses for each $u_i$ component of velocity, $ u'_i u'_j $, and components as follows: 
+ 
+ TKE = 2 ( u' u' + v' v' + w' w' ).
+
+In the results section, when these quantities are introduced, they are presented without angle brackets for the sake of streamlining notation, but note that all of the results presented from here on are averaged either temporally or temporally and radially as was presented in this section, unless explicitly stated otherwise. 
+
+Results and Discussion
+
+Simulations were run on the Eagle supercomputer using Intel Skylake processors with the Intel suite of compilers . Simulations used 576 ranks in total, with 36 ranks spread across 16 nodes. Roughly 17,000 cells were handled per rank. Dynamic load balancing of levels allowed for maximum utilization of the system. In total, over 100 TB of data were stored from the original 3D simulations run over the course of the 10 flow-throughs of the domain needed for averaging procedures. To help manage data storage issues, slicing procedures were implemented to reduce full 3D simulation data down to 2D slice data, where averaging procedures were then performed as outlined in the previous section. 
+
+Here, we present the results of the three cases outlined in section . In addition to visualizing some qualitative aspects of jet slices along the axial direction, a variety of quantities of interest are analyzed. Quantities of interest we consider include axial velocity decay (in both the radial and axial directions), centerline velocity decay, resolved Reynolds stresses, and resolved , among others. These quantities are commonly explored in turbulent jet investigations and have been chosen to highlight the differences in flow field structure between our three cases. In the graphs presented throughout this chapter, all quantities are averaged over time unless specifically denoted otherwise. Additionally, for graphs plotted in the radial direction away from the centerline, quantities are radially-averaged. 
+
+These results are organized as follows: first, the isothermal jet case is presented and quantities of interest are related to those of comparable subcritical turbulent jets studies from relevant literature . This establishes a baseline for comparison with the non-isothermal jet cases and is used to validate that the numerical jet setup is behaving in a reasonable manner. The two non-isothermal cases are then presented together, with the 350~K ambient case compared against the isothermal case. Variations between these two cases are related to similar non-isothermal turbulent jets from the subcritical regime. Our main case of interest is the 314~K ambient case as it contains the transition over the pseudo-boiling point. We then compare this case with the 350~K ambient case, which is additionally related to similar supercritical investigations regarding the work of Mayer et al., where transcritical injection involves a phase change . Through the comparisons of our 314~K cases, we specifically investigate the impact of the transition through the pseudo-boiling point on the supercritical flow field. 
+
+Isothermal Jet
+
+Our first case involves the isothermal jet where both jet and ambient fluid are at 330~K. Quantities of interest for this case are compared against an incompressible round turbulent jet and apt compressible jet cases from literature . This case serves as a baseline for comparison with the other two cases involving non-isothermal jets.
+
+All images here depict a 2D slice of the 3D flow field at $z=0$. Each figure contains an instantaneous snapshot and a time-averaged snapshot of the entire slice domain, plus an additional zoomed-in image of the time-averaged quantity of interest near the inlet. All instantaneous images are taken from the final data point of the simulation.
+
+Figure shows the axial velocity component of the flow field. The general spreading rate and decay of the velocity field can be seen from the instantaneous snapshot in Figure . From these images, the flow field can be distinguished into three main regions, as noted in : the potential core region, the transition region, and the fully developed region. The flow is laminar up until about $d=2$ before perturbations begin. The stream mostly stays together through these initial perturbations up until $d=7$ where spreading then begins, marking the end of the potential core. The averaged axial velocity fields in Figures and shed more light on the development of the jet. The transition region occurs approximately from $7 d 15$, where the laminar state evolves into the turbulent state as flow structures begin to interact with one another. Thereafter the jet appears fully developed and nonlinear interactions give way to eddies across a range of large and small scales. Centerline analysis of the turbulent kinetic energy later on will provide more information for these boundaries. 
+
+Figure shows minor pressure fluctuations in the flow, scaled against the maximum pressure achieved above the ambient pressure. Figure shows minor pressure oscillations mirrored on each side of the jet edge in the same zone as the initial velocity fluctuations see in Figure . Thereafter, the oscillations become asymmetric, correlating to the beginning of the jet disintegration as seen in the velocity field. Pressure fluctuations are concentrated near the inlet and decrease in amplitude past the transition zone. This can be seen more clearly in Figure . On average, pressure fluctuations yield a minor increase within the potential core and decrease on the jet perimeter, as can be seen in Figure . Fluctuations also lead to a minor pressure drop on average in the transition region. 
+
+Figure shows the magnitude of the vorticity scaled between the maximal and minimal values. Figure shows the strongest vorticity occurring at the jet interface with the ambient fluid near the inlet. Past this initial stage, a Kelvin-Helmholtz instability causes a shear rollup at the outer edge of the jet around $d = 2$, forming small but coherent vortical structures. These structures then become unstable and lead to more complex vortices beginning around $d= 5$. The averages in Figures and both show again that the most intense vorticity occurs at the inlet along the outer edge of the jet. This high intensity remains constant until about $d=1$ before more mixing with the ambient fluid occurs as the jet spreads and the vorticity lessens in intensity. Vortices are still restricted to the jet edge until around $d = 5$ where the transition to fully developed turbulence enables vortical motions to extend across the fully spread of the jet. Generally, vorticity then dissipates as the jet spreads farther downstream.
+
+Figure depicts the time and radially averaged scaled axial velocity component plotted against radial distance from the centerline at multiple normal slices downstream from the inlet. The velocity is scaled by the average axially velocity value at the inflow while the radial direction is scaled by the jet diameter. These plots demonstrate the axial velocity decay as the flow progresses farther downstream. As the velocity value along the centerline decreases, the increases, both flattening and widening the velocity profile. Typically, for the round turbulent jet, this expansion would occur in such a way that upon specially selected scaling, these profiles would collapse into one profile after a certain point. This potential is explored farther in the next figure. This decay is a common feature of how the axial velocity of the jet develops as it leaves the inlet . 
+
+Figure depicts time and radially averaged scaled axial velocity components plotted against the radial distance from the centerline. Each curve is made at a slice normal to the axial flow direction at different points downstream. Figure depicts velocity curves every $3d$ downstream from the inlet near where the transition region begins while Figure contains plots taken every $5d$. The axial velocity is scaled by the centerline value $v_c$ while the radial distance is scaled by the , where the velocity component is equal to half the value on the centerline $v(r_1/2) = 2$.
+
+Figure shows axial velocity profiles in the transition region of the jet. They exhibit self-similarity collapse into one profile which, is a common feature of round turbulent jets . farther downstream as depicted in Figure , self-similarity is fairly well maintained with minor fluctuations in the center and edge of the jet. These fluctuations are most likely the result of low resolution in the time averaging of available data. Overall though, this general collapse is in agreement to that which is seen in comparable low-Mach isothermal round jet simulations and experiments, as are summarized in . 
+
+Another common feature of round turbulent jets is the development of a linear relationship between the jet centerline value and the distance downstream. This comparison for the transition region of the jet is depicted in Figure . Here, the centerline value of the axial velocity $v_0$ is inversely linearly proportional to the distance downstream. The decay rate can be characterized by the following relationship :
+ 
+v_0 = B_v[ d - d ],
+
+where $y_0$ is the virtual origin of the jet and $B_v$ is the decay rate. For this case, the decay rate is given by $B_v = 3.69$. The decay rate here is smaller than those of comparable low-Mach jets in the subcritical regime, as summarized in . 
+
+As can be seen in Figure ~, the spreading rate of the jet can also be characterized by linear development downstream in a similar fashion :
+ 
+d = C_v[ d - d ],
+
+where $C_v$ is the spreading rate of the jet. The spreading rate here is given by $C_v=0.122$. The spreading rate here is larger than those of comparable low-Mach jets in the subcritical regime, as summarized in . 
+
+Figure shows the time and radially averaged resolved Reynolds stresses at two points downstream from the inlet. Here, velocity components $(u,v,w)$ correspond to the $(r,y,)$ directions, respectively. Each Reynolds stress component follows general trends associated with round turbulent jets , with the axial component providing the leading contribution, followed by the other two directional components closely with these two being of roughly the same magnitude, and the cross-directional component contributing the least. Centerline values are slightly higher than the typical values seen in other works as is summarized in , but are of the same order of magnitude. This discrepancy could be due to error induced by the model accuracy for second order moments as noted in . Note also that self-similarity is not exhibited, as each component exhibits an increase in magnitude at the center of the jet as distance downstream is increased. 
+
+Figure shows the time average components along the centerline of the jet. Each component grows through the potential core region of the jet up until all components reach a peak in energy around $d=6$, with the axial component's peak coming slightly before the other two directions. Rapid decay is then observed up until around $d = 15$ before a slower decay sets in up until a leveling off is achieved around $d = 30$. This rapid decay and then farther progression correspond to the transition and fully developed jet regions, respectively. Compared to similar analysis regarding compressible turbulent jet flows, this case displays anisotropic separation more akin to higher mach flows .
+
+Overall, the isothermal jet appears to behave in a similar fashion to low-Mach compressible and incompressible jets within similar parameter regimes . Qualitative features such as discernible regions of development and self-similarity are in agreement with ranges provided in the literature for subcritical jets. Decay rate and spreading rate are slightly below and above the typical ranges seen for similar subcritical cases, respectively. The supercritical isothermal jet appears to persist and spread more than its subcritical comparable counterpart, at least in the transition region. Resolved components also exhibit slight anisotropy between the axial and span-wise components. 
+
+Non-Isothermal Jets
+
+The two non-isothermal jet cases as described in the operating conditions are presented here. Some features are compared to the isothermal jet case while others are used for direct comparison between the two non-isothermal cases. Again, the 350~K ambient case depicts a cooler jet entering a warmer ambient fluid, moving farther away from the supercritical point while the 314~K ambient case depicts a warmer jet entering a cooler ambient fluid with a transition over the pseudo-boiling point. It is anticipated that the 314~K ambient case will vary much more prominently from the other two cases across various quantities of interest examined. 
+
+Figure shows various axial velocity field comparisons between the isothermal and non-isothermal jets. The instantaneous axial velocity over the whole domain is depicted in Figure . The 350~K ambient case has a laminar flow region of similar length to the 330~K ambient case, with the jet core staying laminar up until $d = 2$ before fluctuations begin to take effect. The developing region after this within $7 d 15$ appears to be slightly more volatile in the 350~K ambient case compared to the 330~K ambient case, with the region containing finer-scale fluctuations. The spreading rate of the 350~K ambient case is smaller than that of the base case while overall intensity levels seem to be comparable in the downstream direction. The 314~K ambient case has a much shorter laminar region compared to the base case, with fluctuations beginning to become apparent as early as $d = 1$. Perturbations after that appear to be more symmetric in structure, with vortices along the jet edge staying in tandem instead of the asymmetric shedding apparent in the other two cases. The 314~K ambient case also appears to have a spreading rate comparable to the 350~K ambient case, but with a faster decay in intensity in the downstream direction. Figure helps further illuminate the difference in spread of the three jets. Here the 350~K ambient core intensity is more persistent downstream with a more distinct and thinner outer edge flow present than in the 330~K ambient case, while the 314~K case has a lower intensity central flow region but a comparably sized edge flow region compared to the 330~K ambient case. Finally, Figure depicts the potential core and transition regions of the three cases more clearly. Here, the similarity between the potential cores of the 330~K and 350~K ambient cases is clear while the 314~K ambient case has a much shorter core length. 
+
+Figure~ shows pressure fluctuations near the inlet for all three cases. Figure~ contains an instantaneous snapshot of these fluctuations near the inlet. The 350~K ambient case is comparable to the 330~K ambient case, with similar large coherent structures forming in the pressure oscillations. However, the initial pressure waves emanating from the inlet are stronger in the 350~K ambient case, resulting in slightly more intense fluctuations downstream. Minor spurious perturbations are also seen downstream in the 350~K ambient case. The 314~K ambient case is qualitatively much different from the other two cases. Larger coherent structures are much less defined, with smaller fluctuations appearing much more prominently throughout. There is also a band of cells slightly before $d=2$ where perturbations are more concentrated. Average pressure fluctuation can be seen in Figure~. All cases have a slight increase in pressure isolated within the potential core surrounded by and followed with a pressure drop. The difference between these low and high pressure pockets is most prominent in the 314~K ambient case, followed by the 330~K ambient case. Numerical artifacts can be seen in the 314~K ambient case with some similar artifacts present in the 350~K ambient case as well. These artifacts are most likely a combined result of the and interplay in this region, i.e., slight inconsistencies of states between coarse cells may be exacerbated by the at this point in the domain. For conditions nearer the pseudo-boiling point, where density gradients are steeper, the fluctuations are more pronounced, hence our suspicion that some aspect of the implementation plays a part in this phenomenon. Further investigation is needed to discern the specifics involved with this feature. Pressure in general is a sensitive field, and since these fluctuations are not apparent in other plots, we do not expect them to impact the conclusions drawn from other quantities investigated here. 
+
+Figure shows both instantaneous and time-averaged flow fields of the vorticity magnitude for the three cases. The vorticity magnitude features seen in Figure follow similar trends as the axial velocity. In all three cases, the strongest vorticity occurs along the jet edge at the inflow, leading to vortex formation and subsequent fluctuations. The 314~K ambient case has a shorter region of steady flow in and also features larger, more distinct vortex formation along the edge of the jet. These vortices roll along the edge in tandem before mixing to lead into the transition region around approximately $d = 3$ for the 314~K ambient case and $d = 5$ for the 350~K. Immediately following this initial vortex formation, jet behavior begins to diverge between the two cases. The 314~K ambient case maintains coherent large vortex structures farther along downstream compared to the 350~K case. As these larger structures disintegrate, it appears that positive interference between edge vortices leads to finer, more compact filament structures with higher pockets of vorticity as compared to the 350~K ambient case. These finer structures then more rapidly decay in the downstream direction. The 350~K ambient case maintains higher vorticity intensity downstream with more prolonged pockets of higher vorticity seen in the transition region of the jet compared to that of the 330~K ambient case. Similar to what was seen with the 314~K ambient pressure field, there are some vorticity artifacts present in the mesh at the edge of the initial high-refinement zone surrounding the jet inlet. Similar to the 350~K ambient case, the 314~K ambient case also maintains some pockets of high vorticity, but then decays more rapidly overall compared to the other two cases. The averaged vorticity magnitude fields in Figures and showcases the different jet regions and jet spreading. From Figure one can see that the 350~K ambient case has more widespread vorticity in the transition region from around $5 d 15$ and then maintains the intensity formed here for farther along downstream compared to the 330~K ambient case. The 314~K ambient case has a much narrower vorticity range in the same region with intensity decaying much more rapidly downstream. Near the inlet, as depicted in Figure , it is easier to see that the 314~K ambient case begins spreading much earlier than the other two cases and has much less uniform vorticity along the jet edges. This earlier breakup also impacts the way the high-vorticity outer edges of the jet merge around the low-vorticity center at the end of the potential core, where the merging of the two jet edges across the middle meet in an almost concave point as compared to the more convex central region seen in the other two cases. The vorticity fluctuations before the mesh refinement change may contribute to the vorticity artifacts seen here. We believe these artifacts are due to a post-processing issue from a previous iteration of the code that has since been resolved. Again, since the velocity field appears relatively smooth by comparison, we do not expect the artifacts seen here to significantly impact the conclusions discussed later on. 
+
+The final figure in this section, Figure , contains direct comparisons between the two non-isothermal cases for various quantities of interest. Figure shows the constant-pressure specific heat variation between the two cases. The added peak in specific heat can be seen in the 314~K ambient case as the fluid transitions through the pseudo-boiling point. This peak occurs at the jet edge in the potential core and is additionally maintained after the transition region, showing a slower transition to the ambient specific heat as compared to the 350~K ambient case. This layer of peak specific heat between the jet and ambient fluid creates a thermal shield around the jet, where most energy goes toward expanding the volume of the fluid as opposed to raising the temperature . This effect can be seen in comparing Figures and . In regions of heightened constant-pressure specific heat, density change in the 314~K ambient case is comparable to the 330~K ambient case, even though the former involves gas-like injection into a liquid-like background and the latter involves gas-like supercritical fluids for both injection and background flow. In the transition region of the 314~K ambient jet, temperature drops dramatically in an area of high mixing just past the potential core. Thereafter, temperature decays much more slowly as the specific heat remains at peak levels for the remainder of the jet propagation. 
+
+The last group of images, Figures , , and , show the sound speed, enthalpy, and compressibility factor of the fluid, respectively. All three quantities exhibit similar trends, with the 350~K ambient case showing a more rapid transition to the ambient conditions as compared to the 314~K ambient case. These follow the same trend as seen in the temperature, but to varying degrees of intensity. For example, enthalpy has an overall faster downstream decay for both cases as compared to the temperature decay, while sound speed and compressibility factor have comparable decay rates. 
+[hbtp!]
+	
+ [] 
+ 
+	[trim=0 1cm 0 5cm, scale=.35]figures/Plots/vertical/cp_scaled_vert_noniso.pdf 
+ 
+ 
+ 
+ [] 
+ 
+	[trim=0 1cm 0 5cm, scale=.35]figures/Plots/vertical/temp_scaled_vert_noniso.pdf 
+ 
+ 
+ \\
+ 
+ [] 
+ 
+	[trim=0 1cm 0 5cm, scale=.35]figures/Plots/vertical/rho_scaled_vert_noniso.pdf 
+ 
+ 
+ 
+ [] 
+ 
+	[trim=0 1cm 0 4cm, scale=.35]figures/Plots/vertical/Cs_scaled_vert_noniso.pdf 
+ 
+ 
+ \\
+ 
+ [] 
+ 
+	[trim=0 1cm 0 4cm, scale=.35]figures/Plots/vertical/Hi_scaled_vert_noniso.pdf 
+ 
+ 
+ 
+ [] 
+ 
+	[trim=0 1cm 0 4cm, scale=.35]figures/Plots/vertical/Z_scaled_vert_noniso.pdf 
+ 
+ 
+ 
+ 
+
+Figure depicts the time and radially averaged scaled axial velocity component plotted against radial distance from the centerline at multiple normal slices downstream from the inlet. The velocity is scaled by the average axial velocity value at the inflow while the radial direction is scaled by the jet diameter. In both cases, velocity profiles flatten as they get farther downstream. Compared to the 330~K ambient case, the 350~K ambient case has a slower axial velocity decay downstream while the 314~K ambient case has a much faster decay. This agrees with the trends seen in the vertical slice images. 
+
+Figure shows a different scaling of the axial velocity profiles depicted in the previous figure. Here, the axial velocity is scaled by the centerline value at each normal slice while the radial distance is scaled by the $r_1/2$, as was done in Figure . Figures and show the near field profiles resulting from this scaling. As was the case with the 330~K ambient case, self-similarity is seen in the near field for the non-isothermal cases, where fairly agreeable profile collapse occurs at $d = 15$. The 350~K ambient case profiles are slightly more in-line with each other as compared to the 314~K ambient case, but both demonstrate a general tendency toward self-similarity still. Figures and however do not show as agreeable a collapse as the 330~K ambient case. The 314~K ambient case has better self-similarity structure toward the centerline of the jet as compared to the 350~K ambient case, though the outer edge of the jet has a wider disparity between profiles. 
+
+Density self-similarity is not as evident as is in axial velocity profiles, as can be seen in Figure . The 350~K ambient case profile spread is not as tight as it was with the axial velocity. The 314~K case has more prominent fluctuations in the curves than the previous profile depictions. Far-field density in this case has the widest spread of all previous comparisons. These density fluctuations and lack of self-similarity could be related to the increased Kelvin-Helmholtz instabilities seen in the 314~K ambient case and the subsequent density decay as seen in Figure . One interesting feature of these plots can be seen on the outer edge of the jet, past the mark. For the 314~K ambient case, profiles exhibit an initial decay as they dip below the $d=10$ profile before increasing to fall above this initial curve at later slices downstream. This is opposite to what is seen in the 350~K ambient case, where earlier slices rise above the initial curve at $d = 10$ before decaying below it farther downstream. This later decay is consistent with what is seen in the axial velocity self-similarity curves for both cases, while the density profiles for the 314~K ambient case break from this pattern. 
+
+Figure shows the recovery of linear decay in the axial velocity along the centerline of the jet for each case. The 350~K ambient case has a less steep slope compared to the 330~K ambient case seen in Figure , where the decay rate according to Equation is $B_v = 4.48$. This corresponds to slower decay of the axial velocity along the centerline. The 314~K ambient case has a steeper slope compared to the 330~K ambient case, with $B_v = 2.92$, corresponding to a faster decay in axial velocity along the centerline. These findings are consistent with the analysis from Figure . 
+
+Similarly, Figure shows the recovery of linear spreading rate along the centerline of the jet for each case. The 350~K ambient case has a steeper slope compared to the 330~K ambient case seen in Figure , where the decay rate according to Equation is $C_v = 0.115$. This corresponds to slower decay of the axial velocity along the centerline. The 314~K ambient case has a steeper slope compared to the 330~K ambient case, with $C_v = 0.122$, corresponding to a faster decay in axial velocity along the centerline. These findings are consistent with the analysis from Figure . Overall the jet in the 314~K ambient case decays faster in the axial direction while spreading further in the radial direction compared to that of the 350~K ambient case. 
+
+Finally, Figure shows various quantities along the centerline for both non-isothermal cases. For all quantities presented here, centerline plots help depict the different regions of the jet. The potential core is maintained until around $d = 2.5$ for the 314~K ambient case and until around $d= 5$ for the 350~K ambient case. Then there is a transition region where quantities experience rapid change. This occurs up until about $d= 10$ for the 314~K ambient case and $d = 12$ for the 350~K ambient case. After that, a gradual leveling out occurs as the quantity of interest continues to adjust as it mixes with the ambient fluid through the remainder of the domain. Figure shows the temperature change for each case along the centerline of the jet. The 314~K ambient case exhibits a more rapid decay from the inflow temperature as compared to the 350~K ambient case, as can be seen in the separation between the curves between $4 d 16$. Afterwards, they continue their respective transition toward ambient conditions at roughly the same rate. The 350~K ambient case is never as close to ambient conditions as the 314~K ambient case due to the slower initial decline, hovering instead around $T^+=0.18$ as compared to the $T^+=0.14$ that the 314~K ambient case sits at. Enthalpy and the compressibility factor in Figures and respectively follow the same trend though with less separation between the two cases as compared to the temperature trajectories. Figure shows the sound speed transition along the centerline. Compared to the previously discussed quantities, the sound speed decay appears much more gradual, with little rate difference between the two cases. The initial transition region is less steep and the region thereafter more of a continued gradual decline as opposed to a leveling out like the other quantities. Figure shows the constant-pressure specific heat for the two non-isothermal cases. Again, neither fully transitions to the ambient condition as the jet persists through the domain. Here the jump in specific heat over the peak present near the pseudo-boiling point can be seen for the 314~K ambient case. This case also has a steeper initial transition than the other case does, though both have similar rates of approach toward ambient conditions after this initial shift. Figure shows the density of the two cases. This quantity follows a unique trajectory between the two cases compared to those previously discussed. Here, the initial transition rate of the two cases from the potential core to the fully developed region is nearly the same. Toward the end of this transition though, the 314~K ambient case begins to level out at a faster rate than the 350~K ambient case, allowing the curves to collapse onto each other. Then both centerline densities continue on past $d = 16$ at approximately $^+ = .12$ and steadily decline toward ambient conditions thereafter. 
+
+Figure shows the resolved Reynolds stresses of each non-isothermal case at two different locations downstream. As was the case with the 330~K ambient resolved Reynolds stresses in Figure , self-similarity in the axial direction is not recovered. The Reynolds stresses for both of the non-isothermal cases are generally smaller than their counterparts in the isothermal case. The stresses in Figure generally follow the trends outlined in the isothermal case, but the remaining slices for these two cases do not follow suit, with little to no separation between the axial direction stresses and the other stresses. This could be due the effects of the modeling as mentioned in . 
+
+Figure shows the components of the resolved for each non-isothermal case. Both cases follow the same general trends seen in the 330~K ambient case, with the axial component being the strongest and the other two components being of the same magnitude. The 350~K ambient case is the most similar to the 330~K ambient case between the two. For this case, peak occurs at approximately $d = 7$, which is slightly later than the isothermal case. Additionally, this peak is aligned with the peak seen in the other components, where for the isothermal case the axial component peak came slightly before the peak of the other two. The magnitude of the peak axial component is larger in the 350~K ambient case while the magnitudes of the other directional components are similar to their counterparts in the 330~K ambient case. The decay rate is also slightly higher in the 350~K ambient case compared to the isothermal case. The components of the 314~K ambient case reach their peaks slightly earlier than the 330~K ambient case at about $d = 5$. The peak of the axial component is much larger than that of the other two cases. Additionally, the other components of the 314~K ambient case have a smaller magnitude than their counterparts in the other cases, resulting in a larger disparity between the magnitudes of the components in this case. There is also stronger overall decay in the 314~K ambient case as compared to the 350~K ambient case.
+
+Figure further emphasizes the differences between the components and overall by directly comparing each quantity across all cases. For all quantities, the 314~K ambient case peaks before the other two cases. For the overall resolved and the axial component, the 330~K ambient case is next to the peak, followed by the 350~K ambient case. For the cross directional components, the peaks of these two cases coincide. The 314~K ambient cases experiences the strongest decay along the centerline immediately following the peak for each quantity, however, the other two cases eventually decay to the same value so that all cases exhibit a roughly equivalent leveling off as the jet progresses through the remainder of the domain. 
+
+Key differences in the flow structure between the 350~K and 314~K ambient cases of supercritical fluid injection are noted. Vertical slice imaging in Figures , , , depicts qualitative differences between the non-isothermal cases. In general, the 350~K ambient case has a very similar flow structure compared to the isothermal case. Thus, the introduction of variable density dynamics does not heavily impact jet behavior when moving away from the pseudo-boiling point. This is not the case when moving across the pseudo-boiling point. 
+
+One of the main effects of crossing the pseudo-boiling point that can be seen in the vertical slice images and centerline plots is the formation of barrier of high constant-pressure specific heat. The effects of this ``thermal-shielding'' on a denser jet can be seen in the experimental work of Mayer et al. and Chehroudi et al. , and some of the numerical counterparts of these studies . In these studies, the thermal-shield contributes to a sharp density gradient at the jet-ambient interface, which stabilizes the shear layer and allows for further jet penetration before jet breakup . Density gradient stratification in these cases also contributes to finger-like structures formed downstream in the pseudo-boiling case, which are not evident in the case moving away from the pseudo-boiling point . In this study, however, a lighter, warmer jet is propelled into a denser, cooler ambient fluid for the case that crosses the pseudo-boiling point, so the specific heat peak enhances a flipped density gradient. The stabilizing effects of density stratification here may be overcome by the volume dilatation , not only enabling but amplifying the vortex formation related to a Kelvin-Helmholtz-like instability. 
+
+Spreading rate and decay of the jet is ultimately also enhanced by the pseudo-boiling region, as compared to both the non-isothermal case here and typical values for spreading rate and decay seen in the literature for subcritical jets . As larger vortex pairs deteriorate at the end of the potential core, high levels of mixing occur as denser ambient fluid is entrained in the lighter jet. This entrained fluid with higher thermal conductivity and constant-pressure specific heat allows for better transfer of thermal energy and faster density adjustment. As this mixing occurs, jet penetration is slowed and the lower-density liquid builds and expands spanwise in the denser-ambient surrounding. This enhanced spreading and decay is also found in similar numerical simulations and some recent experiments .
+
+A feature not found in the literature that is explored here is the increase in anisotropy regarding when crossing the pseudo-boiling point. In general, anisotropy of the resolved in the isothermal and other non-isothermal cases is comparable to that seen in higher Mach or lower Reynolds flow subcritical compressible flows as is explored in . This implies that compressibility may play an important role in the enhanced mixing features seen in not only supercritical fluids in general, but especially in the case where pseudo-boiling is involved. 
+
+Conclusions
+
+In this work, we studied three cases of a supercritical round turbulent jet injected into a supercritical environment: an isothermal case, a non-isothermal case with ambient temperature farther away from the critical point, and a non-isothermal case with ambient temperature closer to the critical point and specifically crossing a region of intense thermodynamic fluctuation known as the pseudo-boiling point. It was shown that the isothermal case had many similarities with ideal incompressible round jets. Many properties found in classical round turbulent jets were recovered in this case, such as self-similarity, linear decay along the centerline, and general trends associated with Reynolds stresses (although self-similarity in the Reynolds stresses was not recovered; general trends were still agreeable). The non-isothermal case farther away from the critical point behaved similarly to the isothermal case with slight differences being noted in potential core length and spreading rate of the jet. The non-isothermal case that transited the pseudo-boiling point exhibited noticeably different behavior.
+
+The effects of pseudo-boiling density stratification was demonstrated for low-to-high density supercritical jet injection, in contrast to the more common high-to-low density injection scheme found in existing literature. Earlier onset of Kelvin-Helmholtz-like instabilities in the jet-ambient shear interface ultimately contributes to faster mixing and jet decay as compared to the other non-isothermal case presented here. Of note with this regard, resolved in this case is redirected from the spanwise direction to the streamwise direction, displaying enhanced isotropy in the pseudo-boiling case. To the authors' knowledge, this feature has not been explored in the current literature regarding pseudo-boiling in supercritical jet configurations. Jet decay and spreading rate are both enhanced compared to the other non-isothermal case, but may be even more so due to pseudo-boiling, indicating a potential for larger heat transfer and more rapid combustion for applications of interest. A further investigation regarding lighter density supercritical injection could be useful in exploring this effect further. 
+
+Some limitations of this work are noted. The models used in this work do not take into consideration real gas behavior, being limited to assumptions based on the ideal gas equation of state. There is room for improvement in turbulence modeling with the aim of incorporating higher order equations of state to the model formulation. As with any numerical simulation, discretization and resolution inherently lead to error. Ideally with more computational power, finer resolution can be achieved to help improve simulations. Finally, minor artifacts were noted in the non-isothermal case closest to the critical point likely due to the presence of steep gradients and issues with post-processing procedures. Though the impact of these are believed to be mild, they are still present and add to cumulative error. These artifacts are limited to the mesh interface transition from the inlet region as described in Figure~ and are not seen in other regions where high shear or gradients might be present. Data collected for analysis begins beyond this region, with no noticeable impact seen on centerline slices. Evidence of self-similarity trends, as seen in Figure~, along with the centerline decay in Figures and , as relates to general turbulent jet theory add confidence toward the validity of the results presented here. 
+
+Future work aims to incorporate multiple species to the flow system and to investigate higher Mach flows. The impact of more specific application-oriented configurations with complex geometries on the flow field is also of interest. 
+
+Transport Coefficient Formulation
+
+As stated in Eqn. , transport components can be separated into a low-pressure component incorporating ideal gas behavior and a high-pressure component that captures deviation from the ideal as formulated by Chung et al. . These formulations as implemented in PelePhysics are presented here for convenience.
+
+For viscosity, these components are calculated as follows:
+
+_k = _0 ( G_2 + A_6 Y ), \\ 
+_p = ((MT_c)^1/2V_c^2/3)A_7Y^2G_2(A_8 + T^* + T^*2), 
+
+where $M$ is the molecular weight, $V_c$ is the critical molar volume, $T^* = T/_k$ is a dimensionless temperature scaling using the Lennard-Jones potential well depth , $Y = ( V_c)/6$, and $G_1 = (1-0.5Y)/(1-Y)^3$, and $G_2 = \A_1[ 1-(-A_4Y)]/Y + A_2G_1(A_5Y) + A_3G_1 \ \\ /(A_1A_4 + A_2 + A_3)$. The constants $A_1-10$ are linear functions calculated as follows: 
+
+A_i = a_i0 + a_i1 + a_i2 _r^4 + a_i3 i = 1,..., 10,
+ 
+where $_r$ is the reduced dipole moment of the species, $$ is the association factor of the species, and $a_ij$ are constants (see Table ). 
+
+Similarly, thermal conductivity components are given by: 
+
+_k = _0 ( H_2 + B_6 Y ), \\ 
+_p = ((T_c/M)^1/2V_c^2/3)B_7Y^2H_2T_r^1/2,
+
+where $H_2 = \B_1[ 1-(-B_4Y)]/Y + B_2G_1(B_5Y) + B_3G_1 \/(B_1B_4 + B_2 + B_3)$ and $B_1-7$ are defined as: 
+
+B_i = b_i0 + b_i1 + b_i2 _r^4 + b_i3 i = 1,..., 7,
+
+where $b_ij$ are constants (see Table ). All species-related constants mentioned in this section can also be found in Table . 
+
+Coefficients used in the ideal gas component of each transport coefficient as formulated in Eqn. are listed in the Table .
+
+Thermodynamic and Transport Model Validation
+
+We compare some thermodynamic and transport quantities with highly accurate data from the NIST WebBook to quantify the error present in our model within the regime of interest. Overall, quantities of interest relevant to this work follow the same general trends as the NIST data, but with larger discrepancies between the two noted near the pseudo-boiling region denoted by the peak in specific heat, as can be seen in Figure . Peak error values occurring in the pseudo-critical region are also noted by . 
+
+Most of the largest error values can be found in the $314 - 330$ K range, which means modeling errors will have the largest impact on the pseudo-boiling case presented in this work. Table contains the largest percent errors over the operating range for all cases for each quantity along with the temperature value of that peak error location. Future studies will explore methods of achieving higher accuracy in thermodynamic and transport modeling in this challenging parameter regime. Since general trends are still followed by the models, results from this study still provide insight into this region.

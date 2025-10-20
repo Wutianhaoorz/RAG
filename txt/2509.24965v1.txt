@@ -1,0 +1,81 @@
+[utf8]inputenc 
+[T1]fontenc 
+ 
+ 
+ 
+ 
+ 
+ 
+[numbers]natbib
+
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+RGB0,100,0 
+RGB200,0,0 
+
+ 
+
+ 
+[scale=0.06]orcid.pdfNiccolò Tonioni \\
+	Pprime Institute,\\
+	CNRS, Université de Poitiers, ISAE-ENSMA,\\
+ Chasseneuil-du-Poitou, 86360, France.\\
+	 \\
+	
+	
+	Lionel Agostini \\
+	Pprime Institute,\\
+	CNRS, Université de Poitiers, ISAE-ENSMA,\\
+ Chasseneuil-du-Poitou, 86360, France.\\
+	
+	Franck Kerhervé \\
+	Pprime Institute,\\
+	CNRS, Université de Poitiers, ISAE-ENSMA,\\
+ Chasseneuil-du-Poitou, 86360, France.\\
+	
+	Laurent Cordier \\
+	Pprime Institute,\\
+	CNRS, Université de Poitiers, ISAE-ENSMA,\\
+ Chasseneuil-du-Poitou, 86360, France.\\
+	
+	Ricardo Vinuesa\\
+	Department of Aerospace Engineering,\\
+	University of Michigan,\\ 
+ Ann Arbor, MI 48109, United States\\
+ and\\
+ FLOW, Engineering Mechanics,\\
+ KTH Royal Institute of Technology,\\
+ Stockholm, SE-100 44, Sweden.
+
+0.5em
+
+[scale=0.06]orcid.pdf 
+[1]
+	Niccolò Tonioniniccolotonioni.github.io,
+
+[1]Lionel Agostini
+[1]Franck Kerhervé
+[1]Laurent Cordier
+[2,3]Ricardo Vinuesa
+
+[1]Pprime Institute, CNRS, Université de Poitiers, ISAE-ENSMA,Chasseneuil-du-Poitou, 86360, France
+[2]Department of Aerospace Engineering,University of Michigan, Ann Arbor, MI 48109, United States
+[3]FLOW, Engineering Mechanics, KTH Royal Institute of Technology, Stockholm, SE-100 44, Sweden
+
+VIVALDy
+
+,
+pdfsubject=q-bio.NC, q-bio.QM,
+pdfauthor=Niccolò Tonioni, Lionel Agostini, Franck Kerhervé, Laurent Cordier, Ricardo Vinuesa,
+pdfkeywords=Reduced-Order Models, Turbulent Flows, Vortex-Induced Vibrations, Variational Autoencoders, Generative Adversarial Networks, Transformers,
+
+	
+
+Acknowledgments

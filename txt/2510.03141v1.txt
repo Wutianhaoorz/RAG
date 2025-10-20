@@ -1,0 +1,302 @@
+[
+ reprint,
+
+ amsmath,amssymb,
+ aps,
+
+]revtex4-2
+
+ 
+
+[dvipsnames]xcolor
+
+_0
+_0
+
+k_x, 
+k_y, 
+k_x, 
+k_y, 
+G_
+
+ 
+
+In astrophysical shear flows, the Kelvin-Helmholtz (KH) instability is generally suppressed by magnetic tension provided a sufficiently strong streamwise magnetic field. This is often used to infer upper (or lower) bounds on field strengths in systems where shear-driven fluctuations are (or are not) observed, on the basis that fluctuations cannot grow in the absence of linear instability. On the contrary, by calculating the maximum growth that small-amplitude perturbations can achieve in finite time for such a system, we show that
+
+perturbations can grow in energy by orders of magnitude even when the flow is sub-Alfv\'enic, suggesting that shear-driven turbulence is possible even in the presence of strong magnetic fields, and challenging inferences from the observed presence or absence of shear-driven fluctuations. We further show that magnetic fields introduce additional nonmodal growth mechanisms relative to the hydrodynamic case, and that 2D simulations miss key aspects of these growth mechanisms.
+
+ 
+
+Shear flows are ubiquitous in astrophysical , space , and fusion plasmas, where they drive or fundamentally alter turbulent fluctuations. These fluctuations provide a source of mixing in stellar interiors , 
+
+may provide a source of coronal/chromospheric heating , 
+
+are associated with transport barriers in high-confinement regimes of tokamak plasmas , and constrain the efficiency of inertial confinement fusion designs . 
+
+Often, the impact of flow shear on such fluctuations is viewed through the lens of normal mode stability analyses. 
+A variety of shear-driven modal instabilities exist , 
+
+most famously the Kelvin-Helmholtz (KH) instability . 
+
+Results from modal stability calculations---including parameters for which a system is unstable, and the length- and time-scales of the instability---are believed to give insight into the fully nonlinear evolution of the system. If a given flow is 
+modally stable, 
+
+then fluctuations and turbulence are often expected to be suppressed as well. 
+In astrophysical shear layers, where KH is generally stable for sub-Alfv\'enic flows (i.e., where the Alfv\'en speed exceeds the change in flow velocity across the layer) , such arguments are routinely used to suggest that an absence of shear-driven 
+fluctuations or KH billows implies an upper bound on the magnetic field strength 
+
+, based on the assumption that no fluctuations can grow if the field is strong enough to make the flow sub-Alfv\'enic. Similarly, Squire's theorem that spanwise-independent modes are the most unstable
+
+is often used (sometimes mistakenly ) to argue that 2D nonlinear simulations are sufficient to characterize fluctuations in such plasmas. 
+
+However, this line of reasoning can be misleading. In the fluids literature, numerous studies have shown that fluctuations can grow and drive turbulence and transport even in systems that are stable according to 
+modal instabilities. This phenomenon is broadly referred to as nonmodal or non-normal growth . 
+In shear flows, two distinct mechanisms are known to drive nonmodal growth: the Orr mechanism , which rotates and amplifies eddies tilted against the shear, and the lift-up effect 
+, which amplifies fluctuations via advection of horizontal momentum. These mechanisms arise in all manner of shear flows---including shear layers, wall-bounded flows, and jets ---where they drive fluctuations that differ significantly from those driven by modal growth mechanisms. For instance, while the fastest-growing KH modes in 
+parallel shear flows are spanwise-invariant, that need not be the case for nonmodal growth: 3D fluctuations can be significant and may even attain the most growth over intermediate times . Indeed, while the Orr mechanism can drive growth in both 2D (spanwise-invariant) and 3D fluctuations, the lift-up effect drives growth in fluctuations with no streamwise variation! 
+Furthermore, nonmodal growth can drive fluctuations in flows that are linearly stable by classical modal stability analyses. 
+For instance, sufficiently strong vertical density stratification 
+stabilizes KH 
+in neutral fluids
+
+(where buoyancy can stabilize KH just as magnetic tension can in MHD); however, in such flows, nonmodal mechanisms can lead to large amplification of fluctuations which can significantly modify the background state ---even for flows far from the stability boundary. This raises the question of whether 
+sub-Alfv\'enic flows in astrophysical systems 
+can support shear-driven fluctuations despite strong magnetic tension, just as stratified flows 
+support such fluctuations despite strong stratification.
+
+While nonmodal growth has been investigated in 
+several plasma systems---including MRI , tearing instability , and 
+plasma drift waves ---the ubiquitous nonmodal effects seen in neutral-fluid shear layers have not, to our knowledge, been investigated in astrophysically relevant plasma models, despite their significance in the former. 
+Implications for shear flows in liquid-metal duct flows have been widely explored . However, work in that area generally considers 
+wall-normal magnetic fields (not streamwise, as in the astrophysically relevant case 
+considered here), and 
+with asymptotically large resistivity. That limit is largely irrelevant to astrophysical plasmas---which are nearly ideal conductors---and precludes two 
+features of this system we show to be quite important: Alfv\'en waves, and the transfer of energy from magnetic to kinetic. 
+
+Thus, we investigate nonmodal growth in a shear layer with a streamwise magnetic field and finite resistivity. 
+This system has multiple qualitative similarities with stratified shear layers, making it 
+instructive to compare the two. Relative to the simplest unstratified shear layers in neutral fluids (where the only force that can stabilize an otherwise-unstable layer is viscosity), stratification and magnetic fields each give rise to a new force in the momentum equation that provides waves (internal gravity waves and Alfv\'en waves, respectively) and, in some limits, suppresses KH. 
+We demonstrate that, as with the stratified 
+case, significant perturbation growth can occur even when KH is suppressed by magnetic tension.
+
+We also encounter new nonmodal growth mechanisms introduced by the magnetic field.
+
+Methods.---We consider the growth of small-amplitude 3D disturbances $$, $$ to the background shear flow $_0 = U_0 (z/d) _x$ and uniform, streamwise magnetic field $_0 = B_0 _x$ in the framework of incompressible MHD with finite viscosity and resistivity. 
+
+The equations governing these disturbances, linearized about $_0$ and $_0$ and non-dimensionalized using the 
+layer half-width $d$, flow speed $U_0$, and 
+field strength $B_0$, are
+ 
+ t + wU' _x + U x = - p + ^2 x + ^2 ,
+
+ 
+ t + U x = x + b_z U' _x + ^2 ,
+
+with $ = 0$ and $ = 0$.
+Here, $ U_0/v_A$ is the Alfv\'en Mach number with 
+Alfv\'en speed $v_A B_0$, 
+$ U_0 d / $ 
+the Reynolds number with 
+kinematic viscosity $$, $ U_0 d / $ 
+the magnetic Reynolds number with 
+magnetic diffusivity $$, and $U' dU/dz$. 
+Throughout this work, we 
+take $ = = 250$. 
+We choose these values because they are the largest we can achieve before numerical costs force us to reduce the breadth of our scans across $k_x$, $k_y$, and $M_A$, and fix $/ = 1$ because of its ubiquity in astrophysical studies (despite not being 
+ubiquitous in astrophysics ). We note that nonmodal growth in the hydrodynamic case 
+
+depends on $$ , but leave the question of how our results vary with $$ and $$ to future work.
+We impose periodic boundary conditions in $x$ and $y$, and no-slip, perfectly conducting boundaries in $z$. 
+To enforce $ = 0$, we use the 
+vector potential in the Coulomb gauge (see, e.g., Ref.~). 
+
+In contrast to modal stability analyses, we frame our stability problem by seeking an initial condition that maximizes some measure of perturbation growth---the ``linear optimal perturbation" (LOP). Let $(t) = [(t), (t)]^T$ represent the system state at time $t$. 
+We define the ``gain'' $G_ (t_0)$ as the maximum amplification of some norm $|| ||_^2$ that 
+any initial condition can achieve by the target time $t_0$, i.e.,
+
+ G_(t_0) = _(0) 0 (t_0) ||_^2||(0)||_^2.
+
+This gives our measure of perturbation growth to be maximized between $t = 0$ and $t_0$. The initial perturbation $(0)$ that achieves this amplification is the LOP, and $(t_0)$ is the ``evolved state.''
+
+We measure growth using the energy norm
+
+ E = d^3x [ ||^2 + ^2 ||^2 ],
+
+where the first term is twice the kinetic energy $K$ and the second term 
+twice the magnetic energy $M$. 
+In the absence of 
+viscosity and resistivity, 
+
+ t E = 2 d^3x _ + b_x b_z U']_\, .
+
+The first term on the right describes changes in kinetic energy via the background shear, i.e., ``kinetic shear production'' (KSP). The second term corresponds to growth via interactions between the background shear and 
+magnetic field fluctuations, 
+
+which we call ``magnetic shear production'' (MSP). This term presents a significant departure from stratified neutral fluids 
+and from the $ 0$ ``quasistatic MHD" limit, where only the KSP term is present, and can give rise to significant nonmodal growth in the system considered here. 
+
+We calculate the LOPs and gains numerically following methods employed by Refs.~ and described in greater detail in the End Matter. In short, we construct the propagator 
+using the eigenmodes of Eqs.~--; the gain is then given by the largest singular value of the propagator. We expand our system in Fourier modes in $x$ and $y$ with horizontal wavenumber $ = (k_x, k_y)$. Because 
+the dynamics at each $$ are entirely decoupled,
+the LOP and gain can be defined separately for each $$. For every $t_0$, we let $(, )$ denote the wavenumbers 
+that maximize $G(t_0, k_x, k_y)$, and define $(t_0) G(t_0, , )$.
+
+Before proceeding to our results, key differences relative to stratified shear flows can already be anticipated. First, as noted above, this system includes a second energy production term in Eq.~ beyond the standard KSP term. Additionally, for perturbations invariant along $_0$ (so $k_x = 0$, or $ _0 = 0$ 
+more generally), Eqs.~ and decouple. 
+Thus, for these perturbations, the evolution of $$ is identical to the hydrodynamic case regardless of 
+field strength. 
+An immediate consequence is that (provided viscosity is 
+sufficiently small ) in the presence of uniform, horizontal magnetic fields, incompressible shear flows always permit some nonmodal growth regardless of field strength. 
+
+In our particular case, we thus expect the standard lift-up effect at $k_x=0$ for all $$. 
+
+To investigate the role of domain size, 
+we compare two sets of calculations. In our ``small box'' cases, we consider evenly spaced $k_x[0.1,1]$ and $k_y[0,1]$. The minimum $k_x$ in these cases is comparable to the wavenumber of the most unstable 
+KH mode for weaker magnetic fields, and roughly mimics the smallest nonzero $k_x$ found in many direct numerical simulations (DNS) of this system (e.g., Ref.~). Thus, these calculations are aimed at identifying nonmodal growth mechanisms one might anticipate at nonzero $k_x$ in standard DNS calculations. In our ``large box'' cases, we consider longer-wavelength modes with logarithmically spaced $k_x [10^-3, 1]$ 
+(and evenly spaced $k_y[0,0.775]$). We find that, until $t_0$ becomes very large, $G$ is independent of $k_x$ for $k_x 10^-2$. This lends us confidence that 
+our results are not restricted by this floor on $k_x$, thus providing some insight into the $k_x=0$ case, which we are unable to calculate directly 
+(see End Matter). 
+
+[width=]smallbox_megaplot.pdf
+
+Small boxes.---We first consider ``small-box'' LOPs, 
+Fig.~. 
+
+Panel (a) shows optimal energy gains $$ as a function of target time $t_0$. For 
+$>1$ (where normal-mode instability 
+is possible), the gain curves 
+follow the modal growth rate at large $t_0$ as expected , while substantial nonmodal growth is possible at 
+smaller $t_0$ and for stronger magnetic fields (lower $$). 
+The peak gain for $ = 1$ approaches 43, comparable to the marginally-stable case in Ref.~ (which computed LOPs for a uniformly-stratified shear layer where, as in the case considered here, the addition of a new force can stabilize KH). 
+Just as stratification affected peak gain in that study, we find stronger magnetic fields reduce maximum growth here. 
+
+The preferred structures also share similarities with the stratified case. The wavenumbers $_$ corresponding to $(t_0)$ are given in Fig.~(b-c), and the spatial structures in the $xz$-plane for two different LOPs are shown in Fig.~(d-k). At late times, the spanwise wavenumber $k_y, 0$, consistent with the 
+most-unstable normal modes which are 2D in the $xz$-plane. Meanwhile, the large gains associated with shorter $t_0$ are inherently 3D, with large $k_y$ comparable to those seen in neutral fluids . 
+
+The vertical structures of the LOPs resemble eddies tilted against the background shear, allowing for transient growth via the Orr mechanism . 
+
+We also note key differences relative to the stratified case. First, MSP 
+
+drives growth for some LOPs. This is seen in panels (l-o), which show the time evolution of $K$ vs $M$ and of KSP vs MSP for the two LOPs shown in panels~(d-k). 
+
+The $t_0=2$ LOP is largely driven by 
+KSP and correspondingly has much more kinetic than magnetic energy; the converse is true for the $t_0=20$ LOP.
+
+This is also reflected in the relative phases of the perturbation components: KSP is maximized for perturbations where $u$ and $w$ are anti-aligned ($u -w$), while MSP is maximized when $b_x$ and $b_z$ are aligned 
+[note 
+each terms' sign in Eq.~]. In general, 
+
+KSP is preferred for short-$t_0$ perturbations, while 
+for 
+KH-stable flows at larger $t_0$, there is an oscillation between the two at about twice the Alfv\'en frequency. Thus, unlike the stratified case, this system permits two sources of growth that compete to determine the nature of the LOP for a given $t_0$. 
+For either, perturbations eventually reach a state dominated by oscillations between $K$ and $M$ at near-equipartition, a characteristic feature of shear Alfv\'en waves.
+
+Panel (b) reveals a final noteworthy 
+feature of this system: for all KH-stable ($ 1$) cases, $ $ 
+for all but the shortest $t_0$.
+
+When the magnetic field is strong enough to suppress 
+KH, not only are the LOPs not 2D in the $xz$-plane, they also become very extended in the streamwise direction. 
+
+(This was not seen in the stratified 
+case , where 
+LOPs had a similar streamwise length scale 
+to modally-unstable cases). While $ = 0.1$ corresponds to a domain length 
+that is already larger than 
+typically used in nonlinear simulations of this system, in what follows we extend to even smaller $$ to identify how much growth is possible for larger-scale perturbations.
+
+[width=]bigbox_megaplot_rnd2.pdf
+in the inset, large box calculations (solid) are compared against small box (dashed)---note all large-box curves overlap over this range. 
+
+(b) Spanwise wavenumbers $$ for the LOPs.
+
+(c) Fraction of energy in different components for $=0.25$ LOPs for different $t_0$.
+Initially, energy is mostly in $v$ (orange), $w$ (dark orange), $b_y$ (purple), and $b_z$ (dark purple). (d) As for (c), but for the evolved state. The energy is now mostly in $u$ (light orange) and $b_x$ (light purple). (e) Evolution of kinetic (orange), magnetic (purple), and total (black) energy for the $t_0=1000$ LOP (vertical black lines in (c-e), blue diamond in (a)). 
+(f-h) As in panels (c-e), but for $=1$ and $t_0=7500$. 
+
+Large boxes.---Key ``large box'' results are highlighted in Fig.~. Several noteworthy differences from the ``small box'' calculations are immediately apparent. Linearly stable configurations ($ 1$) can achieve orders of magnitude higher energy gains in these larger domains, 
+
+with the $ = 1$ case exceeding $ = 10^4$, and even the strongly stabilized $=0.1$ case achieving $ 10^3$ (panel~a). 
+
+Additionally, while $ 0$ (not shown) for $ 1$ as before, $$ remains finite.
+
+This is the opposite of 
+expectations from modal stability analyses for shear flows with streamwise magnetic fields, where fastest-growing modes often have $k_y=0$ (e.g., Ref.~).
+
+That large-box MHD calculations achieve much higher gains than 
+small boxes or the stratified case can be understood by 
+recalling that the Lorentz force (and thus the stabilizing 
+magnetic tension) vanishes from Eq.~ for modes with $ _0 = 0$. 
+
+One can therefore show 
+that, in the inviscid limit, the streamwise velocity grows as
+
+ u(t) = u(0) - w U' t,
+
+a phenomenon known as the lift-up effect .
+
+This effect provides a growth mechanism for $k_x = 0$ perturbations that is unaffected by the background field no matter its strength. 
+
+Thus, while the Lorentz and buoyancy forces both tend to stabilize streamwise KH modes, only the latter stabilizes KH and the spanwise modes driven by lift-up.
+
+Not only does $_0$ have no effect on hydrodynamic lift-up in this system for $k_x = 0$, but it introduces an additional growth mechanism. The MSP term in Eq.~ gives rise to 
+solutions (in ideal MHD for $k_x=0$) that evolve as
+
+ b_x(t) = b_x(0) + b_z U' t.
+
+Thus, shear 
+also drives growth of magnetic fluctuations---a magnetic analogue of the hydrodynamic lift-up effect. Note that this is precisely the ``omega effect" relevant to dynamos realized in a Cartesian domain . 
+
+The impact of these two lift-up effects is demonstrated by Fig.~(c-d) and (f-g), which show that the energy in the LOPs consists of a combination of $w$ and $b_z$ (with some $v$ and $b_y$ contributions to satisfy $=0$ and $=0$), while the evolved states consist almost entirely of energy in $u$ and $b_x$. 
+
+For short $t_0$, hydrodynamic lift-up is the dominant contributor. 
+For larger $t_0$, either KH becomes the dominant growth mechanism (for $ > 1$, not shown) and the energy breakdown merely reflects that of the unstable mode, or the optimal growth arises from a combination of the two lift-up mechanisms. 
+For $ = 1$, hydrodynamic lift-up remains preferred, 
+
+but for $ < 1$ the balance between the two varies with $t_0$, 
+
+see panels (c)--(d). 
+
+We find that for each of the KH-stable ($ 1$) cases, the global maximum in $$ occurs at $t_0 = T_A/4$ (with Alfv\'en crossing time $T_A = 2/ v_A$) suggesting that, at this $$, the initial departure from the expected secular growth is due to the excitation of Alfv\'en waves by the Lorentz force rather than dissipative effects as seen in the hydrodynamic case . The transition from lift-up to waves is further demonstrated in Fig.~(e) and (h), which show the $K$ (orange) and $M$ (purple) evolution in initial value calculations corresponding to the LOPs denoted by the symbols in panel (a). After the initial peak from lift-up, energy is continually exchanged between $K$ and $M$ at twice the Alfv\'en frequency, consistent with the presence of a standing Alfv\'en wave, as in the small-box case. 
+
+Discussion.---We have calculated the maximum energy growth attainable by small-amplitude perturbations to a shear layer with a streamwise, uniform magnetic field. While the dynamics as $t $ are dictated by modal stability analyses, significant nonmodal growth is possible over finite time horizons. 
+This is true even when the 
+field is strong enough to suppress KH, 
+with energy growing by a factor of over $10^4$ in some cases. Thus, when magnetized shear flows are observed in the laboratory or in nature, a strong, flow-aligned magnetic field need not imply that the configuration is stable and that no shear-driven fluctuations will grow. This demonstrates the importance of advancing beyond modal stability analyses, the current state of the art in understanding shear-driven fluctuations in astrophysical flows.
+
+Furthermore, while spanwise-uniform ($k_y=0$) modes 
+are often 
+the most unstable according to traditional modal stability analyses---an observation often used to motivate 2D simulations of plasma shear flows---our results show that the perturbations that grow the most may be either 3D or (nearly) uniform in the streamwise direction (with $k_x 0$). This finding suggests that simulations that neglect spanwise variation based on the results of modal stability analyses may miss key sources of fluctuation growth, and thus we expect more fluctuation growth in 3D simulations than in 2D, particularly for $M_A 1$.
+
+We acknowledge helpful discussions with I.~Grooms, B.~Hindman, C.~Caulfield, and B.~Tripathi. 
+AEF was supported by NSF awards AST-1814327 and AST-1908338, NASA HTMS grant 80NSSC20K1280, and the George Ellery Hale Postdoctoral Fellowship in Solar, Stellar and Space Physics at the University of Colorado, Boulder. 
+AKK was supported as the Ho-Shang and Mei-Li Lee Faculty Fellow at UC Berkeley.
+JSO was supported by NASA HTMS grant 80NSSC20K1280 and NASA OSTFL Grant 80NSSC22K1738.
+This work grew out of discussions during the 2021 Kavli Institute for Theoretical Physics workshop on ``Layering in Atmospheres, Oceans and Plasmas'' (supported by NSF grant PHY-2309135). 
+Computations were conducted with support of the NASA High End Computing (HEC) Program through the NASA Advanced Supercomputing (NAS) Division at Ames Research Center on Pleiades, the Lux supercomputer at UC Santa Cruz, funded by NSF MRI grant AST-1828315, and the Alpine cluster, jointly funded by the University of Colorado Boulder, the University of Colorado Anschutz, Colorado State University, and the National Science Foundation (award 2201538).
+
+End Matter
+
+In contrast to modal stability analyses, here we frame our stability problem by seeking an initial condition that maximizes some measure of perturbation growth---the ``linear optimal perturbation'' (LOP). 
+Consider the system
+
+ t = ,
+
+where $(t)$ is the system state and $$ is a time-independent linear differential operator.
+Defining the propagator $(t) = ( t)$, the general solution at some time $t$ can be written 
+
+(t) = (t) (0)\, .
+
+The maximum amplification in terms of some norm $|| ||_^2$ by the target time $t_0$, referred to as the ``gain", is then
+
+G_(t_0) = _(0) 0 (t_0) (0) ||_^2||(0)||_^2.
+
+This gives our measure of perturbation growth between $t=0$ and some nonzero target time $t_0$ that we seek to maximize. 
+
+We perform our calculations numerically using the pseudospectral tau method as implemented in the Dedalus framework leveraging its eigentools package . 
+We expand in Fourier modes in $x$ and $y$ with horizontal wavenumber $ = (k_x, k_y)$ 
+and expand in Chebyshev polynomials in $z$.
+
+From here, our calculation largely follows Ref.~: we calculate $$ at each $$ in the eigenmode basis, 
+and calculate the gain and LOP using a singular value decomposition, specifying the energy norm $E$ using a Cholesky decomposition. We identify spurious eigenmodes arising from discretization using the spurious mode rejection algorithm implemented in eigentools, and remove them from the calculation of gains and LOPs using the method described in Ref.~.
+To expedite calculations, we use sparse linear algebra solvers to calculate only a subset of the eigenmodes of the system. Rigorous convergence checks have been performed to ensure our results do not change significantly upon increased resolution in $z$ or increased number of eigenmodes obtained by the solver. We find that calculations with $N_z = 512$ Chebyshev modes and 600 eigenmodes are well converged for all parameters reported here (where 600 corresponds to total number of eigenmodes obtained by the routine before spurious modes are identified and removed). While this method provides robust results for all parameters shown in this paper, we find that the condition number of $$ grows significantly as $k_x 0$, and thus we are unable to reliably calculate gains or LOPs for $k_x 10^-4$ using double-precision arithmetic (note Ref.~ used extended precision).

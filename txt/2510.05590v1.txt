@@ -1,0 +1,635 @@
+[aps,pre,superscriptaddress,floatfix,tightenlines,showpacs,twocolumn,10pt,notitlepage]revtex4-2
+
+[shortlabels]enumitem
+
+[normalem]ulem
+[textsize=scriptsize,backgroundcolor=white]todonotes
+
+[dvipsnames,svgnames,table]xcolor
+
+ 
+
+[1]#1
+[1]
+[1]
+
+[1]
+[1]#1
+[1]
+[1]
+[1]#1
+[1]
+
+Definition
+Theorem
+Algorithm
+*remarkRemark
+
+nard convection
+
+Horizontally extended plane-layer convection flows are characterized by characteristic patterns of turbulent heat transfer due to the convective fluid motion consisting of a nearly-regular ridge network where hot fluid rises and cold fluid sinks. 
+Here, we analyse this transport behavior by the so-called inflated generator framework, which identifies quasi-stationary families of almost-invariant sets, derived from leading inflated generator eigenvectors. 
+We demonstrate the effectiveness of this data-driven analysis framework in three-dimensional turbulent flow, by extracting transient characteristic heat transfer patterns as families of almost-invariant sets subject to a transient evolution, which contribute least to the convective heat transfer.
+
+Introduction
+
+Turbulent convection phenomena are ubiquituous starting with heat and momentum transfer processes in stellar interiors via vortex formation in planetary atmospheres to magnetic field generation by dynamo action in planetary cores and heat exchanger and cooling devices in technology . In the simplest setting buoyancy forces drive fluid motion, caused by the temperature dependence of the fluid density, in a planar fluid layer of height $H$ that is uniformly heated from below ($z=0$) and uniformly cooled from above ($z=H$) . This is the fundamental Rayleigh-B\'enard convection (RBC) case in which the mass density is a linear function of the temperature deviation from a reference equilibrium state, the working fluid is incompressible, and the material parameters, such as thermal conductivity and kinematic viscosity, are constant across the fluid volume. For imposed temperature differences between top and bottom, which significantly exceed a critical threshold value, a (turbulent) fluid motion is initialized. Heat is transferred then by diffusion and dominantly by advection. This thermal driving is quantified by the dimensionless Rayleigh number $Ra$ . 
+
+One central question in turbulent convection is the exact amount of heat that is transferred on average from the bottom to the top as a function of the imposed outer temperature difference (i.e., on $Ra$) and the material properties of the working fluid in the plane layer . Depending on the horizontal extension (in $x$ and $y$ directions) of the fluid layer, this turbulent transport proceeds frequently in the form of regular and gradually evolving horizontal fluid flow patterns at scales that exceed the thickness $H$ of the layer. These patterns set a large-scale order, which exists despite the convection flow is fully turbulent on smaller scales; they are termed turbulent superstructure of convection . Recently, it has been shown that these structures are rooted in a hierarchical (i.e.\ successively coarser) network of thermal plumes with increasing distance from the wall.
+These plumes are linearly unstable fragments of the thermal boundary layer that detach from the walls and rise into the bulk. This implies that turbulent superstructures are formed in a bottom-up process, starting with the smallest building blocks --the thermal plumes-- from the walls . In addition, it is found that the characteristic ``mesh width'' of this plume network follows a self-similar scaling with Rayleigh number, which scales with the Rayleigh number as $ Ra^-1/3$. 
+
+The large-scale patterns of plane-layer convection depend on the thermal boundary conditions . For prescribed temperature at the top and bottom, the Dirichlet boundary condition case (which will be considered here), we observe a collection of horizontally curved and elongated circulation roll structures with horizontal cross-roll modulations to form circulation cells which fill the layer vertically from bottom to top. They also exist as a single entity in closed cylindrical convection cells with cell diameter of the order of cell height and are termed here large-scale circulation (LSC) . 
+
+In terms of the material transport in the turbulent fluid, i.e., from the perspective of the Lagrangian frame of reference, these convection cells can be considered as coherent sets -- regions that largely trap Lagrangian tracer particles for a transient period of time in their cores and thus essentially reduce the mixing and heat transfer from bottom to top in the convection case. This concept has been discussed in several other material transport problems in the atmosphere and ocean . The complementary perspective is to detect and study the manifolds between the nearly coherent sets, which can serve as barriers to material transport . Both frameworks stem from dynamical systems theory. Coherent sets were investigated in RBC in different ways, e.g., by various implementations of the dynamic Laplacian or dynamic clustering , their long-term behavior was described by a Markov model , the arising advective and diffusive transport barriers were analysed , and so-called collective variables were calculated to model transitions between large-scale states . 
+
+Despite turbulent convection flows being time-dependent, turbulent superstructures slowly form and only gradually change before fading away. While they exist, they are therefore almost-invariant sets i.e., they stay approximately fixed in space and only slowly leak fluid. Due to this quasi-stationary-in-space property of the turbulent superstructures, we analyse the convective heat transfer (CHT) in a turbulent plane-layer RBC flow using almost-invariant sets rather than coherent sets. In contrast to standard almost-invariant set analysis, which can only detect almost-invariant sets that possess the almost-invariance property throughout the flow duration, here we study the flow over long duration in which we expect the birth and death of many superstructures. We seek quasi-stationary families of almost-invariant sets, namely time-dependent fluid parcels that may appear, slowly evolve in a quasi-stationary-in-space manner, and ultimately disappear. Each such family represents a convection cell, as discussed above. We go beyond prior work by tracking the onset and decay of the convection cells and filtering out possibly spurious coherent sets that move rapidly in the fluid.
+
+We employ a recent data-driven framework , built around the (time-varying) infinitesimal generators $G_t$, which generate the Perron-Frobenius or transfer operators, the operators which describe the evolution of the distribution of a (probability) measure in the phase space of a dynamical system for a positive time. We ``inflate'' (time-extend) the individual generators $G_t$ from the spatial into the spatio-temporal domain of the time-dependent RBC flow in the plane layer to create an inflated generator $ G$. Through this special time-extension we are able to capture the almost-invariant character of the transport patterns, as well as their appearance, time evolution, and disappearance. 
+
+An eigenvector analysis of $ G$, which builds on the Sparse Eigenbasis Approximation (SEBA) technique is subsequently used to identify quasi-stationary families of almost-invariant sets. Our analysis can extract the gradually evolving patterns in the bulk of the horizontally extended plane-layer turbulent convection flow; they can be successfully compared with the time-windowed Eulerian fields of the convective heat transfer, which correlates velocity and temperature and thus forms the important transport pattern in the RBC flow . We note that velocity data are used in the present framework to reproduce correlations between velocity and temperature. We thus provide a proof of concept to apply the framework from dynamical systems theory to reveal the spatio-temporal organization of convective heat transfer in horizontally extended plane-layer configurations, which are termed mesoscale convection flows , from reduced information. The analysis will also allow one to analyse the correlation of the SEBA fields with $u_z$.
+
+The outline of the manuscript is as follows. Section II introduces the convection flow with its parameters. Here, we also detail the convective heat transfer, the coupled field of velocity and temperature, which characterizes the turbulent heat transfer due to fluid motion. Section III summarizes the analysis methods for almost invariant sets. Afterwards, in Sec. IV, we present the results of our data analysis before the final conclusions are drawn in Sec. V. 
+
+Rayleigh-B\'e
+nard convection model
+
+Boussinesq equations and parameters
+
+The data for the analysis are generated by direct numerical simulations (DNS). To this end, we solve the three-dimensional Navier-Stokes equations in the Boussinesq approximation numerically. This couples velocity $ u( x,t)=(u_x,u_y,u_z)$ and temperature $T( x,t)$ fields with $ x=(x,y,z)$~. The non-dimensional form of the governing equations is given by 
+
+ t + ( u ) u & = & - p + T + Ra \, ^2 u, \\
+ t + ( u ) T & = & \, ^2 T, \\
+ u & = & 0. 
+
+The equations are solved by the spectral element method (SEM) using the GPU accelerated SEM solver, nekRS~. The computational domain is a cuboidal cell of $ =L/H= 8$ with periodic boundary conditions along the horizontal directions, where $L$ is the horizontal extension and $H$ is the height. The horizontal coordinates are $x,y [-4,4]$. The top and bottom walls are found at $z=0$ and $1$. The simulation domain is the volume $V=L^2 H$.
+
+We set no-slip condition on the velocity field and prescribe uniform temperatures $T_ top= 0$ and $T_ bot = 1$ respectively. 
+The two dimensionless parameters that characterize the convection flows (in addition to the aspect ratio $$) are the Rayleigh number $Ra$ and the Prandtl number $Pr$, which are given by
+
+Ra= Pr=\,,
+
+where $g$ is the acceleration due to gravity, $ T=T_ bot-T_ top>0$ is the temperature difference between the hot and cold plates, $$ is the thermal expansion coefficient, $$ is the thermal diffusivity, and $$ is the kinematic viscosity. The present study uses one data set at $Ra=10^5$ and $Pr=0.7$. The characteristic length, velocity and temperature scales used to obtain the non-dimensionalized eqns. -- are $H$, $U_f=$, and $ T$ respectively, where $U_f$ is the free-fall velocity of the thermal plumes.
+
+[width=0.95]Figure1.png
+ 
+
+We follow the same workflow as in Samuel et al. . Consequently, we ensure that the meshes are fine enough to resolve the boundary layers. The simulation s with the diffusive equilbrium state of RBC for which the fluid is at rest and the temperature drops linearly from the bottom to the top. This equilibrium state is infinitesimally perturbed and develops into a turbulent convection flow for a transient period. The turbulent state is statistically stationary, i.e., statistical moments and correlations are time-independent. Time averages, indicated by $_t$, are taken in the following always as an arithmetic average over a sequence of statistically independent snapshot realizations of the fluid flow. Time averages will be combined with averages over the horizontal cross section plane $A=L^2$ or the simulation domain $V=AH$ and denoted by $_A,t$ and $_V,t$, respectively. Error bars are then standard deviation from this statistical analysis.
+
+We determined Nusselt number, $Nu$, and Reynolds number, $Re$, which are the global measures of heat and momentum transport, respectively. To this end, we compute $Nu$ from the non-dimensionalized temperature gradient at the bottom wall, whereas $Re$ is calculated from the volume-averaged root mean square (rms) velocity, see also eq. ,
+
+Nu=- z|_z=0,
+Re=U_ rms Pr\,.
+
+The root mean square velocity is computed for the volume $V$, $U_ rms= | u|^2_V,t^1/2$. 
+
+To solve the system of equations~ to~ using SEM, we discretize the domain into $N_e = 300 300 64$ elements. Each element is further discretized into Gauss-Lobatto-Legendre (GLL) nodes from fifth-order ($p=5$) Legendre polynomials along each direction, yielding a total of $N_e p^3 =$ 720 million collocation points. 
+
+Each snapshot generated from DNS contains velocity, pressure and temperature data at all collocation points. We obtained 150 such snapshots within steady-state, separated by unit $T_f$, where $T_f = H/U_f$ is the free-fall time used to non-dimensionalize time , covering a total of 150 $T_f$ (resulting in 3.6 TB of data). The free-fall time $T_f$ is a characterisitic time that estimates how long cold dense fluid falls across a distance $H$ under the action of buoyancy forces. To ensure a statistically steady state, data was sampled after an initial period of 2000 $T_f$. Note that although the DNS is performed at sufficiently high spectral resolution -- necessary to accurately calculate the temporal evolution of the velocity and temperature fields -- the datasets are subsequently downsampled for the detection of the quasi-stationary almost-invariant sets.
+
+[width=0.7]Figure2.pdf
+ 
+
+Averaging over a sequence of statistically independent snapshots in the statistically stationary regime, we obtain the Nusselt number from our DNS to be $Nu = 4.264 0.058$, and the Reynolds number is $Re = 92.66 1.03$. These values are consistent with those obtained by Samuel et al. . The slightly reduced value of $Re$ is also consistent with the observations made for larger aspect ratios as shown for $Ra=10^9$ in the same work.
+
+Convective heat transfer field
+
+While the global heat transport is quantified in non-dimensional units using the Nusselt number, a local measure can be obtained the convective heat transfer (CHT) field, which is given by
+
+H( x,t) = u_z( x,t)( x,t)\,,
+
+where $u_z( x,t)$ is the component of the velocity field along the vertical $z$-direction, and 
+
+( x,t) = T( x,t) - T _A,t(z)
+
+the temperature fluctuation, obtained after subtracting the mean temperature profile
+$ T _A,t(z)$. Here, $ _A,t$ is a combined average over the horizontal cross section $A=L^2$ and time $t$. Using , it is possible to calculate the Nusselt number in an alternative way to which is given by 
+
+Nu = 1 + H ( x,t) _V,t\,.
+
+Computing $Nu$ using this formula, we get $Nu = 4.264 0.086$, which is in excellent agreement with the former value $Nu$ computed from near-wall temperature gradient . This underlines, that the numerical simulations are well-resolved, both in the bulk of the layer and the near-wall regions. 
+
+We obtain a sequence of 102 three-dimensional data snapshots of the velocity and temperature fields of RBC flow for times $2001 T_f < t < 2103 T_f$ with a time interval of 1 $T_f$ between successive snapshots. The field data are subsequently interpolated spectrally to a coarser three-dimensional grid with uniform mesh size $$ in all three space directions, see also Sec. III C. The coarse grid will be used for the data analysis. Note that the original fields are much more finely resolved with a vertically non-uniform spectral element grid, in particular close to the bottom and top walls. 
+
+Figure shows two-dimensional slice cuts through the temperature field $T( x,t_0)$ in panels (a,b), the vertical velocity field $u_z( x,t_0)$ in panels (c,d), and the CHT field $H( x,t_0)$ in (e,f) at $t_0=2052 T_f$, which is the snapshot in the middle of the sequence. In the left column of the figure a horizontal cross section at the midplane at $z=1/2$ is shown, in the right column we show a corresponding vertical cut through the volume $V$ at $y=0$. While the horizontal cuts display the spatial organization of the convection patterns by means of three fields viewed from the top, the vertical cut highlights the thermal plume structures of the convection flow across the layer which carry the heat from bottom to top. 
+
+It is seen that CHT is locally maximal where hot fluid rises and cold fluid sinks to the bottom; in both cases locally $H>0$. Note, that in both cases, heat is carried from the bottom to the top. For the vertical cut at $y=0$, this is dominantly done by cold fluid falling down as seen by relating panel (a) with panel (f) of Fig. . These fields fluctuate strongly with respect to space and time. We thus smoothen out the snapshot data by a sliding time average over a time window $[t_k - m, t_k + m]$ of length $=(2m+1) \ T_f$ for the upcoming analysis. We will take $m = 2$ and thus a time window of length $5 \ T_f$. This filtering with respect to time, which will be denoted by $_$ highlights the large-scale and gradually evolving convection cells better, which we aim to analyse with the present framework. 
+
+While the short-time fluctuations of the fields are smoothened out by the sliding average, mean transport properties of the flow remain unaffected by this procedure. To demonstrate this, we choose a single snapshot at a time $t_0$ and calculate the mean vertical CHT profile $ H(t_0)_A (z)$. This is compared in Fig. with the mean profiles that are obtained from an average which combines the time window-average centered about $t_0$ and plane average of CHT fields, $ H_A, (z)$. 
+We see that the vertical mean profiles overlap for differently long time windows $$, which are indicated in the legend. All CHT profiles are $H=0$ at the walls, which is caused by the no-slip boundary condition at the walls, $z=0,1$, which states that $u_x=u_y=u_z=0$. The averaged CHT profiles become maximal in the center or bulk of the convection layer as seen in Fig. .
+
+Analysis method for quasi-stationary families of almost-invariant sets
+
+As discussed in the introduction, we aim to characterise the three-dimensional fluid motion using the concept of quasi-stationary families of almost-invariant sets . For our turbulent RBC flow, we expect many such families to be present simultaneously, although each individual family may not exist throughout the full time duration we consider from $2001T_f$ to $2103T_f$. The almost-invariant aspect of these families means that at any given time instant, almost all of the fluid remains in the family over short time durations.
+The quasi-stationary aspect relates to the families being approximately fixed in the spatial domain through time, and also allows for families to emerge and disappear. These families are the manifestation the slow dynamics of the large-scale turbulent superstructure patterns, the spatial complement of the families will be responsible for the major fraction of the CHT across the plane layer. 
+
+We use the approach of to construct multiple quasi-stationary families of almost-invariant sets.
+This approach rests on a spectral analysis of generators for stochastic drift-diffusion equations, where the drift is given by $(t, x)$.
+
+ 
+ x_s = u(t, x) \ s + \ w_s
+
+where $\ w_s\$ is Brownian motion and $ > 0$ is small.
+
+Almost-invariant sets and generators of steady flows
+
+This section provides background on identifying almost-invariant sets in steady flows, i.e.\ where $(t,x)=(x)$; in the next section, we extend these ideas to time-dependent velocity fields.
+For a steady vector field $$, we consider trajectories $\_t\$ of the SDE .
+We say that $S M$ is almost-invariant if
+
+ 
+^s(A):= A)( x_0 A) 1
+
+for short durations $s$, where $$ is the probability of the event occurring if $_0$ is initialised uniformly over $M$.
+
+Following , one may construct a first-order-in-$s$ formula for $^s(S)$: 
+
+ 
+ ^s (A) = 1 + _AV(A) s + o(s),
+
+where $V$ denotes volume in $M$ and $_A$ is the indicator function on $A$.
+The operator $G_A$ is defined as 
+
+ 
+ G_A f := _s 0 _A s \ V,
+
+where $P^s$ is the Perron--Frobenius operator, describing evolution of a density $f$ by the Fokker--Planck equation 
+
+ 
+ t = - ( u ( x) f(t, x)) + 2 f(t, x)
+
+for a duration $s$.
+From it is clear that $G_A_A 0$ and returning to , we see that almost-invariant sets $A$ should have $G_A _A 0$.
+To obtain multiple almost-invariant sets $A$, following , one computes several leading real eigenfunctions of the generator $G$, where
+ 
+ 
+ Gf := _s 0 s.
+ 
+
+That is, we solve the linear eigenproblem 
+$Gf= f$ 
+
+with periodic boundary conditions applied at the vertical ``sides'' of $M$ and Neumann boundary conditions applied at the floor and ceiling of $M$.
+
+Quasi-stationary families of almost-invariant sets and the inflated generator
+
+In this and subsequent sections we assume that $$ is time-varying.
+We define the spacetime domain $ = [0,] M$, which should be thought of as a continuum of copies of $M$ across times from 0 to $$.
+We now define spacetime versions of $$, the SDE in , the invariance ratio $^s$, and the generator $G$.
+
+Following we define a time-expanded
+domain $ = [0, ] M$ and construct a stochastic process as so that:
+
+ 
+ in the time coordinate, introduce diffusion with intensity $a > 0$,
+ in the original phase space coordinates, on $M$ at time $t$, we have the usual SDE on $M$, namely diffusion with intensity $$ and drift given by $(t, ·)$.
+
+More precisely, we define a spacetime vector field $$ by
+
+ U(t, x)=
+ 0\\
+ u(t, x) 
+
+ 
+and a spacetime SDE as 
+
+ 
+ X_s = U( X_s) \ s + \ W_s,
+
+where $ X = (t, x) $ and 
+
+ =
+ a & 0 \\ 0 & I_3
+.
+
+The scalar $ > 0$ continues to represent diffusion in space, and $a > 0$ is the diffusion coefficient along the temporal coordinate. 
+Note that is an autonomous SDE on $$.
+
+Similarly to the previous subsection, we will say that the spacetime set $$ is almost-invariant if
+, 
+
+ 
+^s():=, X_s )( X_s ) 1,
+
+where $$ is distributed uniformly on $$.
+Let's write the spacetime set $=_t [0,] (\t\ A_t)$, where each $A_t M$, $t[0,]$ and interpret what almost-invariance in spacetime means.
+Stochastic trajectory escape from a spacetime set $$ can occur in the space coordinates or the time coordinate, and if $^s() 1$, both types of escape should be low.
+
+ 
+Low escape in space coordinates means that on most time-slices $\t\ A_t$, one has $^s(A_t) 1$, and therefore at most time instances $A_t$ is almost-invariant in the usual phase space sense.
+ Low escape in the time coordinate means that the boundary of $$ is mostly aligned with the time axis, which means that there is small variation of the boundary of the family $A_t$ with $t$; in other words, the family $\A_t\_t[0,]$ is quasi-stationary.
+
+Note that the sets $A_t$ may be empty for during some subintervals of $[0,]$.
+This flexibility allows for quasi-stationary families of almost-invariant sets to appear and disappear in time.
+
+Following , one may construct a first-order-in-$s$ formula for $^s()$: 
+
+ 
+ ^s () = 1 + _() s + o(s),
+
+where $$ denotes volume in $$. 
+An operator $_$ is defined as 
+
+ 
+ _ F := _s 0 _ ^s F- Fs \ ,
+
+where $^s$ is the Perron--Frobenius operator, describing evolution of a density $F$ by the Fokker--Planck equation 
+
+ 
+ s = - ( U ( X) F( X)) + 2 F( X)
+
+for a duration $s$.
+From it is clear that $__ 0$ and returning to , we see that almost-invariant sets $$ should have $__ 0$.
+To obtain multiple almost-invariant sets $A$, following (see also ), one computes several leading real eigenfunctions of the generator $G$, where
+ 
+ 
+ F := _s 0 ^s F - Fs.
+ 
+In practice, we will compute eigenfunctions of the $L^2$-adjoint of this operator; see for details.
+That is, we solve 
+
+ 
+F^*&= F^*\,,\\ 
+ F( x) N( x)&=0\;\; X ,
+
+where
+
+^*F(t, x)= U(t, x) F(t, x)+2 F(t, x).
+
+We have periodic boundary in the $x$ and $y$ coordinates, and apply Neumann boundary conditions on $ =(\0,\ M) ([0,] M)$,
+where $ M$ consists of the floor and ceiling of our three-dimensional physical domain.
+
+The spectrum of $^*$ (and of $$) consists of eigenvalues $_k, k=1,2,3,$ with non-positive real part, ordered by decreasing real part.
+The eigenvalue $_1=0$ has corresponding eigenfunction $F^*_1 1$.
+We separate the real eigenvalues into two classes . Firstly, so-called temporal eigenfunctions with no dependence on $$; they have the form $F_k^*(t, x)=(k t/)$, with corresponding eigenvalues $-(ak/)^2/2$.
+Secondly, the remainder of the real eigenfunctions we call spatial eigenfunctions; it is these that encode the quasi-stationary almost-invariant families.
+
+Numerical estimation of the inflated generator
+ 
+
+We discretise our spacetime domain $ = [0,] M$, where $M = [-4,4) [-4,4) [0,1] ^3$, by splitting the time interval $[0,]$ into equidistant time steps $0 = t_0 < t_1 < < t_K-1 < t_K = $, each separated by $ t = /K$, and subdividing $M$ into $N$ cubes $B_1,,B_N$ of equal side length $$. Figure shows an example of what $M$ looks like after it has been split into $N$ cubes. 
+
+At time $t$, we denote the operator corresponding to the right-hand-side of with $()=(t,)$ by $G^t$.
+To construct an estimate of $G^t$ -- called the spatial generator at time $t$ -- we use ``Ulam's method for the generator" as introduced in . 
+This approach is related to an upwind scheme and involves computing integrals representing the rate of flux out of all of the faces of the boxes $\B_i\_i=1^N$.
+
+Let $_ij$ denote the unit normal vector to the face $B_i B_j$ pointing out of $B_i$. 
+We construct an $N N$ matrix $^t$ as 
+
+ 
+ G^t_ij=
+ G^t_ drift,ij + 2^2,& i j,\\
+ -_j iG^t_k_ij,&
+
+where $S$ denotes surface area and
+
+ 
+ G_ drift,ij^t=V(B_j)_B_i B_j(\ u(t, x) n_ij,0\)\ d S( x)
+
+denotes the deterministic (drift) component of the generator matrix $G^t$, which corresponds to the first term on the right-hand-side of . 
+
+Note that at most six flux integrals are computed for each three-dimensional box.
+
+These integrals are computed numerically using the Julia package "HCubature.jl" . All of the default choices for the input arguments are maintained, with the exceptions of the relative and absolute tolerances which are both set to $10^-2$ for the sake of computational efficiency. 
+We add a small spatial diffusion when the flux integral is nonzero, using 
+
+ 
+=
+
+where $$ is the median RBC velocity magnitude over the entire spacetime domain $$ to ensure that the eigenvalue $_1=0$ is simple.
+The expression for $$ is obtained by setting the term $^2/2^2$ in equal to $0.05/$, which corresponds to adding a drift of 5\
+
+ To obtain the discretised inflated generator, we note that can be re-written as
+
+ 
+F(t, x)=G_tF(t, x)+2_t^2F(t, x).
+
+To create a discretised spacetime estimate of $$, we index first by space, then by time. 
+For the terms $G^t$ in , this means 
+
+creating a block-diagonal spacetime (st) matrix with generator matrices $^t$ on the diagonal:
+$$_:=
+ ^t_0 & 0 & 0& 0 & & 0 \\
+ 0&^t_1& 0 & 0 & & 0\\
+ 0 & 0 & ^t_2 & 0 & & 0 \\
+ 0 &0 & 0& & & & \\
+ & & & & & & \\
+ 0& 0 & & 0 & 0 &^t_K
+.$$
+To construct the second term on the right-hand side of , we use standard central differencing to estimate the Laplacian in time over the full time interval $[0,]$, and pad with $N N$ identity matrices to respect the spacetime indexing: 
+
+$$_:=
+ - I_N & I_N & 0& 0 & & 0 \\
+ I_N&-2 I_N& I_N & 0 & & 0\\
+ 0 & I_N & -2 I_N & I_N & & \\
+ 0 &0 & I_N & & &0 \\
+ & & & & -2 I_N & I_N \\
+ 0& 0 & & 0 & I_N &- I_N
+/ t^2.
+$$
+The discretisation of $$ is then
+
+ 
+_a = _ + (a^2/2)_.
+
+The temporal diffusion matrix in is scaled by a temporal diffusion strength $a$.
+We discuss a posteriori and a priori heuristics for initial choices of $a$.
+Suppose that we seek approximately $Q$ quasi-stationary families and that the average lifetimes of these families are approximately $(1/)$.
+Then $a$ should be chosen so that the $Q^ th$ spatial eigenvalue of $_a$ is approximately equal to the $^ th$ temporal eigenvalue of $_a$.
+This involves an explicit computation of the eigenvalues of $_a$.
+
+In order to create an a priori initial estimate of $a$, we additionally require information about the domain $$ in order to estimate the temporal and non-temporal eigenvalues.
+As discussed earlier, the $k^ th$ temporal eigenvalue of $_a$ is $-(ak/)^2/2$.
+We now need to compute the eigenvalues of $(^2/2)$ on our spatial domain $M=8S^1 8S^1 [0,1]$.
+The eigenfunctions will be combinations of real Fourier modes and of the form:
+
+ 
+ &&(2 k x/8)(2 l y/8)( m z)\\
+ &&(2 k x/8)(2 l y/8)( m z)\\
+ &&(2 k x/8)(2 l y/8)( m z)\\
+ &&(2 k x/8)(2 l y/8)( m z),\\
+ 
+where $k,l,m$, due to periodicity in the $x$ and $y$ directions and Dirichlet boundary conditions at the domain floor and ceiling.
+One may verify that the leading eigenvalues of $$ on $M$ are (multiplicities in parenthesis):
+$0\ (1), -^2/16\ (4), -^2/8\ (4), -^2/4\ (4), -5^2/16\ (8),$ $-^2/2\ (4), -9^2/16\ (4), -5^2/8\ (8),$
+In our experiments we select $Q=30$ and $=2$.
+From the list above, we see that the $30^ th$ eigenvalue of $(^2/2)$ is $-5^2^2/16$ and the $2^ nd$ temporal eigenvalue is $-4a^2^2/2^2$.
+Following B.1 , there is numerical diffusion introduced by the Ulam-for-the-generator scheme, which means that when determining a heuristic $a$ value, we use an ``effective'' $$ defined by 
+
+ 
+_ eff= 0.1228.
+
+Equating these eigenvalues yields 
+
+ 
+a_ init=\, _ 4.9532 .
+
+The drift term in may cause many of the leading $Q=30$ non-temporal eigenvalues to be complex.
+Therefore the estimate for $a_ init$ in , which assumes all real eigenvalues, may need to be increased in order to match the second temporal eigenvalue with the $30^ th$ real non-temporal (i.e.\ spatial) eigenvalue.
+
+We remark that when $Q==2$ (the simplest case of two quasi-stationary families with lifetime half of the time extent $$), one may compute the a priori heuristic choice for the parameter $a$ is: 
+
+a_=2/L_ max=2_/L_. 
+
+$L_ max$ is the longest side length of the spatial domain $M$, which in this case will be $ = 8$. Note that the units of $a_ init$ in are the same as those in because $L_ max$ is already part of the numerical coefficient in . 
+The heuristic for $a$ in was derived in , and has been adjusted by a factor of $2^2=4$ here to account for the periodic boundary conditions in the $x$ and $y$ coordinates (see similar periodic/nonperiodic domain discussions in ).
+
+Extracting individual quasi-stationary families from eigenvectors of the inflated generator and SEBA
+ 
+
+We eigensolve the discretised inflated generator $_a^*$ with the Arnoldi method using the Julia package "ArnoldiMethod.jl" 
+
+to obtain the leading real-valued spatial eigenvalues $_k^ spat < 0$ (with values closer to 0) and their corresponding eigenvectors $_k^ spat$. 
+To distinguish the real-valued eigenvalues/eigenvectors (spatial and temporal) from their complex-valued counterparts, check that the imagninary part of $_k$ is 0 within a certain tolerance ($10^-12$ is sufficient for this study). To distinguish the spatial eigenvalues/eigenvectors from the temporal ones, calculate the variance of the eigenvector $_k^*$ on the $K + 1$ blocks of indices $kN+1,,(k+1)N$, $k=0,,K$ (in other words, calculate the variance of the eigenvector data across each point in our spatial domain $M$ for each of the $K + 1$ time steps), then take the average of these variances. If this average spatial variance is close to 0 (again, within a specified tolerance, $10^-8$ was sufficient in this case), then the eigenvector is constant on all points in space for each time step and the eigenvalue/eigenvector pair is therefore temporal. Otherwise, we have a real-valued spatial eigenvalue $_k^ spat$ and its corresponding eigenvector $_k^ spat$, the latter of which we use in the SEBA algorithm.
+
+ Each of the leading real-valued spatial eigenvectors of the inflated generator $_k^ spat$ contains signatures of potentially multiple and not necessarily disjoint quasi-stationary families of almost-invariant sets present within a flow system. As signatures of multiple families of sets can be present within a single eigenvector, isolating single families of sets can often be difficult. To assist with isolating individual and disjoint families of sets from a single vector, we can rework a subset of spatial eigenvectors into an alternative basis of sparse vectors using the Sparse Eigenbasis Approximation (SEBA) algorithm . Each of the vectors produced from this algorithm will isolate spatiotemporal signatures of individual fluid cells present within the RBC flow, and should a SEBA vector contain traces of more than one of these fluid cells, each of these will be disjoint
+
+Each of the leading real-valued spatial eigenvectors of the inflated generator $_k^ spat$ contains signatures of possibly multiple quasi-stationary families of almost-invariant sets. 
+
+To isolate individual families of sets from the span of the leading spatial eigenvectors, as has been done with isolating individual coherent sets within an RBC flow system , we use the Sparse Eigenbasis Approximation (SEBA) algorithm to derive an sparse basis for this eigenspace.
+Each SEBA vector will isolate one quasi-stationary family of almost-invariant sets.
+
+Let $=[_1^|_2^|...|_Q^]$ be a matrix whose columns are the leading $Q$ spatial eigenvectors of the inflated generator, let $$ be a matrix whose columns form a basis of sparse vectors each of the same length as the spatial eigenvectors $_k^$, and let $>0$ be a small sparsity penalty.
+We seek a sparse array $$ whose column space is approximately the same as the column space of $$.
+We achieve this through the following optimisation problem:
+
+_, \|-\|_F^2+\|\|_1.
+
+We solve by alternately fixing $$ and solving for $$ exactly using soft-thresholding, and fixing $$ and solving for $$ exactly using SVD.
+When the algorithm converges we are guaranteed a local optimum, which in practice is frequently the global optimum.
+
+[Sparse Eigenbasis Approximation (SEBA)]
+
+\, 
+
+ Inputs: A matrix $$ of size $N(K+1) Q$, whose columns are the $Q$ leading real-valued spatial eigenvectors of $_a^*$, $_k^$, $k = 1,,Q$, each of length $N(K+1)$. 
+
+ Outputs: An $N(K+1) Q$ matrix $$, whose columns are the $Q$ SEBA vectors $_1,,_Q$ 
+which approximately span $\ _1^,,_Q^ \$.
+
+ Define a sparsity parameter $ = 0.99/$ (the largest possible value) and initialise the rotation matrix $ = _Q$.
+ To avoid degeneracies, apply a tiny random perturbation to any of the eigenvectors $_j^ spat$ that are constant vectors or close to constant. In practice, this is usually only required for the trivial eigenvector $_1^ spat$.
+ Apply a soft thresholding to the columns of $$: $_j = C_ (( ^)_j)/\| C_ (( ^)_j) \|$, $j = 1,,Q$ where $C_ (z) = (z) \ |z| - ,0 \$.
+ Update the orthogonal matrix $$: let $USV^$ be the singular value decomposition of $^$, and set $=UV^$.
+ Repeat the previous two steps until the matrix two-norm between the newly calculated matrix $$ and the matrix $$ calculated from the previous step is below a certain threshold (we used $10^-12$).
+ Ensure that each column of $$ is predominantly nonnegative by setting $_j (_i = 1^p _ij) _j$ for $j = 1,,Q$.
+ Scale the columns of $$ so that each one has a maximum value of 1: $_j _j / _i _ij $ for $j = 1,,Q$.
+ Re-order the columns of $$ in decreasing order of their minimum value. Those columns with 0 or negative values close to zero are more reliable and appear first in the ordering.
+ 
+
+The $Q$ columns of $$ form our basis of SEBA vectors $\_1,,_Q\$.
+
+ 
+
+We describe the SEBA algorithm. We start with a collection of the leading $Q$ real-valued spatial eigenvectors $_1^ spat,,_Q^ spat$ (including the trivial $_1^ spat$ which is classified as spatial) from the inflated generator and stack these together to create the $P Q$ matrix $$, where the $j$-th column of $$ is the $j$-th spatial eigenvector $_j^ spat$, $j = 1,,Q$; and $P = N(K+1)$ is the length of each eigenvector, where $K+1$ is the number of time steps we divide our temporal interval $[t_0,t_0+]$ into, and $N$ is the number of cubes we divide our spatial domain $M$ into at each of these time steps. These eigenvectors should be made orthonormal if they aren't already, but the Arnoldi method in Julia does usually return an orthonormal basis of eigenvectors by default, so there shouldn't be any need to carry out this extra step. That said, the first step of the SEBA algorithm used for this study enforces orthonormality on these eigenvectors as a precaution using QR decomposition. The end goal is to return two matrices from this algorithm: a $P Q$ matrix $$, whose columns form a sparse basis of SEBA vectors $_1,,_Q$ alternative to the basis created by the spatial eigenvectors but spanning the same subspace; and a $Q Q$ rotation matrix $$, which when applied to $$ (in the fashion $^$) produces the matrix $$.
+
+We start the algorithm by initialising $ = _Q$ (the $Q Q$ identity matrix which is a nice and easy initial guess for $$, though a matrix corresponding to a different initial sparse basis of vectors can be defined if desired) and defining a parameter $ = 0.99/$, which is used to induce sparsity on the SEBA vectors produced from this algorithm. We apply a small perturbation to any of the eigenvectors $_j^ spat$ that are constant vectors or close to constant, though usually only the trivial eigenvector $_1^ spat$ fits this description. 
+
+We then commence the iterative process for the SEBA algorithm, which consists of two steps, designed (respectively) to optimise the SEBA vector matrix $$ and the rotation matrix $$. The first step is concerned with optimisation of the SEBA vectors (contained in the columns of $$) using a soft-thresholding technique governed by the transformation function
+
+ C_ (z) = (z) \ |z| - ,0 \.
+
+Essentially, if an element $z$ of a vector is ``extremal" (in the sense that it is among the largest in terms of absolute value) and in the case of the eigenvectors $_j^ spat$ is a piece of spatiotemporal data more likely to correspond to a signature of a quasi-stationary family of almost-invariant sets; $C_ (z)$ simply makes a minor adjustment to the element $z$ by shaving off the value of the sparsity parameter $$ from the absolute value of $z$. Whereas if the element $z$ is closer to 0 in absolute value, and is therefore less likely to correspond to quasi-stationary, almost-invariant behaviour; then $|z| - < 0$ and $C_ (z)$ will ``cancel out" this element by setting it to 0. We hence apply this iterative step by calculating 
+
+ _j = (( ^)_j)\| C_ (( ^)_j) \|,
+
+for the $j$-th column of $$ (and therefore the $j$-th SEBA vector), $j = 1,,Q$.
+
+The second step of the process involves updating the rotation matrix $$ to ensure that this matrix is a solution of the Procrustes optimisation problem 
+
+ _ 2 \| \|_F^2,
+
+where $ = \ A ^Q Q : A^A = _Q \$ is a Stiefel manifold of orthogonal $Q Q$ matrices, and $\| \|_F$ represents the Frobenius norm for matrices. Solving the above optimisation problem ensures that the eigenvectors contained within the columns of $$, after having been rotated by the matrix $$, are ``close" to the columns of $$, in the sense that the subspace spanned by the columns of $$ (the SEBA vectors $_1,,_Q$) will be the same as the subspace spanned by the columns of $$ (the eigenvectors $_1^ spat,,_Q^ spat$). We update $$ through polar decomposition of $^$ after the columns of $$ have been updated through the aforementioned first iterative step. This polar decomposition can be calculated using the svd function in the "LinearAlgebra.jl" package which is part of the standard library of Julia .
+
+These two iterative steps (which update $$ and $$ respectively) are repeated until the matrix two-norm between the newly calculated matrix $$ and the matrix $$ calculated from the previous step is below a certain threshold ($10^-12$ is a sufficient threshold for this study). Once this process is complete, we finish the method by adjusting the parity of the columns of $$ (i.e. setting $_j (_i = 1^p _ij) _j$ for $j = 1,,Q$), scaling the columns of $$ so that each one has a maximum value of 1 (i.e. setting $_j _j / _i _ij $ for $j = 1,,Q$) and re-ordering the columns of $$ in decreasing order of their minima. This last step is important as the minimum value of each column of $$ is an indicator of the reliability of the spatiotemporal information contained in each column as to the whereabouts of individual quasi-stationary families of almost-invariant sets within our flow system. If a SEBA vector (column of $$) has a minimum value of 0 (or close to it), then the quasi-stationary, almost-invariant features captured within it (by the spatiotemporal data contained within it) are affirmed to be satisfactorily and reliability separated from all other features of a similar nature present within our flow system. On the other hand, if a SEBA minimum is further from 0 (in absolute value), the features in question have not been sufficiently separated from other similar features which exist within our flow system, and there may still be some overlap in quasi-stationary, almost-invariant behaviour, reducing the reliability of the information contained within the column vector (though not 
+necessarily rendering the information completely useless).
+
+We now summarise the full numerical approach, following Algorithm 1 in , to extracting quasi-stationary families of almost-invariant sets.
+
+[Identify quasi-stationary families of almost-invariant sets]
+
+\, 
+
+ Inputs: A state space $M$, a time-varying velocity field $$ on $M$, a time duration $[t_0,t_0 + ]$.
+
+ Outputs: Estimates of families of quasi-stationary almost-invariant sets at discrete time points in $[t_0,t_0 + ]$.
+
+ Discretise the spatial domain $M$ into cubes $B_1,,B_N$, and the time interval $[t_0,t_0 + ]$ into time nodes $t_k$, $k=0,,K$.
+ Calculate $$ using equation and compute the discrete generator matrices $^t_k$ for $k=0,,K$ as described in Section using .
+ Combine the $^t_k$ to form $_a$ as described in Section using , where the temporal strength parameter $a$ is initially selected using .
+ Compute the eigenvalues $0=_1>_2 $ of the sparse matrix $_a^*$ whose real parts are closest to 0, along with their corresponding spacetime eigenvectors $_1^*,_2^*,$. Note that $_1^*$ should be a constant vector $$.
+ Remove the complex-valued eigenvectors as well as the constant-in-space temporal eigenvectors using the steps outlined at the beginning of this subsection. 
+ 
+ 
+ Isolate $Q$ quasi-stationary families of almost-invariant sets by applying SEBA to the leading $Q$ spatial eigenvectors (including the trivial constant vector $_1^*$) to obtain spacetime SEBA vectors $_1,,_Q$. Each SEBA vector should support one of these quasi-stationary families of almost-invariant sets in spacetime.
+
+ .
+
+ 
+Signatures of multiple and not necessarily disjoint quasi-stationary families of almost-invariant sets can be present within individual inflated generator eigenvectors $_k^ spat$, making individual families of sets difficult to distinguish. A way to explicitly isolate individual fluid cells from our RBC flow that can be difficult to visualise from the eigenvectors is by producing an alternative basis of sparse vectors from a collection of leading inflated generator eigenvectors $_k^ spat$. The algorithm in question which we use to achieve this is the sparse eigenbasis approximation (SEBA) algorithm, first devised in .
+
+To implement the SEBA algorithm in our RBC flow calculations, we take the $Q$ leading real-valued spatial eigenvectors (including the trivial eigenvector $_1^ spat$ which is classified as spatial) $_1^ spat,,_Q^ spat$ (how $Q$ is determined depends on the particular quasi-stationary families of almost-invariant sets one seeks, or on how many families of sets one wishes to isolate), and we insert these into the SEBA algorithm which returns a new sparse basis representation of the spatial eigenvectors, consisting of vectors $_1,,_Q$. Each of these vectors will isolate spatiotemporal signatures of individual fluid cells present within the RBC flow, and should a SEBA vector contain traces of more than one of these fluid cells, each of these will be disjoint.
+
+Since we seek many of these quasi-stationary, almost-invariant fluid cells within the RBC flow system (roughly 20-30 within the time interval of interest), to gauge the full extent of quasi-stationary, almost-invariant flow behaviour present across our entire spacetime domain $$ we calculate the maximum of these SEBA vectors $_ max$, where the $j$-th element of $_ max$ is the maximum of the $j$-th elements of all of the individual SEBA vectors $_i$ where $i = 1,,Q$. The full collection of quasi-stationary families of almost-invariant sets should roughly fill the bulk of our spatial domain $M$ on each time slice, with the thin filaments of remaining space not covered by these families of sets representing regions of fast, less metastable fluid transport.
+
+Results
+
+In this Section, we provide computational specifics for the inflated generator method applied to our RBC flow system, show relevant results obtained from these methods, and then compare the results from this method with the convective heat transfer (CHT) results shown in Section 2 in an attempt to establish a connection between strong convective heat transfer and the lack of quasi-stationary, almost-invariant flow behaviour (or conversely, a connection between low convective heat transfer and quasi-stationary almost-invariant flow behaviour) within this system. We compare these results both qualitatively, through visual comparisons of scalar fields, and quantiatively through computation of the correlation between the maxima of the SEBA vectors produced from the inflated generator method and both instantaneous and time-averaged CHT data.
+
+Quasi-stationary families of almost-invariant sets from the inflated generator
+
+ 
+To execute the inflated generator method on the RBC flow system, we start by discretising our spatial domain $M = [-4,4) [-4,4) [0,1]$ into $128 128 16 = 262144$ cubes of equal side length $ = 1/16 = 0.0625$. We focus on the time interval $[t_0,t_0+] = [2001,2103] \ T_f$, giving $ = 102$ and we take 35 equispaced time steps spaced $ t = 3 \ T_f$ apart. This will produce an inflated generator matrix of size $9175040 9175040$ for our spacetime domain $ = [2001,2103] M$, so constructing this matrix (through computation of the flux integrals), solving it for its eigenvalues/eigenvectors and producing SEBA vectors from the resultant real-valued spatial eigenvectors will have to be made more efficient using the techniques described in Appendix A.
+
+To execute the inflated generator method on the RBC flow system, we follow the steps outlined in Algorithm , starting by discretising our spatial domain $M = [-4,4) [-4,4) [0,1]$ into $N$ cubes of equal side length $$ at each of our $K + 1$ time steps. We take 35 equispaced time steps spaced $ t = 3 \ T_f$ apart on the time interval $[t_0,t_0+] = [2001,2103] \ T_f$ of length $ = 102$. We have tried three different values of $$ for the inflated generator method in this case, these being 0.25, 0.125 and 0.0625 (which, respectively, gives $N = $ 4096, 32768 and 262144). In this paper we focus on the results generated with $ = 0.0625$ as this provides the best spatial resolution for $M$ and allows us to identify quasi-stationary families of almost-invariant sets with greater clarity.
+We compute the discrete generator matrices $^t_k$ on each of our 35 time steps using . Using , we compute the value for the spatial diffusion parameter $ 0.0370$, given the box side length $ = 0.0625$ and the median velocity $$ over the entire spacetime domain $$ taking an approximate value of $0.2195$. As we have a large number of flux integrals to compute in this case (at most, $6 262144 = 1572864$ as each cube will have at most six neighbouring cubes), we make this process more efficient using standard multithreading in Julia so that multiple flux integrals can be evaluated at once.
+We then construct the full discretised inflated generator matrix using which, given $ = 0.0625$, will be a relatively large matrix of size $9175040 9175040$ for our spacetime domain $ = [2001,2103] M$. Using , we calculate an initial heuristic for the temporal diffusion parameter $a$, $a_ init 4.9532$, given $ = 102$ and $L_ = = 8$. We then eigensolve the discretised inflated generator for its leading eigenvalues/eigenvectors using the Arnoldi method. To make this process more efficient for a large inflated generator matrix, large matrices such as the inflated generator and the Krylov subspace matrix for the Arnoldi method are defined on a GPU so that matrix multiplications that form part of the Arnoldi method can be executed more quickly.
+We construct and eigensolve the inflated generator matrix using the initial heuristic for $a$ . 
+
+Figure shows the corresponding spectrum.
+The second temporal eigenvalue roughly matches the thirtieth non-temporal eigenvalue, however many of the non-temporal eigenvalues with larger real part than the second temporal eigenvalue are a mix of complex and spatial eigenvalues. 
+In order for the second temporal eigenvalue to match with the thirtieth spatial eigenvalue (which in this case is the 285th overall), the value of the parameter $a$ would have to be increased to around $a=9.15$. 
+However, such an increase in $a$ would reduce the amount of temporal variation between time slices of the inflated generator eigenvectors and the SEBA vectors. 
+To emphasise this temporal variation, we reduce $a$ slightly to a value of 4.1 for subsequent experiments with a single value of $a$.
+
+ Upon inspection of the eigenvalue spectrum for the inflated generator, if the $Q$th (30th) spatial eigenvalue is not equal to the $$th (2nd) temporal eigenvalue using this value of $a$, we must adjust the value of $a$ until we achieve a better match between these eigenvalues. In our case, we adjust $a$ to a value of . . = 2$ case we were using previously. For the $Q = 30$, $ = 2$ case, after running a few more inflated generator tests over the weekend, $a = 9.15$ gives us a match between the 30th spatial and 2nd temporal eigenvalue.
+In this subsection we display the results produced from the inflated generator method using this value of $a$ to demonstrate how the inflated generator method is used to extract quasi-stationary families of almost-invariant sets within the RBC flow system. This is not the only value of $a$ we have used, however for the sake of brevity we will not display the inflated generator method results to this level of detail for the other values of $a$ used.
+Figure shows the spectrum of the approximately 330 leading eigenvalues of the inflated generator for the RBC flow system, which includes the first 30 real-valued spatial eigenvalues, the first two temporal eigenvalues, and a sizeable collection of complex-valued eigenvalues. As we can see from Figure , the second temporal eigenvalue and the thirtieth spatial eigenvalue match up as desired when $a$ is set to 9.15. While this is the value of $a$ we will use for our analysis in the next few subsections, in this subsection we display the results produced from the inflated generator method for a smaller value of $a = 4.1$. We do this as we wish to demonstrate in this subsection how the inflated generator method is used to extract quasi-stationary families of almost-invariant sets within the RBC flow system, and this is slightly difficult for a relatively large value of $a = 9.15$, as the temporal variation between time fibers of our spacetime eigenvectors will be very small, and we wish to demonstrate how quasi-stationary families of almost-invariant sets form and dissipate within our system, which is easier to accomplish with a smaller $a$ value such as 4.1 in this case. As we see in Figure , several spatial eigenvalues are present before the first temporal eigenvalue, indicating the presence of quasi-stationary families of almost-invariant sets which exist over our entire time interval, and we wish to demonstrate how families of sets can form and dissipate within a system. We use $a = 9.15$ for further analysis in the following subsections.
+
+ Owing to the size of the inflated generator matrix in this case, constructing this matrix (through computation of the flux integrals), solving it for its eigenvalues/eigenvectors and producing SEBA vectors from the resultant real-valued spatial eigenvectors will have to be made more efficient. This is achieved through multithreading in Julia so that multiple flux integrals can be evaluated at once, and defining large matrices (such as the inflated generator) on the GPU to speed up matrix multiplication within the Arnoldi method for eigensolving the inflated generator and the SEBA algorithm. We do not have to improve the efficiency of the method in this manner if we increase the value of $$, but doing this reduces the spatial resolution of our results and may limit our ability to draw meaningful conclusions from these results.
+
+ Using , we compute the value for the spatial diffusion parameter $ 0.037$, given the box side length $ = 0.0625$ and the median velocity $$ over the entire spacetime domain $$ taking an approximate value of $0.2195$. Using , we compute an initial heuristic for the temporal diffusion parameter $a$, $a_ 3.1327$, given $ = 102$ and $L_ = = 8$, and after some experimentation , we select $a = 4.1$ so that the leading (non-trivial) spatial and temporal eigenvalues approximately match, as was done in . As will be elaborated on later, we have also prepared results from the inflated generator method using other values of $a$, though the value of $a$ we focus on in this subsection is $a = 4.1$.
+ , As mentioned in , this is merely an approximation for the appropriate value of $a$ required, and may need to be adjusted depending on the results generated from an initial run of the inflated generator method with this estimated value of $a$. We adjust this heuristic for $a$ to a value of 4.1 , and 
+
+ 
+[width=]figures/Figure5.png
+ _21$. A cutoff of 0.4 has been applied to the SEBA vector.
+ 
+
+Since we seek several quasi-stationary families of almost-invariant sets within this flow system (in this case, roughly 20-30 within the time interval of interest), we take the corresponding eigenvectors $_1^,,_30^$ of these 30 spatial eigenvalues and we insert these into the SEBA algorithm in order to isolate signatures of the quasi-stationary families of almost-invariant sets present within the RBC flow system. Since the matrices $$, $$ and $$ will all be large, in similar fashion to what was done with the Arnoldi method we define all of these matrices on a GPU to make Algorithm , in particular steps 3-5 of this Algorithm, more efficient.
+
+ After calculating these 30 SEBA vectors $_1,,_30$, we further improve the spatial resolution of these spacetime vectors by interpolating them over a uniform three-dimensional grid of points within our spatial domain $M$ with mesh size $/2 = 0.03125$. Figure shows a typical example of a quasi-stationary family of almost-invariant sets detected for the RBC flow system from its birth to its dissipation identified through the SEBA vector $_21$ . We visualise this SEBA vector in three-dimensions by plotting isosurfaces of this vector restricted to discrete time slices to show the actual quasi-stationary, almost-invariant plumes of fluid as they form and dissipate over a subset of our time interval. Extremal values of the SEBA vector (i.e. values closer to 1) are spatiotemporal data representing greater metastable flow behaviour within our system, but values closer to 0 are less likely to correspond to this behaviour, so to better isolate our quasi-stationary families of almost-invariant sets visually we apply a cutoff of 0.5 to the entries of the SEBA vector . As can be seen in Figure , at time 2022 $T_f$ our spatial domain $M$ is blank, indicating that our family of sets (representing a metastable plume of fluid within our RBC flow system) has not formed yet. However, at time 2037 $T_f$ a red object (representing our family of sets) begins to form along the bottom of our domain, before growing in volume and rising to the top of our cell at time 2052 $T_f$ to form our full metastable flow object. This quasi-stationary family of almost-invariant sets exists for roughly 30-36 units of time, until it begins to shrink back down towards the bottom of our cell around time 2067 $T_f$ and by 2082 $T_f$ the family of sets has vanished. 
+
+After calculating these 30 SEBA vectors $_1,,_30$, we further improve the spatial resolution of these spacetime vectors by interpolating them over a uniform three-dimensional grid of points within our spatial domain $M$ with mesh size $/2 = 0.03125$.
+
+Figure shows a typical example of a quasi-stationary family of almost-invariant sets detected for the plane-layer RBC flow system identified through three-dimensional isosurfaces of the SEBA vector $_21$ taken for example at a level of 0.4 at discrete time steps. As can be seen in Fig. , at time $t=2022 T_f$ our spatial domain $M$ is blank, indicating that our family of sets (which will represent a transient plume of fluid comprising an almost-invariant parcel) has not formed yet. However, at $t = 2028 T_f$ a red object (representing a member of our family of sets) begins to emerge along the bottom of our fluid layer. This object then begins to grow in size, before reaching the top of our cell at time $t= 2043 T_f$ to form our full metastable/almost-invariant flow object. Once fully formed, this transient family of almost-invariant sets retains its shape for roughly 20-25 units of time, until it begins to shrink back down towards the bottom of our cell at around time $t 2061 T_f$. By time $t=2076 T_f$, the family of sets has been reduced to a small object sitting at the bottom of the cell, and by time $t=2082 T_f$ the family of sets has vanished completely. 
+
+ 
+[width=]figures/Figure6.png
+ _2$, $_15$, $_21$ and $_22$) taken at the central time step 2052 $T_f$. A cutoff of 0.4 has been applied to each of these SEBA vectors. In a fifth panel (right), we superimpose these four vectors on a single three-dimensional axis to show these four families of sets co-existing within the RBC flow system at time 2052 $T_f$.
+ 
+
+ 
+[width=]figures/Figure7.png
+ restricted to the horizontal $xy$-midplane (with $z = 0.5$) at the central time step 2052 $T_f$. A cutoff of 0.4 has been applied to each of these SEBA vectors. In a fifth panel (right), we take the maximum of these four vectors and restrict this to the $xy$-midplane to demonstrate the co-existence of these four families of sets found through the four SEBA vectors at time 2052 $T_f$.
+ 
+
+Several quasi-stationary families of almost-invariant sets are present simultaneously. To illustrate this, Fig. shows four of the many distinct quasi-stationary families of almost-invariant sets present at time $t=2052 T_f$ (the central point of our time interval), found through four different SEBA vectors ($_2$, $_15$, $_21$ and $_22$). In a fifth panel within Figure , we superposition these four vectors to illustrate the four families of sets existing simultaneously at this moment in time. In Fig. , we restrict these four SEBA vectors, along with the superposition panel, to the $xy$-midplane with $z = 0.5$. In Figure , two-dimensional restrictions of quasi-stationary families of almost-invariant sets are identifiable through solid or dark red objects (corresponding to SEBA values of isolevel 0.4 or higher). We again apply a cutoff of 0.4 to both Figs and so that we can easily visualise the individual quasi-stationary families of almost-invariant sets.
+
+ 
+[width=]figures/Figure8.png
+ 
+ 
+
+In order to produce one complete picture of the quasi-stationary, almost-invariant flow behaviour present across our entire spacetime domain $$, we calculate the maximum of the 30 SEBA vectors $_ max$, where
+
+ (_ max)_i = _j _ij
+
+over all $j = 1,,30$. The full collection of quasi-stationary, almost-invariant plumes of fluid obtained from $_ max$ should fill most of our spatial domain $M$ on each time slice, with the remaining filaments of space not covered by these plumes representing regions of faster and less metastable fluid transport.
+After taking the maximum of the 30 spacetime SEBA vectors $_ max$ (including the four shown in Figs. and ), we use $_ max$ to produce the images shown in Fig. . We plot horizontal restrictions of the SEBA maxima at three levels in the $xy$-plane, namely the ``Top" (positioned along $z = 1- = 0.9375$, which is not on the ceiling of the cell but is still within the upper thermal boundary layer for the cooling plate at the top of the cell), the ``Midplane" ($z = 0.5$, the middlemost horizontal layer), and the ``Bottom" ($z = = 0.0625$, which is within the lower thermal boundary layer for the heating plate at the bottom of the cell). We also restrict the SEBA maxima to two vertical midplanes, one in the $xz$-plane (with $y = 0$) and one in the $yz$-plane (with $x = 0$).
+
+In Fig. , as was the case in Fig. , the regions of our spatial domain colored in red or deep red (corresponding to maximal SEBA values of approximately 0.4 or higher) represent quasi-stationary, almost-invariant fluid objects present within the RBC flow. Regions colored in light pink represent quasi-stationary families of almost-invariant sets which are beginning to either emerge or dissipate; while the thin white streaks or filaments correspond to parts of our domain where no almost-invariant behavior is present, and which are more likely to correspond to thin passageways through which parcels of less metastable fluid flow towards the top wall after being heated, or sink towards the bottom wall after being cooled. 
+
+Qualitative comparisons between SEBA and CHT
+
+We now focus on a connection between the quasi-stationary families of almost-invariant sets identified from the SEBA vectors and the values of convective heat transfer (CHT) data for the RBC flow system. We start with a more qualitative approach to doing this by comparing the scalar fields for the SEBA vectors and the CHT data. Figure shows the scalar fields of the maximum of 30 SEBA vectors computed from the inflated generator method with $a = 4.1$ (as discussed in the previous subsection) and the CHT data averaged over 5 $T_f$ in the horizontal $xy$-midplane and the vertical $xz$-midplane 
+The full three-dimensional CHT data is averaged over a window of length 5 $T_f$, $[t_k-2,t_k+2]$ with $t_k = 2052 \ T_f$, and is then restricted to the two-dimensional horizontal $xy$-midplane and the vertical $xz$-midplane. We must stress that the SEBA spacetime vectors and CHT data is three-dimensional and defined over the entire spatial domain $M$, however, for ease of display we restrict the data to these two midplanes for this qualitative analysis. We focus on more quantitative comparisons of the full three-dimensional data in the next two subsections.
+
+ We now turn our attention to comparing the SEBA maxima and the CHT data (the latter of which can be either instantaneous or time-averaged) . We perform these comparisons on our full three-dimensional spatial domain $M$ in order to gauge an idea of the overall correlation between these quantities over $M$ , and then we focus exclusively on the $xy$-midplane as convective heat transfer is relatively stronger along this cross-section (as established in Section 2.1) and this may give rise to a stronger connection between SEBA and CHT . We use the SEBA maxima data obtained from our main value of $a$ considered for the inflated generator method (4.1), along with half (2.05), double (8.2) and four times (16.4) this $a$ value as an easy way to establish what impact (if any) the choice of this parameter has on the correlation between the resultant SEBA maxima and the CHT data. In terms of the CHT data, we consider instantaneous snapshots of CHT data, and CHT data averaged over time windows of length $5,9,13,17$ and $21$. The CHT data has also been downsampled from its original resolution (i.e. interpolated over a coarser grid) in order to match the spatial resolution of the maximal SEBA data for consistent results.
+
+[width=0.9]figures/Figure9.png
+ 
+ 
+
+For brevity, we restrict the qualitative analysis in this paper to one value of the temporal diffusion parameter $a = 4.1$ for the inflated generator method to produce the SEBA vectors, and one length of time over which we average the CHT data (5 $T_f$). To the naked eye, some connections can be drawn between the SEBA and CHT fields in Fig.\ . For instance, at a region in the neighbourhood of the point $(0,2)$ in the $xy$-midplane, the crucifix-shaped purple object in the CHT field roughly coincides with a web of white filaments centred at the same location in the maximum SEBA field. In the $xz$-midplane, we can also spot some of these similarities, such as a thin white colored stem roughly close to the vertical line $x = -1.5$ in the maximum SEBA field lining up with a purple vertical object (a little thicker than the white stem) in the CHT field. Other examples like these can be deduced from the scalar fields, signifying a potential connection between low SEBA (and therefore less metastable fluid behavior) and high average CHT (corresponding to faster fluid movement as heated fluid rises from the bottom of our cell and cooled fluid sinks from the top). That said, while the regions of high CHT usually take the shape of thicker purple or black blobs, the white ridges of minimal SEBA are little more than wafer-thin filaments which separate the quasi-stationary families of almost-invariant sets.
+
+This connection is not perfect, as there are a few visual inconsistencies between the two fields. This is particularly true in the opposite case, where we seek connections between high SEBA (quasi-stationary families of almost-invariant sets) and low CHT (reduced transfer of heat from reduced fluid movement as large metastable objects form). As we can see in Fig.\ , while there are some overlaps between the red regions of the SEBA fields and the deep orange or yellow regions of the CHT fields, the shapes of the red objects in the SEBA field do not completely line up with orange or yellow objects in the CHT field. These observations suggest a qualitative connection (albeit weak) does exist between SEBA and CHT when the movement of fluid is more rapid and convective heat transfer is stronger, but not within regions of the domain where fluid movement is more quasi-stationary and metastable (or at least, not to as great an extent).
+
+In the $xy$-midplane, we note that the $||$ field, much like the CHT ($H$) field, does share common features with the SEBA field, particularly between the thin white streaks of the SEBA field and the yellow regions of high $||$, reinforcing that there is some connection between regions of less metastable fluid advection and increased temperature fluctuation (in absolute value, disregarding whether this is a net positive or negative fluctuation). However, when we focus on the vertical $xz$-midplane, it is much more difficult to develop some connection between SEBA and the $||$ field, in contrast to CHT.
+
+Thus, it appears that it is difficult to detect transient almost-invariant regions in this turbulent flow using physical properties of the fluid directly, and one requires the more specialised inflated generator method, which targets precisely the emergence and dissipation of almost-invariant objects.
+
+ 
+[width=0.95]figures/Figure10.png
+ 
+ 
+
+ 
+[width=0.95]figures/Figure11.png
+ 
+ 
+
+Correlation between SEBA and CHT
+
+We quantitatively compare the SEBA field and other fields such as CHT by computing correlations.
+Let $_t,i$ and $_t,i$ respectively denote the values of the SEBA and CHT fields at time $t$ and pixel $i$.
+Pearson's correlation coefficient at time $t$ is computed with 
+
+&_t(,):=\\
+& ^N(_t,i - _t)(_t,i - _t)^N(_t,i - _t)^2 ^N(_t,i - _t)^2,
+
+where 
+
+_t=N_i=1^N _t,i _t=N_i=1^N _t,i.
+
+In Fig. , we plot the correlation between the full three-dimensional SEBA data and CHT data against time at every 3 $T_f$ (as this is the temporal resolution of the SEBA spacetime vectors). We also plot the correlation between SEBA and CHT restricted to the $xy$-midplane. In this instance, we focus on SEBA data computed from the inflated generator with $a = 4.1$, while the CHT data is taken at instantaneous moments in time, and is also averaged over subintervals of time of length 5, 9, 13, 17 and 21. The subintervals in question take the form $[t_k-m,t_k + m]$, where $t_k$ is the central time point of the interval and $m = 2p$, $p = 1,,5$. The correlation values computed between SEBA and average CHT are plotted at these central time points $t_k$.
+
+From the left hand graph in Fig. , we observe a (weak) negative correlation between SEBA and CHT. This correlation is considerably weaker when we calculate it using single-time instances of CHT, however as the length of the time window over which we compute CHT averages increases, the correlation between SEBA and CHT becomes more negative and therefore improves. This implies that the removal of noise/diffusion from the CHT data by averaging the data helps improve the correlation between CHT and SEBA. One could argue that it is possible to improve the correlation values even further by taking CHT averages over longer time windows than those already considered (e.g. in the region of 60-90 $T_f$). However, the observed ``bunching" of the curves as the time window length increases suggests that we are approaching some limit for the improvement of these correlation values, where increasing the window of time over which we average the CHT data will only be effective at improving the correlation up to a point.
+
+ 
+[width=0.95]figures/Figure12.png
+ 
+ 
+
+This weak correlation observed between SEBA and CHT is likely due to the fact that we are computing these correlation values over the entire three-dimensional spatial domain $M$, and the correlation between these quantities is weaker within some parts of the domain compared to others, such as the thermal boundary layers along the top and bottom of the cell. To that end, we also compute the correlation between SEBA and CHT after restricting these data sets to the $xy$-midplane, with the graphs for these correlation values shown in the right-hand panel of Fig.\ . 
+Similar to the left panel in Fig.\ , the time window over which we compute CHT averages changes, but the temporal diffusion parameter $a$ remains fixed at 4.1. We do not observe a great difference between the correlation values for the three-dimensional data and the $xy$-midplane data when CHT is defined on a single time step. However, as the length of the time window over which we compute the CHT averages increases, we see an improvement in these correlation values compared to those generated using the full three-dimensional data. These correlation values are still relatively weak as they roughly range between -0.25 and -0.1 (when CHT has been averaged). 
+
+A likely reason for this lack of a stronger correlation is to do with the observation of a weaker qualitative connection between high SEBA and low-to-medium CHT values in the $xy$-midplane, as observed in Fig. . For a stronger negative correlation between these two quantities (i.e. corresponding to a correlation value close to -1), quasi-stationary families of almost-invariant sets (identified through high values of SEBA) would have to align near perfectly with regions of $M$ corresponding to low to no convective heat transfer. At the same time, the correlation values are not zero because we do observe some qualitative connections between low SEBA and high CHT. The volume covered by these relatively thin filaments is much smaller compared to the volume covered by the metastable plumes of fluid identified through quasi-stationary families of almost-invariant sets and low CHT; hence this correlation between SEBA and CHT exists over a lower volume of $M$ and contributes to the correlation values being closer to 0 in Fig. .
+
+Correlation between SEBA and other quantities
+
+To further test the possible connections between SEBA and the characteristics of our RBC flow system, we extend this analysis further by calculating the correlation between SEBA and several other key quantities for the RBC flow. To this end, we take correlations between SEBA and the following fields
+
+ Temperature fluctuation $$, and its absolute value $||$;
+ Vertical velocity $u_z$, and its absolute value $|u_z|$;
+ Convective heat transfer (CHT) $H$, and its absolute value $|H|$;
+ Magnitude of horizontal velocity $\| (u_x,u_y,0)^ \|$;
+ Magnitude of horizontal gradient of temperature fluctuation $\| ( / x, / y,0)^\|$.
+
+We average these quantities over subintervals of time of length 5 $T_f$ centred at $t_k$, $[t_k-2,t_k+2]$, as we did previously with the CHT data. Figure displays these correlation values across time for both the full three-dimensional spatial domain $M$ and the restriction to the $xy$-midplane. The mean correlation values across time are included in the legend of Figure . We observe particularly weak correlation between SEBA and the quantities $$, $||$, $u_z$, $\| (u_x,u_y,0)^ \|$ and $\| ( / x, / y,0)^\|$ across the full three-dimensional domain. The correlation between SEBA and $|u_z|$ is somewhat less than between SEBA and $H$ and $|H|$; therefore, we can be confident that our analysis focuses on CHT. 
+
+Restricting our calculations to the $xy$-midplane, greatly improves the correlation between SEBA and $||$, with the mean correlation changing from -0.0247 across the full spatial domain $M$ to -0.1720 across the $xy$-midplane. Restricted to the midplane, the correlation with $||$ exceeds the correlations with CHT. A reason for this observation might be that the strongest plume clusters, which have clear $||$ signatures, will be observed in the 
+$xy$-midplane, while smaller-scale structures formed at the floor and ceiling may become washed out by turbulent mixing by the time they reach the $xy$-midplane. This was also observed in ref.\ . 
+
+Finally, to benchmark against a featureless scalar field, we computed the correlations between SEBA and a constant scalar field, and between CHT and a constant scalar field.
+The magnitudes of these correlations across all time windows shown in Fig.\ were at least an order of magnitude smaller (not shown) than the values shown in Figs and .
+
+Impact of the temporal diffusion parameter $a$
+
+To identify what sort of impact (if any) the temporal diffusion parameter $a$ used to construct the inflated generator has on the correlation results presented in the previous subsection, we re-run the inflated generator method for a smaller value of $a$ and two larger values of $a$ than the original value of 4.1 and perform similar correlation analysis using the SEBA vectors generated. As a convenient way of doing this, we re-run the inflated generator method for $a/2 = 2.05$, $2a = 8.2$ and $4a = 16.4$. The results are shown in Figure , where we calculate the mean correlation values between SEBA and CHT across the full time interval $[2001,2103] \ T_f$ and plot these against the lengths of the time windows over which we compute the CHT averages. Analogously with Fig. , the left-hand plot shows correlation values computed for three-dimensional SEBA and CHT data, while the right-hand plot shows these values for SEBA and CHT data restricted to the $xy$-midplane. 
+
+Between our two smaller values of $a$ (2.05 and 4.1), we see roughly no impact on the correlation between SEBA and single-time instances of CHT; though as the time window taken to compute the CHT averages increases in length, the mean correlation values improve for the larger $a = 4.1$ and plateau a little more quickly when $a = 2.05$. When $a = 8.2$, we find better mean correlation values when using single-time instances of CHT data, and the correlation values continue to improve as we average CHT over a larger time window. However, when we increase $a$ to 16.4, we do not observe any further improvements to our correlation results. Instead, while the mean correlation values for $a = 16.4$ are better than those for $a = 2.05$ and 4.1, these means are slightly worse (in the sense that they have value closer to 0, when we wish them to tend more towards -1) than those recorded for $a = 8.2$. Hence, increasing the value of the temporal diffusion parameter $a$ for the inflated generator does improve the correlation between SEBA and CHT but only up to a point, after which the correlation values either plateau or start to recede towards 0.
+
+ From these two plots, we again ascertain that SEBA and CHT are correlated slightly more strongly on the $xy$-midplane compared to the entire three-dimensional spatial domain $M$, and increasing the length of the time window over which we average the CHT data also improves this correlation. However, as we can see from the two smallest $a$ values considered (2.05 and 4.1), the mean correlation in both Figures appears to plateau to a limiting value as the time window length increases, reaffirming that there is a limit as to how much we can improve the correlation values between SEBA and CHT by increasing the length of the time window over which we average the CHT data. We do not appear to have reached this limiting value yet for the two largest $a$ values (8.2 and 16.4), though the shapes of the blue and pink curves in both of these graphs suggest that we will eventually reach this limit for a larger time window length than those considered.
+
+Conclusion
+
+The main objective of our study was the application of a new method to detect and analyse quasi-stationary families of almost-invariant sets of convective heat transfer in a plane-layer Rayleigh-B\'enard convection flow. In this flow, heat which is supplied at the bottom of the layer is carried to the top amplified by turbulent motion of the fluid layer between. The method that we used extract these families of sets is based on the so-called generator of the Perron-Frobenius or transfer operator that is inflated from space to space-time to capture the transient dynamics of the almost-invariant sets in time. 
+The scalar field that was mainly analysed in our study is the convective heat transfer field $H( x,t)$, which couples the vertical velocity component, $u_z$, and the temperature fluctuation, $( x,t)$. The quasi-stationary families of almost-invariant sets are obtained as eigenvectors of the discretized version of the inflated generator and a subsequent Sparse Eigenbasis Approximation (SEBA). 
+
+In our three-dimensional data analysis, we demonstrated qualitative and quantitative correlations between the patterns of convective heat transfer and the computed SEBA vectors and thus the capability of this analytical approach to extract the formation and dissipation of transient almost-invariant sets in the complex dynamics of a turbulent convection flow. This implies that the mathematical framework, which we applied here, can describe the gradual transient dynamics of the large-scale patterns in the the plane-layer convection flow, the turbulent superstructures, and reveal its central role for the turbulent heat transfer. 
+
+Possible extensions of this work for the future could be as follows. If the convection dynamics proceeds in a more complex settings, e.g., in a thin shell that is subject to rotation, then the transport patterns will become latitude-dependent and meridional transport might be suppressed. The transport barriers that would form in such a flow configuration should be identifiable by the present framework. 
+
+Data Availability
+
+Code and data used in this work is available at

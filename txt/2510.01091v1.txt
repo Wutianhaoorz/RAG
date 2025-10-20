@@ -1,0 +1,308 @@
+[preprint, nonatbib]neurips_2023
+
+[utf8]inputenc 
+[T1]fontenc 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+
+ \\
+
+We present a data-driven framework for turbulence modeling, applied to flow prediction in the FDA nozzle. 
+In this study, the standard RANS equations have been modified using an implicit-explicit hybrid approach. New variables were introduced, and a solver was developed within the OpenFOAM framework, integrating a machine learning module to estimate these variables. The invariant input features were derived based on Hilbert's basis theorem, and the outputs of the machine learning model were obtained through eigenvalue-vector decomposition of the Reynolds stress tensor.
+
+Validation was performed using DNS data for turbulent flow in a square channel at various Reynolds numbers. A baseline MLP was first trained at $Re=2900$ and tested at $Re=3500$ to assess its ability to reproduce turbulence anisotropy and secondary flows. To further enhance generalization, three benchmark DNS datasets were transformed into images via the Deep-Insight method, enabling the use of convolutional neural networks. The trained Deep-Insight network demonstrated improved prediction of turbulence structures in the FDA blood nozzle, highlighting the promise of data-driven augmentation in turbulence modeling.
+
+Introduction
+
+In 2009, the FDA hosted an interlaboratory study to evaluate computational fluid dynamics (CFD) methods in the safety investigation of healthcare equipment. The benchmark study focused on a general healthcare device featuring a cylindrical nozzle with a diameter of 0.012 m, characterized by a sudden contraction and a conical diffuser of 10 degrees on both sides of a throat with a length of 0.04 m and a diameter of 0.004 m(Fig. ). This study is pivotal because accurate flow predictions are essential for assessing blood damage criteria, such as hemolysis, which can directly impact patient safety and treatment efficacy. Various numerical simulations were conducted, and their outcomes were compared with planar particle imaging velocimetry (PIV) data across laminar, transitional, and turbulent flow regimes . Notably, the CFD results, particularly in turbulent regimes, did not align well with the PIV measurements, highlighting the need for enhanced predictive capabilities. In some cases, CFD predictions of the maximum wall shear stress in sudden contraction showed significant discrepancies compared to experimental results, which is considered as a major source term for the hemolysis criteria in healthcare devices. 
+
+Simulating biological effects like hemolysis, which involves red blood cell damage in medical devices, requires highly accurate predictions of flow and stress fields. These fields are essential for accurately solving equations related to hemolysis. Despite some limitations, Reynolds-Averaged Navier-Stokes (RANS) turbulence models are widely used in industry because they strike a balance between accuracy and computational efficiency. However, RANS models can have significant errors in predicting key factors like Reynolds stresses, turbulent viscosity, and velocity fields, depending on the specific case. These errors are often due to assumptions made in Boussinesq's hypothesis and constants used in simple one- or two-equation models, which are derived from calibrations based on standard fluid mechanics problems. By improving the accuracy of Reynolds stress and velocity predictions, we can expect more accurate estimates for hemolysis and other blood damage criteria.
+
+In fluid dynamics, various types of data are utilized, including laboratory results, field measurements, and numerical simulations. The emergence of Big Data has significantly influenced fluid mechanics in recent years, driven by advancements in high-performance computing and enhanced experimental techniques . Machine learning algorithms, encompassing supervised, weak supervision/semi-supervised, and unsupervised learning, are increasingly applied in fluid mechanics, providing a versatile modeling framework that addresses various challenges, including the turbulence modeling closure problem. 
+The discrepancies observed between RANS predictions and PIV measurements in the FDA benchmark nozzle illustrate the limitations of traditional turbulence models in accurately capturing complex flow dynamics in medical devices. This discrepancy underscores the importance of developing turbulence models, such as Reynolds-Averaged Navier-Stokes (RANS), that can better predict flow characteristics, Reynolds stress, and shear stress using machine learning (ML) approaches that leverage direct numerical simulation (DNS) data from benchmark problems.
+
+Researchers have utilized both offline data (DNS datasets from unrelated flows) and online data (real-time data from the target flow) to enhance predictions in fluid dynamics , . For instance, in the study by Dow , DNS data of straight channel flows was utilized to identify turbulence viscosity differences, represented as $_t$, modeled with the $k-$ approach. This pioneering work sets the stage for future research by demonstrating how advanced datasets can lead to refined turbulence models. To extend this model to channels with wavy walls, researchers represented the logarithm of the viscosity differences as Gaussian random fields and averaged these over the domain to capture flow characteristics generically.
+In a related approach, Duraisamy et al. , introduced the $$ parameter as a location-specific correction factor in the source terms of the transport equations. In their model, $$ serves as a multiplicative factor in the production terms for $_t$ in the Spalart-Allmaras model and for $$ in the $k-$ model, enabling regional adjustments that improve alignment with DNS data. This innovative approach highlights the potential for localized modifications to enhance turbulence modeling accuracy.
+By calibrating the $$ parameter, they were able to assess and reduce uncertainties in the turbulence models, advancing RANS predictions for similar flows. Xiao et al. further extended this work by using real-time velocity dispersion measurements to quantify discrepancies in the Reynolds stress tensor, denoted as $ _$, predicted by RANS models. Their method allowed for the estimation of additional physical quantities, such as turbulence kinetic energy and Reynolds stress anisotropy, through sparse velocity measurements, adding further depth to RANS model correction efforts.
+
+The methods discussed provide a foundational approach for achieving a central objective: predicting turbulence with standard RANS models using well-validated offline data, such as direct numerical simulation (DNS) or laboratory measurements. By calibrating the difference between true Reynolds stress and that derived from RANS models, these methods aim to extend accurately to similar flow scenarios. Wu et al. , following the approach by Xiao et al. , showed that calibrating the difference in Reynolds stress based on limited velocity data could be applied to flows with Reynolds numbers much higher than the initial reference cases. This method significantly improved the accuracy of velocity and other flow predictions, underscoring the promise of using data-driven models for turbulence prediction. However, the approach taken by Wu et al. had an inherent limitation: it assumes that $ _$, the discrepancy in Reynolds stress, depends solely on physical coordinates, $$, meaning the discrepancy calibration holds only for flows within the same geometric configuration at corresponding locations. Consequently, attempts to generalize across geometries—such as from square to rectangular cross-sections—were less successful. This constraint is shared by Dow and Wang’s approach , where the Gaussian random fields they propose also directly depend on spatial coordinates.
+Although Wu's method has certain limitations, its effectiveness largely stems from defining key variables—like anisotropy and directional parameters—using the eigenvalues and eigenvectors of the Reynolds stress matrix, rather than the matrix elements directly. To overcome the limitation in Wu's calibration-prediction framework, an improved approach would construct the discrepancy functions in terms of selected feature variables $$ rather than relying on physical coordinates $$. By defining $ _$ as a function of $$, this approach aims to retain the strengths of Wu’s method while broadening the applicability of calibrated differences across a wider range of flow scenarios.
+
+In a similar direction, Duraisamy et al. utilized dimensionless flow properties for their input space, which avoids direct reliance on physical coordinates. However, their input features lacked Galilean invariance. Ling et al. addressed this by demonstrating that machine learning models perform more accurately with Galilean-invariant input features. Building on this concept, Ling and Templeton proposed a set of 12 Galilean-invariant features for use with a random forest classifier, while Wang et al. applied these features in a physics-informed machine learning (PIML) framework. This approach allowed for learning Reynolds stress discrepancies within the mean flow’s feature space, making it possible to predict Reynolds stresses in new flows without additional data.
+Wang and colleagues’ research evaluated PIML’s performance specifically in predicting Reynolds stress tensors but did not explore its impact on velocity fields. They noted several challenges, particularly in incorporating modified Reynolds stresses into a RANS solver to accurately predict mean velocity and pressure fields. The study underscored the importance of high-quality training data to produce reliable velocity field predictions. Additionally, achieving high quality Reynolds stress predictions necessitates accurate point predictions and high-quality Reynolds stress derivatives, due to the influence of Reynolds stress gradients on velocity and pressure fields. Purosawa and Thompson found that explicitly integrating the Reynolds stress tensor into numerical models can cause issues with convergence. This is because directly replacing the Reynolds stress tensor in equations leads to rapidly compounding errors, resulting in instability. To address this, they suggest incorporating implicit terms, which can help stabilize the solution when working with Reynolds stress tensors.
+
+This paper adopts the approach of Xiao, validating against channel flow with a square cross-section while aiming to enhance RANS turbulence model predictions through the integration of machine learning (ML) approaches. The research specifically focuses on employing supervised algorithms to achieve more accurate estimates of the Reynolds stress tensor in RANS modeling, utilizing a more extensive direct numerical simulation (DNS) dataset from similar benchmark problems. The goals include developing a modified RANS-based solver that integrates ML to adjust model predictions, validating this solver using established DNS data, and training a more advanced ML model, such as DeepInsight, using a validated DNS database for application to more complex flows like the FDA nozzle, which comprises three sections of simpler flows. The modified solver is built using OpenFOAM’s object-oriented framework, while the ML algorithms are implemented with TensorFlow. The PythonCAPI interface is employed to link the solver with the ML model, facilitating the transfer of both implicit and explicit corrector terms related to the Reynolds stress tensor.
+
+Methodology
+
+This section aims to investigate the process of reaching the modified RANS equations so that the effect of non-linear terms not seen in the linear eddy-viscosity assumption can be included in the Reynolds stress tensor.
+Starting from the Navier-Stokes and continuity equations, and using the Reynolds averaging method, we will reach RANS equations:
+
+ t( )+ ( )=+ ()- ()
+
+Where $$ is the mean time-averaged velocity vector, $$ is the molecular averaged stress tensor of a Newtonian fluid, and 
+$=- ^' v_j^'$
+represents the Reynolds Stress Tensor (RST).
+
+The following relation determines a Newtonian fluid's molecular averaged stress tensor.
+
+=-(p+3 ) +( +( )^T)
+
+The general form of algebraic eddy viscosity model for turbulent stresses can be expressed as :
+
+(, )=& _n=1^ G^(n) ^(n) \\
+=& G^(1) +G^(2)( - )+G^(3)(^2-3 (^2) ) \\
+&+G^(4)(^2-3 (^2) )+
+
+which $$ is the deviatoric Reynolds stress tensor , and 
+$$ 
+and 
+$$
+are rotation-rate and strain-rate tensors respectively.
+
+ = 2 k(-3 k )
+
+ = 2 ( x_j + x_i)
+
+ = 2 ( x_j - x_i)
+
+Recently, researchers have observed that solving the RANS equations with explicit Reynolds stresses can amplify small errors in the Reynolds stresses into significant errors in the mean velocity. Thompson et al. extended this analysis to flow in a square cross-section channel, substituting Reynolds stresses from several well-known DNS databases across a wide range of frictional Reynolds numbers, and observed similar convergence issues. In order to overcome convergence challenges due to explicit treatment of RST one can introduce implicit terms starting from Eq. :
+\[ = -_t^L + _t^L + \]
+
+\[ = -_t^L + _t^L + 2 k(-3 k )\]
+
+ = _t^L + [/(2 k) - /3 - _t^L ]
+
+we simplify Eq. (7) by defining a linear Reynolds stress tensor that aligns with the original definition of Reynolds stress:
+
+ = -2 _t + 3 k
+
+Based on the initial definition of the deviatoric Reynolds stress tensor, the following relation is obtained for the modeled Reynolds stress tensor:
+
+ = -2 _t + [ - ] + 3 k
+
+Therefore, with the symbolic definition of the Reynolds stress difference obtained from RANS simulation and the true DNS Reynolds stress, a relation for the modified Reynolds stress can be obtained.
+
+ = -2 _t + [(^RANS + ) - (^RANS + ^L)] + 2/3 k_m 
+
+A simple mapping function is considered based on the input variables mentioned in the Eq. , and to make it more generalized, one could impose the effects of pressure gradient and turbulent kinetic energy too .
+
+ = g(,, p, k)
+
+where 
+$ = \,, p, k\$
+is comprised of input features.
+The Ling normalization method is adopted to ensure the nondimensionality of the inputs. 
+
+As in traditional turbulence modeling, it is desirable that the form of the Reynolds stress mapping function should be invariant to changes in the coordinate system, this property should also be maintained in data-based turbulence modeling. Therefore, the form of the function
+$= g(, , p, k)$
+must be invariant under rotational and reflective transformations of the coordinate system or Galilean transformation of the reference coordinate system.
+
+To ensure the rotational invariancy of the $g$ function
+$ = g(, , p, k)$
+under arbitrary rotations of the coordinate system, the following relationship must hold:
+
+ ^T
+=
+g(
+ ^T,
+ ^T,
+ p ^T,
+ k ^T
+)
+
+where rotation matrix $$ is an orthogonal matrix with determinant 1 (i.e. $^T = ^-1$). Rotational invariancy of the trained function $g$ is guaranteed by ensuring rotational-invariant inputs and outputs.
+Hilbert's basis theorem states that for a tensor set with a finite number of members, there exists a set with a finite number of members that are invariant to the rotation mapping . Specifically for the collection
+$\, , p, k\$
+, the integration basis include the traces of all independent matrices that are formed according to the Cayley-Hamilton theorem . Applying Hamilton's theorem to this particular set will result in 47 variables.
+
+We also decompose Reynolds stress difference tensors to rotational invariant variables as the model outputs. The eigenvalue-vector decomposition (EVD) has been applied to the deviatoric part of the Reynolds stress due to the rotational invariant property of EVD:
+
+ = 2k(3+) = 2k(3 + ^T)
+
+Where
+$ = [,,]$
+is a matrix whose columns are eigenvectors of $$ and
+$=diag[_1,_2,_3]$
+is a matrix whose main diameter are the eigenvalues in which
+$_1+_2+_3=0$. Due to the symmetry of the Reynolds stress deviation matrix, the eigenvectors are orthogonal to each other. (The $$ matrix is orthonormal.)
+According to the property mentioned for the eigenvalues, these values can be mapped to the 2D barycentric coordinate system. This mapping aims to ensure the invariancy of the output variables of the mapping function. Also, from Euler's rotation theorem , we know that for two sets of arbitrary orthogonal vectors, the rotation matrix is unique. Since the eigenvectors of a two-by-two symmetric matrix are orthogonal, the RANS Reynolds stress eigenvectors can be mapped to the modified (true DNS) eigenvectors with a rotation around an axis and a certain angle in 3D. It should be noted that first the eigenvalues are arranged in order of magnitude and the eigenvectors such as each of these values are compared with the eigenvectors from the DNS simulation.
+In general, for the rotation of a vector in three dimensions around a certain axis
+$ = (u_x,u_y,u_z)$
+and the rotation angle $$, the rotation matrix is considered as follows.
+
+!$R=[ccc
+ +u_x^2(1- ) & u_x u_y(1- )-u_z & u_x u_z(1- )+u_y \\
+u_y u_x(1- )+u_z & +u_y^2(1- ) & u_y u_z(1- )-u_x \\
+u_z u_x(1- )-u_y & u_z u_y(1- )+u_x & +u_z^2(1- )
+]$
+
+To maintain the rotational invariancy, the rotation matrix can be replaced with the rotation quadrature $$.
+A rotation with angle $$ around the axis defined by the unit vector
+$ = (u_x,u_y,u_z)$ can be represented by the following quaternion.
+
+ = 2 + (u_x,u_y,u_z)2 
+
+It can be shown that the result of this period for an arbitrary vector
+$ = (p_x,p_y,p_z)$
+ is determined by the following relation:
+
+(0,') = (0,)^-1
+
+which in the above relationship, the inverse of the quaternion 
+$^-1$
+is calculated according to the following relationship:
+
+^-1 = 2 - (u_x,u_y,u_z)2 
+
+Now, by considering an eigenvector obtained from RANS simulation and assuming that the axis and rotation angle are known, the modified eigenvector (DNS) can be obtained.
+According to Euler's rotation theorem, we know that the period matrix is unique for two sets of arbitrary orthogonal vectors. On the other hand, the eigenvectors of a two-by-two symmetric matrix are mutually orthogonal, and therefore only one axis and one rotation angle will determine the proper rotation of all three eigenvectors, which, taking into account the unity of the rotation axis, the variables $u_x$,
+$u_y$
+ and $$ are added to the outputs of the transformation function.
+
+ Pre-processing on eigenvectors\\
+Since the negative of an eigenvector is also the eigenvector of an eigenvalue, and in the process of eigenvector calculation for RANS and DNS simulations, there is a possibility of encountering eigenvectors with an angle difference greater than $90^$, it is necessary to present a process which, if necessary, replaced a eigenvector with its negative. After sorting the eigenvectors based on the magnitude of their corresponding eigenvalues, the inner product of the first eigenvectors obtained from RANS and DNS and the negative DNS is calculated and the product of the inner product specifies the correct direction of the desired eigenvector.
+Also, to ensure that the group of eigenvectors is right-handed and considering the orthogonality of the eigenvectors in this problem, the third eigenvector is calculated from the outer product of the first two eigenvectors.
+
+Optimum value of turbulence viscosity
+
+In this section, a method for calculating the optimal value of the only remaining variable from the variables required to close the Eq. , i.e. $_t$ is introduced. In fact, the goal is to obtain the turbulence viscosity to minimize the difference between the correct Reynolds stress and the Reynolds stress resulting from Boussinesq's hypothesis $-2_t$.
+
+Therefore, the desired optimization problem is according to the following relationship:
+
+_t^L = __t ||R_dev + 2_t S||
+
+The algebraic details of solving this optimization problem are given below.
+$$
+d_t ||R_dev + 2_t S||^2 = 0 d_t tr(R_dev R_dev^T + R_dev2_t S^T + 2_t S R_dev^T + 4_t^2S S^T) =0
+$$
+
+_t = -1/2 :S||S||^ 2
+
+in which
+$R_dev:S$ indicates double dot production.
+
+ML networks used as RST mapping function
+
+Here is the improved version of your paragraphs, with grammar and flow enhancements while preserving the meaning and all LaTeX syntax:
+
+In this research, multiple neural networks were employed to predict output variables corresponding to tensors $ $, $ ^L$, and optimal turbulence viscosity $_t$. Various machine learning architectures, including Multi-Layer Perceptrons (MLP), Convolutional Neural Networks (CNNs) utilizing DeepInsight to transform vector feature sets into 2D feature images, and Random Forests, were implemented. Mutual validation and grid search were conducted to fine-tune the hyperparameters effectively.
+
+To ensure that the third component of the rotation axis vector is real, the following relationship must hold for the first two components:
+$$
+u_x^2 + u_y^2 1
+$$
+A correction term is added to the loss function to enforce this constraint. Typically, the correction term is designed as the sum of a least squares function for regression applications. The final form of the proposed cost function is given as follows:
+
+Loss = MSE + (ReLU(u_x^2+u_y^2-1))
+
+The DeepInsight method is proposed to transform non-image samples into an organized image form. This transformation enables the use of Convolutional Neural Networks (CNNs), including GPU acceleration, for non-image datasets. While the order of features has no direct effect on methods such as random forests, decision trees, or MLPs, the reliability of these methods often depends on the feature extraction techniques employed.
+
+In contrast, a CNN architecture accepts input as an image (i.e., a matrix of size $m n$) and performs feature extraction through hidden layers, such as convolutional layers, ReLU layers, and max-pooling layers. One significant advantage of this approach is its ability to uncover higher-order statistical features and nonlinear correlations within the data.
+
+By considering the relationships among neighboring points, CNNs achieve a richer representation compared to traditional machine learning models that process points independently. The DeepInsight method leverages this capability by integrating three steps: element arrangement, feature extraction, and classification. It transforms data into images by grouping similar features close together and placing dissimilar features farther apart. This spatial arrangement enables the model to more effectively utilize contextual information, uncovering underlying patterns such as pathways or feature relationships that might otherwise remain hidden.
+
+For instance, a feature vector $x$ is converted into a feature matrix $M$ through a transformation $T$. Each feature’s position in the image is determined by its similarity to other features in the dataset. This arrangement in Cartesian coordinates provides a visual representation that highlights the relationships among features.
+
+Results and Discussion
+
+Square Channel Flow
+
+First, both the training and the testing stages are applied to the fully developed, incompressible, and isothermal flow inside a channel with a square cross-section. The objective is to improve RANS simulations and achieve more accurate secondary flows predictions. An MLP is trained using DNS data and RANS simulations at a Reynolds number of $Re=2900$ to provide implicit and explicit terms in the modified equation . This trained model is then applied to predict flow behavior at a higher Reynolds number of $Re=3500$.
+
+The results of the RANS simulation for the secondary flow in the channel with a square cross section, obtained using two models $k-$ and LRR are shown alongside the DNS reference data in Fig. . It is evident that the $k-$ model fails to accurately predict the secondary currents, and the results from the LRR model also deviate significantly from the DNS reference data.
+
+According to the previous section, from the 4 basic tensors i.e.
+$ = \,, A_p, A_k\$
+and 3 scalars which all are obtained from simulation RANS, 47 secondary invariants are obtained. The trace of the first six matrices from the set of 47 matrices, which are 
+$^2$
+,
+$^3$
+,
+$_p^2$
+,
+$_k^2$
+,
+$^2$
+and
+$^2^2$
+are shown in Figs -.
+
+The difference of the eigenvalues mapped on the barycentric coordinate system can be calculated first to construct a set of output variables. Figs
+
+ and
+
+ are indicating this difference.
+
+Also, for better intuition and understanding, the eigenvectors of deviatoric Reynolds stress have been compared for the point
+$y,z=0$. It is known that for each simulation mode, due to the symmetry of the deviatoric Reynolds stress matrix, the eigenvectors are orthogonal, which can be seen in the figure below.
+According to the relation , the angle and axis of rotation necessary to convert the feature vectors obtained from RANS simulation to DNS can be calculated, which are shown in Figs.
+
+ and
+
+ are shown.
+
+A multi-layer perceptron neural network was chosen for this problem in which the number of neurons of different layers and the activation functions are given in tables
+
+and
+.
+In Fig. graphs of the cost function are drawn.
+
+The results of applying the algorithm with the trained MLP on $Re = 2900$ will be utilized for both $Re = 2900$, and $Re = 3500$. Velocity profiles obtained from RANS and DNS simulation are compared for both Reynolds numbers in the Figs. 
+
+. The effectiveness of the PIML method is assessed at the lower Reynolds number ($Re = 2900$) by evaluating its corrections to the secondary flow velocities $$ and $$, compared to results from RANS and DNS (Figures and ).
+
+The velocity profiles as a function of the distance from the wall for $Re = 3500$ are shown in Figs. and . The modified PIML equation was solved using terms predicted by the MLP trained on $Re = 2900$. Additionally, the convergence and changes across successive iterations are illustrated in Fig. for $$. It is important to note that in each iteration, the simulation outputs are fed back as inputs to the MLP, updating the correction terms $$, $_L$, and $_t^L$.
+
+Figures and compare the $_yy$ and $_zz$ components of the Reynolds stress tensor obtained from PIML, RANS, and DNS across three stages. The graphs indicate that the Reynolds stress predicted by the machine learning-modified equation for both components moves closer to the DNS data.
+
+Available DNS Datasets and Turbase Converging-Diverging Channel
+
+A comprehensive search of available DNS datasets has been conducted, categorizing them based on whether the reported variables are time-averaged or provided as a time series. The physical similarity between the datasets and the target problem is also considered, excluding cases involving energy, state, or multiphase flow equations. Among the identified datasets, the flow in a converging-diverging channel was selected due to its relevance. The physics of blood flow in the target nozzle closely resembles the behavior in a converging-diverging channel, making it suitable for training a network to improve RANS simulations.
+
+As part of this work, DNS data from the European project WALLTURB was chosen as the reference dataset. To provide input features for the PIML network, RANS simulations must first be performed. The selected dataset contains data from two direct numerical simulations of flow within a convergent-divergent channel. These cases were designed using a geometry similar to that employed by the Lille Mechanics Laboratory (LML) in various experiments focused on turbulence analysis under pressure gradients.
+In the figure RANS and DNS velocity fields are shown for several sections simultaneously in terms of distance from the wall.
+
+By taking similar approach as we took for the square-cross section channel flow, difference of mapped eigenvalues to the barycentric coordinate have been calculated and the variations over the domain are shown in below.
+
+By applying the t-SNE dimensionality reduction technique, the feature set $G$ has been transformed into a two-dimensional plane. The points of this Cartesian plane are features. These points only specify the location of the features, and after determining the location, Hall's convex hull algorithm is used to find the smallest rectangle containing all the points. Since the image must be horizontal or vertical for the convolutional neural network architecture, a rotation is performed. Then, the features are averaged to convert the Cartesian coordinates to values per pixel of the image.
+In order to use this method,a hyper-parameter called multiplexity, which determines the effect of local and non-local aspects of the data, must be determined. This parameter is, in a sense, a guess about the number of nearest neighbors of each point. 
+
+In Fig. , the velocity along the z-axis obtained from the RANS simulation is compared with PIV laboratory results at different cross-sections. 
+
+Viscous shear stress magnitude in an incompressible Newtonian fluid is calculated according to the following equation:
+
+|| = 2 |S_ijS_ij|
+
+These figures illustrate the complexities of shear stress behavior in the studied device, reiterating the need for precision in RANS modeling to ensure the high accuracy of predicted blood damage factors.
+
+Conclusion
+
+In this paper we tried to improve RANS simulation by taking advantage of the high potential of data-oriented learning algorithms. For this purpose, a new solver based on the modified RANS equation with 3 correction variables was developed. The first correction variable was included in an implicit expression with the title of optimal turbulence viscosity. Two other corrective variables were entered into the flow equations directly from the artificial neural network.
+To check the accuracy of the performance of the developed algorithm and solver, the flow in the channel with a square section was chosen. This choice was made due to the shortcomings of the common RANS models in simulating the secondary flows in the channel with a square section. By using DNS data at a lower Reynolds number of 2900 and using a multi-layer perceptron neural network, the invariant features obtained from RANS as input, and the angles and rotation vectors of the transformation of the eigenvectors of the Reynolds stress tensor RANS to DNS, the barycentric differences of the eigenvalues of the two stress matrices Reynolds RANS and DNS, as well as optimal turbulence viscosity were used as outputs of the multilayer perceptron network. By applying the trained network on a higher Reynolds number of 3500, the modified flow field was obtained and by comparing with the DNS simulation data, the good performance of the algorithm was observed. This observation can be promising for the application of this approach in reducing the cost of calculations by reducing the number of elements of the solution network.
+
+Considering that in DNS simulation, the distance of the first cell from the wall is determined depending on the flow conditions such as the Reynolds number, with the present algorithm, the flow in the desired geometry can be simulated at a lower Reynolds number with fewer elements, and from its results to train the network Artificial neural and combined with the developed algorithm used in this thesis.
+
+Next, the comprehensiveness and extrapolation capability of the learned network with DNS data of problems with different geometries from the target problem was investigated. It was investigated by considering 3 different geometries, each with similar flow physics to the 3 sections of the FDA standard nozzle. For all three problems, by performing RANS simulation, the feature vector was converted into a feature image with the DeepInsight algorithm. By examining the image of the features obtained for different points of the solution network, it was determined that the network outputs are sensitive to the input features. In fact, the features
+ $^2^2$
+ And
+$^2$
+ And
+ $$
+ The main representative of changes and variables with high sensitivity were identified in three basic learning problems. Also, by choosing the DeepInsight algorithm, it became possible to use the convolutional neural network.
+Finally, the trained network was implemented on the US Food and Drug Administration standard nozzle problem, and by performing RANS simulation and forming input feature vectors, modified flow fields (determining viscous stresses) and Reynolds stress were obtained. The instant communication of the solver in each iteration with the artificial neural network to update the correction variables caused a quasi-unstable behavior in the final solution. By averaging the results of different iterations, we reached the flow field with a much smaller difference than the RANS simulation with the experimental results. The modified stress and flow field can be used to solve the hemolysis criterion transfer equation with the Eulerian approach and using the power model.
+
+In order to follow up the current research, the following suggestions are made.
+
+ The use of the developed algorithm in reducing the computational costs of DNS simulation should be investigated more closely. In fact, by specifying the flow conditions (e.g. Reynolds number) of the target, DNS simulations can be performed at lower Reynolds numbers and the performance of the algorithm in predicting and reducing the computational cost due to increasing the size of the solution grid elements can be checked. \\
+ Also, by simulating DNS on benchmark issues that are not listed in the table, it is possible to generate new benchmark data and learn a new neural network with the ability to extrapolate to more diverse issues.\\
+ In hemolysis modeling, other models can be used instead of the power model. Also, the effect of the Lagrangian approach instead of the Eulerian approach in simulating the hemolysis criterion with the modified flow field should be investigated.
+Loss-based approaches can also be used in the simulation of the hemolysis criterion in the turbulence flow regime.

@@ -1,0 +1,370 @@
+[caption=false]subfig
+[utf8]inputenc 
+[T1]fontenc 
+[hidelinks]hyperref 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+
+[numbers,sort&compress]natbib
+
+ 
+
+$, P.E. Lapenna$^b$, F. Creta$^b$ and I. Langella$^a$ \\
+ $^a$Faculty of Aerospace Engineering, TU Delft, Kluyverweg 1, 2629 HS, Delft, Netherlands \\
+ $^b$Department of Mechanical and Aerospace Engineering, Sapienza, University of Rome, \\ Via Eudossiana 18, 00189, Rome, Italy \\
+ a.porcarelli@tudelft.nl \\
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+This study presents a comprehensive a priori analysis of tabulated-chemistry models for both laminar and turbulent lean premixed hydrogen flames in strained counterflow configuration. Particular focus is drawn on differential and preferential diffusion effects and the synergistic interaction of thermodiffusive instabilities and turbulence that existing models struggle to capture. Through detailed assessment of various modelling approaches at unfiltered and filtered grids, we identify significant limitations in traditional unstretched flamelet manifolds, particularly their strong filter dependence and systematic reaction rate mispredictions. To address these challenges, we introduce and evaluate novel strained flamelet approaches, including: (1) a one-dimensional manifold constructed from a single strained flamelet that provides computationally efficient and reliable consumption speed predictions at coarser grids, and (2) a two-dimensional manifold combining fixed strain with varying equivalence ratio that demonstrates improved performance in predicting the local reaction rates across multiple grid resolutions. Additionally, we develop a correction methodology derived from laminar simulations that significantly improves consumption speed predictions of unstretched flamelet manifolds in turbulent settings. Unlike previous works, our solutions maintain computational efficiency without increasing manifold dimensionality, keeping memory costs unchanged. These advancements provide guidance for developing reliable LES models that properly account for differential and preferential diffusion and strain effects in practical hydrogen combustion systems.
+
+hydrogen; strained flames; tabulated-chemistry; presumed filtered density function (FDF); F-TACLES
+
+Introduction
+ 
+Hydrogen technologies have gained significant momentum recently, offering a carbon-free solution for sectors where electrification is challenging, such as aviation and other transportation industries~. Within the realm of hydrogen applications, recent scientific advancements focus on fully~ or partially~ replacing hydrocarbon fuels with hydrogen in combustion systems. However, stoichiometric hydrogen flames exhibit higher adiabatic flame temperatures than traditional fuels, leading to increased emissions of harmful nitrogen oxides (NO$_ x$). To meet emission regulations, recent research has concentrated on studying hydrogen combustion under lean premixed conditions, where lower adiabatic flame temperatures reduce NO$_ x$ formation across the thermal route~. Due to its high reactivity and lower heating value, hydrogen is ideal for attaining ultra-lean combustion regimes while avoiding the risk of lean blow-off~. Nevertheless, lean hydrogen flames present challenges such as very high flame speeds~, auto-ignition phenomena~, and the onset of thermodiffusive instabilities~, complicating flame control and flashback prevention.
+
+Within this framework, it is essential to rely on cost-efficient, yet accurate CFD simulations to aid the design of novel and safe lean premixed hydrogen combustion systems. Flamelet-based tabulated-chemistry models have been extensively explored and applied to practical cases. They are based on the assumption that universal local laminar-like structures appear across a turbulent flame front. Due to hydrogen's unique high-diffusivity characteristics, however, existing tabulated-chemistry large eddy simulation (LES) models assuming unity Lewis number (Le) need to be modified to account for differential and preferential diffusion, the possible onset of thermodiffusive instabilities, and for their potential interaction with turbulence~. 
+
+Various tabulated-chemistry formulations based on two controlling variables, namely progress variable and mixture fraction, have been proposed in the literature to account for differential and preferential diffusion at the resolved scales in laminar conditions. Regele et al.~ first introduced a modified mixture fraction equation by including a progress variable dependent source term and considering Le$1$ for the fuel only. This approach was later extended by Schlup and Blanquart~ to incorporate a full mixture-averaged transport formulation and including thermal diffusion effects.
+Another proposed formulation consists of introducing additional terms in the diffusive fluxes of the transported controlling variables 
+. This approach was tested only recently with good success to pure hydrogen flames in partially premixed~ and fully premixed conditions~.
+Mukundakumar et al.~ proposed a different formulation obtained by inverting the order of the operations performed to reconstruct the diffusive transport terms of the controlling variables, and assuming constant non-unity Lewis numbers. 
+Another approach is the composition space method first introduced for unstretched premixed flamelet manifolds~ and then extended to strained and curved premixed flamelets~. The extended formulation was tested with good success over spherically expanding lean premixed hydrogen flames at atmospheric~ and elevated~ pressure, but required a four-dimensional manifold, which is computationally demanding. Reduced manifold formulations have been also attempted for the same 
+modelling framework by using unstretched flamelets with varying reactants temperature~ and curved (unstrained) flamelets~.
+
+Further challenges for tabulated-chemistry models of lean hydrogen flames arise at subfilter scales due to the presence of thermodiffusive instabilities. Indeed, differential diffusion effects in sufficiently lean hydrogen/air mixtures lead to intrinsically unstable flames due to thermodiffusive mechanisms~, as the mixture's effective Lewis number drops below the critical threshold Le$_0$ established analytically by Bechtold and Matalon~. Recent studies have addressed these challenges by tabulating data from filtered direct numerical simulations (DNS) performed over the same flame setup~, and introducing an algebraic laminar wrinkling factor to correct the filtered consumption speed to model the effect of subgrid thermodiffusive instabilities over resolved scales~. While this approach was successful in the framework of one-step chemistry simulations~, it still needs improvement in a detailed-chemistry framework~.
+
+The accurate modelling challenges posed by subgrid thermodiffusive instabilities in a large eddy simulation framework become even more pronounced in turbulent flames. Indeed, even if the typical cellular structures are not directly observable due to the instantaneous flame perturbation by turbulent eddies, intrinsic flame instabilities continue to influence flame dynamics. 
+Direct numerical simulations~ and experiments~ suggested that thermodiffusive instabilities feature a synergistic interaction with turbulence in enhancing hydrogen reactivity and consumption speed. Although these synergistic effects have been proved to progressively vanish with higher and more practical Karlovitz numbers~, the flame reactivity still increases due to hydrogen's response to strain triggering a local flame enrichment~. 
+
+In the context of LES with presumed filtered density functions (FDF), 
+extensions 
+
+of the formulations of Regele et al.~ and Mukundakumar et al.~ have been proposed with discrete success by Berger et al.~, Kai et al.~ and Ferrante et al.~, respectively. In these works the reaction rates were obtained from unstretched premixed hydrogen flamelets with varying equivalence ratio, tabulated as a function of progress variable and mixture fraction. However, a recent a priori study performed by Böttler et al.~ indicated that a simple two-dimensional unstretched flamelet manifold exhibits limitations in capturing the local thermochemical states in thermodiffusively unstable and turbulent conditions even at the DNS scale. The authors showed that the local error of the tabulated quantities can be significantly reduced through a novel higher-dimensional flamelet manifold consisting of five control variables and considering around 26000 strained and curved flamelets. However, this solution appears very memory-demanding. 
+
+In the present work, a comprehensive a priori analysis is performed over an intrinsically unstable laminar and turbulent lean premixed hydrogen flame with differential and preferential diffusion testing a variety of up to two-dimensional manifolds at both unfiltered and filtered grids. The filtered reaction rate is found from the manifolds with the presumed $$-FDF approach~, with an additional comparison to the one obtained with the F-TACLES approach~ in unstretched flamelets manifolds. Although further limitations are highlighted for unstretched flamelets manifolds at the filtered grids, two solutions are proposed to significantly reduce the modelling error over a range of filters without increasing the manifold dimension. The first consists of correcting the consumption speed predicted by the unstretched flamelet manifold in the turbulent case with a correction function extrapolated from the laminar a priori analysis as a function of the filter width. The second evaluates two strained flamelet approaches: (1) a single counterflow premixed flamelet at a chosen strain rate, and (2) a novel premixed counterflow flamelet manifold at fixed-strain and varying equivalence ratio. Indeed, mean strain rate has been recognised as the main driver of the increased overall flame reactivity experienced in turbulent lean premixed hydrogen flames as it triggers an enrichment of the conditional mean of mixture fraction over the progress variable~. The capability of strained flamelets to reproduce this shifted profile of mean mixture fraction towards richer states has been already suggested by Berger et al.~ through DNS studies at a bulk Reynolds number of 11000. Unlike the work of Berger et al.~, however, where the total mean strain rate was solely a function of shear-driven turbulence, this study employs a counterflow premixed flame configuration with a varying applied strain rate~. This configuration offers two main advantages. First, it allows the extrapolation of the effect of increasing mean strain rate on modelling error and its filter dependence from the laminar flame a priori analysis. Second, in the turbulent setting, it enables the isolation of the effects of turbulence-driven mean strain and configuration-driven mean strain, thereby providing insights into their impact on the predictions of the tested models.
+
+This paper is organised as follows. The computational setup and the tested tabulated-chemistry models are discussed in Section~, reporting the setups of the two-dimensional laminar (Section~) and the three-dimensional turbulent (Section~) DNS datasets, the equations of the Gaussian filter applied (Section~), and a complete account of the tabulation models (Section~). A priori analysis results in terms of local reaction rate error and consumption speed are discussed next in Section~. First, the laminar flame results are reported (Section~). Afterwards, the turbulent flame results are shown including the irreducible error and modelling error (Section~). The choice of the fixed strain rate for the manifold of counterflow flamelets is the discussed in Section~. Last, the proposed correction function to improve the prediction of the consumption speed from unstretched flamelet manifolds as a function of the filter width in turbulent flames is discussed (Section~). Finally, conclusions are provided in Section~.
+
+Computational setup and tabulated-chemistry models
+ 
+A priori analyses are performed using existing laminar two-dimensional data from Porcarelli et al.~ and turbulent three-dimensional data from Fathi et al.~. These two simulations are chosen because they both consist of the same strained counterflow configuration with the same inflow conditions (and thus flame setup), and similar ranges of strain rates are established, thus allowing for a meaningful comparison between the laminar and the turbulent cases. The flame setups are described in detail below.
+
+2D laminar setup
+ 
+The laminar DNS setup consists of a two-dimensional counterflow flame in reactants-to-products configuration as sketched in Figure~. 
+
+Lean conditions are established at an equivalence ratio $= 0.5$ and the reactants temperature and pressure are fixed respectively to $T_r=300$ K and $p=1$ atm. Detailed kinetic data of reactions are taken from the Conaire chemical mechanism~. The nominal applied strain rate is defined as 
+
+ 
+ a = L,
+
+where $L=2$ cm is the domain length, $u_r$ and $u_p$ are the velocity at the reactants and products boundary, respectively~. Three levels of nominal strain rates are considered in this study: $a=706.85$ s$^-1$, $a=1447.5$ s$^-1$, and $a=3633.5$ s$^-1$. Further information on the solver and the setup can be found in~. At these levels of strain rate, it was shown that thermodiffusive instabilities are suppressed, resulting in a planar flame front once steady state is achieved~. The a priori analysis is performed for each case at different applied strain rates over a sample steady-state, planar simulation snapshot. Note, however, that variations with respect to the states of an unstretched laminar flame are still present due to the presence of different strain rates, leading to super-adiabatic temperatures (see Fig.~) and super-equilibrium products, thus still challenging the tested models.
+
+3D turbulent setup
+ 
+The turbulent DNS setup consists of a three-dimensional counterflow flame in reactants-to-products configuration. A cross-section of the setup can be observed in Figure~. The setup features periodic boundary conditions over the z axis, so that the complete computational domain should be considered an `extrusion' of the counterflow section reported by $L_z=3$ mm. 
+
+The same equivalence ratio, reactants temperature, and pressure conditions are considered as in the laminar case, while detailed kinetic data of reactions are taken from a combination of the hydrogen skeletal mechanism from Sanchez and Williams~ and the NO$_ x$ module from Capurso et al.~. An inflow boundary with homogeneous isotropic turbulence is superimposed using the digital filter method at the reactants side of the counterflow. The average inflow velocity is kept fixed at all cases, such that a Karlovitz number of $ Ka = (l_t/_f)^-1/2(u^/s_L)^3/2 = 3.143$ is achieved, where $l_t$ is the integral length scale, $_f$ is the flame thickness, $u^$ is the root-mean-square velocity, and $s_L$ is the laminar flame speed. The nominal applied strain rate, also referred to as "bulk" strain rate, is changed by adjusting the products inlet velocity (see Eq.~), whose inflow is kept laminar. This way it is possible to increase the bulk strain rate while keeping unaffected the level of turbulence withstood by the flame. Two different levels of bulk strain rate are considered in this study, a=2000 s$^-1$ and a=5000 s$^-1$. The a priori analysis is performed over an instantaneous field at a sample time step. Given the three-dimensional flame setup counting $$16 millions grid points, a single time step is sufficient to collect statistically representative thermochemical state sampling. For a complete description of the solver and the setup, along with the simulation results analysis, the reader is referred to Fathi et al.~. 
+
+Filtering of DNS dataset
+ 
+The DNS dataset is filtered using a spatial convolution with a homogeneous isotropic filter function~:
+
+ 
+ (,t) = _-^ (-,t) G(; ) d,
+
+where the filter function $G$ is taken as a Gaussian filter, and depends on the filter width $$. 
+
+In order to be consistent with LES formulations, the Favre filtering for a generic quantity $$ is introduced as $ = /$. 
+The Favre-filtering is then applied to progress variable $c$ and mixture fraction $z$, while the density and the reaction rates (in kg/m$^3$/s) are filtered using the conventional Reynolds filter.
+
+A range of filters widths around the laminar flame thickness is applied to the DNS dataset. This range is reported in Table~ for the different cases at different applied strain rates analysed in this work, along with corresponding flame thicknesses. Note that the same ratio $/_f$ is kept for different cases. Also, the largest filter size used in the laminar cases of $=4_f$ could not be achieved for the turbulent cases due to the smaller domain size in the latter, leading to a very coarse filtered grid.
+
+Tabulation approach
+ 
+
+In this work, three different types of flamelet manifolds are considered as follows, and summarised in Table~. 
+
+ A single counterflow reactants-to-products strained flamelet at the nominal equivalence ratio $=0.5$ (1DS). On the unfiltered grid, this one-dimensional manifold is parametrised with a progress variable $c$. The applied strain rate in the flamelet is the same as that of the DNS for the 2D laminar cases. In the turbulent cases the strain rate experienced by the flame varies in space and time as it is a combination of applied and turbulence-driven strain. Therefore, the applied strain rate on the flamelet is chosen so that the tangential strain on the flamelet is close to the conditional mean estimated from the DNS~[see][Fig. 7]fathi2025strain; 
+ 
+ 
+ A manifold of 300 unstretched premixed flamelets with equivalence ratio varying from $=0.3$ to $=1$ (2DU). On the unfiltered grid, two-dimensional manifold is parametrised with a progress variable $c$ and a mixture fraction $z$. 
+ 
+ A manifold of 300 reactants-to-products counterflow flamelets at the same fixed applied strain rate and with equivalence ratio varying from $=0.3$ to $=1$ (2DFS). The value of applied strain rate is chosen here as for the 1DS case. 
+ 
+ On the unfiltered grid, the resulting two-dimensional manifold is parametrised with a progress variable $c$ and a mixture fraction $z$.
+
+Note that while higher dimensional manifolds are possible, they are not considered in the present work where the objective is to ensure 
+that potential LES based on these manifolds remain efficient in terms of computational time and memory requirements (note that the manifold dimension will increase in the case of filtered meshes, see Secs.~ and~). 
+
+The flamelet manifolds are computed with Chem1D~. In the counterflow cases, the reactants and products velocities are computed from the imposed fixed strain rate $a$ as:
+
+ u_r = 1+_p, u_p = u_r _p,
+
+where $L=2$ cm is the domain length and subscripts $r$ and $p$ refer to reactants and products streams respectively.
+The progress variable used in the present a priori analysis is based on the hydrogen fuel, $c= 1-Y_ H_2/Y_ H_2,r$, where $Y_ H_2,r$ denotes the mass fraction of hydrogen in the reactants at the nominal equivalence ratio. This choice guarantees the monotonicity of the progress variable across the flamelet for the lean conditions investigated here, which is not the case for other choices.
+
+The Bilger's definition is used for the mixture fraction~:
+
+ 
+ z = 2 W_ H (_ H - _ H,p) - W_ O (_ O - _ O,p)2 W_ H (_ H,r - _ H,p) - W_ O (_ O,r - _ O,p),
+
+where $W_k$ is the molar mass of element $k$, $_ H$ and $_ O$ are the elemental mass fractions of monoatomic hydrogen and oxygen, respectively, and the subscripts $r$ and $p$ indicate reactants and products side of the flamelet. 
+
+Additional controlling variables are needed when the DNS dataset is filtered, emulating the subgrid turbulence-flame interaction in a LES. This work mainly evaluates the presumed filtered density function (FDF) approach with $$-FDF, with additional comparisons to the performance of the filtered tabulated-chemistry approach for LES (F-TACLES) in the context of 2DU-type manifolds.
+
+These approaches are discussed next.
+
+ 
+The performance of different manifolds based on the presumed FDF approach for LES is assessed a priori.
+The filtered reaction rate in the presumed FDF approach can be written as~:
+
+ 
+ = _0 ^1 _0 ^1 (, ) (, ) (, ; , , ^2_c, sgs, ^2_z, sgs) d d,
+
+where $$ and $$ are the sample space variables of progress variable and mixture fraction, respectively, $_c, sgs=-^2$ and $_z, sgs=-^2$ represent the subgrid variance of $c$ and $z$, respectively, and $(, ; , , ^2_c, sgs, ^2_z, sgs)$ is their joint FDF (sometimes referred to as subgrid probability density function, PDF). In LES of hydrocarbon fuels 
+
+$z$ only describes the local mixing of fuel and oxidizer, and 
+$c$ and $z$ can be treated as statistically independent~.
+
+However, this is not the case in hydrogen flames, where local fluctuations of mixture fraction across the flame front are present due to 
+preferential diffusion. Following the methodology proposed by Berger et al.~, it is therefore convenient to introduce a flamelet index $_ FL$. For every flame state described by $(c,z)$, $_ FL$ represents the nominal equivalence ratio of the corresponding flamelet in the chosen manifold, so that $_ FL = f(c,z)$ is a bijective function and can be tabulated from the manifold itself. Unlike the mixture fraction, this quantity is conveniently independent of the progress variable, as it is basically a `label' of each 1D flamelet forming the manifold.
+This allows to assume statistical independence between $c$ and $_ FL$:
+
+ 
+ (,;,_ FL,^2_c, sgs,^2__ FL, sgs) = (;,^2_c, sgs) (;_ FL,^2__ FL, sgs),
+
+where $$ is the sample space variable of the flamelet index. The validity of this assumption has been also confirmed with good approximation from the DNS data of this study (not reported) and previous works (e.g. see~). In the present study, the $$ shape is tested as presumed FDF for the progress variable space, as it showed good performance in the thin reaction zone regime of the Borghi's diagram~ (which is the regime for the turbulent flames here), while other choices are remanded to future studies. 
+A delta-function is chosen instead for $()$ since the subgrid variance of mixture fraction is negligible for the cases under investigation. 
+
+Therefore, the tabulated filtered reaction rate is expressed as $(,^2_c, sgs,_ FL)$. 
+
+Note that, since $_ FL$ is implicitly determined by $$, 
+
+ 
+ = _0 ^1 z(, _ FL) (; , ^2_c, sgs) d.
+
+then the filtered reaction rate in Eq.~ still depends on the set of initial parametrisation variables $$, $^2_c, sgs$ and $$. 
+
+Also, since $$ increases monotonically with $_ FL$, the latter can be re-interpolated in the functional form $(,^2_c, sgs,)$. The importance of this final step, which has been controversially omitted in some of the existing studies~[see][for example]ferrante2024differential,kai2023flamelet,fortes2025large, is discussed in Section 3 of the supplementary material.
+
+ 
+In this approach the filtered reaction rate in a LES is obtained by spatially pre-filtering the reaction rate from the laminar solution~, i.e.
+
+ 
+ = ()^* (, , ),
+
+where $^*$ denotes the pre-filtered laminar reaction rate and $$ is the chosen LES filter width. To account for the subgrid wrinkling at the filtered scales in the turbulent flames, the subgrid scale wrinkling factor $$ is introduced, which is found from the filtered DNS data as~:
+
+ 
+ () = _u s_L | |,
+
+where $$ and $s_d=| c|Dt$~ are the local density and displacement speed, respectively, $_u$ is the density of the unburnt reactant mixture, and $s_L$ is the laminar flame speed of the unstretched flamelet at $=0.5$.
+
+Attempts to incorporate counterflow strained flamelets within the F-TACLES approach are documented in literature for non-premixed~ and partially premixed~ setups. However, they are not applicable in the framework of this work assessing fully premixed counterflow flamelet manifolds. Therefore, this approach is only employed in the context of unstretched flamelet manifolds, which is well-established in literature also for hydrogen flames~.
+
+Results
+ 
+
+Laminar flames
+ 
+The 2D DNS dataset of laminar flames is assessed first in order to evaluate the robustness of the tabulation approaches proposed in Section~ without turbulence. Note that as the filter size increases, $^2_c,sgs>0$ even in the case the flame is laminar. The full list of cases assessed is provided in Table~. Additional cases testing the 2DSF-type manifolds (see Table~) can be found in Section 1 of the supplementary material.
+
+ 
+In this section, the ability of the fixed-strain manifold (first three cases in Table~) to reproduce the states of a two-dimensional laminar and strained lean premixed hydrogen flame is tested. 
+The fuel source term $_ H_2^M$, filtered and unfiltered, is reconstructed by entering the flamelet manifold with the controlling variables indicated in Table~. The modelled consumption speed is thus computed as
+
+ 
+ S_c^M = _u Y_ H_2,u L_y _A _ H_2^M dA,
+
+where $L_y=2$ cm is the stream transversal length of the domain, and is compared to the one obtained directly from the DNS data, $S_c, DNS$. Results are shown in Figure~ for increasing filter widths and three levels of applied strain.
+
+The graph shows that the relative error is below 5\
+
+The error rapidly increases for filter sizes $>_f$, which is due to the limitations of the $$-FDF in mimicking the asymptotic bimodal behaviour at large filter sizes~. Interestingly, this overestimate appears to be reducing at increasing strain rates, the reasons for which are discussed in Section 2 of the Supplementary Material. 
+
+ 
+In this section, the ability of a manifold of unstretched flamelets at varying equivalence ratio to reproduce the states of the two-dimensional laminar and strained lean premixed hydrogen flame front is assessed for three levels of applied strain (fourth to ninth case in Table~). For this manifold type, we compare results from the presumed FDF to those of the F-TACLES subgrid model to distinguish whether the observed errors stem from parametrisation inaccuracies or from the subgrid closure itself.
+
+The results are shown in Figure~. 
+
+Unlike the cases with fixed-strain manifold discussed in Section~, the modelled consumption speed shows a 20\
+Except for the case at lowest applied strain and presumed FDF approach, the error on filtered meshes overall tends to decrease for increasing filter sizes regardless of whether using the $$ presumed FDF or the F-TACLES approach. Although this might seem as an improvement at moderate filter sizes, for all these cases the ratio between modelled and DNS consumption speed becomes eventually smaller than unity and keeps decreasing as the filter size increases. This suggests that the small error found for $ _f$, in particular for the F-TACLES cases, is rather due to compensation of effects. 
+Note also that the ratio of consumption speeds in the cases of the $$-FDF becomes negative for the two highest applied strain cases despite the known tendency of the $$-FDF methods to overestimate $S_c$, suggesting that the errors introduced by the unstretched thermochemical states play a stronger role. 
+
+In order to understand what regions of space across the flame contribute more to the discrepancies on the consumption speed, the relative error between the fuel reaction rate from the DNS (unfiltered, $_ H_2^ ref$, or filtered, $_ H_2^ ref$) and that reconstructed from the manifold, is shown in Figure~. The relative error is computed as
+
+ 
+ _rel (_ H_2) = _ H_2^M - _ H_2^ ref max ( _ H_2^ ref ).
+
+For the unfiltered mesh, the overestimate of the reaction rate is stronger in the region of higher progress variable, which corresponds to the region of super-equilibrium products, where the mixture fraction in a lean strained flame also goes above its nominal value~. This suggests that within an unstretched flamelet manifold, the mixture fraction variations, which correspond to transitions toward richer flamelets, fail to accurately capture the strain-induced reaction rate changes, resulting in an overestimation of reaction rate. Similar considerations can be extended to the reaction rate changes in a positively-curved flame front, which exhibit an overshoot of $z$ at high progress variables similar to that induced by strain.
+
+For filtered meshes ($>0$) a similar overestimate of the modelled reaction rate is observed for large values of progress variable. 
+However, an underestimation is also observable for both presumed FDF and F-TACLES approaches at low values of progress variables, corresponding to regions where the mixture fraction falls below the nominal value in lean strained flames~. 
+
+These regions of underestimation of reaction rate compensate for the overestimation in the region of super-equilibrium (and superadiabaticity), explaining the relatively small errors on the consumption speed at moderate filter sizes observed in Figure~. 
+The region of underestimate becomes dominant at larger filter sizes and higher strain rates, leading to larger and larger underestimation of the consumption speed. Since the same behaviour is observed for both presumed FDF and F-TACLES models, this suggests that the error stems from fundamental parametrisation limitations at filtered grids rather than subgrid model inaccuracies. Moreover, these errors, together with the resulting consumption speed, appear to be filter dependent.
+
+Overall, the a priori analysis on the laminar flame showed the limitations of manifolds made of unstretched flamelets in mimicking the local changes of reaction rate due to differential/preferential diffusion, particularly at filtered grids and regardless of the subgrid model used. This suggests that a subfilter correction is necessary in turbulent LES settings to correctly predict the flame properties, which is discussed next. Strained flamelets, on the other hand, showed improved performance in the limit of high strain, giving scope to further tests in turbulent settings.
+
+Turbulent flames
+ 
+The 3D DNS dataset of turbulent flames is now assessed in order to evaluate how the tabulation approaches proposed in Section~ perform when the flame is turbulent. The full list of cases assessed is provided in Table~. Note that the nominal applied strain rate in the DNS differs from the one imposed in the manifold because turbulent eddies induce a mean (positive) tangential strain on the flame~, therefore the total amount of strain experienced by the flame increases. This amount was directly estimated from the DNS. However, since the strain on the flame changes in space and time in the turbulent cases, multiple manifold strain levels have been tested for each DNS case, and further considerations are provided in Section~.
+
+ 
+An irreducible error is introduced to evaluate how accurately a given set of input parameters can be employed to reproduce
+different flame states (identified by the fuel reaction rate in the present analysis). 
+The irreducible error is defined as~
+
+ 
+ ^2_irr = _ H_2 - _ H_2| ) ^2 | c max ( _ H_2 | c )^2,
+
+where $$ is a set of input parameters, and quantifies the fluctuations of reaction rate with respect to its mean value. Only for this case, the irreducible error is calculated by sampling DNS data points at two different time steps (nominally $t=t_1$ and $t=t_2$) to improve the accuracy. Figures~ and~ show respectively midplane reaction rate contours at the two time steps, and the corresponding irreducible errors, for both unfiltered data and filtered data with increasing $$. Only the case at nominal applied strain rate $a=5000 \, s^-1$ is reported as the lower strain rate case yields similar outcomes.
+
+For the unfiltered mesh (Figure~), using only the progress variable as controlling parameter results in $_ H_2$ fluctuations that reach 15\
+
+When the mesh is filtered, combinations of input parameters including also the progress variable variance are considered. From Figures~-, it can be observed that the error remains always below 5\
+introducing $^2_c, sgs$ among the controlling variables (presumed-FDF approach), although this introduction has a moderate impact at moderate filter sizes.
+
+This suggests that subgrid models not considering the variance as a parameter, like the F-TACLES model, may perform slightly worse solely due to the reduced accuracy of the parametrisation, particularly at coarser grids. 
+
+Interestingly, the error reduction due to including mixture fraction among the controlling variables becomes less strong as the filter width increases. This is due to the fact that mixture fraction variation are solely caused by preferential diffusion effects in the studied flames, and filtering the results reduces mixture fraction gradients thus reducing the reaction rate scatter across the mixture fraction space. 
+
+ 
+In this section, the ability of the different manifold approaches of Table~ to predict the consumption speed of a turbulent and strained lean premixed hydrogen flame is assessed. 
+
+The consumption speed is computed as:
+
+ 
+ S_c^M = _u Y_ H_2,u L_y L_z _V _ H_2 dV,
+
+where $L_y=4$ mm and $L_z=3$ mm are the vertical and transversal length of the turbulent domain, respectively. The results presented in Figures~ show data for the cases with nominal applied strain of $a=2000\, s^-1$ and $a=5000\, s^-1$.
+
+The manifolds based on unstretched flamelets with varying equivalence ratios (blue lines in Figure~) lead to an overestimation of consumption speed of about 20\
+
+In particular, the modelled consumption speed is overestimated up to 40\
+Introducing the wrinkling factor still results in a remaining systematic overestimation of above 20\
+
+Let's now consider the manifolds based on a fixed-strain flamelet (1DS in Table~). The first observation is that in this case the consumption speed ratio is observed to be mainly independent of the filter width. The quantitative error depends on chosen value for the fixed-strain rate on the flamelet, which as explained earlier varies on the turbulent flame due to the effects of turbulent eddies. For this reason, for each nominal applied strain rate in the turbulent case, two manifolds are tested, respectively with imposed strain on the flamelet of $a = 5000\, s^-1$ and $a = 10000\, s^-1$, which are representative of the actual values observed from the DNS data. As observed in Figure~ the error on the consumption speed is observed to be below or slightly above 10\
+
+since, the total strain rate experienced by the lower- and higher-strain flames in the DNS are approximately 7000-8000 s$^-1$ and 10000-11000 s$^-1$, respectively. Nevertheless, results also show that mispredicting the value of strain rate to apply on the flamelet up to 50\
+
+Overall, these results indicate that a single strained flamelet can quantitatively reproduce the flame speed in flames subject to differential and preferential diffusion effects and potential subgrid thermodiffusive instabilities, as long as the fixed-strain value is imposed within a reasonable range.
+
+Let's now consider the manifolds based on a fixed-strain flamelets with varying equivalence ratio (2DSF in Table~). The application of varying equivalence ratio in the manifold stems from the fact that turbulent eddies and induced strain and curvature might affect the thermochemical state within the flame.
+By looking at the consumption speed ratio in Figure~, one can notice that the error now
+
+depends again on the filter width, although more weakly than the 2DU-type manifolds, and its maximum value ranges from 20\
+Nevertheless, the error in this case is much less sensitive to the choice of the fixed-strain level imposed on the flamelets. 
+
+ 
+
+Additional insight on the performance of the various manifold approaches of Table~ is provided by quantifying the conditionally averaged modelling error for the fuel reaction rate, which is defined as~:
+
+ 
+ ^2_mod = _ H_2^M - _ H_2^ ref ) ^2 |c max ( _ H_2^ ref | c )^2.
+
+This definition allows to assess how the modelling error varies across the flame front as compared to the peak mean reaction rate. The error variation in filtered progress variable space is shown in Figs.~ and~- respectively for the unfiltered and filtered (at different $$) meshes.
+Midplane contour plots of the relative error according to Eq.~ are further shown 
+in Figure~ for a subset of cases in Table~.
+
+Only the DNS case with applied strain rate $a=5000\, s^-1$ is shown as similar observations could be made for the case at $a=2000\, s^-1$.
+
+Consistently with the laminar flames analysis (Section~) and the turbulent flame consumption speed assessment, the manifold of unstretched flamelets exhibits the highest modelling error on the unfiltered grid (see Fig.~), with an average deviation from the DNS reaction rate of about 25\
+The modelling error seems to only mildly reduce when the single fixed-strain flamelet is employed (even with the imposed strain rate of $a=10000\, s^-1$ giving the smallest error on consumption speed).
+The error seems to reduce more significantly, instead, when a manifold of fixed-strain flamelets with varying equivalence ratio is used. The error peak in this case (see $ 0.7$ in Fig.~) reduces further when increasing the applied strain rate in the flamelets from $a=5000\, s^-1$ to $a=10000\, s^-1$, but shows negligible additional improvement for $a=15000\, s^-1$, the reasons for which are discussed in the next subsection.
+
+When the mesh is filtered, the modelling error for the unstretched flamelets manifold and presumed $$-FDF reaches values of about 30\
+
+When the F-TACLES approach is used without wrinkling factor (with the unstretched flamelets manifold), the modelling error is observed to remain below 10\
+
+Consistently, the contour plots of Figure~,
+show that for increasing filter sizes the relative error increases in magnitude in the F-TACLES approach when the wrinkling factor is introduced. However, this errors corresponds to both regions of overestimation and underestimation of reaction rate, which apparently compensate for each other when integrating the reaction rate to compute the consumption speed. This suggests that the wrinkling factor would introduce limitations in mimicking the correct local behavior in terms of differential and preferential diffusion effects.
+
+Let's now consider the performance of fixed-strain single-flamelet manifold with presumed $$-FDF at increasing filter widths.
+Here the modelling error exhibits a similar behaviour to that observed for the irreducible error examined in Section~. The error peak in this case is relatively high, between 20\
+
+Lastly, the manifold with fixed-strain flamelets of varying equivalence ratio is assessed. This manifold approach leads to the smallest modelling error peaks among the cases of Table~, which are observed in Figure~ to be overall contained around 10\
+This suggests that this approach, unlike the others, has potential to mimic an about correct local behaviour in terms of differential and preferential diffusion effects in strained and curved regions. The fact that other manifold approaches lead to reduced errors on the consumption speed at specific meshes is thus to be interpreted as compensation of errors in the parametrisation as demonstrated by the present analysis (a part from the 1DS-type manifold at large filters discussed in the previous paragraph). A stronger sensitivity to the choice of the fixed-strain value in the manifold (which is generally not known a priori in a LES context) is observed as compared to the results for the consumption speed. This dependence is further investigated in the next section.
+
+Choice of fixed strain rate value
+ 
+Although improved performance was observed in the a priori analyses of fixed-strain flamelets manifolds for both laminar and turbulent conditions (Tables~ and~ respectively), the values of strain imposed on the flamelets in these analyses could be chosen by inspection of the DNS data, which is generally not possible in the context of a LES.
+
+An analysis is thus conducted here to assess how the choice of the fixed-strain value influences the reconstructed reaction rate. For this purpose the stretch factor $ I_0 = S_c/s_L$ of a laminar flamelet at the nominal equivalence ratio $=0.5$ across different strain rates is computed, and presented in Figure~. As observed, the stretch factor exhibits a peak value of approximately 1.55 in the strain rate range of 7000 s$^-1$ to 8000 s$^-1$, indicating a 55\
+Notably, the stretch factor shows a steep increase with strain rate up to values of about $a=3600 \, s^-1$, followed by a more gradual variation in the region near the peak.
+For values of strain rate ranging between about 3600 s$^-1$ to 15000 s$^-1$ (shaded area in the figure), a misprediction of applied strain rate would lead to a maximum 10\
+
+This range includes the strain rates of all tested manifolds of strained flamelets in the turbulent setting. This result suggests that imposing any strain rate on the flamelet within this range would lead to similar predictions, at least for integral quantities like the consumption speed, which is consistent with the observations in Figure~.
+
+This outcomes suggests that, at least for the ranges of turbulence and strain investigated in this study, relatively low-dimensional manifolds consisting of a single strained flamelet can be used in a LES with relatively large filter sizes to predict, with limited errors, integral quantities such as consumption speed, even in presence of preferential and differential diffusion effects. 
+A set of flamelets with varying equivalence ratio, but still with fixed value of strain, might be accurate enough to further predict local fluctuations of reaction rates induced by preferential and differential diffusion effects, such as strain and curvature effects and the onset of thermodiffusive instabilities. This represents an important simplification for flamelets-like models as strained flamelets with varying levels of strain, implying a higher-dimensional manifold, might be avoided. However, this should be ultimately assessed a posteriori in future works.
+
+Unstretched flamelets correction
+ 
+Previous sections have demonstrated both poor a priori performance and strong filter dependence in models based on manifolds constructed from unstretched flamelets. Specifically, unlike strained flamelets, unstretched flamelets provided a poor prediction of the consumption speed already in laminar conditions, showing a counter-intuitive systematic decrease with increasing filter width. This systematic decrease was more significant at higher simulation strain rates, suggesting that the reaction rate map it provides is not a good picture of the thermochemical states of lean premixed and turbulent hydrogen flames, as later proved in Section~. In light of this, here we propose a correction for the predicted turbulent consumption speed based on the results of the laminar analysis. 
+
+At the highest tested strain rate, the predictions in the laminar analysis from both subgrid closures exhibited perfect agreement (see Fig.~). This level of strain is marked in Figure~, showing that its corresponding stretch factor belongs to the 10\
+
+ 
+ S_c, DNS = f(_f) S_c, DNS,
+
+where $S_c^ 2DU$ represents the consumption speed reconstructed using the 2DU manifold, and $S_c^*$ denotes the corrected consumption speed. The correction function is defined as the inverse of $S_c, DNS^ ref,lam(_f)$, obtained from the 2DU manifold applied to laminar simulations at $a=3633.5$ s$^-1$. To determine this function, we perform a double exponential fit using combined data points from both the $$-FDF and F-TACLES models across all tested filtered grids. Note that the 2DU-FTWF tabulation with the wrinkling factor has not been corrected here due to the limitations highlighted in Section~.
+
+This correction is applied to both the 2DU-$$FDF and 2DUFT tabulation predictions, with the results shown in Figures~ and~ for the cases a2000T and a5000T, respectively.
+
+The figures show that the correction significantly improves the 2DU-$$FDF tabulation predictions. In both the a2000T and a5000T cases, the corrected consumption speed exhibits markedly reduced filter dependence, thereby addressing the primary limitation of this tabulation identified in previous sections. Moreover, the error decreases to below 15\
+
+Considering the 2DU-FT tabulation, on the other hand, the correction is not as effective. Although there is a moderate improvement, the prediction of the consumption speed remains substantially dependent on the width of the filter, and an underestimate above 20\
+
+Conclusions
+ 
+This study presents a comprehensive a priori assessment of various tabulated-chemistry models for lean premixed hydrogen combustion with differential and preferential diffusion, with particular focus on addressing the challenges posed by the synergistic effect of thermodiffusive instabilities and turbulence in strained counterflow settings. The main findings obtained through systematic analysis of both laminar and turbulent flame configurations are summarised below.
+
+ Limitations of Unstretched Flamelet Manifolds: The investigation highlights significant inaccuracies in the thermochemical states parametrisation based on unstretched flamelet manifolds.
+ 
+ These manifolds exhibit systematic overestimation of reaction rates at high progress variables and underestimation at low progress variables.
+ While in some cases correct predictions are obtained by compensation of these effects, the consumption speed obtained through this manifold are overall unreliable, and worsen with increasing strain rates and filter widths, thus requiring and ad hoc correction.
+ Effectiveness of Strained Flamelet Approaches: Fixed-strain flamelet manifolds demonstrate improved performance compared to unstretched counterparts. When the flamelet strain rate matches the total strain rate of the simulated flame, the single strained flamelet manifold shows a remarkably low modelling error at large filter sizes. The novel strained flamelets manifold, combining fixed strain with varying equivalence ratio, offers enhanced ability to reconstruct the local reaction rates determined synergistically by thermodiffusive instabilities and turbulence at all tested filter sizes.
+ 
+ Strain Rate Selection Guidelines: Analysis of the stretch factor reveals a wide range of strain rates (3500-15000 s$^-1$) where the corresponding stretch factor changes by less than 10\
+ Correction Methodology for Unstretched Manifolds: A novel correction function derived from laminar simulations significantly improves the predictions a priori of integral quantities such as the consumption speed of unstretched flamelet manifolds, reducing filter dependence. While effective for $$-FDF models, this correction proves less successful for F-TACLES implementations, suggesting the need for combined approaches with wrinkling factors.
+
+Overall, for coarse grid simulations, ultra-light manifolds consisting of single strained counterflow flamelets with appropriate strain rates and $$-FDF subgrid closures offer computationally efficient and reliable solutions to capture the increased reactivity at subgrid scales determined by thermodiffusive instabilities, turbulence, and strain. However, it's important to note that this approach works effectively only at coarser grids, as finer resolutions would reveal the model's inability to capture local mixture fraction and reaction rate oscillations, potentially leading to poor a posteriori performance. For higher fidelity requirements across multiple grid resolutions, both the corrected unstretched flamelets manifold and the novel manifold with fixed strain and varying equivalence ratio with $$-FDF closure provides reliable predictions of integral quantities such as the consumption speed. Ultimately, the novel strained manifold shows the best performance among all the tabulations tested in reconstructing the local reaction rates.
+
+Unlike previous works, this study achieves modelling improvements without increasing the dimensionality of the manifolds, thereby maintaining computational efficiency and keeping memory costs unchanged. 
+
+Future work should focus on a posteriori validation of these findings and further refinement of correction methodologies for practical LES applications.
+
+Disclosure statement
+
+The authors declare that there is no conflict of interest.

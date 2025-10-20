@@ -1,0 +1,408 @@
+[aps,11pt,superscriptaddress,nofootinbib,notitlepage,showkeys]revtex4-2
+
+=1
+[T1]fontenc
+
+[breaklinks]hyperref
+
+*remarkRemark
+Theorem
+Conjecture
+Definition
+
+Property
+Calculation
+
+ N
+
+ U
+
+ k
+ X
+ x
+ u
+
+ R
+ r
+
+ X
+
+[1]#1
+[1]\| #1\|_ 
+
+^
+
+[1] #1 
+[2]
+[2]#1#2
+[1] To do: #1
+[1]#1
+[1]#1
+*
+
+N-DAM
+
+newfigs/
+
+[1][DS: #1]
+[1][ST:#1]
+
+ 
+
+We describe the blowup scenarios in a novel phase-parametrized differential approximation model of deep water surface gravity waves that was recently derived in the limit of a large number of multicomponent fields.
+Previous work showed that upon precisely tuning the phase parameter $$ to $$, the model formally supports steady-state solutions transitioning from Kolmogorov-Zakharov $ ^-4$ to Phillips' critical balance $ ^-5$ at small scales, a feature qualitatively consistent with oceanic measurements.
+Here we show that the critical balance is in fact a generic feature of the model, which prescribes a finite-time transfer of the energy from the IR towards the UV for any value of $ [0,)$. 
+We observe a bifurcation in the blowup scenario from continuous to discrete self-similarity as $$ is increased above $_* 2.7$. To our knowledge, this is the first example of a non-continuous blowup in the kinetic theory of waves. 
+
+Introduction
+
+The nonlinear interactions of gravity waves (GW) on the deep ocean surface provide a classical testbed for the theory of wave turbulence . The theory is formalized by the (homogeneous) Hasselmann wave kinetic equation for the wave density $n( k,t)$, 
+
+	_t n( k,t) =S_nl + S_f+ S_diss
+
+describing cascading processes mediated by resonant quartets of modes in the collision integral $S_nl$,
+in the presence of forcing $S_f$ and damping $S_diss$.
+ The nonlinear term $S_nl$ prescribes the standard phenomenology of wave turbulence, supporting both thermal Rayleigh-Jeans (RJ) and non-thermal Kolmogorov-Zakharov (KZ) scaling regimes --- see, e.g. and references therein. In particular, the KZ solution associated to the 
+ direct cascade of kinetic energy 
+
+ 	E(,t) = _ R^2 d \, ( () - ) () n( k ,t), () =
+ 
+produces the scaling $E() ^-4$, consistent with oceanic observations---
+the energy representing the fluctuations of the surface elevation.
+ While one could expect the KZ spectrum to hold from kilometric down to capillary scales, oceanic field measurements rather support the idea that KZ breaks down at metric scales , transitioning into a regime $E() ^-5$ known as the Phillips spectrum .
+
+A consensual interpretation ties the Phillips spectrum to wave-breaking mechanisms and, in particular, white-capping events appearing under strong wind forcing . This leads to a balance between non-linear energy transfers and suitably parametrized dissipation mechanism . This is a form of critical balance, which, more generally, denotes a conjectured regime in which the state adjusts itself so that the growth of the nonlinear term saturates and becomes of the same order as the linear term . Another viewpoint interprets the Phillips spectrum as the statistical restoring of scaling symmetry in the Hasselmann equation ---akin to the statistical restoring of symmetries in the classical theory of Navier-Stokes turbulence . This suggests that critical balance could as well reflect a dynamical feature of the collision integral. 
+
+The Phillips spectrum occurs in the regime of strong nonlinearity---outside the regime of validity of the standard kinetic equation, which assumes weak nonlinearity. A dynamical explanation of the Phillips spectrum at short scales, which connects onto the KZ spectrum at long scales, must emerge from a kinetic equation that is valid for both weak and strong nonlinearity. While one can compute the kinetic equation perturbatively in the nonlinearity , reaching the strong turbulence regime requires more. In the context of the multicomponent nonlinear Schr\"odinger equation (Gross-Pitaevskii model), one can find the full kinetic equation---valid at all scales---in the limit of a large number of components of the field (large-$N$ limit) . Both analytics and numerics demonstrate flow from KZ to critical balance scaling for the focusing nonlinear Schr\"odinger equation in two dimensions. The large-$N$ limit is perhaps most familiar in the turbulence literature in the context of the random coupling model ---in the large-$N$ limit the model is solvable and the direct interaction approximation is exact. Specifically, the random coupling model is however a Sachdev-Ye-Kitaev-like model , which is a different kind of large-$N$ limit than the vector models we will be discussing . 
+
+A further simplification occurs if in addition to large-$N$, one instead takes an interaction that is strongly local in momentum space. Such a large-$N$ differential approximation model (DAM) was introduced in , where it was found that the collision integral is a fourth order differential operator, yielding the non-linear conservation law in frequency space 
+
+	
+	
+	& _t E (,t) +_ P = F+D , P =- ^2_(^-1 K )~,\\
+ 	& K(,t)= E^4 ^2_ (^4 E^-1)|1-e^jU |^2, U=^10_ (E^-4).
+	
+
+Here the powers of $$ have been fixed to those appropriate for the gravity wave case, and the units have been rescaled such that the only free parameter in the model is a phase $$ ranging from $0$ to $$---see Appendix for further details. We emphasize that () is not contrived to give any particular scaling in the non-weak (strong) turbulence regime---it is derived by summing a perturbation series to all orders in the interaction. 
+We later refer to 	the model () as the .
+Of course, neither of the two simplifying features used to derive the \, is valid for gravity waves: We know of no physically natural extension of the height of the ocean to be multicomponent, and the interaction of a quartet of gravity waves is certainly not local in momentum space. In fact, recent results for the nonlinear Schr\"odinger equation have revealed spectral nonlocality in the turbulent spectrum (dependence on the pumping and dissipation scale); a feature which, by construction, is absent in a differential model. Nevertheless, the simplicity of differential models enables them to quickly give new insight---and, indeed, we will find that the model () has two novel and surprising dynamical features. 
+
+At this stage, we note that formally setting the function $U$ to zero reduces the \, to the isotropic version of a diffusion approximation already found by Hasselmann et al , written in a general form by Dyachenko et al. , and studied in greater detail by Pushkarev \& Zakharov in the specific context of gravity waves
+(see also ). The model then 
+ admits pure scaling steady states in terms of KZ and RJ solutions.
+The presence of nonzero $U$ alters the nature of the steady states. In particular, the \, supports steady-state direct cascade solutions which interpolate between Kolmogorov-Zakharov spectrum $E() ^-4$ in the infrared (IR) and a strong-coupling regime $ ^-2$ in the ultraviolet (UV). 
+In addition, at the specific value of $=$, the model also supports a transition from KZ to the Phillips regime $ ^-5$.
+
+The purpose of the present letter is to extend the phenomenology of the , and investigate the interplay between Phillips, KZ and strong regimes in a time-dependent setting.
+Physically, the setting models the cascade of surface kinetic energy triggered by episodic gusts of wind. Mathematically, it connects to the question of (finite-time) blowup in the kinetic equations. Finite capacity cascades --- such as the ones for gravity waves --- are characterized by a traveling front reaching infinite frequency in finite time. The spectrum that is left behind is usually regarded as a non-universal transient, which is replaced at a later time by the stationary solution resulting from a second stage of backward propagation from infinite to finite frequency. 
+Here, the first feature we report is that the front leaves, nontrivially, Phillips scaling in its trail. 
+ In other words, critical balance turns out to be the driving mechanism for the finite-time blowup. It prescribes a finite-time propagation of the energy to the UV, converging to an asymptotic similarity solution with Phillips scaling. This scenario holds for any value of the parameter $$, so it has no connection to the late-time stationary Phillips scaling, which only holds for $ = $. \\
+
+We find a second novel feature: The similarity solution bifurcates from continuous to discrete (or periodic) as the phase parameter $$ increases towards $$, at a critical phase of $_ 2.7$. Although similarity solutions have been studied in many families of DAM associated to wave kinetics, the \, provides the first explicit example of a non-continuous similarity blowup in the context of the kinetic theory of wave turbulence---to the best of our knowledge. 
+
+The paper is organized as follows. reviews the basic phenomenology of the \, and its various steady-state solutions,
+ describes the (time-dependent) asymptotic similarity and the interplay between the Phillips, weak and strong-coupling regimes in the blowup solutions. describes a bifurcation of the blowup from self-similar to periodic as $$ is varied.
+ formulates concluding remarks. 
+
+Steady-state similarity
+
+A detailed discussion on the steady states produced by the ~ can be found in ; here we recall the basic phenomenology. The magnitude of the function $U$ in the denominator provides an interpolation between the Pushkarev-Zakharov (weak) DAM---obtained in the limit $U 0$---and a strong DAM in the opposite limit $|U| $. The weak and strong asymptotics are defined through the substitutions $K$
+
+ K_W= ^10 E^4 ^2_ (^4 E^-1) \ \ \ \ \ \ \ \ \ \
+ K_S:=^-10 E^4 (^4 E^-1)[_ (^-4 E)]^2 
+
+Both models admit a scaling solution with constant energy flux $P_0>0$, respectively:
+
+	
+	E_W = (56)^1/3^-4 	E_S = 5 P_0 \,^-2~,
+
+associated to direct cascades of energy, transferring energy form small to large frequencies (i.e. from large to small scales). The solution $E_W$ is the KZ scaling.\\
+
+ For finite $U$, the steady state solutions interpolate between the weak and strong scaling regimes in the IR and UV, respectively. This is shown in the right panel of Fig.~, which plots the results of direct numerical simulations of the DAM with prescribed large-scale forcing and dissipation. For $=0$, the steady-state solution for $E()$ interpolates directly between the two scaling solutions of 	Eq.~. Heuristically, the transition from the weak to the strong regime occurs when the function $|U|$ becomes of order $1$, which happens when $ _0 =2P_0^-1/3$. 
+Note that for values of $$ near $$, the solution develops a bump-like feature near the weak to strong transition (Shown in Fig.~ for $=0.99$).
+
+Precisely at $=$, a second asymptotic scaling regime is possible in the UV . This is the Phillips spectrum characterized by 
+
+E_P= 9\,^-5.
+
+In principle, a solution interpolating to strong scaling $E_S$ is also possible, but the Phillips UV behavior appears more robust.
+The numerics in Fig.~ show that the Phillips UV asymptotics indeed emerge in forced-dissipated numerical simulations of the . 
+
+Note that the pure solution $E_P$ does not depend on the flux $P_0$, and a direct substitution in the ~ would cause the denominator in $K$ to diverge. This is not fundamentally problematic:
+ the actual steady-state solution $E$ is never exactly $E_P$, as it includes $P_0$-dependent sub-leading terms which vanish faster than $^-5$ and prevent any true divergence at finite $$. However, we point out that the realization of the Phillips spectrum requires some numerical care. In particular, a precise tuning of the viscosity is required, in order to prevent numerical instabilities caused by the small values taken by the denominator. 
+
+We will next show that Phillips scaling arises for generic values of $$ in the finite-time inviscid evolution of the \, toward small scales, describing the finite-time blowup occurring in the limit $ 0$.
+
+Time-dependent similarity
+
+Steady-state solutions have finite capacity if the integral $ E() d$ is convergent, which we expect to be the case if the solution has the strong scaling $ ^-2$ in the UV. A common heuristic predicts that finite capacity requires the finite-time propagation of any perturbation down to the UV, generically associated to the finite-time blow-up of a vorticity norm~.
+The simplest blowup scenario is mediated by self-similar intermediate asymptotics . In other words, the solution converges in finite time towards a universal self-similar profile, characterized by a sharp UV front leaving in its trail an anomalous scaling. 
+This has been well-studied for the usual nonlinear diffusion models associated to wave turbulence kinetics , and
+we point out that the analysis can be extended to discrete cascade models where the blowup scenarios are known to be richer~.
+
+In this section we extend the analysis of the \, to such time-dependent settings and analyze the self-similar blowups individually supported by each of three regimes: $=0$, $|| $, and $0<||<$. The interplay between the different blowups will be discussed in .
+
+Weak case: $U=0$
+
+The most direct way to capture the self-similar blowup is to introduce the ansatz 
+
+	 
+	E(, t) = (t_* - t)^bx ^-11/2 (), (,t) = (t_* - t)^b ~.
+
+For positive exponent $b>0$, the ansatz describes a self-similar solution with a sharp front $_* (t_*-t)^-b$ propagating towards the UV. The scaling function $()$ depends on the similarity variable $= /_*$. It decays to $0$ smoothly in the UV ($ 1$) and has asymptotic algebraic scaling behavior $ ^-x$ ($ 1$) in the IR. This translates into $E() ^-x-11/2$ sufficiently far from the front. 
+ Setting $U=0$ and substituting this ansatz into the \, sets
+
+	
+	b(x)=-2x~.
+
+This prescribes that the profile $$ satisfy a $4^th$-order ordinary differential equation (ODE), which we compactly write as 
+
+	2xD_-11/2D_-9/2 (^4 D_17/2 D_19/2 ^-1)-D_x =0~,
+	
+
+in terms of the differential operators $D_$ defined through
+
+	
+	D_ f = f + f R~.
+
+The derivations of Eq.~- can be found in Appendix~. 
+
+For any choice of $x$, the ODE has a solution obeying $ ^-x$ in the IR, but only for particular choices of $x$ (possibly non -unique) will $$ also have the appropriate boundary conditions in the UV involving $$ decaying faster than any power law as $ $. In that sense, Eq.~ represents an eigenvalue problem.
+Changing variables $ = $, the differential operators become $D_ + \, $, and this transforms into an autonomous system:
+Appropriate choices for $x$ may then be found numerically using a variety of techniques, from brute-force optimization to shooting methods and continuation techniques . Here we used the latter to find a unique value $x -0.917$ leading to the scaling law $E ^-4.583$ for $ _*$ (see the left panel of Fig.~). We later refer to the value $4.583$ as the weak anomalous scaling exponent.
+
+Let us comment on our notation. The similarity solution prescribes in particular a blowup at the level of the norms defined as 
+
+	
+	|W|_p= (_0^ W^p d)^1/p, W(,t) = ^11/2E(,t)~.
+
+Using Eq.~-, a direct calculation yields the diverging behavior
+$|W|_p (t_*-t)^-2 (1+xp)$. The blowup rate becomes independent of the IR similarity exponent $x$ in the large-$p$ limit, $|W|_ (t_*-t)^-2$. This is reminiscent of the Beale-Kato-Majda criterion tying blowup in the incompressible Euler equations to the vorticity supremum diverging at least as rapidly as $(t_*-t)^-1$. This analogy motivates our choice of notation $W$ and $$, suggestive of a vorticity.
+
+Strong case: $|U| $
+
+We recall that the strong regime asymptotics corresponds to setting $K K_S$, as prescribed by Eq~ in the \, . The strong DAM supports the finite-capacity KZ scaling $E ^-2$. However, it does not support a finite-time blowup.
+At a heuristic level, this apparent contradiction comes from the energy flux $P = -^2 _ (^-1K_S)$ being homogeneous of order 1 in $E$, meaning that changing $E E$ entails $P P$ for any $ >0$. While it is not clear if this can be explicitly mapped to standard diffusion, we expect to see a diffusive dynamics---akin to the heat equation, and with no sharp-front solutions.
+
+This heuristics can be substantiated from a perturbative argument. To this end, let us slightly perturb the strong regime into
+
+	
+	 K_S K_S^():= ^2-10 E^4+ (^4 E^-1)[_ (^-4 E)]^2, >0~.
+
+Namely, we impose a small nonlinearity in the energy flux $P[ E,] = ^1+ P [E,]$, such that the resulting $$-perturbed \, shares the RJ solutions and energy flux pure scaling solutions $ ^-2$ of the strong unperturbed case ($=0$). 
+
+The $$-deformation trick allows us to find a unique self-similar solution, just as in the weak limit. Following the steps of , the relevant vorticity turns out to be $W^() = ^2+ E$, which blows up at the rate
+$|W^()|_ (t_*-t)^-1/$. 
+In the strong limit $ 0$, one needs to compensate the energy spectrum by a diverging scaling exponent $2+ $. This implies that in the strong limit the energy profile is smooth, decaying faster than any power law. This is reflective of diffusive behavior and the absence of a self-similar solution blowing up in finite time.
+
+As a consistent illustration, the bottom panel in Fig.~ shows an estimate of the anomalous similarity exponent as a function of the nonlinearity parameter $$, obtained from numerical continuation. The increasing deviation from the constant-flux exponent $2$ as $ 0$ is consistent with a diverging behavior $x_ $, indicative of the diffusive behavior of the strong regime.
+
+Generic case: $0<|U|<$
+
+The analysis performed in the weak case extends to the generic case of finite and nonzero $U$. 
+Inserting the ansatz - into Eq.~ additionally prescribes $x=-1/2$, 
+in order to get a time-independent equation for the similarity profile $()$. A few lines of algebra then also prescribe that it be solution of the fourth-order dynamics
+
+	0=D_-1/2 +D_-11/2D_-9/2( D_19/2 ^-1|1-e^j V|^2), 
+ V= ^-1/2D_-19/2 ~.
+
+Such similarity solutions prescribe a blowup $|W|_ (t_*-t)^-1/2$, as in the weak case. The parameter $b$ takes the value of $1$, so the fronts propagate as $_* (t_*-t)^-1$ and leave behind the Phillips spectrum: $W ^1/2$ or equivalently $E ^-5$ for $ _*$. For clarity, we emphasize that while the Phillips scaling is occurring well behind the edge of the front, at $ _*$, it occurs in a non-weak regime of large enough $$ so that $|U| 1$, as we will see in the next section.
+
+A key difference between the generic equation and the weak equation is that the weak equation may be put in an autonomous form simply by transforming to a variable $= $, and thus it is symmetric under translations in $$, or equivalently rescalings of $$. This means that associated to any solution asymptotically scaling as $() _0^-x$ there is actually a whole family of solutions related by rescalings of $$, and thus involving different values of the coefficient $_0$. The natural eigenvalue problem in the weak case is finding the value of $x$ such that $()$ has the appropriate boundary conditions, and $_0$ is not relevant information.
+
+However, in the generic equation the translation symmetry is explicitly broken by the $$ term. Now there is no longer a family of solutions related by rescalings, and the coefficient $_0$ is crucial information. Even though the value $x=-1/2$ is fixed, there is still an eigenvalue problem involving selecting the value of $_0$ such that $()$ has the appropriate boundary conditions.
+
+The eigenvalue problem may be solved numerically for any value of $<$, see the top right panel of Fig.~. The numerical method used is a variant of a shooting method. Fixing a trial value for $_0$, the asymptotic solution to may be used to set approximate initial conditions in the IR. These initial conditions are tuned to increasingly greater precision to balance between two classes of UV asymptotic behavior, and the light blue curves in Fig.~ reflect solutions with slightly imprecise initial conditions. The solution constructed in this manner will eventually reach a point $$ at which either $()=0$ or $'()=0$, depending on whether the trial value for $_0$ was set too high or low, respectively. At the exact value of $_0$ which solves the eigenvalue problem, both conditions $()='()=0$ should hold at the same point $$, and this value may be bounded from above and below to increasingly greater precision.
+
+Blow-up scenarios
+
+We now analyze the interplay of blowups between the three regimes. Our main finding is that 
+the blowup in the \, is determined not by the strong DAM, but by the Phillips regime. In fact, the blowup asymptotic solution precisely produces Phillips scaling $ ^-5$---meaning that critical balance extends across the entire UV range. Through numerical simulations, we show that convergence towards the self-similar profile can proceed via either a $weak Phillips$ or $strong Phillips$ transition, depending on the magnitude of the initial conditions. This behavior is robust for most values of $$; however, as $$ approaches $$, we give evidence for a transition in the blowup structure, from self-similar to periodic .
+
+Convergence to Phillips similarity
+
+When starting from an initially smooth (say Gaussian) profile sharply localized around $_i=O(1)$ 
+and with energy $E=O(1)$, the interplay between the various similarity regimes is driven by the magnitude of the $$ term, as discussed for steady-states in .
+
+Phillips similarity implies that $||=9_0$, where $_0$ is the (universal) Phillips coefficient $_0$ discussed above. On the other hand, the weak similarity solution implies that $|_w|= C_0^-x-2$, where $C_0$ is a non-universal coefficient that depends on initial conditions. Since the exponent is positive ($ 0.417$), the condition $|_w| 1$ will be violated at some point in the UV, and the weak regime will no longer hold. This occurs near the transition point $^+ C_0^x+1/2$. Hence, the weak similarity only holds as a finite-size transient state in the IR, ultimately shifting to the Phillips similarity.
+
+The strong regime requires $|| 1$, but does not lead to any viable similarity solutions. 
+A sharply peaked initial condition with $|| 1$ will therefore relax directly into the Phillips solution. In other words, the main consideration in defining the weak and strong regimes is the magnitude of the solution $W=^11/2E$ with respect to the curve $_0 ^1/2$. This is illustrated in the numerical simulations shown Fig.~, which take $=/2$.
+
+If the initial conditions lie well below this curve, the solution approximately obeys the weak \, with $K K_W$. Over a range of frequencies and times it will approximately obey the weak self-similar ansatz and evolve according to the anomalous scaling exponent $x=-0.917$. Upon reaching the transition frequency $ ^+$ the solution becomes of the same order as $_0 ^1/2$ and the generic \, becomes relevant: the solution then converges to the Phillips similarity. In the opposite limit in which the initial conditions are larger than $_0 ^1/2$, we may consider the strong regime in which $K K_S$. As discussed above, this regime only supports diffusive solutions, and those relax towards the Phillip similarity as $$ increases towards the UV. 
+
+Bifurcation of blowups
+ 
+Let us now discuss the role of $$. As $$ is varied, periodic oscillations appear around the Phillips solutions, which grow more pronounced as $$ gets closer to $$.
+To characterize these oscillations, we appeal to the the Dombre-Gilson viewpoint, which interprets self-similar blowups as solitonic waves propagating at constant speed in renormalized time $ = -(t_*-t)$ across the $ $ range . 
+To this end, instead of considering the self-similar ansatz , let us first rescale the vorticity dynamics using the log-variables $,$, 
+
+	 
+	 W(,) = (t_* - t)^1/2 ^11/2E(,t) , = , = -(t_* - t).
+
+Under the (DG) rescaling , the rescaled vorticity evolves as 
+
+	
+	_ W(,)= 2 +D_-11/2D_-9/2( D_19/2 W^-1|1-e^je^/2-/2 D_-19/2 W|^2),
+
+with terms of the homogenous operators now reading $D_ = + \, $. The derivation of Eq.~ can be found in Appendix~. From the DG dynamics 	, one recovers the generic ODE given by Eq.~ upon identifying $ = -$ and solving for the solitonic profile $ W(,) = ()$. In that sense, the similarity solutions studied in indeed map to solitonic waves in rescaled log-variables. 
+
+Now, we may always rewrite $$ as a function of $$, $(,)=(,)$, and in general $$ will have additional $$ dependence. A special class of so-called discrete self-similar solutions involve periodic dependence in $$ , $(, +T)=(, )$ for some period $T$. Our numerical simulations show that indeed these discrete self-similar solutions are the relevant solutions when $ >_c 2.7$ ---See Fig. . We also refer to this as the periodic blowup regime.
+
+We note that similar to the calculation of Eq.~, the discrete self-similar solutions have their supremum diverging at the universal rate $|W|_ (t_*-t)^-1/2$. This provides a rationale for the DG rescaling , which can be interpreted as the dynamical rescaling of the vorticity by its (diverging) supremum in the rescaled time $ 2 |W|_$. In the self-similar regime $()$ was asymptotically $ _0e^/2$ for $ 0$. In the discrete (or periodic) self-similar regime, $_0$ is replaced by a periodic single variable function $_0(-)$, leading to the asymptotic behavior
+
+	(, ) _0(-) e^/2, ~ \ \ \ \ \ 0~.
+
+Such periodic behavior is illustrated in the left panel of Fig.~.
+
+The right panel of Fig.~ illustrates the transition from self-similar to periodic blowup through a bifurcation diagram plotting the extrema of $U/9$ as a function of $$. In the continuous similarity regime, the scaling properties far from the UV front impose
+$U/9 =_0$, recovering the universal constant $_0$ computed by the shooting method described in ~.
+The minimum and maximum $_0^$ of $U/9$ then coincide.
+
+ In the periodic blowup regime an oscillatory pattern emerges, tracked by the splitting of $_0^$ as $>_c$. Both the maximum and minimum values of the asymptotic function $_0(-)$ are plotted. The eigenvalue problem associated to the ODE still admits a non-trivial solution---the results for $_0$ are the plotted black crosses. However, it is not realized for $>_c$ in our numerics, suggesting that the continuous similarity solution has a vanishingly small basin of attraction.
+
+Concluding remarks
+
+To summarize, our analysis of the \, provides an example of kinetic wave dynamics in which the blowup scenario is determined by critical balance. In a sense, the emergence of a critical balance scaling is natural: In order to have a self-similar solution the two terms in the denominator (the $1$ and the $U$) must have the same scaling. As $U$ is the strength of the nonlinearity, this sets a critical balance condition.
+However, this feature is not trivial, as the UV emergence of the Phillips spectrum in the \, is fragile in the steady state, being restricted to exactly $=$. In the time-dependent setting, critical balance sets the UV behavior for any value of the phase parameter $ [0,)$.
+We also emphasize that the critical balance at play in the \, does not require any ad-hoc linear damping mechanism--- 
+at variance for example with the models studied in .
+
+Besides, the specific scenario for blowup depends on the phase parameter. We have identified a critical phase $_c 2.7$, above which periodic modulations emerge under the Phillips envelope. 
+
+As $ $, the smooth periodic pattern transforms into a chain of pulses, and the limit $=$ seems ill-defined, giving rise to increasingly large fluctuations of $U$. Note that such fluctuations were not encountered leading up to the steady-state Phillips behavior depicted in Fig.~.
+Due to the combination of small-amplitude initial conditions and large viscous damping,
+only the weak similarity regime appeared in the early-time regime of our numerics.
+ Had the onset of dissipation been shifted deeper into the UV, or had the initial conditions been greater, these fluctuations would have been encountered; this is another difficulty for realizing the steady-state Phillips behavior.
+
+To our knowledge this is the first example of a non self-similar blowup in the context of the kinetic theory of waves. It is natural to wonder whether such a feature appears in more general kinetic equations, ones that do not involve the differential approximation.
+ 
+Naturally, this perspective is not restricted to the kinetics of gravity waves. While in this paper we focused on dispersion relation and interaction scaling appropriate for gravity waves, , as presented in , is more general. As detailed in Appendix , the general \, may have arbitrary values for the spatial dimension $d$ and the scaling exponents $$ and $$ associated with the dispersion relation and interaction, respectively. As long as $/>3$, the stationary states are qualitatively similar to the gravity wave case, and similarly involve a transition from a weak direct cascade in the IR to a strong or Phillips direct cascade in the UV. However, the qualitative description of the blowup behavior involves a stronger condition on $/$. The scenario involving a transition from weak to Phillips scaling depended on the anomalous exponent $-x 0.917$ being greater than the corresponding Phillips exponent $1/2$ (see Fig.~). For instance at $d/=4$, this requires the stronger condition $/ 3.67$. Below this range, the system may have weak anomalous scaling arbitrarily far in the UV and need not transition to Phillips.
+
+For much smaller parameter values, the qualitative situation is inverted. There is weak anomalous scaling for the inverse cascade , and the \, has strong and Phillips stationary states in the IR rather than the UV. It would be natural to hypothesize that likewise there is a transition to Phillips blowup behavior as the solution propagates into the IR, but our preliminary numerical results suggest that this may not be the case. We leave this to future work.
+
+ Acknowledgments: 
+VR and DS are supported by NSF grant 2209116. 
+
+From kinetic equation to 
+
+ 
+ We here introduce the differential model of in the context of gravity waves. Following closely the notation of , the Zakharov equation for gravity waves at the interface of a fluid is
+
+i_t b_k = _k b_k + 2 _k123\,b^*_1 b_2 b_3 _k+1-2-3dk_123~.
+
+Here $_k=$ is the dispersion relation and $$ is a complicated function of the wave numbers . Both $$ and $$ scale homogeneously
+
+	_ k=^ _k, _ k\, 1\, 2\, 3=^ _k123,
+
+with $=1/2$, $=3$, and spatial dimension $d=2$ in the gravity wave case.
+
+$b$ is a complex field that is constructed from the height above the wave surface $$ and the velocity potential at the surface $$. This is related to observable quantities through the wave action density $n_k b^* _k b_k $. Up to small corrections at higher order in the wave steepness, the wave action can be related to the average of $^2$ at an arbitrary point in space,
+
+	 d^2k\, _k n_k = d E()=^2 .
+
+Explicitly for gravity waves, the energy density $E()$ defined in the second line is
+
+	E=	2d|k|n_k=4 g^-2^4n_k
+	.
+
+The usual wave kinetic equation may be written in terms of $n_k$,
+
+	_t n_k dk_123\,(_k1;23)|_k123|^2 n_k n_1 n_2 n_3 (n_k+n_1-n_2-n_3).
+ 
+This may be reduced to a differential approximation model , for details see ,
+
+	^-1_t n_k _^2(^ n^4 ^2_^2 n^-1).
+ 
+This may be rewritten in terms of $E$ and an explicit dimensionful coefficient $C_1$, which is proportional to $g^-4$ in the gravity wave case,
+
+	_t E = _^2(C_1^ E^4 ^2_^2 (^E^-1)).
+ 
+
+The wave kinetic equation and the corresponding differential approximation model only involve interactions at lowest non-trivial order in perturbation theory, and thus are only valid in the weakly interacting regime. The wave kinetic equation may be extended by taking into account certain large N corrections which are summed to all orders in perturbation theory . The corrections included are the most significant ones in an $N$-component extension of the Zakharov equation in the limit as $N$ becomes large, and it is hoped that even in the single component case the inclusion of these corrections may capture qualitative aspects of the strongly interacting regime.
+
+The net effect of including the large $N$ corrections renormalizes the interaction coefficient in the kinetic equation. Schematically,~$ with factorizable momentum dependence, but this is taken as an assumption in the reduction to the differential approximation model. the result takes the form
+
+|_k123|^2 _k123|^2|1-2 dk_45 _k425_k4;25+i|^2.
+
+Reducing to a DAM in the manner of , the difference $n_4-n_5$ becomes a derivative $_ n$, the coefficient $$ introduces a factor of $^/$, and the integration over a single independent momentum introduces a factor $^d/$. The remaining integration introduces a second constant $C_2$, which is proportional to $g^-2$ in the gravity wave case. In total the DAM in terms of $E$ is modified to
+
+	_t E = _^2( E^4 ^2_^2 (^E^-1)|1-C_2^_(^-E)|^2).
+ 
+This is the $N$-DAM investigated in the main body, apart from the appearance of the additional parameters $C_1$ and $C_2$. Note that $C_1$ is real and positive, but $C_2$ is complex in general, $C_2=|C_2|e^i$. We may eliminate the explicit appearance of $C_1, |C_2|$ by working with rescaled quantities
+$$=|C_2|N, =|C_2|^2t, =C_1P.$$
+In the form of the $N$-DAM discussed in the text we use these rescaled quantities exclusively, and omit the tildes.
+
+Technical details
+
+Derivation of the weak ODE~
+
+To derive the ODE , we use the vorticity defined in Eq.~ as
+ 
+	W(,t) = ^11/2 E(,t),
+
+ whose dynamics
+in the absence of forcing and dissipation is derived from the \, as
+
+	
+	_t W (,t) + ^11/2_ P = 0
+
+where $P$ is prescribed by Eq.~ as
+
+	
+	 P =- ^2_(^-1 K ),
+ 	K(,t)= E^4 ^2_ (^4 E^-1)|1-e^jU |^2, U=^10_ (E^-4).
+
+Setting $U=0$ and using the expresion yields the weak version of the flux term as 
+
+	
+	^11/2_ P & = -^11/2_( ^2 _ (^-13W^4 _ ( ^19/2 W^-1)))\\
+	& = - D_-9/2 D_-11/2 (W^4 D_17/2 D_19/2W^-1),
+	
+	
+
+where the second line is obtained by successively substituting --- from right to left --- the derivatives by the operators $ D_ = _ + \, Id$, observing in particular that
+ 	
+	_ (^ f) = ^-1 D_ f.
+
+We now use the ansatz , which in terms of $W$ simplifies to
+
+	W(,t) = (t_*-t)^bx (), = (t_*-t)^b, b(x)=-2x.
+	
+
+Inserting 	the ansatz~ into Eq.~ yields
+for the first term
+
+	_t W = 2x (t_*-t)^-3/2(x + ) = 2x (t_*-t)^-3/2D_x ,
+	
+
+where the $D_$ operator is now prescribed by Eq.~.
+For the second term, we get
+
+	^11/2_ P = 
+ -(t_*-t)^-3/2 D_-9/2 D_-11/2 ( ^4 D_17/2D_19/2^-1).
+	
+
+As a result of 	Eq., Eq.~ and sum to $0$. Cancelling the time prefactor $(t_*-t)^-3/2$ then yields the weak ODE .
+
+Derivation of the DG dynamics 
+
+In terms of the vorticity $W$ given by Eq.~, the term $U$ in Eq.~ reads 
+
+	U=^-1/2 D_-19/2W.
+
+Repeating the calculations of ~, the vorticity dynamics recasts as 
+
+	
+	_t W(,)=F[W], F:= D_-11/2D_-9/2( D_19/2W^-1|1-e^j^-1/2 D_-19/2W|^2),
+
+Now using Eq.~, we introduce the new variables $= $, and $=-(t_*-t)$. The dynamics of the rescaled profile $ W(,) =e^/2 W$ is then obtained as 
+
+	_t W = -2 +e^-3/2 F[W].
+
+With the differential operator becoming $D_ _ + $,
+observing that 
+
+	F[W] = F[e^/2 W] = e^3/2 D_-11/2 D_-9/2( D_19/2 W^-1|1-e^je^/2-/2 D_-19/2 W|^2)
+
+ yields Eq.~.

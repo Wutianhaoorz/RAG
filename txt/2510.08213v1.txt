@@ -1,0 +1,449 @@
+[]JFM-FLM_Au
+
+\,
+
+Lemma
+Corollary
+
+, Peter E. Hydon, Carl Shapiro, Dennice F. Gayme, Charles Meneveau
+
+Department of Engineering, Durham University, Durham DH1 3LE, UK
+ School of Mathematics, Statistics and Actuarial Science, University of Kent, Canterbury CT2 7NF, UK Pittsburgh, PA, USA Department of Mechanical Engineering, Johns Hopkins University, Baltimore, MD 21218, USA
+
+Classical actuator disk theory, developed more than a century ago, provides an idealised description of turbine rotor performance. It treats a rotor as an infinitesimally-thin permeable disk and applies the governing flow equations over a streamtube encompassing the disk. A well-known limitation of the theory is its assumption of ideal flow 
+downstream of the disk, which restricts its applicability to short downwind distances before turbulence and mixing processes governing the wake evolution take hold. As a result, the classical theory also leads to unphysical predictions for highly-loaded rotors. Turbulent axisymmetric wakes, by contrast, represent an extensively-studied canonical free shear flow with much of the progress and its applications to wind turbines limited to the far-wake dynamics. In this work, we introduce a generalised actuator disk theory based on a hybrid stream-tube and wake control volume, that seamlessly integrates classical actuator disk analysis with wake turbulence modelling at arbitrary distances from the rotor. The resulting model, while still idealised, can be used to predict variations in velocity, pressure, and cross-sectional flow area as function of position, both upstream and downstream of the rotor disk. Furthermore, by accounting for turbulent entrainment in the wake development, it provides more realistic predictions of thrust and power coefficients for highly-loaded disks.
+
+Introduction
+
+Actuator disk model is one of the most fundamental models in fluid dynamics for analysing turbine rotors and propellers . First proposed by Rankine and later refined into its classical form by Froude in 1889 , it is now commonly referred to as Froude’s actuator disk theory. The model represents the complex loading of a rotor as a simple pressure jump across an infinitely thin, permeable disk of the same diameter, known as an actuator disk. Despite its simplicity, the theory remains a cornerstone of rotor fluid dynamics because it provides clear and intuitive insights into rotor performance. Froude’s actuator disk theory is typically one of the very first conceptual models introduced to students and researchers interested in the fluid mechanics of turbomachinery. 
+
+It appears in almost every major wind energy textbook [e.g.,][among others]Burton1995,spera_wind_2009,manwell2010wind,hansen2015aerodynamics,sorensen2016general,branlard2017, and classical aerodynamics and hydrodynamic textbooks on propellers and rotors [e.g.,][among others]breslin1994hydrodynamics,leishman2006principles,seddon2011basic,carlton2018marine.
+
+Despite its historical importance and value as a simple conceptual model, Froude’s theory has important limitations.
+
+First, it does not describe how flow variables evolve with streamwise distance and only relates conditions far upstream and far downstream to those on the actuator disk. Secondly, 
+the model does not describe the turbulent wake behaviour 
+
+since the predicted downstream velocity asymptotes to $U_0 (1 - 2a)$, where $U_0$ is the incoming velocity and $a$ is the induction factor, and the wake width becomes constant after an initial expansion. In reality, following the initial velocity reduction due to pressure recovery, the wake gradually recovers through turbulent mixing, and wake expansion continues downstream.
+
+For these reasons, Froude’s theory is generally regarded as conceptually relevant only in the region immediately downstream of the disk, before turbulence dominates.
+
+The limitations become especially severe for highly-loaded actuator disks (with induction factors $a > 0.5$), where the model even predicts negative wake velocities. Likewise, the well-known relation for the thrust coefficient $C_T = 4a(1-a)$ breaks down in this regime and fails to provide meaningful results . This breakdown is believed to result from strong shear that drives the wake into a fully turbulent state and promotes strong interactions with the ambient flow, effects absent from Froude’s formulation. To mitigate these limitations, empirical corrections are often introduced to adjust the $C_T$–$a$ relationship . For a highly-loaded actuator disk (i.e., a disk with low porosity), where a significant portion of the fluid bypasses the disk rather than passing through it, the actuator disk behaves more like a solid plate. In this case, intense wake turbulence and flow separation generate a strong negative pressure behind the disk, contributing to pressure drag . accounted for this negative wake pressure by formulating governing equations for a control volume (CV) surrounding the disk that has non-zero pressure at the outlet, unlike Froude's original formulation. The flow inside the CV is assumed to be inviscid and irrotational, and the outlet is placed immediately before the region where turbulent mixing becomes significant. However, because introducing a non-zero outlet pressure adds an extra unknown, additional information is needed to close the system of equations. To address this, they modelled the actuator disk using potential flow theory. As representing the disk as a distribution of potential sources results in an unrealistic velocity discontinuity at the disk plane, they rescaled the wake velocities to enforce mass conservation and validated their predictions against water-channel experiments of porous flat plates. More recently, adopted a similar CV analysis 
+
+but determined the negative pressure at the CV outlet by solving the two-dimensional pressure Poisson equation proposed by . They assumed that the CV outlet coincides with the end of the near wake, whose length was estimated using the method of . They also extended this framework to yawed rotors to predict a $C_T$–$a$ relationship that shows good agreement with large-eddy simulation (LES) data for various cases. While these approaches provide improved predictions for highly-loaded disks, they still do not overcome the important limitation of Froude’s actuator disk theory; namely, its inability to incorporate effects of turbulent mixing induced by strong velocity shear that may occur in the immediate downstream vicinity of a highly-loaded disk. 
+
+Turbulent wake development is more realistically represented in far-wake analytical models, which are widely used in wind energy applications to characterise wake interactions in wind farms [see reviews by][and references therein]stevens2017review,porte2020. These models are generally based on momentum theory, where pressure effects are neglected under the far-wake assumption, so that the thrust force balances the streamwise flux of momentum deficit . Although recent wake models aim to use more realistic velocity profiles in the near wake [e.g.,][among others]shapiro2019paradigm, blondel2020, schreiber2020brief,ali2024, their neglect of pressure effects prevents them from accurately capturing the flow immediately behind the disk, where such effects remain significant. Consequently, analytical wake models typically require assumptions about near-wake conditions as inputs. Examples include specifying the onset of the far-wake region, the initial wake width, or the downstream location where the velocity deficit reaches its maximum. Moreover, commonly used far-wake models 
+
+typically
+fail to 
+
+provide reliable predictions for induction factors $a > 0.25$ in the far-wake region . For instance, the widely used top-hat model of and the Gaussian model of may predict a decrease in the maximum wake velocity deficit as the induction factor $a$ increases beyond 0.25 (i.e., $C_T > 0.75$), which is not physically expected. Although more recent studies [e.g.,][]bempedelis_analytical_2022 have incorporated pressure effects into the far-wake evolution of highly-loaded disks, they remain limited to the far-wake region, where velocity monotonically increases with 
+streamwise distance from the disk. This behaviour is not valid in the region immediately behind the disk.
+
+This paper aims to bridge the gap between two traditionally separate areas of research, actuator disk theory and turbulent wakes. We show that it is possible to overcome the limitations outlined above by developing a new actuator disk theory that includes wake recovery due to turbulent entrainment. While still idealised, the proposed approach provides a more accurate and physically meaningful representation of actuator-disk flows. 
+
+Generalised actuator disk theory including wake development
+
+We consider the ``hybrid'' CV around a disk as shown in Figure~. Upwind of the disk, as in Froude’s theory, we assume there is no mass exchange between the CV and the surroundings, so the CV is the streamtube encompassing the rotor disk. This assumption implies that turbulent mixing does not play a significant role in shaping the flow distribution upstream of the disk. This notion is supported by previous studies showing that inviscid solutions often provide satisfactory predictions in this region [e.g.,][]medici2011upstream,Bastankhah2017POF,segalini2021analytical. Downstream of the rotor disk, however, the CV is not a streamtube but is assumed to coincide with the outer boundary of the wake, where turbulence drives entrainment of the ambient flow through the lateral surface of the CV, until the wake is fully recovered.
+For this CV, at each streamwise position $x$, the velocity $U(x)$ and pressure $P(x)$ are assumed to be uniform, with the diameter of the CV cross-section denoted by $(x)$. The disk is located at $x=0$, and the diameter of the CV at $x=0$ is equal to the disk diameter $D$.
+Subscripts $0$ and $$ denote the asymptotic far-upstream ($x\!\!-$) and far-downstream ($x\!\!$) values, respectively.
+
+In Froude’s original formulation, the CV extends from far upstream to far downstream. Here, to capture the streamwise variations of the flow quantities, we retain the inlet at far upstream but place the CV outlet at an arbitrary streamwise location $x$, where $x$ can take on positive or negative values.
+The goal of our analysis is to determine $P(x)$, $U(x)$, $(x)$, and thrust coefficient $C_T$ for a given induction factor $a$ (or for a known $C_T$, to determine $a$).
+
+Mass conservation
+
+The conservation of mass for this CV is written as
+
+ (x)=_0+_e(x),
+
+where $_0=4 ^2_0 U_0$ and $(x)=4 ^2(x) U(x)$ are the mass flow rates at the inlet and outlet, respectively, and $_e(x)$ represents the mass flow rate of the entrained flow across the lateral surface. Also, $$ is the air density. If we define the entrainment velocity as $U_e(x)$, the axial rate of change of $_e(x)$ can be written as the product of perimeter times entrainment velocity and is given by
+
+ _ex= \,(x) \, U_e(x) \, (x),
+
+ where $(x)$ is the Heaviside function, which ensures that the entrainment driven by turbulence only takes place downwind of the actuator disk. 
+ Taking the derivative of equation~ with respect to $x$ and using equation~, we obtain
+
+ (^2 U)x=4 U_e(x),
+
+which can be expanded and rearranged as
+
+ x = 2U ( - x + 4U_e(x)).
+
+Choice of entrainment velocity $U_e$
+
+ In the absence of ambient turbulence, turbulent entrainment is primarily driven by wake shear. In this case, the entrainment velocity is modelled as
+ 
+ U_0 = E_1 U_0,
+ 
+ where $ U(x) = U_0 - U(x)$, the superscript $w$ stands for wake-shear driven entrainment, and \( E_1 \) is the entrainment coefficient with a typical value of 0.1 . 
+Entrainment is expected to be primarily wake driven in the near wake where the wake shear is strong. However, further downstream it is increasingly influenced by background turbulence as the wake recovers in the far wake. This mechanism is described in the next section. 
+
+ 
+Regarding the influence of background turbulence on wake development, showed that the incoming turbulence intensity $I$ becomes the dominant factor governing entrainment in the far wake, while being only weakly dependent on the inflow integral length scale. Therefore, we assume that the entrainment velocity driven by background turbulence is proportional to the incoming turbulence intensity. We note that the turbulence intensity can be defined based on either the total turbulent kinetic energy or its streamwise component. While the former may be more physically grounded, the latter is easier to measure and is typically used in most current wind energy research . We therefore write 
+
+U_0 = E_2 I,
+
+where $E_2$ is the background-driven entrainment coefficient, and superscript $b$ stands for background turbulence. From the analysis in section~, we find that $E_2$ should be in the range of $0.25$–$0.4$, with $E_2 = 0.3$ used in this work as a representative value. 
+
+ 
+We propose that the total entrainment velocity is proportional to the generalised mean of the normalized velocity deficit and the incoming turbulence intensity:
+
+U_0 = [ ( U_0)^n + ( U_0 )^n ]^1/n = [ ( E_1 U_0 )^n + ( E_2 \, I )^n ]^1/n,
+
+where $n$ is a positive integer. Here, we assume $n=4$, noting that larger values do not lead to a considerable difference. The advantage of using equation~ is that the entrainment velocity closely approaches the larger of the two contributing factors. Consequently, under typical conditions, the near-wake entrainment velocity is dominated by the wake shear, which is generally larger in that region, while in the far wake the entrainment velocity is dominated by background turbulence. 
+
+Momentum balance
+
+The momentum equation for the CV shown in figure is given by
+
+ 4^2(x)\, U(x) \, [U_0-U(x)] =8 C_TU_0^2 D^2 (x)+4^2(x) P(x) -F_P_s(x), 
+
+where the momentum deficit flux term on the left-hand-side is written using the mass conservation (equation ), i.e. 
+$_e=4 (^2 U- ^2_0 U_0)$ and its associated momentum flux $_e U_0$. 
+In equation, the term $F_P_s(x)$ is the axial component of the force exerted by the pressure on the lateral surface of the streamtube, given by
+
+ 
+ 
+
+ F_P_s(x)= 4_-^xP(x') \, x' x',
+
+where 
+
+$x'$ is a dummy variable. Equation~ is obtained by integrating the pressure force exerted on an infinitesimal lateral area, shown in figure , from far upstream to $x$. In Froude’s actuator theory, the lateral pressure term is neglected because the CV's outlet is assumed to be sufficiently far downstream, such that the lateral pressure force contribution downstream cancels that upstream, resulting in a net effect of zero. This zero net contribution in the far wake can be understood by considering a spherical control volume of very large radius, $R_s\!\! $, surrounding the disk, as shown in figure~. For this CV, the lateral pressure forces are all internal , and the pressure at the control surface is atmospheric everywhere. Consequently, equation~ reduces to a simple balance between the thrust force and the net momentum flux across the control surface. However, it is important to note that for a finite $x$ (either positive or negative) considered here, the net contribution of the lateral pressure term is non-zero and must be retained in the momentum equation. 
+
+Taking the derivative of equation with respect to $x$ and rearranging terms leads to
+
+ UUx+ Px=(x+Ux)(U_0-U)-2 C_TU_0^2 (x),
+
+where $(x)$ is the Dirac delta function. 
+
+Using equation to express $/ x$ allows equation to be written as
+
+ U(x)Ux+ Px=-2 C_TU_0^2 (x) + (x)(x).
+
+Integrating from $-$ to $x$ results in the following Bernoulli-type equation
+
+ \,P(x)+2U^2(x)=2U_0^2(1- C_T (x) )+ 4 _0^(x,0) (x') \, x', 
+
+which represents the variation of the mechanical energy with $x$. It can also be regarded as a generalised form of the Bernoulli equation, with two additional effects incorporated: the extraction of energy by the disk (i.e., $-C_T(x)$ term on the right-hand side) and the entrainment of energy by turbulence (the last term on the right-hand side). When $C_T=U_e = 0$, this equation reduces to a Bernoulli equation. It is also important to note that the derivation of this generalised form of Bernoulli equation from mass and momentum equations is possible when the momentum equation is written in its complete form including the lateral pressure term $F_P_s$.
+
+Finally, equation~ can be rearranged as 
+
+Ux = U ( - Px - 2 C_T U_0^2\, (x) + (x) ).
+
+We then have a system of two ordinary differential equations comprising equation~ for $U/x$ and equation~ for $/x$. However, there are three dependent variables, $U(x)$, $(x)$, and $P(x)$, with $x$ as the independent variable. The required third equation (for $P/x$) is obtained in the next section.
+
+Pressure variations for lightly-loaded actuator disks
+
+For a lightly-loaded actuator disk (i.e. small values of the induction factor, $a$), the axisymmetric pressure Poisson equation can be simplified to the Laplace equation $^2P=0$ as a leading-order approximation (see Appendix for details). In the half-space upstream of the rotor disk the Dirichlet boundary condition on the disk $P(x=0^-)=P^+_D$ is used, while on the downstream half-space one uses $P(x=0^+)=P^-_D$, where $P_D^+$ and $P_D^-$ are the values of pressure immediately upstream and downstream of the actuator disk, respectively. Along the centreline,
+the solution to the Laplace equation is given by
+
+ P(x)=P_D^+(1+)(-x)+P_D^-(1-)(x),
+
+where $R=D/2$ is the rotor radius. We note that our approach here differs from the one in and who used a Cartesian 2D formulation, as we use the axisymmetric formulation of the pressure Poisson equation that is appropriate in three dimensions. The interested reader is referred to Appendix for additional information about the derivation, underlying assumptions and simplifications leading to equation . From equation with $U_D=U_0(1-a)$, $P_D^+$ and $P_D^-$ are respectively given by 
+
+P_D^+ = 2 U_0^2a(2-a), P_D^- = 2 U_0^2(a(2-a) - C_T). 
+
+To provide support for the proposed $P(x)$ expression in equation , we compare the predicted results with those from numerical simulations. The interested reader is referred to and for more information on the numerical setup, which consists of a LES with laminar uniform inflow towards an actuator disk, and negligible effects of turbulence in the near-rotor region. Results are shown in figure for three different values of $a$. The model (dashed lines) requires specification of $C_T$ for the downstream portion of the flow. As will be shown later in , for the case $U_e=0$, the classical Froude relation $C_T=4a(1-a)$ holds. Since for $x/D<3$ the effects of turbulence were negligible in the simulations, we use $C_T=4a(1-a)$ to specify $C_T$ in this comparison with idealised simulation results. Results shown in figure confirm that equation~ yields satisfactory predictions of the pressure distribution, with accuracy improving as \( a \) decreases. 
+
+It is worthwhile mentioning that, according to equation , the pressure drop across the actuator disk is not necessarily symmetric. In fact, for typical values of $C_T$, the magnitude of the immediate upstream pressure increase, $|P_D^+|$, is greater than the immediate downstream pressure drop, $|P_D^-|$. This subtle fact is also important for determining the pressure variations 
+
+(see Appendix for details).
+
+Taking the derivative of equation and inserting values of $P_D^+$ and $P_D^-$ from equation gives
+
+ x = 2 U_0^2 ( (x^2 + R^2)^3/2 [ a(a - 2) (x) + C_T\,(x) ] - C_T \, (x) ),
+
+where \( (x) \) is the sign function, defined as
+$(x) = -1$ if $x<0$, and $(x) = 1$
+if $x>0$. We now have the three relations needed to obtain the streamwise evolution of velocity $U(x)$, pressure $P(x)$, and CV diameter $(x)$ for given values of the induction factor $a$ and thrust coefficient $C_T$.
+
+Solving for $U(x)$, $(x)$, and $P(x)$
+
+Here, we determine $(x)$, $U(x)$, and $P(x)$ for given $C_T=C_T(a)$. Inserting $ P/ x$ from in equation and using , we obtain a system of equations that can be solved to find $U(x)$ and $(x)$
+
+x &= 2U ( - x + 4U_e(x) ), \\[6pt]
+Ux &= 2U ( 
+(x^2 + R^2)^3/2 ( a(2-a)\, (x) - C_T \, (x) )
++ U_0U_0\, (x)
+). 
+
+For the upwind region ($x<0$), equation is readily solved, yielding
+
+U_0 &= +1)+1, \\[6pt]
+D &= U(x) 
+= \,[ a(a-2)(+1)+1 ]^-1/4. 
+
+For the downwind region ($x>0$), no analytical solution was found due to the presence of $U_e(x)$. Instead, a basic forward marching numerical scheme (or more efficient Runge–Kutta methods) can be used, starting at $x=0$. The initial values $U(0)=U_0(1-a)$ and $(0)=D$ can be used to solve equation numerically and compute $U(x)$ and $(x)$. Pressure $P(x)$ is directly obtained from equation . 
+
+Determining the thrust coefficient $C_T$
+
+So far, we have not determined a general relationship between $a$ and $C_T$. 
+
+Next, we apply the proposed generalised actuator disk model with turbulent entrainment to develop a relationship for $C_T$ and establish a framework in which all three flow quantities ($U,$, and $P$) and $C_T$ are determined for a given value of $a$. The obtained relations can also be inverted to obtain $a$ for any prescribed $C_T$, since it is the latter quantity that is generally known a-priori for a given rotor. 
+
+Section discussed that the net contribution of the lateral pressure term in the momentum equation must asymptote to zero as $x\!\!$. By enforcing this condition, a new relation for $C_T$ can be obtained. 
+The total force from the side pressure contribution is given by $F_P_s(x )$ from equation and implies: 
+
+ 4_-^0 P(x) \, x x + 4_0^P(x) \, x x = 0.
+
+Denoting the first and second integrals as $F_P_s^+$ and $F_P_s^-$, respectively, we can evaluate the upwind lateral pressure force as
+
+ F_P_s^+=4_-^0 P(x) \, x x = 8 D^2U_0^2a^2,
+
+where we have used equations and for $P(x)$ and for $(x)$.
+From equations ($F_P_s^- = - F_P_s^+$) and , we conclude that
+
+ _0^P(x) x x= -2 D^2U_0^2a^2,
+
+which can be expanded using equations and to
+
+ _0^(a(2-a) - C_T)(1-) x x=-D^2a^2.
+
+Solving for $C_T$ gives
+
+ C_T=2a+(Y-1)a^2,
+
+where
+
+ Y=D^2_0^(1-) x x.
+
+To solve equation with $Y$ given by equation , $(x)$ is required. However, from equation , determining $(x)$ itself requires knowledge of $C_T$. Consequently, equations and must be solved iteratively. We begin by guessing a value for $C_T$ (e.g., using $C_T = 4a(1-a)$ or other models such as ) and use it in equation to compute $(x)$. The resulting $(x)$ is then substituted into equations and to obtain an updated $C_T$. This updated value is fed back into equation , and the process is repeated until convergence is achieved.
+
+If instead of $a$, we are provided with $C_T$, we begin by guessing a value of $a$ and use it in equation to compute $(x)$. The resulting $(x)$ is then substituted into equation to find the value of $Y$, which is inserted in equation to find a new value for $a$, and the process is repeated until convergence is achieved. Implementations of these iterative procedures can be found in the computational notebooks associated with figures or (see the figure captions for details). 
+
+Reduction to Classical Froude Theory for $U_e=0$
+
+Solving equation for $U_e=0$ at $x>0$, we obtain 
+
+ U_0= ,
+
+and $(x)=D$. For the upwind region ($x<0$), the solution is the same as equation . From equation , the asymptotic velocity at $x$ is $U_=U_0$, or $U_=U_0(1-2a)$ if $C_T=4a(1-a)$. The well-known relation of $C_T=4a(1-a)$ can be also derived from our new generalised theory for $U_e=0$. Inserting equation~ into equation~ yields 
+\( Y = -1 + \,a(2-a)-C_T\,( - (1-a)) \), 
+which can then be substituted into equation~, whose only non-trivial solution becomes 
+\( C_T = 4a(1-a) \).
+
+Results and discussions
+
+Model predictions and trends
+
+The influence of entrainment velocity on model predictions is first illustrated in figure~, which presents results for various values of the entrainment coefficients $E_1$, with $E_2 = 3E_1$ and $I = 5\
+
+ 
+
+Figure~ shows how the entrainment velocity varies with the streamwise distance downwind of the actuator disk for a typical case with $a = 0.3$ and $I = 8\
+
+Model predictions for five different values of the induction factor $a$ are shown in figure~. For all cases, the entrainment coefficients are set to $E_1 = 0.1$ and $E_2 = 0.3$, and the incoming turbulence intensity is $I = 5\
+Figure~a shows the streamwise variation of velocity. In all cases, as expected, the velocity upstream decreases from $U_0$ to $U_0(1-a)$ at the disk. Immediately downstream, it drops further, mainly due to pressure recovery ($ p/ x > 0$ resulting in $ U/ x<0$ according to equation ), until reaching a minimum value (i.e., maximum deficit) approximately one rotor diameter downstream. Our model predicts the maximum deficit to be smaller than $2aU_0$ predicted by Froude’s theory, due to the inclusion of turbulent entrainment already beginning at $x=0$. Further downstream, when pressure is mostly recovered, flow entrainment becomes the dominant mechanism, resulting in $ U/ x > 0$ according to equation . Moreover, as expected, higher values of $a$ produce greater velocity deficits.
+
+As shown in figure~b, the cross-sectional width $$ of the CV generally increases with $x$ in both the upwind and downwind regions. According to equation , velocity reduction ($ U/ x < 0$) contributes to cross-sectional expansion both upstream and downstream, with downstream growth further enhanced by flow entrainment. Figure ~b also shows that $$ increases with $a$ downstream, indicating a wider wake for actuator disks with higher loading. In far-wake engineering models (for instance, ), this impact of disk loading on the wake width is often incorporated through an semi-empirical initial wake width that depends on the thrust coefficient $C_T$. 
+
+An interesting feature is observed for $a = 0.5$ and $a = 0.6$, where the wake undergoes a rapid initial expansion followed by a contraction and then gradually re-expands due to turbulent entrainment. Such non-monotonic behaviour has been extensively reported in the literature (, among others) and is often attributed to the formation of complex turbulent wake structures, including vortex rings, characteristic of the turbulent state with $a>0.4$. It is interesting that our simpler model reproduces such features. Nonetheless, we should bear in mind that the developed pressure relation, equation , is an approximate solution of the pressure Poisson equation for lightly-loaded disks. Therefore, model predictions for large values of $a$ should be interpreted with caution. Finally, figure~c shows the pressure distribution, where the asymmetric pressure drop on the disk plane, discussed earlier in section , is evident, particularly for large values of $a$. The figure suggests that pressure is recovered downstream within the first two rotor diameters. This behaviour may however differ from some findings in the literature on highly-loaded disks , where pressure persists longer. As mentioned before, it is likely because the simplified pressure relation used here is a first-order approximation for lightly-loaded disks.
+ 
+
+Far-wake solution
+
+Here, we examine model predictions for the asymptotic far-wake case, where $x $. In this case, both the normal and lateral pressure force terms in the momentum equation vanish, and $U U_0$. From the momentum equation for large values of $x$, we obtain
+ 
+ (^2 U (U_0-U) ) (^2 (U_0-U)) 0.
+ 
+This means that
+
+ U_0^2 (^2 U).
+
+Inserting equation in the conservation of mass expression in leads to 
+
+ x= 2U_0 \; x.
+
+ First, we assume the ambient turbulence is negligible, and the main driving force for turbulent entrainment is the wake shear. In this case, $E_2=0$, so $U_e=E_1(U_0-U)$. From the simplified form of the momentum equation for $x $ (i.e., no pressure effects and $U U_0$), we substitute $U_0-U$ to have
+
+ U_e=E_1(U_0-U)=(2E_1C_TU_0D^2)^-2.
+
+Inserting equation in equation and integrating leads to
+
+ D=(3E_1C_T)^1/3(D)^1/3,
+
+where $x_0<0$ is the virtual origin defined as the location where $(x_0)=0$. There are two interesting points about equation . First, it shows that the far wake grows with downstream distance as $x^1/3$ in the absence of ambient turbulence. This is consistent with the extensive literature of three-dimensional wakes subject to laminar free-stream flows (see and references therein). Moreover, this shows that the spreading rate of the wake depends on $C_T$. This supports George's theory that although canonical free shear flows may reach universal asymptotic states in terms of self-similarity, their spreading rate is not universal, and it depends on upstream (i.e., initial) conditions. This is clear in figure (a), which shows variations of $^3$ with respect to $x$ for different values of $a$, where $E_1=0.1$ and $E_2=0$. To verify equation~, 
+we rearrange it assuming that \(x_0\) is chosen such that \((x=0)=D\). 
+Under this assumption, equation~ simplifies to 
+\((/D)^3 - 1 x\), 
+which further reduces to \((/D)^3 x\) when \( D\), as shown in figure (a).
+
+For the case where ambient turbulence is not negligible, equation simplifies to $U_e/U_0 = E_2 I$ as $x $. Substituting this relation into equation and integrating yields
+
+D = 2k_ (D),
+
+where $k_ = 2 _ / x = E_2 I$ is the expansion rate of the far-wake radius. The parameter $k_$ is an empirical constant widely used in far-wake engineering models of wind turbines [e.g., Park model developed by][]Jensen1983. suggested $k_ = 0.4 I$, which corresponds to $E_2 = 0.4$. reported that $k_ = 0.02$ provides results in closer agreement with operational data from offshore wind farms. For offshore turbulence intensity at turbine hub height in the range of $5\
+ The results illustrate that linear wake growth begins earlier for higher values of incoming turbulence intensity. 
+
+For the same parameter set, the corresponding values of $k(x) = 2 / x$ are shown in figure (c) as solid lines, with the asymptotic value $k_$ included as a dashed line for reference. This figure confirms that for small values of incoming turbulence intensity $I$, the wake expansion rate $k$ asymptotes to $k_$ only at large downwind distances. The wake initially expands at a higher rate, and for example for $I = 4\
+
+Relation between thrust coefficient and induction factor
+
+Next, we discuss the predictions of thrust coefficient $C_T$ and power coefficient $C_P = C_T (1-a)$ based on the developed actuator disk model and the iterative process explained in Section . Figure~ shows variations of $C_T$ and $C_P$ with the induction factor $a$ for different values of $E_1 = (0.02, 0.05, 0.1)$ and $E_2 = (0, 0.3)$. For comparison, the figure also shows Froude's relation ($C_T=4a(1-a)$), LES data of , and the models of and . The figure shows that in the windmill state ($a < 0.4$), model predictions are not very sensitive to the value of entrainment coefficients and provide results similar to Froude's theory, albeit with slightly smaller values. On the other hand, in the turbulent state ($a > 0.4$), results are highly sensitive to the value of $E_1$, and the inclusion of entrainment considerably improves predictions of actuator disk models in comparison to the unphysical predictions of Froude's theory in this region, where higher values of $E_1$ lead to higher values of $C_T$. A value of $E_1 = 0.05$ seems to provide results in satisfactory agreement with the model of , validated against LES data, while a value of $E_1 = 0.1$ provides results in very good agreement with the model of , validated against laboratory experiments. It is worth noting that the iterative method described in Section does not converge for cases with high values of $a$ (e.g., $a > 0.6$) and small values of $E_1$ (e.g., $E_1 = 0.02$). This may be due to the fact that, in highly loaded cases, turbulent mixing and entrainment play such an important role in shaping the wake structure downstream of the disk that minimising their effect does not lead to meaningful predictions. Furthermore, as mentioned earlier, the simplified pressure relation used in the model may not provide accurate estimates for highly-loaded disks. Nevertheless, figure clearly illustrates how including the effect of turbulent entrainment improves predictions of $C_T$ and $C_P$ significantly beyond the classical Froude theory's limiting value of $a 0.4$.
+
+In reality, the entrainment coefficient $E_1$ may not be strictly constant and may have some dependencies on the actuator disk characteristics, inflow properties and streamwise location (i.e., $E_1 = E_1(x/D,a,I)$). However, the key physical insight provided by figure is that a universal relation between $a$ and $C_T$ may not exist; rather, their exact relationship depends on the interaction of the actuator disk flow with the ambient flow and the turbulent entrainment, particularly immediately downstream of the disk. This is especially important for highly-loaded disks, where the interaction between the wake and the surrounding flow is strong and cannot be neglected. This dependence may also explain why observations of $C_T = C_T(a)$ performed in different studies typically show good agreement in the windmill state, while the data become widely scattered in the turbulent state, as shown in figure and reported in previous works [e.g.][]buhl2005new.
+
+Finally, the figure indicates that the value of \( E_2 \) has minimal impact on the variation of \( C_T \) and \( C_P \). This is expected, as \( E_2 \) mainly governs entrainment in the far-wake region where background turbulence effects dominate, whereas the near-wake region, where wake-shear driven entrainment mainly occurs, has a more direct influence on the thrust force and power output. Background-turbulence driven entrainment is expected to have some possible impact on $C_T$ only in the asymptotic case of $a 0$, since in this case the entrainment induced by ambient turbulence can dominate even in the region immediately behind the turbine. 
+
+Optimal power and revised Betz limit
+
+Here, we examine predictions of the new theory for the maximum power coefficient $C_P,$ and its corresponding optimal induction factor $a_$. Figures~(a) and (b) show zoomed-in portions of the $C_T$–$a$ and $C_P$–$a$ curves near $a_$, while figures~(c) and (d) illustrate the variations of $C_P,$ and $a_$ as functions of $E_1$. The results indicate that as the turbulence parameter $E_1$ increases, $a_$ exceeds its classical value of $1/3$, and $C_P,$ slightly surpasses the Betz limit of $16/27 0.593$. 
+
+Since $C_P = C_T(1-a)$, it is useful to analyse how $C_T$ varies with $E_1$ for $a$ close to $a_$. By definition, $ 2 U_0^2 C_T = P_D^+ - P_D^-$, where the upstream pressure $P_D^+$ is unaffected by downstream turbulent mixing (see equation~). Thus, an increase in $|P_D^-|$ leads to a larger $C_T$. From equations and , we conclude that $|P_D^-|$, and therefore $C_T$, increases when turbulent mixing reduces the initial near-wake expansion, which occurs for $a > 1/3$. An example of this reduction by turbulent mixing for a high value of $a$ is shown in figure~(b). A larger $C_T$ for $a > 1/3$ in turn yields a larger $a_$ and a slightly higher $C_P,$, which was also reported in . Exceeding the Betz limit has been reported in other contexts, such as flow confinement , whereas here the mechanism arises from turbulent mixing that lessens near-wake expansion and thereby increases the pressure drop behind the disk. A higher value of $C_P$ in the presence of free-stream turbulence has been also reported in previous experimental works [e.g.,][]gambuzza2021effects.
+
+It is worth noting that for $a < 1/3$, the effect of turbulent mixing is the opposite, as seen in figures~ (a) and (b). In this case, mixing slightly increases the near-wake expansion (see figure~(a)), which reduces $|P_D^-|$ according to equation and consequently lowers both $C_T$ and $C_P$. As already shown, however, the influence of turbulence mixing on the rotor performance for $a < 1/3$ is much weaker than for $a > 1/3$. In reality, the impact of wake turbulent mixing on rotor performance for small induction factors ($a < 1/3$) may be even smaller than shown here if entrainment does not begin immediately behind the disk; for instance, if shedding tip vortices act as a barrier between the wake and the ambient flow .
+
+Summary and conclusions
+
+In this work, we develop a generalised actuator disk theory that extends the classical formulation by:
+(i) describing how flow properties vary with the streamwise coordinate $x$, rather than limiting the analysis to far-upstream and far-downstream conditions;
+(ii) incorporating the effects of turbulent mixing in the wake and its contribution to wake recovery; and
+(iii) providing physically consistent predictions of the thrust coefficient $C_T$ for a given induction factor $a$ (or vice-versa) for highly-loaded disks. 
+
+The mass and momentum equations are formulated for a hybrid CV encompassing the streamtube and the wake, upstream and downstream of the actuator disk, respectively. In the downwind region, wake recovery is modelled as the result of turbulent entrainment across the lateral surface of the CV with an entrainment velocity that depends on both the wake shear and the ambient turbulence. Moreover, it is shown that, at finite streamwise positions, pressure forces acting on the lateral surface of the CV contribute a non-negligible term to the axial momentum balance and must be included for a self-consistent formulation. 
+
+By integrating mass and momentum balances between far upstream and an arbitrary downstream position $x$, we derive a generalised Bernoulli-type equation that accounts for both energy extraction by the disk and energy injection into the wake via turbulent mixing. An additional pressure equation is obtained by solving a simplified, axisymmetric form of the pressure Poisson equation, yielding accurate predictions for lightly-loaded disks when compared with LES data. Together, the system consists of three governing relations: two differential equations (obtained from mass and momentum equations) and one algebraic equation (obtained from an approximate solution of the pressure Poisson equation), which can be solved to obtain the streamwise evolution of velocity $U(x)$, pressure $P(x)$, and CV diameter $(x)$ for given values of the induction factor $a$ and thrust coefficient $C_T$. The upwind region can be solved analytically, while the downwind region must be solved numerically using a forward marching scheme. The model predicts a physically consistent wake evolution, with an initial flow deceleration due to pressure recovery followed by re-acceleration from turbulent entrainment, along with a gradual wake expansion. Also, the asymptotic far-wake behaviour is examined. If entrainment is driven solely by wake shear, the wake width expands as $x^1/3$. When background turbulence is also included, the wake expansion becomes linear with $x$ (i.e., a constant wake expansion rate). However, for small values of the incoming turbulent intensity, the wake expands linearly only at sufficiently large downstream distances, and at intermediate downwind distances, the wake experiences a variable expansion rate. 
+
+The new theory provides a new framework to determine the $C_T$--$a$ relationship. This relation is achieved by enforcing the condition that the axial component of the net pressure force on the lateral control surface asymptotically vanishes as $x $. A simple iterative method then yields $U$, $P$, $$, and $C_T$ as functions of $a$. The results show that for small values of $a$ or $C_T$, the dependence between $C_T$ and $a$ is largely unaffected by wake turbulent mixing, whereas for larger values of $a$ or $C_T$, it becomes highly sensitive to the level of turbulent entrainment in the near-rotor downstream wake region. The maximum power coefficient can slightly exceeds the Betz limit, and we analyse the causes for this effect. Notably, the model reduces to the Froude classical actuator disk relationship between $a$ and $C_T$ when turbulence entrainment is neglected. 
+
+Future extensions of this framework may incorporate more realistic wake profiles to capture the transition from a top-hat shape in the near wake to Gaussian-like shapes in the far wake observed in experiments and high-fidelity simulations. Additionally, retaining non-linear terms in the pressure Poisson equation could improve predictions for highly-loaded actuator disks. 
+
+Declaration of Interests.
+ The authors report no conflict of interest.
+
+Pressure Poisson equation for actuator disk flows
+
+Let us consider an axisymmetric, steady, incompressible flow without swirl around an actuator disk of radius \( R = D/2\), subjected to an incoming flow with velocity \( U_0 \). Note that in this Appendix, unlike the rest of the paper, our variables (e.g., $P$ and $U$) depend on both streamwise $x$ and radial $r$ coordinates. The flow is described using cylindrical coordinates \((x, r)\), and \( U \) and \( V \) represent the time-averaged streamwise and radial velocity components, respectively. Taking the divergence of the momentum equation (including the actuator disk force and an eddy-viscosity term for turbulence) and combining with the continuity equation, yields the mean pressure Poisson equation which can written as 
+
+^2P=- P_D xH(R-r) + f_1(x,r)+f_2(x,r),
+
+where 
+
+ ^2= x^2 + r r(r r),
+ and $ P_D=0.5 C_T U_0^2$ is the total pressure drop due to forcing at $x=0$. The non-homogenous terms $f_1(x,r)$ and $f_2(x,r)$ are respectively defined as 
+
+ f_1(x,r)=-( x)^2 - r r x,
+
+and
+
+ f_2(x,r)= x r r ( r r )+ r r(r r).
+
+Neglecting non-homogenous terms in pressure Poisson equation
+
+We here show that the terms $f_1$ and $f_2$ are small compared to the expected impact of the actuator disk force which must be balanced by the pressure Laplacian.
+The term $f_1$ arises from the advective nonlinearity of the RANS equations (see equation ), while the term $f_2$ originates from spatial variations in turbulent viscosity (see equation ). Therefore, removing $f_1$ and $f_2$ terms is equivalent to solving the linearised RANS equations with constant turbulent viscosity. 
+
+To estimate the order of magnitude of each term, we introduce characteristic velocity and length scales: \(_0\) represents the magnitude of the inflow velocity, while \(_d\) characterises the velocity deficit. The cross-stream and streamwise length scales are denoted by \(_r\) and \(_x\), respectively. 
+The following equation expresses the order of magnitude of each term in the pressure Poisson equation:
+
+ x^2__0_d_x^2$ + r r(r r)__0_d_r^2$ = - P_D xH(R-r) \, + 
+__d^2_x^2$ + 
+__d^2_x _r$
+
+To estimate the pressure variation scale, we assume based on Bernoulli’s equation that $ P/ U_0 \, U _0_d$ when \(_d _0\). For the turbulent viscosity $_t$ in $f_2(x,r)$, we assume \((_t) = _d _r\) . From Equation~, it follows that for lightly loaded disks (i.e., small values of $a$) where $_d/_0 0$, the terms $f_1$ and $f_2$ become negligible compared to the terms in the Laplacian, as a leading-order approximation. In this case, the two Laplacian terms on the left-hand side must balance each other away from the disk ($_x _r$) and each still much larger than $f_1$ and $f_2$ near the disk. 
+
+Therefore, while we present the complete solution of the pressure Poisson equation in the following for the sake of completeness, we omit the effects of $f_1$ and $f_2$ for simplicity in the final result.
+
+ 
+
+Solving the Poisson equation in an infinite domain
+
+First, we solve 
+
+^2P=- P_D xH(R-r) 
+ for an infinite domain $-<x<$ using the Greens function method. For our model we seek the solution \( P(x, r) \) evaluated at the centreline \( r = 0 \), i.e., \( P(x, 0) \). The domain of the variables is
+\[
+x (-, ), r [0, ),
+\]
+with the following boundary conditions:
+\[
+
+&_x P(x, r) = 0, \\
+&_r P(x, r) = 0, \\
+&. r |_r = 0 = 0 .
+
+\]
+In Cartesian coordinates, the general solution of $(1/)^2 p= q(x,y,z)$ on $^3$, subject to zero Dirichlet conditions at infinity is:
+
+p(x,y,z)=_x'=-^_y'=-^_z'=-^ 4\, z' y' x'.
+
+In polar coordinates, with $P(x,r,)=p(x,r,r)$, $Q(x,r,)=q(x,r,r)$, this amounts to
+\[
+P(x,r,)=_x'=-^_r'=0^_'=0^2 4\, ' r' x'.
+\]
+If $Q$ is axisymmetric, integrate over $'$ and set $a=(x-x')^2+(r')^2+r^2,\ b=2rr',\ ='-$ to get
+
+_'=0^2=&_=-^2-=_=0^2=_=0^\\
+=&\,\,, =.
+
+Here $K()$ is the complete elliptic integral of the first kind. For computational purposes, the identity
+
+K()=2 M(1,)
+
+is useful, where $M(m,n)$ is the arithmetic-geometric mean (which is computed iteratively, with quadratic convergence). This yields the axisymmetric solution
+
+P(x,r)=_x'=-^_r'=0^ 2\ \,M\!(1,)\, r' x'.
+
+On the axis of symmetry, reduces to
+
+P(x,0)=_x'=-^_r'=0^ 2\, r' x',
+
+which can also be obtained directly from by setting $y=z=0$ and then transforming to polar coordinates.
+Note that $Q(x,r)$ must decay to zero as $r$ in order for $P(x,0)$ to be finite.
+
+By linear superposition, each summand in the function $Q(x,r)$ can be integrated separately to give its contribution to the solution.
+For instance, taking $Q(x,r)= -(1/) P_D\, '(x)\, H(R-r)$, where $'$ denotes the formal derivative of the delta function, gives
+
+P(x,0)=&_x'=-^ P_D\, '(x')_r'=0^R 2\, r' x'\\
+
+=&\,2\, P_D(\,-\,|x|).
+
+An important limitation of the infinite-domain solution is that for a first-order approximated solution where we assume $f_1 = f_2 = 0$, equation~ predicts a symmetric pressure discontinuity across the rotor disk, i.e., $|P_D^-| = |P_D^+| = 0.5 P_D$ at $x = 0$, which is incorrect. As discussed in section , the pressure drop across the rotor is not symmetrical, and generally $|P_D^-|<|P_D^+|$. 
+This discrepancy indicates that the non-homogenous terms in the Poisson equation must be retained for this solution to capture the asymmetric pressure jump across the disk. In this regard, the semi-infinite domain solution (i.e., solving for $x>0$ and $x<0$ separately) may be more suitable, as it allows specification of pressure right upstream or downstream of the disk from equation , offering a more realistic modelling framework even without considering the non-homogenous terms of $f_1$ and $f_2$. 
+
+Solving Laplace equation in two semi-infinite domains
+
+We here consider the domain \( x > 0 \), i.e. starting immediately after the disk, where its forcing has no contribution and can be eliminated.
+
+We again set $f_1 =f_2 =0$) but consider that the most important effect of $f_1+f_2$ on the pressure distribution is approximated by setting the boundary condition to the pressure's known value at the centerline immediately behind the disk, i.e., $P_D^-$ as specified by equation . This value is imposed as a Dirichlet boundary condition at \( x = 0 \) and $r<R$ for the Laplace equation. We thus solve: 
+
+^2P
+= 0,
+
+with boundary conditions:
+\[
+
+P(x = 0, r) &= P_D^- \, H(R - r), \\
+_x P(x, r) &= 0, \\
+_r P(x, r) &= 0, \\
+. r |_r = 0 &= 0 .
+
+\]
+where $P_D^-<0$ is a constant. Again, we are interested in the solution along the axis of symmetry, i.e., \( P(x>0, r = 0) \). In Cartesian coordinates, the general solution of $^2 p= q(x,y,z)$ on the half-space $x 0$, subject to $p(0,y,z)=s(y,z)$ and zero Dirichlet conditions at infinity is:
+
+p(x>0,y,z)=& 4\-\ x' y' z'\\
+&+2\x^2+(y-y')^2+(z-z')^2\^-3/2 y' z'.
+
+In terms of polar coordinates, with $S(r,)=s(r,r)$ and the assumption of axisymmetry, this solution amounts to
+
+ 
+	P(x>0,r)=&_x'=0^_r'=0^ )-)\, r' x'\\[4pt]
+	&+_r'=0^)\,\x^2+(r-r')^2\\, r',
+
+where $E$ is the complete elliptic integral of the second kind. Here, if we assume the sum of non-homogenous terms in equation is zero (i.e. $Q(x,r)=f_1(x,r)+f_2(x,r)=0$), the solution simplifies to 
+ 
+P(x>0,r)=_r'=0^)\,\x^2+(r-r')^2\\, r'.
+
+Figure shows the variation of $P(x,r)$, computed from equation , at several streamwise locations downstream of the disk. Immediately behind the disk, where the pressure is relatively high, the radial pressure profiles exhibit a top-hat shape. Further downstream, the pressure drops sharply, and the profiles become increasingly smooth. For simplicity, here we use the pressure along the axis of symmetry as a representative measure of how pressure evolves with streamwise position. This provides the necessary closure relation for the actuator disk theory developed in the main part of the paper. On the axis of symmetry, equation simplifies to
+
+P(x>0,0)=_r'=0^Rx\,r'\x^2+(r')^2\^3/2 r'=P_D^-(1-). 
+
+As an alternate method of solving the Laplace equation, the same result can be also obtained using the Hankel transform method. For the $x>0$ domain, this leads to $P(x,r) = P_D^+ \, R _0^ J_1( R) \,J_0( r) \, e^- x \, $, where $J_0$ and $J_1$ are zero and first order Bessel functions. Evaluating at $r=0$ and performing the integral of the exponentials-weighted $J_1$ function yields the same result as in equation .
+
+Equation~ can also be applied to the upwind region by substituting \(-x\) for \(x\), and using \(P_D^+\) as the corresponding boundary condition. Thus, the solution for \(P(x, 0)\) over the entire domain \( - < x < \), $x 0$, assuming $f_1=f_2=0$, is given by:
+
+ P(x,0)=P_D^+(1+)(-x)+P_D^-(1-)(x),
+
+We have replaced the actual effects of $f_1+f_2$ with specification of the distinct values of $P_D^+$ and $P_D^-$ that are obtained instead from an ``integral'' condition (integrated Bernoulli equation) of the problem. Finally, it is worth noting that the simplified solution presented here does not capture the complexities of the pressure distribution around the disk or outside the control volume, and should be regarded only as an approximation of pressure variation along the disk axis.

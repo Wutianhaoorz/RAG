@@ -1,0 +1,2299 @@
+[
+reprint,
+
+nofootinbib,
+
+ amsmath,amssymb,+--
+ prl
+
+]revtex4-2
+
+[dvipsnames]xcolor
+
+[dvipsnames]xcolor
+
+[1]
+].1pt"0362.1pt
+ 
+ 
+2.4ex
+[-6.9pt]#1
+
+ sgn
+
+_ tot
+
+ '
+ '
+ '
+ '
+_ 
+_ 
+_ 
+_ 
+
+ uv 
+
+Ro_
+Ro_U
+
+ a_^+ a_-^+ 
+ a_^+ a_-^- 
+ a_^- a_-^- 
+ a_^- a_-^+ 
+
+ a_ a_ 
+ a_ a_ 
+
+U_^'*
+V_
+V_ 
+C_
+C_
+
+p_y^f
+K_y
+K
+
+U'
+
+ vv 
+ v 
+ 
+
+T_ 2D
+T_ 3D-2D
+T_ 2D-2D
+
+[1]#1
+[1]#1
+[1]#1
+
+Turbulence follows a few well-known organizational principles, rooted in conservation laws. 
+
+One such principle states that a system conserving two sign-definite invariants self-organizes into large-scale structures.
+
+Ordinary three-dimensional turbulence does not fall within this paradigm.
+
+However, when subject to rotation, 3D turbulence is profoundly altered:
+rotation produces 3D inertial waves, while also sustaining emergent two-dimensional structures and
+favoring domain-scale flows called condensates.
+
+This interplay raises a fundamental question: why and when are 2D flows sustained even when only 3D waves are excited?
+
+Using extensive numerical simulations of the rotating 3D Navier–Stokes equations together with a quasi-linear wave–kinetic theory,
+we show that near-resonant interactions between 3D waves and a large-scale 2D flow impose an additional conservation law: inertial waves must conserve their helicity separately for each helicity sign.
+This emergent sign-definite invariant constrains the waves to transfer their energy to large-scale 2D motions.
+
+However, as rotation increases,
+resonance conditions become more restrictive
+and the energy transfer from 3D to 2D progressively vanishes, leading to a transition from condensate-dominated turbulence to pure inertial-wave turbulence for the 3D modes. 
+We derive analytical expressions for this 3D–2D energy transfer as a function of rotation, Reynolds number and domain geometry, and verify them numerically.
+
+Together, these results establish a mechanism underlying two-dimensionalization in rotating turbulence, and, more broadly, illustrate how wave–mean flow interactions can drive large-scale self-organization.
+
+Rotating turbulent flows abound in nature, from industrial to geophysical and even astrophysical flows.
+Yet, they remain challenging to understand, as they exhibit signatures of two-dimensional, three-dimensional and wave turbulence.
+
+A guiding principle for understanding turbulence is that out-of-equilibrium fluxes arise through inviscid conservation laws,
+determining how the various degrees of freedom interact.
+
+A remarkable manifestation is provided by
+systems which conserve two sign-definite, scale-related, quantities, 
+causing turbulence to self-organize into
+large-scale structures.
+
+The archetype system following this principle is the two-dimensional Navier-Stokes equations (2DNSE), in which both energy and enstrophy (the vorticity squared) are conserved and flow in opposite directions:
+ energy cascades upscale and enstrophy downscale .
+
+In a finite domain and with low dissipation, energy is ultimately concentrated on the lowest modes and forms a condensate: a strong large-scale coherent flow fueled by small-scale eddies. 
+
+Three-dimensional fluids, in contrast, conserve energy and sign-indefinite helicity (the scalar product between velocity and vorticity )
+and are organized very differently:
+
+both energy and helicity are transferred to small scales .
+
+However, when a 3D fluid is rotated, its phenomenology fundamentally changes, while its invariants remain the same.
+
+Rotation produces 3D inertial waves , each with an energy and a helicity of a given sign, while also tending to homogenize the flow along
+
+the rotation
+axis, generating two-dimensional motions .
+
+Once energized, 2D modes seem to exhibit an inverse energy cascade, similarly to 2DNSE, 
+which progressively generates
+larger-scale flows .
+With low dissipation, this leads to the generation of large-scale condensates in these rotating 3D flows .
+
+How and why two-dimensionalization occurs in rotating turbulence
+remains unsettled.
+Generally, for strong rotation, 
+ nonlinear interactions should be restricted to resonances, 
+ but such 3D-2D interactions have a strictly vanishing coupling .
+
+This causes 3D and 2D modes to decouple in the limit of infinite rotation, as established mathematically in
+, which stabilizes 2D motions when those are directly excited .
+ 
+ 
+
+However, most experiments and numerical simulations do not reach this asymptotic limit, and energy is observed to be transferred from 3D to 2D modes . This possibly occurs via near-resonant triads or four-wave interactions ,
+
+but it is unclear why energy is transferred directionally
+from 3D to 2D.
+
+To date, no mechanism for such a transfer based on the flow's global inviscid invariants has been established.
+
+Here we focus on two-dimensional condensates in rotating 3D turbulence, and identify such a mechanism in this context.
+Large-scale steady condensates
+
+alter the nature of turbulence.
+
+They favor non-locality and a different hierarchy of correlations.
+
+Contrary to homogeneous and isotropic turbulence, the dynamics is dominated by mean-flow-turbulence interactions.
+
+Quasi-Linear (QL) theory (inherited from Rapid Distortion Theory )
+provides a self-consistent perturbative statistical framework for this kind of inhomogeneous turbulence .
+
+It has led to analytical predictions of both mean-flow profiles and turbulent correlations in 2DNSE , and has also been applied to 
+2D geophysical and plasma systems 
+
+We investigate the formation of condensates in rotating 3D turbulence using direct numerical simulations ( ) and a quasi-linear wave–kinetic theory ( \& ).
+
+We show that near-resonant interactions enforce a conservation of helicity by sign, causing inertial waves to energize the large-scale 2D flow ( ). 
+As rotation increases, resonances become increasingly stringent and the coupling vanishes, marking the transition from a condensate-dominated turbulence to an asymptotic turbulence of inertial waves for the 3D modes.
+
+We derive scaling predictions for the 3D–2D energy transfer and confirm them numerically, thereby explaining the origin and evolution of two-dimensionalization ( ).
+
+Numerical set-up and observations
+
+We consider an incompressible rotating 3D fluid governed by the Navier-Stokes equations (3DNSE)
+
+	_t + &=- 2 _z - p + ^2 + _h ^2h + ,
+	
+ 
+
+in a periodic domain of dimensions $(L_x,L_y,L_z)$. We assume solid body rotation in the $_z$ direction, with rotation rate $$, entering the equations through the Coriolis force.
+
+The forcing $$ is a random white noise centered on a Fourier shell of radius $k_f$ and width $dk=1$. 
+
+The force has zero mean and a correlation function given by 
+
+ _ (t) _ (t') = 2 _ _+ (t-t'),
+
+where here and in the following $_g(x)$ is the discrete delta function equal to one when $g(x)=0$ and to zero otherwise. We set 
+$_ = _p - k_f 1 /(4 k_f^2 dk ) $ with volume $ = L_x L_y L_z /(2)^3$, such that energy is injected isotropically at a total rate $$.
+Note that in this set-up energy is injected in both 3D and 2D modes (i.e. $z$-invariant modes, with $p_z=0$) at rates $_ 3D$ and $_ 2D$, respectively, such that
+
+ _ 2D + _ 3D = , ~~~ _ 2D _ 3D.
+ 
+
+Nondimensional Reynolds and Rossby numbers defined at the forcing scale $l_f 2/k_f$ are given by
+$Re= ^1/3 k_f^-4/3 /$
+and
+$Ro = ^1/3 k_f^2/3 /(2)$.
+
+We simulate Eq.~ with the pseudospectral code GHOST , with resolution $(N_x,N_y,N_z)=128 (L_x,L_y,L_z) /$.
+
+The inertial range of the forward energy cascade is controlled by an eighth-order hyperviscosity $_8= 6 10^-29$.
+
+In the absence of strong bulk dissipation (e.g. Ekman friction ), and if energy reaches the 2D manifold, a condensate is known to form in steady state, saturated by ordinary viscosity~. Here we use a rectangular box with $L_y=2L_x = 2$, chosen such that the condensate takes the form of jets~,
+
+which allows for a simpler theoretical treatment.
+Note that the theory can be easily adapted to the vortex case $L_x=L_y$ and to the inclusion of friction $$ by replacing $ k_y^2$ by $$.
+
+We first explore the variation of the energy of the condensate with the external control parameters $Ro$ and $Re$, using the energy in 2D modes, $U^2 = | z|^2 $, as a proxy (Fig.~(a)). 
+The condensate emerges when rotation is strong enough, for $Ro 0.5$, below which the forcing excites rotation-dominated modes with a period faster than the eddy-turnover time ($_ 1/ < _nl (k_f)=^-1/3k_f^-2/3$). 
+In contrast, for $Ro 0.5$, the forcing shell is not rotationally-constrained and the flow only exhibits the usual 3D forward energy cascade, see Fig.~(b).
+
+When rotation is increased, the condensate grows in amplitude. 
+
+However, notably, the energy of the condensate starts decaying with rotation below a $Re$-dependent value of $Ro$ (e.g $Ro = 0.02$ for $Re=23$). At very large rotation and for low-enough $Re$, the condensate is replaced by a state of 3D inertial waves, shown in Fig.~(d) (the hollow circles in Fig.~(a) show the total energy for this flow). For higher $Re$, the amplitude of the condensate seems to instead asymptotically saturate at low $Ro$ (around $Ro = 0.001$ for $Re=23$). 
+
+Note that the system at low $Ro$ and low $Re$ exhibits bistability and hysteresis: 
+
+if initialized with $=0$, the inertial-wave state is obtained, as the flow does not spontaneously two-dimensionalize. On the other hand, the condensate state is obtained when traced from
+high to low $Ro$ by an adiabatic decrease
+
+(the squares obtained at the same $Ro$ as hollow circles in Fig.~(a) for $Re=6.6$ and $9.3$ are obtained in this way). 
+
+The decrease in condensate amplitude with $Ro$ in our DNS, and its complete disappearance for low $Re$, 
+is a signature ofdecoupling between 3D and 2D modes, expected in rotating 3DNSE when $Ro 0$ ($ $).
+In this limit, 
+the horizontal components of
+$z-$averaged solutions of rotating 3DNSE are expected to converge to solutions of 2DNSE, 
+as established mathematically in .
+
+Our numerical results provide compelling evidence of this phenomenon, thereby complementing previous numerical work , 
+as well as stability analyses of a single 3D wave or of a 2D flow .
+
+In the following sections, we will provide a quantitative theoretical description of the gradual nature of this 2D-3D decoupling, and the non-dimensional parameters determining where complete decoupling should occur.
+
+Our modeling approach will rely on a Quasi-Linear (QL) type of approximation, expected in the presence of a strong condensate, 
+where 3D fluctuations primarily interact with the 2D condensate.
+
+This picture is confirmed by analyzing 
+the spectral energy fluxes, decomposed into different interaction types, 3D-2D, 2D-2D and 3D-3D (see ),
+as showcased in 
+Fig.~(a) for $Ro = 0.011$ and $Re= 23$.
+
+The large scales, dominated by the condensate, are primarily energized by 3D modes excited around $k_f$.
+
+Meanwhile, only a small portion of the injected energy reaches small scales for this $Ro$. Such a directional transfer of energy from 3D modes to 2D modes appears to be ubiquitous in rotating flows .
+One goal of the present work is to suggest a first-principles explanation of this phenomenon.
+
+Quasi-linear approximation and effect of rotation
+
+We consider a stationary mean flow 
+$= = U(y) _x$ consisting of two $x$-invariant jets, corresponding to the condensate in the 
+rectangular
+domain of Fig.~. The average $ $ denotes both ensemble and vertical averaging.
+
+In the following, we denote by 
+
+ L_y (_y U)^2 dy 
+
+the root-mean-square shear rate, averaged over $y$.
+
+This defines a typical time scale $1/$
+over which turbulent fluctuations interact with the condensate.
+
+As discussed above, interactions with the condensate dominate over eddy-eddy or wave-wave interactions (see Fig.~(a)):
+$1/ _nl$, hence
+$ $. 
+
+Under this quasi-linear (QL) approximation
+, 
+the momentum equations for the mean flow and fluctuations $'$ are written as
+
+_t U &= - _y + _y^2 U =0 
+\\
+_t ' + U(y) _x ' &= - _y U v _x - 2 _z - p' + ,
+
+where $u$ and $v$ denote the $x$ and $y$ components of the fluctuating velocity $'$.
+
+We have neglected both regular and hyper-viscosity in the fluctuation equation .
+
+From Eq.~, the mean flow obeys the global steady-state energy balance
+
+ 
+ (U')^2= L_y _y U y ,
+ 
+
+where $ (U')^2 = (_y U)^2 dy/L_y $ is the energy dissipation by the 2D condensate and $T_2D$ is the energy transfer between the fluctuations and the condensate, both spatially averaged.
+
+We set out to answer the most basic question for this system: how does the condensate amplitude (i.e. energy in 2D mode) depend on the control parameters $Ro,~Re$ and the domain geometry, encoded in the ratios $l_f/L_y,l_f/L_z,l_f/L_x$
+(where $l_f$ is the forcing scale)?
+
+To do so, we must determine the energy transfer between 3D modes and the 2D flow, $$, and, crucially, its direction.
+This requires obtaining the Reynolds stress $$ appearing in Eq.~, 
+
+by solving the dynamical equation for a given mean-flow profile $U(y)$.
+
+For simplicity, we approximate the condensate as the lowest single trigonometric mode $U(y) = /k_y ~ ( k_y y)$ with $k_y= 2 /L_y$, which, since energy tends to accumulate in the gravest 
+mode, gives a correct leading-order approximation of the condensate (see Fig.~c for the mean-flow profile).
+
+The condensate amplitude 
+is then proportional to $U' L_y $, implying that $U'$ is the relevant order parameter, sufficient to capture the evolution of the flow with $Ro$ and $Re$ 
+(Fig.~). It is
+
+determined from the coupled system -.
+
+Having described the mean flow, we now turn to the 3D fluctuations. In the following, we exploit their wave-like character, assuming a time-scale separation so that $U'/2 1$, similarly to what is done in wave-turbulence theory. 
+In the absence of a condensate ($ = 0$), the Coriolis force generates inertial waves, $_^s e^i_^s t + i $, with dispersion relation
+
+_^s= s 2 p, s=1.
+ 
+
+This dispersion relation implies that slow motions are close to being $z$-invariant,
+a correspondence embodying the celebrated Taylor-Proudman theorem . Here, the vectors
+$_^s$ form the helical basis
+
+_^s = p p_ 
+= p p_
+ 	p_x p_z - i s p p_y	 \\
+		p_z p_y + i s p p_x \\
+	 - p_x^2 - p_y^2 	
+ . 
+ 
+
+with $=(p_x,p_y,p_z)$, $p=||$ and $p_^2 = p_x^2+p_y^2$
+, showing that the waves are circularly polarized. 
+In addition, this basis satisfies $i _^s = s p _^s $, i.e. it diagonalizes the curl operator with an associated eigenvalue equal to $s p $. This in turn implies that inertial waves carry a sign-definite helicity, $ ( )$, 
+i.e that a mode $$ with energy $E_$ carries helicity equal to $spE_$.
+
+We decompose the fluctuation field as 
+
+ '(,t) =_,s= 1 _^s ~a_^s (t) ~ e^i_^s t + i ,
+ 
+where $a_^s(t)$ is the time-varying amplitude of a helical mode $(,s)$ and $_^s$ is the frequency of the corresponding inertial wave.
+Each Fourier mode $$ thus supports two inertial waves $a_^+$ and $a_^-$, 
+each associated with a chirality $s= 1$, corresponding to the handedness of its circular polarization around the wavevector $$. 
+This chirality simultaneously determines the sign of the helicity carried by the wave, $s p |a_^s|^2$, and its direction of propagation in the $z$ direction, given by $ s ~( p_z)_z$. Waves of opposite chiralities coexist, which causes the total helicity of the flow
+$H = ( ) 
+ =_ (p| a_^+|^2 - p|a_^-|^2) H^+ + H^-$ to be sign-indefinite.
+
+Projecting Eqs.~- on the helical basis 
+
+leads to the triadic system
+
+ k_y^2 ^2 L_y^2 &= i k_y _,, s [ C_^ss 
+ a_^s* a_^s* ~ e^-i s _^ss t \\
+ &~~~~~~~+ C_^s,-s a_^s* a_^-s* ~ e^-i s _^+- t ] _ \\
+ _t a_^s &= [ ^ss U_^* ~ a_^s* e^-i s _^ss t \\
+& ~~~ +^s,-s U_^* ~ a_^-s* e^-i s _^+- t ] _ + 
+^3/2 L_^s e^-i_ t
+
+ k_y^2 U_ &= - i k_y _, [ C_^ss 
+ a_^s* a_^s* ~ e^-i s _^ss t \\
+ &~~~~~~~+ C_^s,-s a_^s* a_^-s* ~ e^-i _^s,-s t ] _ \\
+ _t a_^s &= _, [ ^ss U_^* ~ a_^s* e^-i _^ss t \\
+& ~~~ +^s,-s U_^* ~ a_^-s* e^-i _^s,-s t ] _ + _^s e^-i_^s t
+
+with $_ = _++$ and beating parameters
+
+ _^ss & _^s + _^s= s2 p_z (p - q ), \\
+ _^s,-s & _^s + _^-s= s2 p_z (p + q).
+
+The coupling coefficients arising from the projection are given by
+
+$ C_^s_1,s_2 =2 (h_,x^-s_1 ~ h_,y^-s_2 + h_,x^-s_1 ~ h_,y^-s_2)$ and
+$^s_1,s_2 = - i p_x ~( _^-s_1 _^-s_2) + i k_y ~ (h_,x^-s_1 ~ h_,y^-s_2)$, for a $y-$dependent shear flow in the $x$ direction.
+
+In this paper, we always refer to $=(0, k_y,0)$ as the single 2D mean-flow mode, and $,$ as 3D modes such that $q_z=-p_z, q_x =-p_x$, $q_y = -p_y - k_y$. 
+
+A 3D mode $a_^s$ interacts with the condensate over a characteristic time $1/$ 
+via Eq.~.
+This interaction involves either a mode $a_^s$ of the same chirality $s$ (which we call a homochiral-wave interaction), or a mode $a_^-s$ of opposite chirality (heterochiral-wave interaction) based on the chirality of the three triadic modes..
+
+Waves exchange energy with the condensate through both types of interactions, as seen in Eq.~.
+
+However, in the presence of rotation, the oscillating factors in Eqs.~-, $ e^-i _^ss t$, will suppress interactions between waves that satisfy $_^s $. This is a type of resonance condition for the condensate-wave system, similar to that in wave turbulence, where wave interactions are restricted to triadic resonances in the limit of fast rotation. As a result, interactions between two 3D waves with wavenumbers $, $ are possible only if 
+
+ 2 p_z (p - q ) & ; \\
+ 2 p_z (p + q ) & ^s ; 
+ 
+
+We will establish these conditions in more details and discuss their consequences in .
+
+Rotation is therefore seen to select only the interactions obeying - out of the full set of wave-condensate interactions in the 3DNSE, depending only on the value of the rescaled condensate amplitude $$. This implies that, in the limit of fast rotation, the energy transfer $$ is a function of $$ only. Hence Eq.~ can be recast in the form
+
+ ^2^2 = 4 ^2 ~ [ ],
+ 
+
+where
+
+ 2 = Ro Re^1/2 
+
+ is a large-scale Rossby number emerging when rescaling Eq.~ by $$, see also . 
+
+Equation~ describes a self-tuning of the rescaled condensate amplitude, $/$, such that the condensate exactly dissipates the energy input from the waves. 
+It also implies that $/$ is a function of the single parameter $$. 
+
+This is confirmed in our DNS data, for which the rescaled condensate amplitude $(^2 dy/L_y)^1/2/(L_y ) U' / $ collapses as a function of the control parameter $$ for all $ 1$ and high $Re$, see Fig.~(a). 
+
+To obtain the condensate amplitude as a function of $$, i.e. solve equation~ for $U'/$, we need to consider the interactions selected by a given value of $U'/$ in Eq.~-. In particular, for heterochiral-wave interactions, condition reads
+
+ _^s,-s 2 _^s = p & .
+ 
+
+At sufficiently-large rotation,
+when $/ l_f /L_z$, no waves $$
+satisfy condition and heterochiral interactions therefore decorrelate.
+Thus, for fast enough rotation, we expect that only homochiral-wave interactions would be present.
+
+To verify this in our DNS, we decompose the energy flux to the condensate into contributions from homochiral and heterochiral interactions, by measuring $^s_1,s_2 = -_|| < 5 _ 2D, , 3D _ (_^s_1 _^s_2) _$. Here $^s,s$ 
+is the transfer between 3D waves with the same chirality and 2D modes (the latter not decomposed into the two helical modes). 
+
+Similarly, $^s,-s$ is the energy transfer involving waves of opposite chiralities.
+
+We find that $^s,-s = 0$ below $ l_f/(2 L_z) = 0.1$, see Fig.~(a) (we will explain later how this condition on $$ arises).
+
+In the following, we will focus on the regime $ l_f/(2L_z) $, 
+where condensate-wave interactions do not couple waves of opposite helicity signs.
+
+The range $ l_f/(2 L_z) $ will be analyzed in a forthcoming publication~.
+
+Kinetic theory for the mean-wave system
+
+Kinetic equation and near-resonances
+
+The remaining homochiral interactions require additional treatment: 3D waves and 2D modes are expected to decouple in the infinite rotation limit, making a kinetic theory for the mean-wave system subtle. Here we develop such a theory, showing how the constraint arises.
+Assuming $ $, Eq.~ 
+can be treated following the procedural steps of wave-kinetic theory , here applied to an inhomogeneous system.
+We focus on correlators 
+
+at an arbitrary time $t=0$, 
+
+$ a_^s a_^s (t=0) = 2 _+ ~ e_^s(0) + a_^s a_-+^s (0) _++$, 
+
+with $ e_^s |a_^s|^2/2$ the energy of a 3D mode $$ and $ a_^s a_- + ^s $ an inhomogeneous correlator associated to the single condensate wavenumber $$.
+
+We consider the wave dynamics on a time scale $t = o (1/)$ which is slow compared to the characteristic wave period $1/$, and 
+obtain
+
+a kinetic equation
+describing the energy evolution from $t=0$ (see Appendix ):
+
+e_^s(t) 
+= ^2 _, & ( |_|^2 [ ( ^ss V_ ^ss* ) e_^s + ^ss ^ss*
+ e_^s ] \\
+ & 
+^ss t )) _^++2 _ ) + _ t + e_^s(0)
+
+&^s(t) - e_^s(0)t 
+ = _^s \\
+& ~ + 2 ^ssti_^ss t U_^* ^ss a_^s a_^s ^* _
++ O(^2 ) \\
+&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ ( -) + c.c.
+
+Because the oscillating factor 
+$^sst i_^sst$
+in Eq.~ decays with $_^sst$, 
+mean-wave interactions are restricted to triads such that $_^ss t 1$ for $t= o(1/)$, with two possibilities:
+
+ 
+ 
+ _^ss = 0 \\
+ 
+ _^ss 0 
+ _^ss t 1.
+ 
+
+Exact resonances are the only contribution to Eq.~ in the asymptotic limit $ t $ (meaning the limit $Ro0$ taken before any other).
+
+However, system - 
+obeys the Greenspan property :
+the coupling to the 2D mode in Eq.~, proportional to 
+
+i k_y C_^ss &= 4 p p_ q q_ 
+[ (p_y- q_y) p_x ( p_z^2 - pq ) \\
+&- i s (p - q) p_z ( p_x^2 + p_y q_y) ) ],
+
+is null when $_^ss = 0$, i.e when either $(k_y=0, q_y = - p_y)$ or $(k_y=-2p_y, q_y= p_y)$.
+This is a consequence of the triad being constrained by the resonant condition and the conservation of energy and helicity
+
+.
+
+Therefore, exactly-resonant triads do not transfer energy to the 2D flow. 
+
+However, 3D modes which satisfy the near-resonance condition rather than exact one, $_^ss t1$ and in particular $_^ss /U'1$, can exchange energy with 2D modes. 
+
+As the condensate occupies the lowest, box-scale, mode $k_y= 2/L_y$, it couples with waves such that $q_y - p_y$, hence the corresponding homochiral interaction is naturally near-resonant (i.e close to the exactly-resonant triads $k_y=0, =-$). Indeed, the beating parameter
+
+ _^ss = L_y p p^2 + O ( (L_y p)^2 )
+ 
+
+can be much smaller than $$ (in absolute value), suppressed by a factor of $1/(pL_y)$ for such triads. Note that as these interactions are never exactly resonant, the transfer coefficient Eq.~ is always finite, proportional to $2/L_y$. 
+
+The oscillating factor can then be modeled as
+
+ 
+
+ ^ss t _^ss t 
+ 
+ ( 1
+ - ^ss|
+ )
+ __^ss < ,
+ 
+
+using a 
+Heaviside filter equal to one
+when $|_^ss| / < 1$ and zero otherwise.
+
+The cutoff at $|_^ss|/U'=1 $ approximates the decay of the oscillating factor
+with $|^ss_| t = o(|^ss_| /)$ (see Appendix ).
+The geometry of a given triad enters the condition through the geometric factor $|_^ss|/$, which determines how close to resonance the triad is. For $ /$ large but finite, triads 
+with a sufficiently small geometric factor are near-resonant ($|_^ss | <$) and
+give a secular contribution to (see ). 
+However, any such triad becomes off-resonant if $/$ is too large ($|_^ss | $), since $|_^ss|/>0$. Such triads will therefore not contribute to and will decouple from the 2D flow.
+
+Note that while it is formally more accurate to approximate the oscillating factor as a smooth function of $/$, and thereby capture a 
+smooth transition from near- to off-resonances (See ), in most of this paper we use a sharp Heaviside filter for simplicity.
+
+With our modeling of the oscillating factor in , we finally obtain a kinetic equation at $O(/)$ (see the discussion of the order in Appendix ),
+
+ _t e_^s 
+ =&
+ _^s
++ 2 U_^* ^s s a_^s a_^s ^* 
+_ 
+~__^ss < 
+\\& + ( -)
++ c.c.,
+
+describing the evolution of the wave energy of mode $$ due to a near-resonant coupling with the condensate mode $$, where most of the 2D energy is concentrated.
+
+Similarly to classical wave-turbulence theory, here the order of limits $l_f/L 0$ and $ t $ matters. Taking the infinite box limit first, followed by $ t $, leads to $|_^ss|/ 0$ in , so that the 2D condensate and 3D waves remain coupled. On the contrary, in the opposite order of limits, near-resonances disappear and the 2D mode decouples from the 3D waves. The former limit is the classical weak wave-turbulence limit , and can also be considered in the absence of a condensate, for a homogeneous 2D flow. As interactions are dominated by near-resonances in this limit, we expect 2D and 3D modes to remain coupled, 
+as they do here with a condensate.
+
+However, within the standard weak wave-turbulence derivation , the transfer coefficient between 3D and 2D modes entering the kinetic equation is evaluated on the resonant manifold, $_^ss = 0$, where it vanishes, resulting in decoupling instead. This implies that wave-turbulence theory may need to be refined to properly capture the coupling between waves and 2D modes in this limit, as we discuss in . 
+
+Kinetic equation in the limit of scale separation $l_f/L_y 1$
+
+In the limit $l_f/L_y 1$, where there is scale separation between the 2D flow and the 3D waves, the kinetic equation Eq.~ can be greatly simplified. 
+In this limit, nearly-resonant interactions such that $_^ss < $ (evaluated at the forcing scale $k_f$) obey the energy balance
+
+_t e_^s =
+ [ p_x _p_y + p^2 ] _^s 
++ _^s, \\
+ _^s 2( a_^s a_-+^s + a_^s a_--^s ) + c.c, 
+
+obtained from Eq.~ by expanding the coupling coefficient $^ss$ 
+at the lowest order in $l_f/L_y$ (see Appendix and for a similar treatment).
+
+The correlator 
+$_^s $
+is responsible for
+the energy transfer between the 3D waves and the 2D condensate, 
+as it determines the Reynolds stress correlator between modes $$ and $ $ with $=2/L_y ~_y$:
+
+ _^ss & ^s v_-+^s + u_^s v_- - ^s 2 + c.c\\
+ &=- p^2 _^s + O (L k_f ).
+ 
+The correlator $_^ss$ contributes to the total Reynolds stress 
+$ =(_,s uv_^ss )(k_y y) $ and enters the mean-flow energy balance:
+
+ & ^2 = + , ~~~~ \\
+ &
+ 
+ 
+ 
+ 
+ = d _s=1 
+ _^ss ~__^ss < \\
+&= - _p_z 0 
+ d _s=1 
+p_x p_y p^2 ~_^s ~__^ss < + O (L k_f ), 
+
+ 
+
+where $$ is the total energy transfer between the 3D waves and the 2D condensate, and 
+$$ is the energy input from 2D modes $p_z=0$, which must be treated separately (Appendix ).
+
+In steady state, Eq.~ takes the form
+
+ &_p_y _ adv^s() = - _^ss
+ + _^s, 
+ \\
+ &_ adv^s() - (/) p_x _ ^s ,
+
+where $_ adv^s()$
+is the spectral energy flux in the $p_y$ direction, due to shearing of the waves by the mean flow, and 
+$- _^ss$
+is the energy transfer between the condensate and wave modes $$,
+which enters the mean-flow energy balance Eq.~.
+
+Equation reflects the exact relationship between the spectral wave energy flux and the energy transfer to the condensate: 
+outside of the forcing scale, the energization of the condensate is determined by the dependence of the energy flux $_ adv^s$ on $p_y$.
+A wave $$ can lose (gain) energy to (from) the condensate, in which case $ _^ss > 0$ ($ _^ss < 0$), and $_ adv^s()$ decreases (increases) with $p_y$. A vanishing transfer term naturally implies a constant energy flux $_ adv^s ()$.
+
+Note that Eq.~ 
+does not apply to
+
+modes excited at $k_f$ and that do no resonate with the condensate (i.e such that $_^ss _p- k_f > $). These modes rather interact with other 3D modes via wave-wave interactions.
+
+By writing our QL energy balance as a closed system, we have ignored the scenario by which some modes $p>k_f$, energized from off-resonant modes at $k_f$ by 3D-3D interactions,
+
+become nearly-resonant with the condensate.
+
+Instead, we consider that for each $(p_x,p_z)$, if the mode $p_y$ at the forcing scale ($p_y^2= k_f^2 - p_x^2 - p_z^2$) is off-resonant,
+larger wavenumbers $p_y^2 > k_f^2 - p_x^2 - p_z^2$ also remain so,
+and 
+do not exchange energy with the condensate.
+
+Emergent conservation law and 
+energy transfer to 2D
+
+Before analyzing the kinetic equation in detail, 
+we first discuss 
+why energy is transferred directionally from the 3D waves to the large-scale 2D flow.
+
+We show that this is due to $(i)$ the emergent conservation of the waves' single-sign helicity $H^s _ s p e_^s$, which implies that $(ii)$ energy is transferred from the 3D waves to the large-scale 2D flow.
+
+Note that the argument does not require the presence of a condensate and applies for any scale-separated 2D-wave interaction in steady state.
+
+Wave interactions mediated by a 
+2D flow are restricted to be between same-helicity-sign waves at large rotation (see ). 
+
+Given such a restriction,
+energy (resp. helicity) injected into a sector $s$ is only transferred to 2D or to the $s$-waves, and 
+the balance of wave energy (resp. helicity) in the inertial range
+can be written separately for each sign $s$:
+
+3
+ ^s &=& ^s
+ &+& _,\, p k_f T_ 3D^s, \\[6pt]
+ s k_f ^s &=& ^s_
+ &+& s p T_ 3D^s,_
+ 
+
+with $^s$ the energy injection rate into modes of helicity sign $s$, 
+$T_3D^s,$ the energy transfer to a 3D mode $(,s)$ mediated by the 2D flow, and
+$ ^s$ the energy transfer between the 2D flow and the $s-$waves. 
+
+$^s $ is the helicity transfer rate between the $s$-waves and the 2D flow. 
+
+(Note that $T_ 3D^s,$ and $^s$ generalize, respectively, the terms $_p_y _ adv^s$ in Eq.~ and $ d _^ss /$ in Eq.~, derived in the presence of a condensate.)
+
+The 2D flow is assumed to be of characteristic wavenumber $k$, and $^s $ can be further decomposed into the contribution from each chirality of the 2D flow:
+$^s = k (^s,+ - ^s,- )$.
+
+The only way for waves of opposite helicities to exchange helicity is via $^s$. 
+However, when the 2D flow occupies a scale much larger than the energy injection scale, $k/k_f 1$, 
+this 2D-3D helicity exchange is negligible: $^s k^s k_f ^s$, 
+assuming that 
+the energy transfer to each 2D chirality is of the order of $^s$ ($|^s,|/^s O(1)$).
+Therefore, from ,
+
+ k_f ^s _, p k_f s p T_ 3D^s,,
+ 
+
+and the waves of chirality $s$ that interact with the large-scale 2D flow conserve their single-sign helicity $H^s _ s p e_^s$ 
+at the leading order in 
+$k/k_f$. This establishes $(i)$.
+
+Due to this additional conservation of a sign-definite quantity $^s$,
+following Fjrtoft , we expect the energy of the waves to be blocked from reaching arbitrarily small scales (large $p$).
+Indeed, assuming that all modes at arbitrarily large $p$ have the same sign of transfer $T_ 3D^s,$,
+
+and that $|T_ 3D^s,|$ remains bounded,
+we have that $T_ 3D^s, 0$ as $p$, otherwise the sum in equation does not converge and the single-sign helicity balance cannot be satisfied. 
+
+The wave energy can then either be transferred to large-scale 3D modes $p k_f$, or to the large-scale 2D mode $k k_f $. 
+However, the former scenario is not expected due to the advection of the waves by the large-scale 2D flow, which tends to shear them and generally
+transfer the wave energy to small scales. This generates a positive forward flux, which however is vanishingly small at small scales due to the constraint of conservation of $H^s$.
+Thus, energy is dominantly transferred from the waves to the large-scale 2D flow, $^s ^s$, showing $(ii)$. 
+This explains how large-scale 2D flows can be irreversibly energized by 3D inertial waves at large rotation.
+
+We now derive these results for our condensate-wave system, starting from Eq.~.
+
+When multiplying Eq.~ by $sp$, we obtain a conservation law for the wave helicity $s p e_^s$, for each pair $(p_x,p_z)$ that obeys the near-resonant condition $_^ss < $
+at the forcing scale $p=k_f$:
+
+ _t (s p ~ e_^s) + _p_y (s p ~_ adv^s ) = sp ~ _^s,
+ 
+
+with $ s p _ adv^s $ a helicity flux in the $p_y$ direction due to the advection by the mean flow.
+
+The advection of the waves by the mean shear flow $ = U(y) _x$ causes the motion of energy along characteristics in the variable $p_y$, and hence generates an energy flux $_ adv^s $ to small scales $|p_y| $. 
+
+However, the downscale energy flux $_ adv^s$ 
+decays with $p$ as a consequence of the conservation of single-sign helicity.
+Indeed, integrating Eq.~ in steady state with consistent boundary conditions at $|p_y| $ (See Appendix ), 
+
+we obtain that all the injected helicity is transferred to small scales via a finite helicity flux, so that
+
+ |_ adv^s()| &=
+ \
+ 
+ & ^s_p_x,p_z p , & p> k_f p_x p_y < 0 \\
+ & 0, & p> k_f p_x p_y > 0
+ 
+ .
+ 
+
+with 
+$^s_p_x,p_z _-^ ^s_ ~dq_y$ 
+the energy injection rate in each $(p_x,p_z)$ line, assuming that the near-resonant condition 
+$_^ss < $ 
+is satisfied at the forcing shell.
+
+Because $_ adv^s()$ decreases with $p_y$ at small scales, the energy balance
+Eq.~ implies that
+waves lose energy to the condensate, i.e. that the energy 
+transfer $ _ = - 2p^2 _^s > 0$ when $p>k_f$.
+
+Now, we can integrate Eq.~ to obtain the energy transfer to the condensate from each resonant $(p_x,p_z 0)$ line:
+
+ _^ss dp_y &= _-^ dp_y~ _^s 
+ - 
+ _ adv^s()|_p_y=-^p_y= 
+ \\
+ &= ^s_p_x,p_z,
+ 
+
+using Eq.~ when $|p_y| $.
+Equation shows that all the energy from such a line is transferred to the condensate. 
+
+The conservation of the wave helicity $H^s$ 
+in the background of a large-scale mean flow can also be understood as the conservation of wave action $_e_^s/_^s$ , applied to each wave species $s$ separately.
+Indeed, for each $p_z0$, wave action is proportional to helicity:
+$_p_ye_^s /_^s = ( _p_ys p e_^s) /p_z$. The directional transfer of energy to the mean flow can then be understood as being due to the motion of energy along characteristics in $p_y$-space, towards large $p$. This decreases the wave frequency $_^s$, and hence requires a decrease in wave energy $e_^s$. A similar phenomenon occurs in plasma
+or Rossby-wave systems and in streaming of acoustic waves .
+
+Solution for the condensate as $ $ and 2D-3D decoupling
+
+We now explicitly compute how much energy is transferred from the 3D waves to the large-scale 2D flow as a function of control parameters $$ and $l_f/L_i$ ($i=x,y,z$), and thus determine the condensate amplitude $/$, using our QL theory.
+
+The strategy goes as follows: we first determine the total energy transfer from the 3D waves to the condensate for a given mean-shear rate $$, $[/]$.
+
+Next, we use the mean-flow energy balance to close the system and determine the condensate amplitude $/$, and thereby the energy transfer to the 2D flow, $$, as a function of $ =2 $ and $l_f/L_i$ ($i=x,y,z$).
+
+Energy transfer as a function of $/$
+
+For a given mean-shear rate $$, the total transfer to the condensate is obtained by summing Eq.~ over all near-resonant lines $(p_x,p_z 0)$, which gives
+
+ [ ]= _ _^ss < , p_z 0 d ~ _,
+ 
+
+where integration is restricted to
+
+near-resonant 
+waves excited in the forcing shell.
+
+The explicit dependence of $$ on $/$ is found by
+
+computing the number of contributing near-resonant modes,
+
+i.e such that
+
+ 
+ k_f^2 < 2 k_y, p_y k_y \\
+ k_f < k_y^2, p_y = 0,
+ 
+ 
+
+at the forcing scale, corresponding to condition using the approximation $ p_y k_y$ up to $p_y =k_y$.
+
+At low rotation, provided that all interactions are with homochiral waves ($/ < l_f/L_z$), 
+all the excited waves transfer their energy to the condensate: 
+
+ = _ 3D, 
+ L_y < < L_z,
+
+where $_ 3D$ is the energy injection rate into the 3D modes.
+
+However, below $/= l_f/L_y$, waves start to progressively decouple from the 2D flow as rotation is increased (i.e do not obey condition ), 
+with fewer and fewer modes contributing, being restricted to low $p_z$ and $p_y$.
+
+Consequently, the energy transfer $ [/]$, computed explicitly in Eq.~ (Appendix ), deviates from 
+$_ 3D$ and decreases with rotation, scaling as
+
+ l_f,
+ < L_y,
+
+with a regime-dependent prefactor including logarithmic corrections in $U'/$.
+The latter produce a 
+steeper scaling in $/$ and cause $ $ to vanish at the finite value $= L_z (L_y)^2 $, as
+
+ = 
+ l_f (
+ -L_z (L_y)^2 
+ ), L_z ( L_y )^2.
+ 
+
+Below this threshold, even waves with the lowest values of $p_z$ and $p_y$, 
+$p_z 2/L_z$ and $p_y = 0 $,
+are completely 
+decoupled from the 2D flow.
+
+The remaining missing piece to determine the total energy transfer is $$, the energy input from 2D modes $p_z=0$ due to 2D-2D interactions.
+
+The above framework does not apply to such modes, which are not affected by rotation.
+In particular, 2D modes do not conserve single-sign helicity but instead horizontal enstrophy .
+It can be shown that half the energy injected into the 2D modes is transferred to the condensate, because of the conservation of horizontal enstrophy, 
+
+ = 2 _ 2D.
+
+The other half is transferred to small 3D scales due to the vertical velocity component
+
+behaving as a passive scalar, hence transferring its energy to small scales (Appendix ).
+
+Closed solution with isotropic forcing
+
+For isotropic forcing, like in our DNS, we obtain a piecewise function $ = f()$ by solving (see Eq.~),
+which, at low rotation, reads
+
+ &= 2 ( + 2 ) ^2 = _ 3D + 2_ 2D, \\ & 2L_y < < 2 L_z.
+ 
+
+This solution is similar to condensates in 2DNSE, where all the injected energy reaches the domain scale.
+
+In contrast, at large rotation, the solution deviates from the 2D-like scaling and an approximate asymptotic solution when $ L_y (L_z )^2$ can be obtained for our aspect ratio:
+
+ 
+
+ &= ^2 l_f ( l_f), > ^* \\
+ &= 2 2 , < ^*, 
+
+where $^* = 2 L_y 2 (2L_z/l_f)$, with $_ 2D = 2L_z _ 3D$ for our isotropic forcing,
+is a crossover $$ below which 
+$ = 2$ dominates over $$.
+
+From solution ,
+the amplitude of the 2D flow saturates to a finite value $ (2)^1/2$ when $ ^*$.
+
+Meanwhile, the transfer $$, written explicitly in Eq.~, vanishes at a critical $^c$ as 
+
+ &= 
+ l_f (4 L_z )^2 ( - ^c ), \\
+ & ^c = (L_y )^2 (L_z )^2.
+
+Below $^c$, 3D modes completely decouple from the 2D flow. We therefore predict a second-order transition for the energy transfer when the 2D manifold is forced.
+
+We compare the condensate amplitude, Eqs.~-, to our DNS results in Fig.~(a), 
+and the corresponding energy transfer $ () $, Eq.~, in Fig.~ (black solid lines).
+
+The energy balance equation , closed with $(/)$ from , can also be solved directly via a numerical root-finding procedure, leading to the red lines in Figs.~(a) (inset) and , which our asymptotic solutions approximate.
+
+The agreement between our DNS data points for $ < l_f/(2L_y) 0.05$ and the QL solutions 
+
+is excellent and does not require any fitting parameter:
+
+below $ = l_f/(2L_y) 0.05$,
+the condensate progressively disappears with increasing rotation, following solution (black line in Fig.~), while $$ decays to 0, in a manner close to, but steeper than $^2$ (Fig.~). 
+
+As $$ decreases, $/$ eventually approaches a linear scaling $ $ for $0$. When $=0$ (white points in Fig.~), the condensate amplitude is set only by the 
+
+2D-2D interactions.
+
+Note that since $_ 2D $,
+
+the value of $$ in the DNS can be reduced and even vanish due to viscous effects at the forcing scale. This is why the condensate disappears in the lowest-$Re$ cases in the DNS, replaced by a state of inertial waves.
+
+Observing the linear scaling when $ 0 $ therefore requires very large $Re$ and small $Ro$, and it is difficult to completely confirm it from the DNS. 
+However, the point $ 0.01$, where $ = 0$ while $ / 0$, is consistent with such a regime.
+
+Note also that our prediction overshoots the DNS data points in the regime $ l_f/(2L_y)$.
+This could be due to our sharp treatment of near-resonances, which overestimates the contribution of near-resonances $_^ss t 1 $ (see Appendix ), or of other viscous or non-linear effects neglected in the theory.
+
+Other forcing scenarios
+
+When forcing only the 3D waves ($_ 2D = 0$),
+the notable difference with the isotropic case in is that there are no remaining 2D-2D interactions in the limit $ 0$.
+
+Then, for $ 2L_y$ the solution essentially takes the same form as in 
+(see for the full result), 
+but vanishes below a critical $^c$. The condensate amplitude and the 3D-2D energy transfer then exhibit a jump near the transition: 
+
+ & 
+ ^2 l_f
+ (1+^2 )
+ \\
+ & ^2 ( l_f )^2 ^2
+ (1+^2 )^2, \\
+ & ^c = (L_y)^3/2 (L_z )^1/2.
+ 
+
+Therefore, in the absence of forcing in the 2D manifold, we predict a complete disappearance of the 2D flow below a finite $^c$, 
+
+and an associated first-order transition occurring at $^c$ (Appendix ).
+This discontinuous transition is expected to be generic, independent of the particular 3D forcing and large-scale dissipation mechanism.
+Since the energy transfer in vanishes at a finite $/$, the solution of Eq.~ for $/$ with $_ 2D = 0$ switches at this point from a finite value to a zero condensate amplitude.
+
+In contrast, when forcing only the 2D manifold ($_ 3D = 0, =_ 2D$), $= /2 $: Eq.~ therefore leads to 
+
+ = ^2 = 2 , 
+ < 2 L_z,
+
+a rotation-independent scaling similar to that of condensates in 2DNSE.
+This regime was observed in numerical simulations of the 2D-forced rotating 3DNSE when $Ro 0$ .
+We expect this regime to be realized below $Ro (l_f/2L_z) Re^-1/2$ .
+
+Remarks on lower rotations
+
+At large-enough rotation ($ l_f/(2L_z))$,
+we have shown that
+only condensate-wave interactions 
+involving homochiral waves
+
+survive, and that these waves transfer all their energy to the condensate: rotation has turned sign-definite an otherwise sign-indefinite invariant, thereby fundamentally altering the energy distribution through scales .
+
+However, at lower rotation, ($ l_f/(2L_z)$) interactions are not limited to be homochiral, and waves of opposite helicity interact through the condensate (Fig.~a).
+In this case, waves can also extract energy from the 2D flow.
+
+We dedicate a forthcoming publication to this higher-$Ro$ regime .
+
+As the sustainment of 2D condensates in rotating 3D flows requires some homochiral wave-condensate interactions, it relies on the existence of inertial waves (or, more loosely, rotation-dominated modes) at the forcing scale.
+
+This is why the condensate is lost when $Ro 0.5$, above which the forcing scale is not constrained by rotation (see Fig.~).
+
+Order of limits
+
+We have established that 3D-2D decoupling occurs progressively, starting from a fully-coupled regime at intermediate rotation ($2L_y < $), to complete decoupling below a critical $^c (L_y )^2 (L_z)^2 $.
+
+Crucially, the limits between $L_y, L_z $ and $ 0$ do not commute.
+
+Taking the infinite box limit in the horizontal direction followed by $ 0$ (the weak wave turbulence limit in this direction), 3D and 2D modes remain fully coupled. For our $y$ dependent condensate, this corresponds to $L_y /l_f $ first, followed by $ 0$, resulting in a vanishing 2D wavenumber $ 0$ which makes the corresponding 2D-3D triads always near-resonant. As a result,
+the scaling $ ^2 $ , similar to 2DNSE, is realized in this limit. 
+
+This is consistent with the previous derivation in , corresponding to this order of limits.
+
+In the vertical direction, when taking $L_z /l_f $ before $ 0$,
+3D and 2D modes never completely decouple, as
+3D modes $p_z 2/L_z$ are always nearly-resonant with the 2D flow.
+
+This behavior is consistent with the numerical stability analysis in and with the convergence rate between rotating 3DNSE and 2DNSE derived in .
+
+In the other direction, when $L_z /l_f$ is decreased (for $<l_f/2L_y$), 
+
+there are fewer resonant modes $p_z 2/L_z$, so decoupling should occur for larger $ (l_f/L_z)^1/2$.
+
+Finally, our treatment of near-resonances and the broadening around them, via the Heaviside approximation of the oscillating factor in , is rough by nature.
+
+It implies, in particular, that near-resonances completely decorrelate below a finite value of the frequency broadening $/$.
+
+Thus, our solution predicts a complete 3D-2D decoupling below a finite $= ^c$, which seems to be confirmed by the DNS.
+
+A smoother treatment of the oscillating factor, as with a Lorentzian function of $/$, would not produce a complete decoupling at any finite $$ (see Appendix ).
+
+Conclusion and discussions
+
+This work identifies a nonlinear mechanism by which 3D inertial waves transfer energy to large-scale two-dimensional structures in rotating turbulence.
+Near-resonant, scale-separated, 2D–3D interactions conserve the helicity of sufficiently-fast waves, separately by sign.
+
+This 
+
+imposes an upscale flux of energy into large 2D scales. This is in sharp contrast with 3D–3D interactions, whether dominated by waves or by eddies , which mix helicity signs, so that both energy and sign-indefinite helicity cascade to small scales.
+
+We have shown that this mechanism is responsible for sustaining 
+large-scale 2D condensates in numerical simulations of rotating 3D turbulence.
+
+As rotation is increased, near-resonances become increasingly stringent and progressively suppress the 2D-3D coupling, until 3D waves and 2D motions fully decouple in the limit $Ro l_f/L 1$, i.e taking the limit of fast rotation before the infinite-box limit.
+
+When 3D modes are excited, this leads to a regime of pure inertial-wave turbulence for the 3D modes.
+
+3D-2D decoupling is a fundamental property of the rotating 3D Navier-Stokes equations 
+for which we provide compelling numerical evidence.
+
+We have derived analytical expressions for the condensate amplitude and 3D-2D energy transfer, confirmed in simulations, which clarify the dependence of this phase transition on rotation rate and domain geometry.
+
+How our results extend to rotating turbulence without a condensate -- for instance, in the presence of strong large-scale dissipation -- remains to be clarified.
+
+In that case, statistically homogeneous and isotropic 2D flows generically emerge, even in systems forced in 3D~.
+
+Once the energy reaches 2D modes, 
+it is transferred to large 2D scales via a classical inverse cascade within the 2D manifold,
+
+see e.g.~:
+ 2D–2D interactions are indeed expected to dominate over 3D-2D interactions, as the latter operate on slower near-resonant time scales or even decouple .
+
+ Thus, a key remaining question is how and why energy is transferred from 3D to 2D, powering this inverse cascade.
+ Our work suggests a possible scenario, 
+ through near-resonant triads irreversibly transferring energy to 2D modes when the scales of 2D and 3D modes are well separated.
+
+The extent to which this scenario is realized in statistically homogeneous flows requires further investigation, 
+but there is some numerical evidence of non-local 3D-to-2D transfers that
+
+seem to support this picture .
+
+It also remains to be seen whether a complete 3D-2D decoupling, similar to the one we report, can be observed in laboratory flows. 
+
+Our helicity-based mechanism may explain the generation of 2D flows in other types of rotating systems, like rotating convection or rotating–stratified flows .
+
+The helicity-by-sign constraint uncovered here is part of a wider class of emergent adiabatic invariants in nonlinear systems, where resonant interactions give rise to effective conservation laws, that then govern large-scale self-organization . It is also an example from a broader category of wave systems where zero-frequency modes are spontaneously generated and dominate, even though their resonant coupling with the waves vanishes. 
+Examples are found in planetary jets , plasma turbulence and stratified flows .
+
+Our near-resonant mean-wave framework opens new avenues for the understanding of this phenomenon. 
+
+We are grateful to Michal Shavit for sharing her invaluable insights with us.
+
+We also wish to thank Alexandros Alexakis, Eran Sharon, Omri Shaltiel and Paul Billant for fruitful discussions. The authors would like to thank the Isaac
+Newton Institute for Mathematical Sciences, Cambridge,
+for support and hospitality during the programme ``Antidiffusive dynamics: from sub-cellular to astrophysical scales'', which was critical to the development of this work. This work was supported by BSF grant No. 2022107 and ISF grant No. 486/23. 
+
+ 
+
+Derivation of the kinetic equation
+
+In this section, we derive the dynamical
+equation for the cumulant $e_^s(t) = a_^s a_^s* /2$ 
+in an expansion in $ / $. Here, $ $ denotes an ensemble average over forcing realizations. 
+
+Due to the presence of the mean flow, inhomogeneous correlators will be non-zero, and we will consider
+
+ a_^s a_^s &= 2_+ e_^s + ^s_ _++ 
+
+where $_f(k)$ is the discrete delta function:
+
+ _f(k)=
+ 1 f(k)=0 \\
+ 0 
+ 
+
+and $^s_$ is the (inhomogeneous) correlator between modes with wavenumbers $$ and $ =--$.
+
+We consider an isotropic white in time forcing, limited to a shell around a wave number $k_f$:
+
+ f_^s (t) f_^s' (t') = 2 (t-t') _+ _s s' _^s.
+
+where $_p ^s_=1/2$ and $_ _k_f^2- p^2 k_f^2+$, $ k =(L_x)^2+(L_y)^2+(L_z)^2$
+, i.e. a shell around $k_f^2$ is assumed to be forced such that the total injected energy is equal to $$. Note that we assume zero total helicity injection.
+In the continuum limit, $_p ^s_ dp ^s_p $ where $ = (L_xL_yL_z)/(2)^3$ so that the noise correlator becomes $_^s = _/2 = (p-k_f) /(8 k_f^2 )$, giving that
+$ d _ = 1$, and the forcing injects total energy at a rate $$.
+
+Energy equation
+
+We begin with the equations for the mean flow and fluctuations (waves) assuming the quasi-linear approximation, a time-independent two-dimensional mean flow $U_$, and considering scales where the dissipation is negligible for the waves. We shall work with a finite space (and discrete wavenumbers for the waves) here, and will comment about the continuum limit at the end. Recall that we are working in the interaction picture (working with the amplitudes of inertial waves, $a_p^s$) so that the equations are non-autonomous.
+
+We take the arbitrary initial time to be $t=0$. The equations then read:
+
+ k_y^2 U_ &= i k_y _,, s, [ C_^s 
+ a_^s* a_^* ~ e^-i _^s t ] _ \\
+ _t a_^s &= _, ,[ ^s U_^* ~ a_^* e^-i _^s t 
+ ] _ + _^s e^-i^s_ t
+
+with 
+
+ _^s=^s_+^_=2 p_z(p-q )
+
+where we have used that $U_k$ is two dimensional so that $k_z=0$, implying that $p_z=-q_z$. 
+
+Next we write the energy balance (equivalent of the kinetic equation) for the waves $e_^s = 2 a_^s a_^s* $:
+
+ & _t e^s_= 2( a^s*__t a^s_ + _ta^s*_ a^s_ ) \\
+ & = 2_, , [ ^s U_^* ~ a^s*_ a_^* e^-i _^s t 
+ ] _ \\
+ &+2 a^s*_ _^s e^-i^s_ t +c.c \\
+ & = 2_, , [ ^s U_^* ~ a^s*_ a_^* (t) e^-i _^s t 
+ ] _ +c.c+ ^s_
+ 
+
+where $c.c$ denotes complex conjugate and we have used that $ a^s*_ _^s = ^s_e^i^s_ t $, since the forcing is white in time (we assume the Stratonovich convention). 
+
+We assume that wave-mean flow interactions occur on a typical time scale of the order of $1/$, so that over a much shorter time scale, of order $t 1/U'$, the wave amplitude correlators can be assumed constant.
+
+Thus, performing a partial time average up to time $t 1/$ (the same procedure should be applied to the equation for the mean flow, Eq.~(), consistently giving contributions from the same triads), 
+
+ &(t)-e^s_(0)t \\
+ &=2_, , [ ^s U_^* ~ a^s*_ a_^* t_0^t e^-i _^s t'dt' 
+ ] _ +c.c+ ^s_ \\
+ & 
+ 2_, , ^sti _^st[ ^s U_^* ~ a^s*_ a_^* 
+ ] _ +c.c+ ^s_ 
+ 
+
+The influence of rotation on the dynamics comes in through the oscillating factor, $^sti _^s$, whose real part is shown in Fig.~ as a function of $_^st$.
+
+In particular
+
+(t) (^sti _^st ) 
+ 
+ 1 _^s t 1 \\
+ 0 _^s t 1
+ .
+ 
+
+Indeed, if $_^s$ is too large compared to the inverse of the evolution time scale $1/t$, the wave-mean-flow interaction term does not contribute secularly, as the oscillating factor evolves as $ _^sst$. Triads such that $ _^s t 1$ are therefore off-resonant and do not couple with the 2D flow.
+
+In contrast, for resonant or near-resonant triads, such that $_^st$ is sufficiently close to zero, the oscillating factor approaches its Taylor expansion and the interaction contributes secularly to the waves energy dynamics over the slow time scale $t$.
+Note that $(^sti _^st )=^st)-1_^st$ decays like $1/_ t$ for $_ t1$ and is at most $O(_ t)$ for $_ t1$, hence we neglect its contribution.
+There is also a lower bound for the time $t$ we need to consider here: the oscillations of the waves will be felt by the system (meaning that some interactions will average out to zero) only for times much larger than $1/(_^s)=1/4$, which occurs in interactions between opposite-helicity waves, $s=-$. Hence, such an expansion makes sense for $1/4 t 1/U'$, requiring a sufficient time-scale separation. Thus, the kinetic equation that we derive is an expansion in $U'/4$ (the ratio between the wave and non-linear time scale), where we keep the leading order term $O(U'/4)$. 
+
+We now approximate the oscillating factor as
+
+ (t) 
+ 
+ 1 _^s t < 1 \\
+ 0 _^s t >1
+ ,
+ 
+
+as visualized in Fig.~ (red line).
+
+By doing so, we extend the secular contribution of near-resonances up to $_^s t = 1$, 
+and deem off-resonant all values of $_^s t$ larger than 1.
+
+Next, given that $0<t<1/$, we further simplify the oscillating factor by estimating it at the upper bound of $t$:
+
+ (t) ( 1 - ^s| )
+ 
+
+where $$ denotes the Heaviside function.
+Making this approximation amounts to the following:
+
+ [-] When $|_^s |/ 1$, all times $t< |_^s | $ produce a secular growth, which is consistent with the approximate behavior of $(t)$ for such times. 
+ [-] For modes for which $|_^s |/ 1$, and if the time-scale separation between $1/$ and $1/U'$ is not very large, the time for partial-time averaging cannot be chosen such that $t 1/U'$, and modes that produce a secular growth then do not contribute fully (as $(t) < 1$ for $t 1/_^s$), so that approximating their contribution at one will be an overestimate; 
+ [-] For modes for which $|_^s |/ 1$ the interaction term is set to zero. This is consistent since there is sufficient time scale separation to take the partial-time average over times $|_^s | t $, for which such terms indeed average out to zero.
+ 
+ [-] For modes such that $|_^s |/ 1$, we have that $ t< 1/U' |_^s | $, so such modes should have non-zero interactions in principle, though they are here set to zero.
+
+Another option, more refined than the Heaviside approximation in and which partially addresses some of the above issues,
+
+is to use a Lorentzian function to model the oscillating factor,
+
+ ( ^sti _^st)
+ ( 1+ Q ( _t )^2 )^1/2 
+ 
+
+with $Q$ a tunable quality factor. See the blue line in Fig.~ with $Q=8$.
+
+Like the original oscillating factor, this function decays as $_ t$ when $_ t 1$, and is $1$ when $_ t = 0$ but is less than one for $|_ t| > 0$. Outside this range, it can be thought to model the evolution of the averaged oscillating factor, $t_0^t (t)$ with $t$.
+
+Next, we evaluate at $t = 1/$:
+
+ ^sti _^st
+ ( 1+ Q ( )^2 )^1/2 
+ 
+ 
+
+By doing so, for modes for which $_^s < t < $ we set the oscillating factor to a value between 0 and 1, instead of setting it at $0$ as in . Therefore, unlike the Heaviside filter, the Lorentzian filter models an infinitesimal contribution of near-resonances as $$, which never fully decouple. On the other hand, for modes for which $ t < 1/_^s$ the oscillating factor is taken to be less than 1 unless there is significant time scale separation $_/U'1$.
+
+Alltogether, due to the contribution of near-resonant triads modeled by our choice of filter, the energy equation reduces at $O(/)$ to
+
+ _t e_^s 
+ =
+ _^s
++ 2_, , U_^* ^s a_^s* a_^* F_
++ c.c
+
+where $F_$ is either the Heaviside filter or the Lorentzian filter .
+
+In most of this paper, we use the Heaviside filter , and discuss the use of the Lorentzian filter in . Note that this equation is the quasi-linear version of the Navier-Stokes equation with only part of the interactions included, based on the quasi resonant condition $^s|<1$.
+
+Both filters - 
+select exact resonances $_^s = 0$ when time-scale separation between the non-linear time $1/U'$ and the wave period is infinite $ $ so that the resonant condition $_^s /U'<1$ becomes extremely stringent.
+They therefore reproduce the behavior of the oscillating factor in this limit:
+$^s ti_^s t = __^s $ when $_^s t $.
+
+Unlike quasi-resonances, exact resonances $_^s = 0$ exhibit the
+anomalous property of zero 2D-3D coupling, $i k_y C_^ss= 0$ for our $x$-invariant 2D flow $U_$. For such a 2D flow, there are two exactly-resonant poles: 
+$k_y = 0, q_y = -p_y$ (however, $U_0 = 0$ by Galilean invariance)
+and $k_y = -2 p_y , q_y=p_y$.
+Any triad involving 3D modes in the vicinity of these resonant poles (i.e such that either $q_y - p_y, k_y p_y$ or that $q_y p_y, k_y -2 p_y$) is nearly-resonant.
+
+When the 2D manifold has condensed due to the inverse energy cascade, low 2D modes $k_y p$ are favored, and the interactions are naturally nearly-resonant, as triads lie in the vicinity of the first resonant pole ($q_y - p_y, k_y p_y$).
+
+Furthermore, we can neglect the quasi-resonances around the second pole ($q_y p_y, k_y -2 p_y$), as they involve a small-scale 2D mode which is assumed to be of negligible amplitude compared to the largest scale mode.
+By neglecting these quasi-resonant triads, we also neglect any catalytic effect, by which a 2D mode energized by quasi-resonant waves acts as a catalyzer for energy transfer between other 3D waves via exact resonances.
+
+Continuum limit
+
+In some of the following we will take the infinite box limit $L k_f 1$, corresponding to the continuum limit for the wavenumbers. In this limit, the sums in $$ in Eq.~() turn into integrals, in which case the main contribution comes from infinitely many discrete quasi-resonant triads $_ _$ (the frequency step due to the discreteness of the spectral grid). 
+In this limit 
+we can use the asymptotic result (Riemann-Lebesque lemma):
+
+( ti_)
+ 2 (_),
+ 
+
+that is, the contribution from near resonances around each exact resonance is weighted correctly in order to conserve the integral over them (since $_-^ dx i x = 2 $ ). However, this contribution is not secular. Alternatively, 
+
+( ti_t)
+ __,
+ 
+
+where $__$ is the discrete delta function, which gives zero contribution upon integration in $$. 
+Thus, terms at order $O(/)$, considered here, are not secular, and in the traditional wave-turbulence approach, one needs to go to the next order in the non-linearity parameter.
+
+For the condensate, however, the energy is concentrated at a few lowest modes.
+Hence, in the continuous limit $L k_f $, we have $U_ = ( - _0)$ with a given wavenumber $_0$ (typically the lowest one), which contains all the mean-flow energy. Then, one does obtain a secular contribution of the individual condensate mode $_0$ 
+at $O(/)$ even in the continuum limit, in which mode $_0$ interacts with a continuum of 3D waves $$ via near-resonances.
+
+In the absence of a condensate, given a 2D flow with a continuous spectrum, one does need to go to the next order to obtain a secular growth.
+Then, the classical kinetic equation
+ is eventually of the form
+
+ &_t e_
+ =
+ ^2 
+ _
+ _ (_),
+ 
+
+where $_ = |U_|^2/(4U'^2) (
+( V_ V_ ^* )
+ e_ + V_ V_ ^* e_
+ )$
+ in the homogeneous case $_^ss=0$
+
+(see ).
+
+Near resonances and 2D-3D decoupling in wave turbulence
+
+In the previous section, we explained why the order of our expansion is one order less in the non-linearity compared to usual wave turbulence theory. However, since 2D modes decouple from 3D modes for exactly resonant interactions, the classical weak-wave turbulence framework cannot be straightforwardly applied to describe 2D-3D interactions, with or without a condensate. Instead, one must consider near-resonant interactions more explicitly, taking into account the finite width around the exact resonance. 
+
+In such near-resonant interactions, the coupling coefficient between the 2D flow and the waves is non-zero, being of the order of the deviation of the frequency sum from exact resonance .
+
+In a system of finite size $L$, 
+the minimal frequency broadening that allows for 2D-3D coupling depends on the discreteness of the system, as $^ss_ 1/L$.
+
+Therefore, when $ t $ is taken first, only exact resonances contribute, and 
+decoupling necessarily occurs.
+
+This is the case in our example with a 2D condensate, where dealing with near-resonances and decoupling is particularly simple, as the 2D flow is dominated by a few discrete low modes, associated to a well-defined interaction time scale $1/$.
+
+However, decoupling is also expected for any 2D spectrum $U_$ (for example, without a condensate).
+
+Taking the limit $ $, before the infinite box limit produces a transition from near-resonances contributing to only exact-resonances 
+contributing. This corresponds to a transition from continuous to discrete wave turbulence, in the parlance of wave turbulence theory .
+
+When the infinite box limit $L$ is taken first, however, the occurrence of decoupling is more intricate, as there is a large number of near-resonances $^ss_ t 1$, which in principle enable 2D-3D coupling.
+
+However, in its current formulation, (continuous) weak wave turbulence predicts a kinetic equation restricted to the resonant manifold $_^ss = 0$, on which the energy transfer to 2D exactly vanishes.
+
+Our procedure gives a hint as to how 
+this paradox can be resolved: one needs to broaden the delta function enforcing the resonant condition in the kinetic equation to include all near resonances which are allowed by the time scale separation between the non-linearity and the wave frequency (i.e. the frequency broadening), similarly to what is done in~. This width will in turn determine the magnitude of the interaction coefficient between the 2D and 3D modes. Note that this discussion focuses on capturing interactions between exactly zero frequency modes and waves, through near resonances, rather than interactions between approximate zero modes (slow modes $_ 0$) and waves through exact resonances, as done in~. 
+
+An important question is if such a regularized kinetic theory could provide relevant predictions for what 2D scale is energized and how much energy is transferred to the 2D manifold in the absence of a condensate.
+The fraction of energy reaching the 2D manifold is key in dictating how much energy feeds a wave-turbulent cascade due to 3D-3D interactions, 
+for which kinetic theories provide relevant estimates of energy spectra and fluxes .
+
+Mean-wave kinetic equation in the presence of scale separation
+
+We now consider homochiral wave interactions with a single 2D mode in the sum in Eq.~, taken at the box scale $k_y =L_y$, giving:
+
+&_te^s_ 
+ = _^s \\
+& ~ + 2 U_^* ^ss a_^s a_^s ^* _ 
+_|_^ss |< 
++ ( -) + c.c.
+
+and expand all coupling coefficients $^ss$ in $k_y/k_f$ for each triad $++=0$).
+
+We only consider homochiral wave interactions which are in near resonance with the condensate at the forcing scale $k_f$, i.e such that
+$|_^ss| _p- k_f < $.
+
+Leading order equation in $k_y/p l_f/L_y $
+
+We expand the interaction coefficient for a triad involving waves $(,s), (,s)$, where $=(-p_x, -p_y-k_y,-p_z)$, in $k_y/p$ as 
+
+ ^ss &= - i p_x (_^-s _^-s) + i k_y h_,x^-s ~ h_,y^-s, \\
+ & - i p_x (1-is k_yp_^2 p)+ik_y h_,x^-s ~ h_-,y^-s \\
+ &= -i p_x + i k_y (H
+ - i s p_x A^(1) ) + O(L_y^2 k_f^2) \\ 
+&=-i p_x - s k_y b_ 
++ i k_y (H) 
++ O(L_y^2 k_f^2)
+ 
+
+with 
+
+ H&= h_,x^-s ~ h_-,y^-s = -2 p^2 + i s 2 p
+ \\
+ 
+ &A = (_^-s _^-s) = 1 + i s k_y A^(1), \\
+ A^(1) 
+ & = - p_^2 p; 
+ ~~~~~ b_ s (H) - p_x A^(1) 
+ 
+
+We recognize in the presence of both even and odd terms under the transformation $() ()^*$: only the third term, $i k_y (H)$, is even, while the two first terms are odd under this transformation.
+
+Injecting into and considering the single-mode correlators $ a_^s a_- ^s $ and the single mean-flow mode $U_ = i k_y$,
+we obtain:
+
+&_t e_^s = [
+- i k_y ( -i p_x + ik_y ( H - i s p_x A^1) ) a_-^s a_+^s \\
+&+ i k_y ( -i p_x - ik_y ( H - i s
+p_x A^1) ) a_-^s a_-^s 
+] + c.c + 2 _^s \\
+&= [
+ k_y
+ ( a_-^s a_+^s - a_-^s a_-^s + c.c) \\ 
+& - i s b_ 
+ ( a_-^s a_+^s + a_-^s a_- ^s - c.c )
+ \\
+& - (H) (
+ a_-^s a_+^s 
++ a_-^s a_-^s + c.c )+ 2 _^s.
+
+ 
+ We now define 
+ 
+ _^s &
+ 2 
+ a_^s a_-+^s + a_^s a_- -^s + c.c \\
+&=2 
+ a_^s a_-+^s + a_-^s a_ + ^s + c.c,
+ 
+ which is exactly twice the term appearing in the additive part in (last line).
+ The difference term appearing in the first line is
+
+& a_-^s a_+^s - a_-^s a_ - ^s + c.c
+= a_-^s a_+^s - a_- + ^s a_^s + c.c \\
+&= 2
+_p_y a_^s a_-+ + a_-^s a_ + ^s + c.c + O(p) = k_y _p_y _^s,
+
+when evaluating the Taylor expansion as the half-sum of the forward and backward expansions in $$.
+
+Furthermore,
+the imaginary term
+
+ & a_-^s a_+^s 
++
+ a_-^s a_- ^s - c.c \\
+&=
+ a_-^s a_+^s
+- a_^s a_-+^s
++ a_-^s a_- ^s 
+- a_^s a_--^s \\
+& =O( p)
+
+using a Taylor expansion in each correlator. 
+We finally obtain
+
+_t e_^s
+& = [ 
+p_x _p_y _^s 
+- i b_ k_y ( _p_y a_ a_-+ - 
+ c.c ) \\
+&~~~~~~~~~~~~~ - 2 (H) _,^s
+] + 2 _ \\
+ &= [ 
+p_x _p_y _^s - 2 (H) _^s
+] + 2 _^s \\
+&~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ O(L_y k_f ),
+
+Only the pure-imaginary terms in therefore contribute at leading order in Eq.~, and odd terms yield $p_y-$derivatives, while even terms yield terms proportional to the correlator.
+
+Leading order equation in $k_y/p l_f/L_y $
+
+We expand the interaction coefficient for a triad involving waves $(,s), (,s)$, where $=(-p_x, -p_y-k_y,-p_z)$, in $k_y/p$ as 
+
+ ^ss &= - i p_x (_^-s _^-s) + i k_y h_,x^-s ~ h_,y^-s, \\
+ & - i p_x (1-is k_yp_^2 p)+ik_y h_,x^-s ~ h_-,y^-s \\
+ &= -i p_x - s k_y(p_^2 p +2p) -i k_y2p^2 + O(L_y^2 ) 
+ 
+
+where we used that
+
+ h_,x^-s ~ h_-,y^-s = -2 p^2 + i s 2 p
+ \\
+ 
+ (_^-s _^-s) 1 - i s k_y p_^2 p
+ 
+
+Note that we have expanded up to order $O(k_y/p)$, including terms of order $O(1)$ and $O(k_y/p)$. Both terms will give contributions of the same order in the end: the former will enter only into correlator differences of order $ k_y/p$, while we will keep the latter only for correlator sums $ O(1)$. In particular, we will group terms of the form 
+
+ a_+^s a_-^s - a_^s a_-+^s 
+ k_y _p_y a_^s a_-+^s \\
+ a_^s a_-+^s 
++
+ a_+^s a_-^s 2 a_^s a_-+^s .
+
+The two correlators appearing in these sums and differences are related by the transformation $k_y -k_y$ together with complex conjugation $() ()^*$. Correspondingly, terms entering the coefficients $V^ss_$ in that are odd with respect to this transformation will give rise to a difference between the correlators in the kinetic equation, while even terms will produce the sum. In particular, the second term in the last line in equation is odd under this symmetry and is proportional to $k_y$, thus it will not contribute at leading order.
+
+Thus, using equation and that $U_-=k_y$, and $(V^ss_(-))^*=ip_x-ik_y (p_xp_y)/2p^2$ to leading order, we obtain the result
+
+ &_t e_p^s = ^s_p+2k_yip_x ( a_^s a_-+^s 
+-
+ a_+^s a_-^s )\\
+&+2k_y2p^2( a_^s a_-+^s 
++
+ a_+^s a_-^s )+c.c \\
+&= 2_p_y a_^s a_-+^s +2p^2 a_^s a_-+^s \\& +c.c+^s_p+O(p)
+
+Defining 
+
+ _^s [ a_^s a_-+^s]=^s a_-+^s+c.c2\\ = ^s a_-+^s+ a_+^s a_-^s4+c.c +O(p)\\
+ =^s a_-+^s+ a_^s a_--^s4+c.c +O(p)
+ ,
+
+we obtain the equation
+
+ _t e_^s=[p_x_p_y _^s +p^2_^s]+ ^s_
+
+Note that $ _^s$ and $ _(-)^s$ solve the same equation, consistent with there being no distinction between the two at leading order. Indeed, $ 2(_^s+ _(-)^s)$ is the coefficient of the term with wave number $k_y$ in the cosine expansion of the correlator. The symmetry of this correlator is inherited from the assumed anti-symmetry of the mean flow. 
+
+In steady state the correlator therefore solves the ODE
+
+ 
+[ p_x _p_y + p^2 ] _^s
+&= - _^s
+
+for near-resonant modes, i.e. modes which satisfy $p_yp_zk_y/p^3<U'/$. In the following, we will assume that for a given $p_x,p_z$ if this condition is not satisfied at the forcing scale then the corresponding waves do not interact with the condensate (for whichever $p_y$. 
+
+Reynolds stress
+
+The wave energy equation is coupled with the mean-flow equation , obtained by Reynolds averaging over time $T 1/$ and over $z$, in a time window where the ensemble-averaged correlator $ a_^s a_^s' $ is stationary. 
+
+The total energy transfer due to homochiral waves is 
+
+ 
+ = &_,s U'_- u_^s v_- + ^s + U'_ u_^s v_--^s \\ &=2 _,s ( u_^s v_- + ^s + u_-^s v_+^s + . \\ &.+ u_^s v_--^s+ u_-^s v_ - ^s ) \\
+ &= 
+ 2
+ 
+ d _s=1( u_^s v_- + ^s + u_-^s v_ - ^s . \\ &+. u_^s v_--^s + u_-^s v_+^s ) \\ &=
+ 
+ d _s=1 [ u_^s v_- + ^s ] + [ u_^s v_--^s ] \\
+ & d_s=1 ^ss_ 
+
+where in the second line we included a factor of $1/2$ since we are double counting modes by including $$ and $-$ for each term in the sum. Here, 
+
+ _^ss & 2 ( u_^s v^s_-- + u_^s v_-+^s ) + c.c \\
+ &= [ u_^s v^s_-- ] +[ u_^s v_-+^s ] \\
+ &=[ h_,x^-s h_- +,y^-s a_^s a_- +^s +h_,x^-s h_- -,y^-s a_^s a_- -^s ] 
+ \\
+ & =- p^2 ~ _ ^s ~ + O(L_y k_f)
+
+where in the last line we used that $h_,x^-s h_- -,y^-s=h_,x^-s h_- ,y^-s+O(k_y/p)$ together with equation , that $_ ^s=_ (-)^s$ and that
+the imaginary part of the correlator is subleading:
+
+ & 2[ a_^s a_-+^s 
++
+ a_^s a_-- ^s ]\\&= a_^s a_-+^s 
++
+ a_^s a_-- ^s - c.c \\
+&=
+ a_^s a_-+^s
+- a_+^s a_-^s
++ a_^s a_-- ^s 
+- a_-^s a_-^s \\
+& =-k_y_p_y a_-^s a_-^s+k_y _p_y a_-^s a_-^s \\
+& =O( p)
+
+using a Taylor expansion in each correlator. 
+
+The real space Reynolds stress reads
+
+ uv =(_,s uv_^ss )(k_y y),
+
+which inherits the symmetry from the form of the mean shear $_yU= U' (k_y y)$, giving that indeed 
+
+ = uv_y U_y = d_s=1 ^ss_ \\ = - d_s=1 p^2 ~ _ ^s,
+ 
+
+ _^ss & 2 ( u_^s v^s_-- + u_^s v_-+^s ) + c.c \\
+ &=2T _0^T ~dt ~ [ h_,x^-s h_- +,y^-s a_^s a_- +^s e^- i _,- + t \\
+ & ~~~~~~~~~~~~~~~~~~~+
+ (-) ] + c.c
+ \\
+ &= 2 [ h_,x^-s h_- +,y^-s a_ a_-- T -1 - i _ T \\
+ &~~~~~~~~~~~~~~
+ + ( -) ] +c.c
+ \\
+ & =- 2p^2 ~ _ ^s ~ + O(L_y k_f)
+ 
+
+which is Eq.~ in the main text.
+
+The creation of 2D helicity is written as
+
+ H_ &= _ k_y ( v_ w_-+ + v_ w_-- + c.c ) \\
+&= k_y _,s p^2 _^s + O(L_y^2 k_f^2)= O(L_y k_f)
+
+Therefore, 2D helicity is only created from the homochiral waves at $O(1/(L_y k_f)$ over a time $1/$, in accordance with the discussion in .
+
+2D-2D interactions
+
+2D-2D interactions are insensitive to rotation (as $_^s = 0$ when $p_z=0$), hence are not restricted to resonances and involve both homochiral and heterochiral modes.
+
+They are therefore characterized by correlations between modes of opposite chiralities $ a_^s a_- + ^-s $.
+
+From the triadic system , the equations for energy $ |a_^s|^2 /2$ and correlation $ a_^s a_-^-s $, in the limit of large scale separation $k p$, are
+
+&_t e_^s =
+ ( [ p_x _p_y + p^2 ] _^s
+- 2 ( H_^s,-s _^s,-s*)
+) \\
+& ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
++ _^s \\
+&2_t a_^s* a_^-s =
+ ( [ p_x _p_y + p^2 
+] 
+(_^s,-s*
++_^-s,s)
+)
+\\
+& ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- 2 H_^s,-s* (_^s* + 
+_^-s )
+),
+
+with heterochiral correlations
+$_^s,-s 2( a_^s a_-+^-s + a_^s a_--^-s ) $, and coefficients
+$H^s,-s_ = h_,x^-s h_-,y^s = 
+2p^2 $
+
+written here for 2D fluctuation modes $p_z=0$.
+
+In steady state, and assuming zero helicity injection ($_^s = _^-s _^+-*= _^-+)$, Eqs.~- are written as
+
+ [ p_x _p_y + p^2 ] _^s
+- p^2_^s,-s* &= - _^s \\
+ [ p_x _p_y + p^2 
+] 
+_^s,-s*
+- p^2 _^s* &=0,
+
+or, equivalently,
+
+ [ p_x _p_y + p^2 ] ( _^s - 
+ _^s,-s* )
+ &= - _^s \\
+ p_x _p_y 
+( _^s +
+_^s,-s* )
+&=- _^s, 
+
+Eqs.~- are solved for $p_y >0 $ by
+
+ _^s - 
+ _^s,-s* 
+ &= - p_x
+ _-^p_y
+ p^2 _^s dq_y
+ = -_(0) p_x p^2 \\
+ _^s +
+ _^s,-s* 
+ &= - p_x
+ _-^p_y
+ _^s dq_y = - _ (0) p_x,
+
+where 
+
+ _ (p_z) & _-^ ^s_~dq_y = 8 k_f^2 _-^ (
+ q
+ 
+ -k_f)~dq_y\\&
+ 
+ = 4 k_f 
+ 
+
+ denotes the total energy injection rate in $p_y$ for each chiral sector, and for given $p_x,p_z$. 
+
+When $p_z=0$, from the helical basis one obtains
+
+ w_ = - (a_^+ + a_^-) \\
+ 
+ w_ w_-+ +w_ w_-- = 2(_^+ + _^- )
+ + 2(_^+-+_^-+)
+
+The small-scale flux due to the advection of the fluctuations by the mean shear is therefore
+
+ _ adv^s & - p_x _^s \\
+ &=(p_z=0)2 ( p^2 + 1 ) (p_z=0)2, 
+ 
+
+and half the energy injected in the 2D manifold is transferred to small scales. 
+The other half energizes the condensate.
+
+This splitting is due to the 2D-2D interactions behaving exactly like in a 2D-3C flow,
+which exhibits a forward cascade of the energy of the vertical component, $|w|^2$.
+
+This forward cascade is accompanied with an helicity exchange between the two sectors of opposite chiralities.
+
+Note that the factor $1/2$ in Eq.~ is due to energy being distributed equally between the two independent variables of the 2D3C hydrodynamic equations, vertical velocity $w$ and horizontal enstrophy $_$. These are related to the helical component via 
+$w_ = (a_^+ + a_^-) /$ and 
+$_ = p^2 (a_^+ - a_^-) /$.
+
+Equations~- therefore correspond to the conservation
+of horizontal enstrophy 
+$|_|^2 = 2(e_^+ + e_^- - a_^+ a_-^- + a_^- a_-^+ ) $
+and of vertical energy 
+$|w_|^2 = 2(e_^+ + e_^- + a_^+ a_-^- + a_^- a_-^+ ) $, respectively.
+
+The Reynolds stress, which here includes heterochiral correlators, is written as
+
+ & _ = 
+ -
+ p^2 ~ _^s
+ +
+ ~ 4( H_^s,-s _^s,-s) \\
+ &= 
+\
+
+&_(p_z=0) k_f^2 
+p^4
+ - < p_y < 
+\\
+&_(p_z=0) k_f^2 
+p^4 p_y > 
+
+ .
+
+with $= $
+and $= $.
+
+Over integration with our isotropic forcing,
+
+ = _p_z=0 _ d = 2 _ 2D =4L_z 
+
+Stationary solutions for homochiral waves
+
+Solution for correlator $_
+^s$
+
+The stationary equation can be written in the form
+
+ _p_y(-sp 2^s_)_p_y(_H^s)=sp _p^s
+
+which is solved by:
+
+ _^s &= - p_x 
+ _-^p_y p ~^s_ ~dq_y ~~ p_x < 0 ~(dq_y >0) ; \\
+ _^s &= - p_x 
+ _^p_y p ~^s_ ~dq_y ~~
+ p_x > 0 ~(dq_y <0).
+ 
+
+where we have used different boundary conditions depending on the sign of $U' p_x$:
+
+ _H^s(p_y -)&=0 ~~ ~~ p_x < 0 \\
+ _H^s(p_y )&=0 ~~ ~~ p_x > 0 
+
+implying that for $ p_x < 0$ ($ p_x > 0$) the flux of helicity is from the forcing scale to $p_y $ ($p_y -$), i.e. to positive (negative) $p_y$. That these are the right boundary conditions (and not the opposite, as the flux is always from the forcing scale to $p_y $) can be seen from the condition that $_^s>0$ by continuity since in the limit $k_y0$ the correlator $_^s$ turns into the energy in the mode with wavenumber $$ and helicity sign $s$, see also .
+
+Put another way, Eq.~ is forced differently depending on the sign of $U' p_x$: if $U' p_x<0$, the RHS is positive and $_^s$ increases with $p_y$, and vice-versa if $U' p_x>0$.
+
+We therefore need to select the solution depending on the sign of $ p_x$, and we are assuming that the information comes from either $q_y < p_y$ if $ p_x <0$, or from $q_y > p_y$ if $ p_x >0$.
+
+This choice corresponds to the irreversible dynamics along the characteristic line $p_y(t) = p_y - p_x t$, where the direction of the energy (and helicity) flux in $p_y$ depends on the sign of $ p_x$.
+The quadrants $ p_x p_y <0 $ are selected by the dynamics.
+See where a similar result is obtained using a dynamical solution of equation , assuming the interacting waves are complex conjugates (i.e. taking the $k_y 0$ limit first).
+
+Solution is simplified when $_^s = _^-s = (p-k_f) /(8 k_f^2 )$ into:
+
+ _^s = 
+ \
+ 
+ &~ 0 ~~ p_y < - \\
+& _ k_f | p_x| p 
+ ~~ - < p_y < \\
+& _ k_f | p_x| p 
+~~ p_y > 
+
+ .
+ 
+
+with $ (-U' p_x)$ the relative sign of the shear and
+
+ _ (p_z) & _-^ ^s_~dq_y = 8 k_f^2 _-^ (q-k_f)~dq_y\\&=8 k_f^2 p_y= 4 k_f 
+ 
+
+the energy injection rate in each $(p_x,p_z)$ line.
+
+Solution reflects the conservation of helicity within each polar sector: $p _ adv^s = k_f _^s$ with the energy flux $ _ adv^s = - U' p_x _^s$.
+
+Solution is only valid when the excitation at $k_f$ is in near resonance with the condensate, i.e if $F_k_f = 1$.
+Otherwise, $_^s=0$ as such excited modes do not interact with the condensate, and the corresponding Reynolds stress is zero.
+
+By integrating solution over all waves, one can compute the 
+total transfer from 3D to 2D, 
+
+ & = - _-K_x,-K_z, -K_y^K_x,K_z,K_y d ~ 2 p^2 (_^+ + _^-) \\
+ &= 4 _-K_x^0 _0^K_z dp_x dp_z \\
+ & (
+	 _-^ 4 p^3 ~dp_y 
+ + _ ^K_y 2 p^3 ~dp_y ) \\
+	&= _/2^ d _0^k_f d p_0 
+ (k_f - )
+
+in polar coordinates $p_x=p_0 , p_z= p_0 $, $p_0 = $. Hence, when $F_k_f = 1$ for all modes in the forcing shell, and in the limit $K_y $,
+
+ & = _ 3D
+
+and
+all the energy injected in 3D is transferred to the condensate in this case.
+
+Near-resonant fraction of the injected energy
+
+In this section, we compute explicitly the energy transfer from the 3D waves to the 2D condensaten $$, as a function of the rescaled condensate amplitude $/$ and the domain geometry, starting from Eq.~.
+
+Note that Eq.~ holds even if the set of waves is discrete, in the form:
+
+ 
+ &= _ _ ~ _|_^ss| < ,
+ 
+
+with the stepwise treatment of the near-resonances .
+ 
+ The validity of Eq.~ only comes from the conservation of energy and single-sign helicity in the mean-wave system at high rotation, the latter being due to scale separation $k p$.
+(In the discrete case, the $p_y$ derivative in can be replaced by a discrete difference, which, over summation, yields the bounds $_ adv (p_y )$, which vanish due to the conservation of single-sign helicity.)
+
+We consider here that $L_y k_f 1$, $L_z k_f 1$, $L_x k_f1$.
+When wavenumbers $(p_x,p_y,p_z)$ are large enough (such that $p_i k_f 2/L_i$), the spacing between the Fourier modes is infinitesimal, hence one can consider a continuous set of wavenumbers for the waves $$ (while the interaction occurs with the single discrete 2D mode $k_y$).
+
+However, the continuous approximation fails close to planes $p_z=0, p_y= 0$ and $p_x=0$.
+Here, the set of modes is necessarily discrete, unless the dimensions are set to $L_i = $ ($i=x,y,z$).
+
+We therefore truncate the modes at the first nonzero Fourier modes $p_i = 2/L_i$ to account for this discreneness, and
+handle modes $p_i > 2/L_i$ continously.
+
+This is a semi-continuous approximation, corresponding to a regularization of the $L_i k_f $ limit.
+
+We will consider the different limits $L_i k_f $ in a later stage.
+
+This stepwise treatment of near-resonances via Heaviside filter $_|_^ss| < $ corresponds to a condition on the values of $p_y$ and $p_z$ within the forcing shell,
+
+^ss < 1 
+ k_f^2 2 k_y |p_y |> k_y \\
+ k_f < k_y^2 p_y = 0, 
+
+where we have used the approximated value of $_^ss$ when $p_y k_y$ in , and 
+when $p_y k_y$ in .
+
+In the following we consider the case $l_f/L_y, l_f/L_z 1$, and do not treat the case of a thin layer compared to the forcing scale $l_f/L_z 1$.
+
+Because the resonant condition in differs in plane $p_y = 0$ and in modes $p_y 0$, we need to consider the integration of the forcing ring $p_y=0$ and of the bulk $p_y 0$ separately.
+
+We introduce non-dimensional polar coordinates
+
+&_z=p_z/k_f, _y=_z^2 (), \\ &_x=_z^2 () 
+
+where we consider only $p_y,p_z,p_x>0$, the other quadrants giving the same result by symmetry. We let $p_x 0$ continuously but cutoff a strip of width $k_y/k_f$ ($l_f/L_z$) around $p_y=0$ ($p_z=0$) from the integration, giving a limit on the smallest angle to use in the $$ integration and on the smallest possible $_z$:
+
+ &2L_z<_z<L_y)^2 1 , \\ & ^-<<2 ^-=[k_f_z^2].
+
+When all 3D modes are resonant (i.e obey condition ), their contribution is
+ _L_z^1 _^-^/2d_z d 1-L_z-L_y (p_y 0)
+
+where we only keep terms up to $O(l_f/L_z), O(l_f/L_y)$ (and in the following contributions of higher order from the integral should be discarded).
+We are also assuming that all modes in the sphere are forced with the same weight. 
+
+Nearly-resonant modes $p_y0$ satisfy
+
+ |()| _z _z^2<,
+
+with
+
+ 2 l_f,
+
+which results in a requirement for the angular integration,
+
+ k_f _z^2< |()|<_z _z^2,
+
+taking into consideration the $p_y-$cutoff in the lower bound.
+This leads to a range of angles $[^- ~ ^+]$ defined for each $_z$ as
+
+^+=
+ [_z_z^2], _z_z^2<1 \\
+ /2 otherwise
+ 
+
+and
+
+ ^-=[ k_f_z^2] 
+ 
+
+(we consider $0<</2$ and multiply the result by 4 to get the contribution from the other quadrants).
+
+Resonant modes exist, i.e. $^+>^-$, only for 
+
+ _z< k_y
+
+which restricts the $_z$ we can consider in this class. Outside this class modes still need to satisfy 
+
+ _z<k_f)^2 
+
+for $_y$ to lie below the cutoff $l_f/L_y$. 
+
+The resonant condition is restrictive, i.e. $^+</2$, for $_z$ in the range
+
+ 2<_z<2
+ 
+
+For $_z$ outside this range, and satisfying $_z< k_f/k_y$, all modes up to $=/2$ contribute.
+
+In particular, we see that the transition to decoupling, $<$, occurs when $=1/2$, for $_z=1/$ (the point where $_z_y$ is maximized), where the full sphere is resonant. 
+
+Now assuming $ 1/2$, we define
+
+ &_z^- = (2, L_z) \\
+ &_z^+ = (2, k_y, ),
+
+The contribution from modes $p_y0, p_z 0$ is finally
+
+ &=
+ _L_z^p_z^- d_z 
+ _^-^2d +_p_z^-^p_z^+d_z _^-^^+d
+ \\& +_p_z^+^( k_y,k_f)^2) d_z _^-^2d,
+ 
+
+where we consider that each integral has increasing bounds, and is otherwise null.
+
+that is, explicitly:
+
+ _z^- =
+ 2 > L_zL_z)^2 \\
+ L_z otherwise
+ 
+
+and 
+
+ _z^+ =
+ 2 L_yL_y)^2 << L_y\\
+ l_f < L_yL_y)^2
+
+In addition, we need to consider separately the contribution from the ring at $_y=0$. 
+
+The contribution from the full ring at $p_y=0$ is a fraction of energy equal to $(2/L_x) (2/L_z)4 k_f^2 k =k_y/2k_f$ where $ k$ is the width of the shell.
+Introducing polar coordinates $_z=$, $_x =$,
+the contribution from the ring is written as
+
+=42L_y 2,
+
+(we count 4 times the sector $ [0 ~2]$),
+where the bounds of the $-$integration 
+vary depending on the resonant condition , which reads
+ 
+_z=<l_f^2 2 l_f.
+ 
+The integration on the ring should therefore be performed over
+
+ L_z < ()<2 k_y
+
+and we can define
+
+ ^- L_z 
+ ^+= 
+ /2 2 l_f >1 \\
+ (2 l_f) 2 l_f<1
+
+so that 
+
+=L_y _^-^^+ =L_y 
+
+The ring does not contribute when $^+<^-$, implying the restriction
+
+ 2L_zL_y
+
+For $ < 1/2 (l_f/L_z)(l_f/L_y)$, using the Heaviside filter, the 3D modes inside the forcing ring in the plane $p_y=0$ completely decouple from the condensate. 
+
+The total energy contribution from resonant 3D modes is finally given by
+
+ = ( + )
+ 
+ 
+
+with
+ 
+ 2L_z1-2L_y-L_z,
+
+a factor correcting the weight of each point in the truncated sphere and in the ring.
+
+Such a rescaling is necessary to make the continuous integration compatible with the energy injection rate in the discrete setup.
+
+If all 3D modes contribute, 
+
+ =1- 2L_z ,
+
+the fraction of the energy injected in 3D modes.
+
+Note that when writing , we use the same weight for modes in the ring and in the truncated sphere, which is only an approximation to what happens in the discrete setup with anisotropic dimensions $L_y=2L_x$. 
+This can result in errors in $O(l_f/L_y, l_f/L_z)$, which will only slighly alter the leading-order behavior of $$. 
+
+From , and , we obtain explicitly:
+
+ &= L_y(^+-^-)
+ + (p_z^--L_z) \\
+& +_p_z^-^p_z^+d_z ^+ -_p_z^-^( k_y,k_f)^2)^- d_z
+ \\& -(p_z^+-( k_y,k_f)^2)) 
+ 
+
+with $= l_f2 $.
+
+The energy transfer $ $ from Eq.~ is shown as a function of $/$ in Fig.~(b).
+
+The energy transfer decreases with decreased $/ = 2L_y$, due to a combined effect of the bounds in the integral being more and more restricted, and the integrand $^+$ decreasing with decreasing $$.
+
+In the following, we consider some asymptotic limits in order to simplify Eq.~.
+
+ 
+Here we can use the asymptotic form $_z^- $ and $ _z^+ 1-2^2$, and to leading order 
+
+ & =
+ - L_z
+ \\& +_^1-2^2[_z_z^2] d_z \\ & +2(^2 -L_y^2)
+ \\ &-_^L_y)^2[k_f_z^2]d_z.
+
+Outside the regions where $_z 1$ and $_z $, the argument of the arcsin is small and one can take a linear approximation:
+
+ ^+ d_z _z_z^2d_z=- ^-1(_z^2)
+
+and 
+
+ ^- d_z k_f_z^2d_z= k_f ^-1(_z).
+
+We then obtain:
+
+ & =
+ - L_z --\,[^-1()-^-1\!()],
+
+where we have used that 
+$$ [^-1 () ]_a^b = 2[ ( 1+ )]_a^b (a) 
+$$
+when $b, a 1$ and
+$ (2 /a)$ when $b 1$ and $a 1$.
+
+ 
+For $l_f/L_y l_f/L_z$ (if $L_z<L_y$)
+we obtain that
+
+ & _l_f/L_z^1-^2[_z_z^2] d_z \\ & (2L_z/l_f)
+
+Here, the lower boundaries of integration have changed (i.e. the smallest possible $p_z$ are now restricted by the resonance condition, hence $p_z^- = l_f/L_z$), and we have neglected terms of the order $O(l_f/L_y)$. 
+
+Note that when $L_z>L_y$, for $l_f/L_z l_f/L_y$ we get
+
+ 
+ & _^ L_y/l_fd_z ^+
+ \\
+ & ( L_y/l_f)
+ 
+
+ 
+In the range $(l_f/L_y)(l_f/L_z) l_f/L_y, l_f/L_z$ we now have $_z^+= L_y/l_f$, and $_z^- = l_f/L_z$: 
+
+&=
+L_y_l_f/L_z^2 L_y/l_f
++_l_f/L_z^ l_fd_z ^+ 
+
+\\& 
+ ( -2L_zL_y)+
+ ( l_fl_f) 
+ 
+
+ 
+Finally, for $2(l_f/L_y)(l_f/L_z)<<(l_f/L_y)(l_f/L_z)$, the tiny region where most of the contribution comes from are modes with $p_y=0$ and they do not decouple fully,
+
+ -L_zL_y
+ 
+
+For even lower $<2(l_f/L_y)(l_f/L_z)$, there is no energy transfer from the 3D waves to the 2D condensate using the Heaviside approximation of the oscillating factor. 
+
+All in all, we obtain the following asymptotic results:
+ =
+ 
+ 1, 2, \\
+ () + - L_z, \L_z, L_y \ < <2 \\\\
+ ((l_f,l_f)), \\ \L_z,L_y\ < < \L_z,L_y\ \\ \\ 
+ ( -2L_zL_y)+
+ ( l_fl_f), \\
+ L_yL_z < < \L_z,L_y\ \\\\
+ ( -2L_zL_y), 2L_yL_z < <L_yL_z \\\\
+ 0, <2L_yL_z
+ 
+ 
+
+with $ = 2l_f$.
+
+We have included linear terms in $O()$ in Eq.~, so as to obtain better predictions for our DNS case where $L k_f = 10$. 
+
+Note, however, that the asymptotic scalings are valid within each range when $$ is sufficiently far from the bounds of the range. 
+
+Thus, when using inequalities in , we 
+
+habe derived a good leading-order approximation of the exact function, but where small discontinuities appear at the regime bounds.
+
+The scalings in are shown in Fig.~(b) as a dashed red line, for the parameters corresponding to our DNS ($L_y/l_f= 10, L_z/l_f=5$), 
+and are a very good approximation of the integration of the exact formula .
+
+We now need to include the fraction of energy injected into the 2D manifold, which is not affected by the resonant condition, and never decouples if forced.
+
+As established in , $$ is half the energy injected in the 2D manifold.
+With our isotropic forcing,
+
+ = 2 2L_z 
+
+The final asymptotic expression for the total energy transfer is therefore
+ =
+ 
+ +
+ , 2 \\\\
+ +
+ (
+ - L_z +
+ () ), \\
+ 
+ \ L_z, L_y \ < < 2 \\\\
+ + (2l_f), \\ \ L_z, L_y \ < < \ L_z, L_y \ \\ \\ 
+ +
+ (
+ ( -2L_zL_y) )+
+ ( l_fl_f), \\
+ L_yL_z < < \ L_z, L_y \ \\\\
+ +
+ ( -2L_zL_y), 2L_yL_z < <L_yL_z \\\\
+ , <2L_yL_z
+ 
+ 
+
+Closure of the energy balance for the mean flow
+
+Here we derive the expression of both the condensate 
+amplitude $/$ and the energy transfer $$ as a function of the control parameters $$ and $l_f/L_i$ ($i=x,y,z$).
+
+We determine $/$ from by closing with 
+the mean-flow energy balance
+
+ ()^2=4^2 
+ 
+
+which in terms of variable $$ reads
+
+ ^2=^2 (l_f)^2().
+ 
+
+With the piecewise function $()$ in , we can solve numerically the algebraic equation 
+via a root-finding procedure.
+
+The resulting solution $/$ is shown as a function of $$ as a red line in the inset of Fig.~.
+
+In the following, we instead proceed analytically by extracting the leading-order terms in and closing 
+with separately in each range in $$.
+
+It is simpler to first consider the case where $_ 2D=0$,
+for which we need to close the mean-flow equation with .
+
+We also assume $L_z<L_y$ for shortness.
+
+ , $=_ 3D$ and the solution is $ = L_y/l_f$, which is valid for $>l_f/(2 L_y)$. So, in this regime we obtain the result
+
+ =2 ,
+
+which is a rotation-independent similar to the scaling of condensates in 2DNSE.
+
+ $, consistent with $ l_f/L_y$, we have the balance
+
+ (1/)=^2 (l_f)^2 
+
+using Eq.~ (second row) at the leading order in $$.
+Since $ 1$, solving this equation perturbatively gives
+
+ = (1/)= - ^2 (l_f)^2 (^2 (l_f)^2) 
+with corrections of order $ (- )$. From the definition of $$ and the condition that $1/2 l_f/L_y,l_f/L_z$ we then obtain the solution
+
+ =-^2l_f(l_f) \\
+ L_y (L_y,L_z) L_y
+
+ < < L_z$, the closure equation is trivial and we obtain at leading order
+
+ & = ^2 l_f(l_f),
+ \\
+ & (L_y)^3/2 L_yL_z
+
+ L_z L_y$, we have the balance
+
+ ^2=^2 (l_f)^2 [ ( l_fl_f) + - 2 L_z L_y ].
+ 
+
+We will simplify Eq.~ by considering two different regimes, separated by a crossover value $^*$, where either the linear term or the term $ ( l_fl_f)$ in is dominant.
+
+Assuming that $ 2 L_yL_z$, the crossover occurs when
+
+ ^* e L_yL_z.
+ 
+
+For $ ^*$, the balance at leading order is
+
+ ^2=^2 (l_f)^2 ( l_fl_f),
+
+which is of the form
+
+ & (1/ )= 1, \\ & =^2 (l_f)^3l_f 1, && = l_fl_f 1.
+ 
+
+To leading order, the solution to Eq.~ is
+
+= (1/)
+
+(Formally, the solution is $ = - /W(-)$ with $W(z)$ the Lambert-$W$ (ProductLog) function solving $W e^W = z$, and using the expansion of the Lambert function when $z0$ for its second branch -- the first branch being solved by $ =1$.)
+
+We therefore obtain
+
+ = ^2 l_f^2
+ ( ^2 ( l_f )^3 l_f)
+
+for $^2 > 2 L_y^2 L_z$, 
+which gives
+
+ &=^2 (l_f) (^2 (l_f)^3l_f) \\
+ & ^* < < L_y(L_y, L_z),
+ 
+
+The lower bound in is 
+
+ ^* = 2 (L_y )^3/2 (L_z )^1/2,
+
+which corresponds to the value where $$ equals the crossover $^*$ , hence where $ ( L_y L_z/l_f^2 ) = $.
+
+ L_z L_y < ^*$ (which includes the range $ 2L_z L_y < L_z L_y $, the energy balance reads 
+
+ ^2 =^2 (l_f)^2 ( -2 L_zL_y),
+
+which is solved by
+
+ & = ^2 (l_f)^2 (1+L_y)^3L_z^-2),\\
+ &
+ > (L_y)^3/2L_z,
+
+where we chose the larger root for continuity at the upper boundary of the domain. 
+Below 
+
+^c (L_y)^3/2L_z,
+
+the mean-flow energy balance has no solution.
+
+Therefore, using the Heaviside as an approximation for the oscillating factor gives that the decoupling of the 2D condensate from 3D modes occurs at a finite $= (L_y)^3/2L_z$ and as a first order phase transition, i.e. in the absence of 2D forcing the condensate amplitude jumps from $=^2 (l_f)=2 (l_f/L_y)(l_f/L_z)$ to zero. Such a sharp transition is however likely to be a consequence of the sharp cutoff we introduced, and it seems reasonable that the contribution of off-resonant modes does not go to zero exactly in practice. Note that we have also neglected the effect of finite viscosity on the waves, which should probably introduce a cutoff on the smallest amount of energy they could transfer to the condensate. 
+
+To summarize the cases when $=0$,
+
+ = 
+ 2, 1 l_f/2L_y \\ \\
+ ^2l_f(l_f), 
+ L_y (L_y,L_z) L_y \\\\
+ ^2 l_f(l_f) L_y<L_z\\
+ L_yL_z (L_y)^3/2 \\\\
+ ^2 l_f(l_f) L_z<L_y\\
+ (L_y)^3/2 L_yL_z \\\\
+ ^2 (l_f) ( ^2 (l_f)^3l_f) \\
+ 2
+ (L_y)^3/2 L_z L_y(L_y, L_z) \\\\
+ ^2 (l_f) (1+L_y)^3L_z^-2) \\
+ (L_y)^3/2L_z < < 2 (L_y)^3/2L_z
+ 
+ 
+
+ = 
+ 2, 1 2L_y \\ \\
+ ^2l_f(l_f), 
+ 2L_y (L_y,L_z) 2 L_y \\\\
+ ^2 l_f( ( l_f , l_f ) ), 
+ L_yL_z l_f, l_f ) ) ) (L_y)^3/2 l_f, l_f ) ) \\\\
+ ^2 (l_f) ( ^2 (l_f)^3l_f), 
+ 2
+ (L_y)^3/2 L_z L_y(L_y, L_z) \\\\
+ ^2 (l_f) (1+L_y)^3L_z^-2), 
+ (L_y)^3/2L_z < < 2 (L_y)^3/2L_z
+ 
+ 
+
+where the third row generalizes solution to $L_y< L_z$.
+
+The corresponding expression for $()$ follows from 
+$_ 3D 
+=
+( )^2 4 ^2$.
+
+We now consider the addition of forcing in the 2D manifold, like in our DNS where forcing is isotropic.
+
+In the continuous limit, isotropic forcing leads to $ = 4 L_z$ (see ).
+
+This additional energy input is negligible for sufficiently large $$, but dominates when enough waves have decoupled.
+
+With our parameter choice, $ = 4L_z$ starts to dominate when $ L_y L_z< < l_f/L_y$, that is in the third range in .
+
+For $ < \ L_z, L_y \$,
+We can therefore approximate the decoupling trend as 
+$ (2 L_z/l_f)$ (third row in ), because the less steep part at lower $$, due to $ ( L_y L_z/l_f^2)$ (fourth row), will be dominated by $$.
+
+By closing separately when either $$ or $$ dominates, we obtain
+
+ &= 2 + 2 _ 2D, 
+ 
+ 2L_y < < 2L_z, \\
+ &= ^2 l_f ( l_f), ^* < L_y L_z, \\
+ &= 2 , < ^* \\
+ 
+
+with the two last scalings intersecting at
+
+ ^* &= 2 L_y
+ 
+ (2 L_z/l_f) \\
+ ^* &= 2 ( 2L_z/l_f),
+
+above which the input due to 3D-2D interactions dominates over $$.
+With our DNS parameters,
+$^* 0.0218$ and $^* = 0.04$. 
+
+Note that we do not derive an analytical solution in the range $L_y L_z < < 2L_y$, as the asymptotic analysis does not necesarily hold there.
+
+Then we use this approximate solution to estimate the 3D-2D transfer, using the leading-order result for $ < l_f/L_z$ in .
+
+Injecting into , we obtain the closed formula
+
+ =
+ 
+ ^2 (l_f)^2 ^2 ( l_f )^2, 
+ 2 ( L_z/l_f)(L_y)^3/2 < L_y L_z\\ \\
+ ^2 ^2 (l_f)^2 (l_f)
+ [ ^2 (l_f)^3 l_f ( l_f)] 
+ ^* < < 
+ 2 ( L_z/l_f)(L_y)^3/2
+ \\ \\
+ l_f ( (l_f)^2 l_f), 
+ (L_y )^2 L_z 
+ < < ^*\\\\
+ (l_f -2L_zL_y),
+ 2 (L_y )^2 L_z < <
+ (L_y )^2 L_z \\\\
+ 0, < 2 (L_y )^2 L_z 
+ \\
+ 
+ ^* = 2 L_y
+ 
+ ( L_z/l_f) 
+ 
+ 
+
+ ( )=
+ 
+ ^2 (l_f)^2 ^2 ( L_zl_f )^2, 
+ 2 ( L_z/l_f)(L_y)^3/2 < L_y L_z\\ \\
+ ^2 ^2 (l_f)^2 ( L_zl_f)
+ [ ^2 (l_f)^3 L_zl_f ( L_zl_f)], ^* < < 
+ 2 ( L_z/l_f)(L_y)^3/2
+ \\ \\
+ l_f ( (l_f)^2 l_f) (l_f -2L_zL_y) , \\
+ 
+ (L_y )^2 L_z 
+ < < ^*\\\\
+ (l_f -2L_zL_y), 2 (L_y )^2 L_z < <
+ (L_y )^2 L_z \\\\
+ 0, < 2 (L_y )^2 L_z 
+ \\
+ 
+ ^* = 2 L_y
+ 
+ ( L_z/l_f) 
+ 
+
+where the blue terms are $O()$ terms. We considered $L_z < L_y$ here for simplicity.
+
+Solution is visualized as a black solid line in Fig.~, and fits very well our DNS data points for $ < L_y L_z$.
+
+In presence of 2D forcing, the decoupling is therefore predicted to occur below
+
+^c = 2 (L_y )^2 L_z = (L_y )^2 (L_z )^1/2
+
+and the transition is continuous.
+
+Discussions on the Lorentzian filter
+
+We can compare our usage of a Heaviside form for the oscillating factor with a Lorentzian form , which is continuous in the time-scale ratio $/$, hence better weights the contribution of the oscillating factor over the time window $t [0 ~ 1/]$.
+
+We consider here a discrete set of waves and compute
+
+ [ ]
+ &= _ _ ~ F_k_f ( ),
+ 
+
+with the Lorentzian filter
+
+ F_k_f
+ = ( 1+ ( Qk_f^3 )^2 )^1/2,
+ 
+
+where parameter $Q$ is set to $Q=8$.
+
+The numerical value of is shown as a blue line in Fig.~(b).
+At the leading order, it follows a linear scaling $ l_f$ (up to prefactors depending on the domain geometry), hence vanishes exactly at $=0$, contrary to the computation with the Heaviside filter.
+
+The mean flow balance
+
+ ()^2 = 4 ^2 ( + 2 )
+
+is then solved numerically with varying parameter $$, yielding the numerical estimate for $()$ shown in Fig.~ (blue line).
+
+With our isotropic forcing, which excites surviving 2D-2D interactions when $ 0$, the solution when $ 0$ therefore scales as
+
+ 2 2 , ~~~~
+ 
+ 2 l_f 2 .
+
+Therefore, with the inclusion of infinitesimally-small near-resonances via the tails of the Lorentzian filter, there is always a small 3D-2D coupling until $=0$ exactly, at which 2D and 3D modes completely decouple.
+
+Because the DNS data points deviate from the Lorentzian prediction when $ 0$, this suggests that such off-resonant tails are negligible in the nonlinear dynamics.
+
+Meanwhile, the Lorentzian filter better approximates the beginning of the decoupling regime ($ l_f/L_y$), and, in particular, the fact that $/$ is never 1, even when rotation is low (but $ l_f/L_z$ for waves to be still homochiral).
+
+This is due to the fact that the Lorentzian filter better weights the time window $[0 ~ 1/]$ where the oscillating factor $(t)$ is not exactly one, but decays with time $t$.
+When rotation is low, time-scale separation is limited and it matters to weight this time window appropriately, as achieved with the Lorentzian filter.

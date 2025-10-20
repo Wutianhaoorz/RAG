@@ -1,0 +1,208 @@
+[journal=iecred,manuscript=article]achemso
+[version=3]mhchem 
+[T1]fontenc 
+
+*[1]
+
+[mCFD]
+Multiscale Computational Fluid Dynamics (mCFD) Laboratory, Department of Chemical Engineering, Indian Institute of Technology Kharagpur, West Bengal 721302, India
+
+[Taylor bubble in Newtonian and non Newtonian liquid]
+CFD analysis of Taylor bubble in a co flow microchannel with Newtonian and non Newtonian liquid
+
+	
+	
+
+We present a CFD based model to understand the Taylor bubble behavior in Newtonian and non-Newtonian liquids flowing through a confined co flow microchannel. Systematic investigation is carried out to explore the influence of surface tension, inlet velocities, and apparent viscosity on the bubble length, shape, velocity, and film thickness around the bubble. Aqueous solutions of carboxymethyl cellulose (CMC) with different concentrations are considered as power law liquid to address the presence of non Newtonian continuous phase on Taylor bubble. In all cases, bubble length was found to decrease with increasing Capillary number, inlet gas-liquid velocity ratio, and CMC concentration. However, bubble velocity increased due to increasing liquid film thickness around the bubble. At higher Capillary number and inlet velocity ratio, significant changes in bubble shapes are observed. With increasing CMC concentration, bubble formation frequency and velocity increased, but length decreased. 
+
+ 
+
+Introduction
+
+ Two phase flow in microchannels and microcapillaries has been an area of keen interest over the last few decades, because of its relevance in lab on a chip devices, microreactors , and several chemical as well as biological applications. Considerable attention has been devoted on understanding the hydrodynamics of two phase flows at the microscale that are important to enhance heat and mass transfer phenomena as well as to help in chemical process development and intensification . Depending on the fluid properties and microchannel geometry configuration, different flow patterns such as bubble, slug, churn, annular, and stratified flow are observed. Numerous experimental studies have addressed these various flow regimes in microchannels and have presented flow regime maps . 
+
+Over the past decades, several observations in T junction microchannel are reported . For analyzing flow pattern transitions in T junction microchannels, empirical correlations based on fluid properties and the wetting phenomena have been developed by . Numerical studies on Taylor bubble flow in T junction using Volume of Fluid (VOF) method was carried out by to understand the influence of inlet configuration, fluid velocity and properties, such as surface tension, liquid viscosity, and wall surface adhesion. However, liquid film thickness was not captured due to poor grid resolution, and different bubble shapes were reported by varying wall adhesion property. Flow focusing junction is another popular configuration used for bubble generation in microchannel . carried out experiments and Lattice Boltzmann simulations of air oil two phase flow in cross and converging shaped microchannels. Different flow regimes (bubbly and slug) and bubble shapes were found depending on Capillary number ($Ca$). studied bubble formation in a square microchannel using flow focusing device for higher viscosity liquids and showed that the liquid viscosity strongly influenced bubble formation process, its length, and shape. 
+
+Co flow configuration is one of the simplest microfluidic geometries that are typically used for Taylor bubble formation, where the dispersed and continuous phases flow in parallel. studied Taylor bubble formation in capillary tubes using co flow microchannel and observed different mechanism for bubble formation and coalescence in smaller nozzles with low liquid flow rates. investigated Taylor bubble formation in a nozzle tube co flow configuration using level set method and predicted liquid film thickness around the bubble which was in fair agreement with the experimental observation by . and also numerically analyzed bubble formation in circular capillaries and described the effect of various parameters, such as superficial velocities, capillary diameter, and wall contact angle. examined two phase flow characteristics in a horizontal circular microchannel by experimental measurement of bubble velocity, void fraction, and pressure drop. To understand the interface morphology of Taylor bubble, investigated the effect of several working conditions. Similarly, bubble formation in a tapered co flow geometry , flow-focusing microchannel , and mixing junction was also reported. Novel methods of bubble formation mechanism and breakup dynamics in different microfluidic devices are comprehensively summarized by . For more insight on numerical and experimental understanding of two phase flow system in microchannel, reader may also refer to other review articles .
+
+ 
+ Interestingly, most of the reported research are concerned with the bubble formation characteristics and size determination in Newtonian fluids, while several fluids in numerous applications, such as emulsion based enhanced oil recovery, drug delivery, food processing, catalytic polymerization reactions, are likely to exhibit non Newtonian properties. Recently, few experimental studies have depicted the effect of rheological properties on Taylor bubble formation in various microchannel configurations. Using micro PIV, studied slender bubble formation in flow focusing device with various concentration of polyacrylamide (PAM) solutions. Gaseous thread width variation with time before pinch off was investigated and a simple power law relation was proposed to understand the breakup dynamics. In a T junction microchannel, analyzed bubble formation in aqueous solutions of PAM and compared the bubble length, liquid slug length, bubble velocity and frictional pressure drop with those for Newtonian (water) system. They showed significant influence of non-Newtonian rheological properties on the behavior of two phase flow phenomena. In millimeter-scale T junction and flow focusing devices, studied bubble formation in yield stress fluids. Using a flow focusing device, examined droplet breakup dynamics in shear thinning PAM solution. Incorporating the rheological properties, a simple scaling law was proposed to predict the droplet size. Although, the results showed interesting perspectives on droplet breakup mechanism in non Newtonian liquids, the necessity of more insight can be evidently be realized for analyzing Taylor bubble characteristics and behavior in non-Newtonian liquids flowing through a co-flow microchannel.
+
+Moreover, there is considerable argument on capturing and/or identifying the liquid film thickness surrounding a Taylor bubble . Recently, explored the effects of liquid film thickness and bubble shape characteristics on mass transfer coefficient. They concluded that mass transfer process significantly depended on the liquid film thickness around the Taylor bubble. reported the implication of thin film region during dissolution of $CO_2$ in a square millichannel. In light of the aforementioned discussion, in this article, we present a CFD based model to study the two phase (gas liquid) flow in a circular co-flow microchannel with an emphasis on determining the bubble shape, velocity and surrounding liquid film thickness in Newtonian and non-Newtonian liquid phase. A schematic depicting typical Taylor bubble flow in a 2-D co flow geometry is shown in Fig.~a. 
+
+ 
+
+Fig. a shows that in a gas liquid co flow system, a Taylor bubble is typically surrounded by a thin liquid film adjacent to the wall which is magnified and illustrated in Fig. b. Two consecutive gas bubbles are separated by liquid slugs. In general, Taylor bubble shape can be estimated from three different zones, as illustrated in Fig. c. Depending on the operating conditions and fluid properties, the radius of curvature (R in Fig. b) changes in dynamic meniscus (Zone II) and nose region (Zone III) that dictates the bubble shape. In the first half of this article, we report the effect of surface tension and inlet velocities on Taylor bubble and surrounding liquid film thickness ($$) in Newtonian liquid phase using VOF method with refinement near the solid wall. Thereafter, we extend our investigation for non Newtonian liquids, that is scarce in the open literature. Aqueous solutions of carboxymethyl cellulose (CMC) with different mass concentration are considered as the non Newtonian liquid phase which exhibit power law behavior. Systematic studies are subsequently carried out to realize the influence of CMC concentration on Taylor bubble formation and adjacent liquid film thickness. 
+
+Numerical model
+
+In general, the physical process of fluid flow are described by a set of conservation equations like mass, momentum and an additional advection equation for a marker function to identify the interface . To track the interface between two phases, different methods are available namely, Volume of Fluid (VOF) , Level Set , Phase Field and Lattice Boltzmann method. In this study, VOF is utilized and the following set of equations are solved for mass, momentum and volume fraction calculation.
+
+Volume of Fluid (VOF) method
+
+In VOF approach, a single set of conservation equations is solved for immiscible fluids. The governing equations of the VOF formulation for multiphase flows are as follows:
+
+ 
+
+ t + . ( ) =0
+
+	
+	) t + .( ) = - p + . + _SF
+
+	
+	
+	 = ( U + U ^T) = 
+
+ where $_SF$, $$, $p$, $$ and $$ are the volumetric surface tension force, shear stress, pressure, volume-averaged density, and dynamic viscosity, respectively. For non Newtonian power law fluid, apparent viscosity ($$) is expressed as:
+
+	
+	=K ^n-1 
+ 
+where $$, $K$ and $n$ are the local shear rate, consistency coefficient, and flow index, respectively. For a two phase system, if the phases are represented by the subscripts and the volume fraction ($$) of the secondary phase is known, then the density and viscosity in each cell are given by: 
+
+ = _2 _2 + (1 - _2) _1 
+
+ = _2 _2 + (1 - _2) _1 
+
+In absence of any mass transfer between phases, the interface between the two phases can be tracked by solving the following continuity equation (Eq. ) for the volume fraction function.
+
+ 
+ t + ( . ) _q =0
+
+where $ q$ denotes either gas or liquid phase. The volume fraction for the primary phase in Eq. is then obtained from the following equation:
+
+ _q =1
+ 
+
+Surface tension force
+
+Surface tension effect plays a significant role in droplet deformation, bubble motion and liquid/bubble breakup. The continuum surface force (CSF) model that has been widely and successfully applied to incorporate surface tension force, is used in this work. Surface tension force ($_SF$) is added to VOF calculation as a source term in the momentum equation. For gas liquid two phase flows, the source term in Eq. that arises from surface tension can be represented as: 
+
+ _SF = _n _1+ _2 _2 2 ( _1+ _2) 
+
+where $_n$ is the radius of curvature and $$ is the surface tension. $_n$ is further defined in terms of the unit normal $ $ as follows :
+
+_n = - . = | n | ( | n | . ) | n | - ( . n) 
+
+where $ = | n | $, and $n= _q$. 
+	
+
+ If $ _ w $ is the contact angle at the wall, then the surface normal at the live cell next to the wall is
+
+= _ w cos _ w + _ w sin _ w 
+
+where $$ and $$ are the unit vectors normal and tangential to the wall, respectively . This implementation of the surface tension force can cause unphysical velocity near the interface, known as spurious currents , due to unbalanced representation of surface tension induced capillary force and related pressure jump across the interface. There have been some attempts to reduce such phenomena . In this work, an explicit geometric reconstruction scheme is used to represent the interface by using a piecewise linear approach in VOF method . observed spurious pressure oscillations using Green Gauss cell based gradient schemes. Consequently, an alternative approach using Green Gauss node based schemes is suggested to accurately calculate the gradients that can help in minimizing the spurious currents. Therefore, in this study, Green Gauss node based gradient calculation is used to avoid such unphysical situations. 
+
+Solution methodology
+
+Schematic of the modeled geometry to understand the hydrodynamic characteristics of gas liquid two phase flow in a circular microchannel is shown in Fig.~a. A two dimensional axisymmetric geometry is considered for circular microchannel having a diameter (D) of 0.5 mm and a length of 10D, as shown in Fig.~b . As the liquid film thickness around the Taylor bubble in microchannels is nonuniform, which varies in both lateral and axial directions from the bubble nose to its tail , the effect of mesh element size on the bubble length is initially investigated for different numbers of mesh elements. Following the guidelines of and , quadrilateral mesh elements are utilized for the solution. Grid independence study was performed with four different mesh element size of $2~ m$, $3~ m$, $4~ m$, and $5~ m$. Optimum mesh element size is found to be 5 $ m$ and the total number of mesh elements are 50,000. The results presented henceforth is based on element size of 5 $ m$ in the core region. To capture the sharp interface and the liquid film thickness around the Taylor bubble, mesh elements near the wall are further refined . 
+
+Transient simulations are carried out using the pressure based solver in ANSYS Fluent 17.0. Pressure velocity coupling is approximated by Fractional Step Method (FSM) using first order implicit Non Iterative Time Advancement (NITA) scheme . An implicit body force treatment is used to take into account the surface tension forces. Quadratic upstream interpolation for convective kinetics (QUICK) and geo reconstruct schemes are used for the momentum and volume fraction equation discretization, respectively. Variable time step and fixed Courant number (Co = 0.25) are used for solving momentum and pressure equations. At the liquid and gas inlet, constant velocity boundary condition is imposed and the pressure outlet boundary condition is set for the microchannel outlet. No slip wall boundary condition is applied to the impermeable wall.
+
+Results and discussion
+
+At first, the developed model is verified for bubble shape obtained in a Newtonian (air-water) system. The comparison of a steady bubble interface extracted from the results of and those obtained from our CFD simulations for $U_G=0.5~m/s$, $U_L=0.5~m/s$, and $_w$= 8.899$10^-4$ kg/m.s at 0.0085 s is shown in Fig. a. Fig. b illustrates the comparison of axial pressure distribution on the axis of the channel in a unit cell with the results of under identical operating condition. 
+
+ 
+	
+The developed model is further used to calculate and corroborate the bubble length in a tapered co-flow geometry, as reported in . The inset in Fig. c describes the simulated geometry with varying gas phase injection position. A reference line ($AA^'$) is marked to identify the onset of tapering section and is assigned as zero injection length ($L_in$). In case of negative injection length, gas phase is introduced at a position prior to this reference line ($AA^'$). Fig. c shows the comparison of bubble lengths reported by and those predicted by this work for various gas injection positions. In all cases, comparison of our model predictions shows excellent agreement with the literature data.
+
+Armed with the well validated model, in the following section, we discuss the results of Newtonian liquid (water) and gas (air) phase in a co flow geometry, as illustrated in Fig. a. Subsequently, the liquid phase is considered as aqueous solution of carboxymethyl cellulose (CMC) with different mass concentration to understand the Taylor bubble hydrodynamics in non Newtonian liquid phase systems. The liquid inlet velocity ($U_L$), and surface tension ($$) values are ranged from 0.25 to 1.0 m/s, and 0.025 to 0.1 N/m, respectively, for this study. In all cases, simulations are performed for sufficiently longer time than the corresponding residence time to attain a steady state flow behavior and thereafter, the analyses are carried out. 
+
+Newtonian liquid phase
+
+Taylor bubble flow in microchannels has a strong dependence on the surface tension and viscous forces. Fig.~ illustrates the effect of surface tension on the bubble length and velocity.
+
+It can be observed that with increasing $Ca$ ($= $), Taylor bubble length decreases. This is attributed to the fact that at lower surface tension, weak interfacial force between two phases leads to smaller bubble and higher formation frequency. For all cases, liquid film thicknesses near the wall are calculated and compared with the available correlations that are based on various approaches and/or measurement techniques. To measure the liquid film thickness a vertical reference line is drawn in the middle of bubble and the film thickness is estimated from the gas liquid interface to the wall as shown in b. Table S1 (in Supporting Information) summarizes the list of methods and respective correlations that are considered in this work, and the comparison is provided in Table . 
+
+For $10^-3$ $ Ca $ $10^-2$, our results conform arguably well with the calculations using lubrication theory . From Table , it is also apparent that with increasing $Ca$, liquid film thickness near the wall increases, which in turn enhances the bubble velocity, as shown in Fig. . This is ascribed to lower resistance between the bubble and solid wall with increasing film thickness. Such phenomena is well supported by the lubrication theory for low $Ca$ values. In all cases, our predicted results closely match with correlation. 
+
+From the phase volume fraction contours (Fig. a d), it can be noticed that bubble detachment occurs rapidly at lower surface tension values. Therefore, for constant mass flow rates, the number of bubbles increases with decreasing surface tension. For higher surface tension i.e., at low $Ca$ values, the front and rear curvatures of the bubble are found to be similar (Fig. e). However, at higher $Ca$, bubble nose (refer to Zone: III in Fig.~a) becomes sharper and bullet-shaped with some wiggles at the back due to weak interfacial tension between phases.
+
+ 
+The pressure difference between the gas bubble and liquid slug combined with dynamic head lead to a pressure field inside the microchannel as shown in Fig.~. Due to the differences in curvatures at the nose and rear of the bubble, there also exists a small pressure drop, as shown in Fig. . This is in line with the observation by other researchers , as well. Moreover, it is evident from Fig. , that for fixed gas and liquid properties, the total pressure inside the bubble is constant.
+
+The effect of liquid phase inlet velocity ($U_L$) on Taylor bubble formation is observed by keeping gas phase velocity ($U_G$) and other fluid properties are at constant. Fig. shows that with increasing $U_L/U_G$ ratio, bubble length decreases. 
+
+This is a consequence of increased shear force on the gas phase that in turn also results in change of bubble shape at higher velocity ratios. Fig. qualitatively describes this effect on the Taylor bubble formation phenomena. In particular, Fig. e helps to clearly understand the effect of liquid inlet velocity on the shape of Taylor bubble. Bubble shapes are found to be similar at lower $U_L/U_G$ values. However, the shape changes significantly at high $U_L/U_G$ (=2.0) primarily due to considerable enhancement in inertia force as shown in Fig. e. 
+
+In addition to bubble length observation, bubble velocity and liquid film thickness are also analyzed. The bubble velocity is found to rapidly increase with the enhanced liquid inlet velocity (Fig. ) and the surrounding liquid film thickness also increases, as mentioned in Table .
+
+Our results are in reasonable agreement with the film thickness values estimated from the correlation based on lubrication theory at moderate $Ca$ values, and are in excellent agreement with the analytical results of .
+
+Non Newtonian liquid phase
+
+To understand the Taylor bubble behavior in non-Newtonian liquid phase, we have considered different mass concentration of carboxymethyl cellulose (CMC) in water as the continuous liquid phase that exhibit power law behavior (Eq. ). Properties of three different aqueous solutions of CMC are taken from the experimental results of that are found to be shear thinning ($n$ 1) in nature. These rheological properties are listed in Table S2 (in Supporting Information). It can be noted that the continuous phase becomes Newtonian (water) when CMC concentration is zero. This systematic selection of data helps us to identify the influence of non-Newtonian continuous phase and to compare model predictions with Newtonian results. 
+
+To understand the effect of CMC concentration in terms of bulk viscosity and overall viscous force, effective viscosities ($ _eff$) of various solutions are estimated from the simulations and compared with the results derived from Eq. .
+
+	
+	
+	_eff=k(4n)^n( D)^n-1
+
+where $K$, $U_L$, $D$, and $n$ are consistency index, liquid inlet velocity, diameter of the channel, and power law index, respectively. Fig. a shows enhanced effective viscosity with increasing CMC concentration and the CFD calculations are in excellent agreement with the theoretical values.
+
+As a result of higher viscous force, bubble length is observed to decrease with increasing CMC concentration (Fig. b). It can also be observed from Fig. b that bubble velocity also changes significantly. 
+
+Similar to the discussions in earlier sections, this is attributed to the influence of surrounding liquid film thickness that is evaluated and provided in Table~. It shows that modified Capillary number ($Ca^*=KU_B^nD^(1-n)/$) increases with increasing CMC concentration for a fixed set of inlet velocities. Consequently, liquid film around the Taylor bubble becomes thicker. Interestingly, in this case, film thickness results are very close to the estimated values from the correlation proposed by through experimental observations in Newtonian liquids. 
+
+Fig.~a shows that increasing CMC concentration leads to more frequent bubble formation for constant inlet velocities. 
+
+This is also quantitatively mentioned in Table . The rheological properties of the continuous phase are found to influence the nose curvature of the Taylor bubble, which is mainly controlled by the balance between capillary and inertial forces. It is evident from Fig.~b that higher $ _eff$ imparts significant alteration on bubble shape in the dynamic meniscus and nose region (Zone: II and Zone: III, respectively in Fig.~). 
+
+Fig.~b also demonstrates that with increasing CMC concentration, the radius of curvature ($R$ in Fig.~b) decreases but the length of nose increases, and the bubble tends to be bullet shaped. This transition arises while increasing the CMC concentration and particularly in situations where viscous force of the continuous phase overcomes the interfacial force. To understand the influence of shear thinning behavior, velocity profiles in liquid slug and gas bubble are also analyzed for two extreme cases (CMC0\
+
+ 
+
+Figs.~a and b show non-dimensional velocity profiles at the middle of the slug and bubble, respectively. In case of Newtonian system, parabolic profile is evident in the slug indicating fully developed laminar flow however relatively flatter profile is evident in non-Newtonian system which is the typical characteristic of laminar velocity profile of a shear thinning fluid. However, considerably higher velocity is observed within the bubble for non-Newtonian system. This is anticipated due to enhanced film thickness and bullet shaped bubble . The non homogeneous viscosity profile, presented in Fig.~c (inset), portray the influence of shear thinning CMC solution on the hydrodynamics of Taylor bubble. The distribution of effective viscosity in the middle of the liquid slug for CMC-6\
+
+ 
+
+ 
+
+The effect of non-Newtonian liquid inlet velocity on the bubble length and shape is systematically investigated with three CMC concentrations and compared with the Newtonian liquid (CMC-0\
+
+Moreover, it can also be seen from Fig.~a that for any particular velocity, bubble length decreases with increasing concentration of CMC. At higher liquid phase velocity, the bubble length is found to be invariant for both Newtonian (CMC-0\
+
+With increasing CMC concentration and liquid velocity, the shape is found to be bullet shaped. At lower inlet velocities, formation of elongated bubbles are observed in all cases. The Taylor bubble volume is also analyzed and presented in Fig.~b that shows reduction in bubble volume with increasing liquid phase velocity for both Newtonian and non Newtonian cases. It is interesting to note that Taylor bubble volume and shape are almost identical for CMC 3\
+
+It is interesting to note from the comparison of film thickness predictions with available correlations that our results are in well agreement with the proposed correlations of and (Fig. ). This can be attributed to the applicability of those correlations for a wide range of Ca which encloses the range of our study. However, it is noteworthy that for non-Newtonian liquids, Ca is replaced with $Ca^*$. Specifically, in cases of CMC-3\
+
+Conclusions
+
+A computational study on the Taylor bubble in Newtonian and non Newtonian continuous liquid phase with air, as gaseous phase, is carried out in a circular co flow microchannel. The Taylor bubble length, shape, and velocity are discussed and influencing properties, such as surface tension, inlet velocity, and effective viscosity are reported. Liquid film thickness between the bubble and channel wall is precisely captured to understand its effect on the bubble. For Newtonian liquid, Taylor bubble length is found to decrease with increasing $Ca$ and $U_L/U_G$ ratio. However, the bubble velocity and the liquid film thickness increases. At higher $Ca$ and $U_L/U_G$ ratio, bubble shape changes significantly and wiggles are observed at the rear. To the best of our knowledge, for the first time, the effect of non Newtonian liquid on the Taylor bubble is computationally investigated using a power law liquid in a co flow geometry. Aqueous solutions of CMC with different concentrations, that exhibit shear-thinning behavior, are considered as the non-Newtonian liquid. Effects of CMC concentration and inlet velocity on the Taylor bubble length, shape, and velocity are elaborated and compared with the Newtonian results. Bubble length is found to decrease with increasing concentration of CMC, due to increase in solution effective viscosity. Moreover, the bubble shape changes toward bullet shape with increasing CMC concentration. With increasing liquid inlet velocity, bubble length also decreases but at higher velocity it barely changes with concentration. 
+
+In all cases, liquid film thickness predictions are compared with the correlations proposed for mostly Newtonian liquid. Our results conform arguably well with most of them, and are in excellent agreement specifically, in cases where the values of $Ca$ (for Newtonian) and $Ca^*$ (for non-Newtonian) are within their proposed range of applicability. In particular, for higher concentration of CMC, the results are close to estimated values from and . It can be underlined that the film thickness can be estimated from these correlations within the limit of respective $Ca$ range even in case of non-Newtonian power law liquid. 
+
+Nomenclature
+
+	
+
+	$Ca$ = Capillary number ($ U_B $) \\
+ 	$Ca^*$ = modified Capillary number ($KU_B^nD^(1-n)/$) \\
+
+	$D$ = diameter of the channel (m)\\
+
+	$K$ = consistency index ($Pa.s^n$) \\
+	$L$ = length (m) \\
+	$$	= unit normal vector\\
+
+	$p$ = pressure (Pa)\\
+	$Q$ = flow rate ($$L/s) \\
+
+	$Re$ = Reynolds number ($_L $)\\
+	Greek symbol\\	
+	$$ = volume fraction\\
+	$ $ = shear rate (1/s)\\
+	$$ = liquid film thickness (m) \\ 
+	$$ = dynamic viscosity (kg/m.s)\\
+	$$ = density ($kg/m^3$)\\
+	$$ = surface tension (N/m)\\ 
+	$$ = shear stress (Pa)\\
+
+	Subscripts\\
+	$B$ = bubble \\
+	$G$ = gas\\
+	$L$ = liquid
+
+Details of rheological properties used in simulations are supplied as Supporting Information.

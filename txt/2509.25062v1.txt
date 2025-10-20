@@ -1,0 +1,343 @@
+[article,amsmath,amssymb,preprint]revtex4-1
+[utf8]inputenc
+[T1]fontenc
+
+ 
+
+[colorlinks=true,urlcolor=cyan,citecolor=cyan,linkcolor=cyan,bookmarks=true]hyperref
+
+ 
+ 
+
+[3]#2
+Tr
+T1
+boldT1
+[1]
+[1]
+
+[5]
+#1
+0.5
+
+#1\\
+
+#2\\
+
+A new three-dimensional (3D) multiphase computational fluid dynamics (CFD) model for adsorption physics in porous media is developed and validated. The model is constituted at a macroscopic scale that integrates new volumetric source terms in the multi-species gas transport and energy conservation equations. These new terms, for the first time, take into account the impact of pores adsorption occupation rate (PAOR), or gas loading.
+Transient 3D simulations are performed at an atmospheric pressure of about 1.02 bar for different CO-He gas mixture feed-in compositions (100\
+
+ capture, porous media, gas adsorption physics
+
+Introduction
+
+Carbon dioxide (CO) concentrations have been increasing in atmosphere in recent decades where at least two-third of greenhouse effect gas emissions are caused by different human activities.
+Moreover, natural gas and coal based fired power plants account for huge amounts of energy production that produces billion metric tons of CO worldwide, contributing to the overall global warming. Governmental strategies at worldwide levels, e.g. as Paris climate change agreements, have been developed in attempts such that nations must urgently decrease CO emissions. Gas separation such as carbon capture and storage technologies (CCS) are promising solutions to reduce CO and greenhouse effect gas emissions .
+
+Adsorption based technologies for CO capture have been an important topic for research and developments in the last decade. For example, Song et al. 2025 employed granulation technology to improve the performance of Alkaline metal salt-promoted MgO sorbents as effective materials for CO capture. Liu et al. 2024 investigated CO capture technology using pressure swing adsorption (PSA) for the petrochemical industry. Das et al. 2023 presented a comprehensive review adsorption based CO capture technologies. Riboldi et al. 2017 and Siqueira et al. 2017 presented state of the art overviews on PSA as an innovative CO capture technology. White at al. 2016 development a PSA cycle to capture CO from flue gas employing a 4-bed PSA apparatus. 
+
+As can be seen, PSA technology, is thus emerging as a promising solution for post‐combustion CO capture. This is thanks to its relatively low energy requirements and operational modularity options. In a PSA cycle, a fluid mixture is passed through a packed bed (usually fixed-bed adsorber or reactor) containing porous solid sorbent: CO preferentially adsorbs onto the sorbent surfaces (nano-pores nanostructure) under high pressure (adsorption step), and the bed is then depressurized to desorb (regenerate) the sorbent and recover the captured CO , that can be transported or stocked underground. 
+
+Fixed-bed adsorption systems, in particular, are highly valued for their operational simplicity, robustness, and adaptability to a wide range of flow and concentration conditions. However, the effective design and optimization of such systems hinge on a deep understanding of the coupled phenomena governing adsorption, which include mass transfer, fluid dynamics, heat effects, and sorbent kinetics. 
+
+Numerical modeling and simulations have been rapidly progressing in the last years. For example, Artificial Intelligence is a promising window for future chemical engineering technologies . The development of fractal dynamics models for adsorption is also very promising . In the context of physics-based numerical modeling and simulation, computational fluid dynamics (CFD) has emerged as a powerful tool to simulate the transient and spatially varying nature of these processes. In the last decade, CFD-based models have increasingly been developed in attempts to better predict the local dynamic behavior of adsorption kinematics and temperature front transport within fixed packed beds. Verbruggen et al. 2016 demonstrated the capability of CFD to simulate gas-phase transport and reaction phenomena in catalytic and adsorptive systems. Kasai et al. 2023 and Gautier et al. 2018 developed CFD models for PSA to predict the adsorption rate in packed beds of granular activated carbon. Ramos et al. 2024 developed a CFD model is validated with experimental measurements of adsorption of CO in-gas mixtures employing packed beds of Zeolite-13X. 
+
+The strength of CFD lies in its ability to resolve local gradients in temperature, pressure, and concentration, information that is difficult to obtain experimentally and often neglected in lumped-parameter or one-dimensional (1D) adsorption models . The research progress in this field underlined that three-dimensional (3D) simulations are essential when realistic prediction of local gas dynamics and heat transfer is needed, particularly in beds with non-conventional shapes or multi-dimensional heat loss paths. In adsorption-based CO capture systems, understanding such local effects is vital for enhancing breakthrough curves and reducing maximum temperature local spikes, for enhanced bed efficiency and increased productivity.
+
+In this work, we develop and implement a new robust 3D CFD model using the OpenFOAM platform, for gas adsorption in fixed-bed adsorber with an application to CO capture. The solver incorporates volume-averaged conservation equations for mass, momentum, and energy, including new source terms that take into account the impact of pores adsorption occupation rate (PAOR), or gas loading, in the CFD modeling. Zeolite 13X is used as the adsorbent material , given its well-documented selectivity and capacity for CO . The new model is validated against experimental data from the literature by Wilkins and Rajendran and Ramos et al.~, for three different CO feed-in concentrations (100\
+
+Unlike most prior studies that assume cylindrical bed geometries, we further extend the 3D CFD solver's capabilities by investigating a more complex multi-tube bed design, which maintains the same total adsorbent volume. This highlights from one hand the importance of 3D CFD models in capturing realistic adsorption and thermal front dynamics, and on the other hand their potential to design next generations of fix-bed adsorbers.
+
+Mathematical Modeling and Governing Equations
+
+Model description
+
+In this section, we present the developed comprehensive 3D CFD model to simulate the physical adsorption process within a fixed-bed adsorber (a reference design from the literature, and a new 3D proposed enhanced design). This is based on OpenFOAM-v2306 open source platform. The geometry of the reference design of the fixed-bed adsorber is constructed to replicate the bed in the experimental setup presented by Wilkins and Rajendran . It comprises a cylindrical fixed-bed made of an internal diameter of 2.82 cm and a total length of 6.4 cm. 
+
+In CFD modeling of adsorption physics, the coupled conservation equations of mass, momentum, and energy must be solved simultaneously. These conservation equations form the background basis for describing the key transport phenomena within fixed-bed adsorption columns. To accurately model the fluid flow, heat transfer, and mass transport phenomena within the packed bed, the porous medium can be modeled at different scales, $i.e.$ at the scale of pellets/beads or at a continuum macroscopic scale. In the latter approach, the porous structure of the bed is implicitly modeled using averaged quantities such as porosity and particle diameter. This allows for more computationally affordable computations without resolving the physics at the scale of each individual particle (pellet or bead). The modeling framework in the present work adopts this macroscopic scale modeling of the adsorbing fixed-bed but with additional improvements to take into account the gas loading impact of PAOR in the CFD modeling as we will explain in section .
+
+In this work, some assumptions are adopted while maintaining numerical accuracy:
+
+ The fluid flow is assumed to be laminar due to the low superficial velocities typically encountered in fluid flow in porous media.
+ A thermal equilibrium is assumed at between the solid particles and the gaseous phase.
+ The thermophysical properties of the gas phase follows an ideal gas assumption. 
+ The transport mechanism is majorly controlled by molecular diffusion within the macro-pores.
+
+The proposed framework solves for the multispecies gas Navier–Stokes (momentum) equations, continuity (mass) equation, species transport and the energy equation, all under transient and compressible multispecies gaseous flow conditions. To account for adsorption, additional sub-models are integrated as will be explained. These include the evaluation of both saturated and instantaneous adsorption capacities, which influence the local mass and energy balances through species uptake and heat effects. 
+Mass transfer mechanisms and heat exchange between the fluid and solid phases are modeled by incorporating new two source terms into the governing mass and energy conservation equations, while pressure drop is accounted for by adding momentum source terms that represent viscous and inertial losses in the porous medium. Furthermore, adsorption kinetics and thermal effects due to exothermic adsorption reactions are incorporated to enhance the physical realism of the simulation. Together, these components are coupled to yield a fully integrated CFD–adsorption model. This enables us to accurately predict the spatio-temporal evolution of species concentrations, temperature profiles, and pressure fields during the adsorption period.
+
+The governing equations in the present 3D CFD model consist of the conservation laws for mass, momentum, energy, and gaseous species transport, expressed as the following:
+
+ 
+ The momentum conservation equation is defined as:
+ 
+ ) t + (_g ) = (_eff ) - 
+ 
+
+ The pressure gradient across a packed bed of porous medium of spherical particles, can be modeled by the Ergun's equation as the following:
+ 
+ = - (1 - _b)^2_b^3 d_p^2 - _b^3 d_p || 
+ 
+ where $t$ is the time, $p$ is the pressure scalar field, $$ is the velocity vector field, $d_p$ is the particle diameter, $_eff$ is the effective dynamic viscosity of the gas mixture, $_g$ its density and $_b$ is the bulk bed porosity.
+
+The adsorption process entails a transfer of mass from the gas phase to the solid phase, i.e. adsorbent. The mass conservation is governed by:
+
+ t
+ + (_g )
+ =
+ S_Y
+
+Where $S_Y$ is a sink term that accounts for the reduction in the gas-phase mass due to adsorption.
+
+The conservation of each chemical species within the gas phase is governed by a species transport equation that accounts for advection and dispersion of each gas component inside the bed column. 
+
+ 
+ t
+ + (_g Y_i)
+ = (_g D_L Y_i)
+ + S_Y
+
+$Y_i$ is the mass fraction of $i$-specie and $S_Y$ is a sink term introduced to represent the mass transfer from the gas to the solid phase due to adsorption; will be detailed in section . The axial dispersion is modeled using an effective dispersion coefficient $D_L$, as the following: 
+
+ D_L = 0.7 D_m + 0.5 u d_p
+
+D_m__2, = T^1.75 M__2 + M_
+p ( _v,_2^1/3 + _v,^1/3 )^2
+
+Where $D_m$ is the binary molecular diffusion coefficient, carbon dioxide helium (CO$_2$-He) mixture, derived as an semi-empirical formulation based on the Chapman–Enskog theory . $T$ is the Absolute temperature of the gas mixture, $M_CO_2$, $M_He$ are the Molar masses of CO$_2$ and He, respectively, $_v,_2$, $_v,$ represent the collisions between CO$_2$ and He molecules, i.e. $_v,CO2=26.9$, $_v,He=2.88$ and $p$ is the operating pressure inside the packed bed.
+
+The energy conservation equation governs the thermal behavior of the coupled gas-solid system during the adsorption process, and is given by: 
+
+ 
+ t ( _ c_p_ T )
+ + ( c_p_ \, T ) 
+ - ( _ T ) 
+ =
+ S_T
+
+In a porous media such as a packed bed of adsorbent porous spherical particles, energy transport occurs through both the fluid (gas) and solid phases. Equation accounts for transient heat accumulation, convective and conductive heat transport, and thermal effects induced by adsorption inside the packed bed. The right-hand side of equation includes a source term $S_T$ that introduce the heat released due to the isosteric heat of adsorption, i.e. $_2$ adsorption on Zeolite-13X beads. $S_T$ will be detailed in section . The subscript "eff" denotes the effective thermophysical properties that are defined as volume-averaged quantities over the total porosity $_t$, thus blending fluid and solid contributions and of course assuming thermal equilibrium at the solid-gas interface. This simplification enables the treatment of the porous medium as homogeneous. 
+
+Additionally, $_$ is the effective density that reflects the weighted average of gas and solid mass per unit volume, defined as: 
+
+ _ = _t _g + ( 1- _t ) _p
+
+$_g$ is the gas density, $_b$ the bed bulk porosity and $_p$ is the adsorbent particle density.
+
+$c_p_$ is the effective heat capacity accounts for the heat storage capacity of both phases, defined as:
+
+ c_p_ = _t c_p + ( 1- _t ) c_p_
+
+$c_p$ is the gas heat capacity and $c_p_$ the solid particle heat capacity.
+
+$_$ is the effective thermal conductivity in $W m^-1K^-1$, defined as:
+
+ _ = _t + ( 1- _t ) _p
+
+Where $$ is the gas thermal conductivity and $_p$ the solid skeletal particles thermal conductivity that depends on the gas loading which is thus dependent of gas feed-in concentration or mass fraction; i.e. $_p=-0.331 (Y_CO2-feed) + 0.355$.
+
+An enhanced modeling of volumetric source terms
+
+Many 1D, 2D and 3D CFD models from the literature , adopts the mathematical formulation of $S_Y$ (equation ) and $S_T$ (equation ) as the following:
+
+cc
+S_Y = -_b _p \, _i=1^n_ 
+(M_i t)\\
+S_T = _b _p \, _i=1^n_ 
+(| H_i| t) 
+
+The mathematical form in both $S_Y$ and $S_T$ (equations ), assume that authors adopted thus a unique volumetric source, dependent on $ t$, that is responsible for both: (i) the gaseous i$^th$-component mass-fraction removal and (ii) the exothermic heat release; from the effective porous phase material of bulk porosity ($1-_b$) to the bulk gas mixture phase of bulk porosity $_b$. Though, mathematical modeling form of $S_Y$ and $S_T$ is true, it merits indeed some discussions and can be also subject to further enhancement. In fact, the form of $S_Y$ and $S_T$ in equation () can not explicitly account for the adsorbing particle's porosity $_p$ which is not necessarily equal to the bed's bulk porosity $_b$. Additionally, the mathematical form of $S_Y$ and $S_T$ (equation ) can not account for the PAOR or gas loading inside the beads/pellets or particles. In other word they can not account for non-uniform $q_i$ inside the particles that will depend of course on the gas loading. The PAOR is a driving force behind the exothermic heat release and gas mass-fraction exchange at the gas-solid interface.
+
+In order to enhance the physics-based background of the CFD modeling, one thus can account explicitly for the particle's porosity $_p$ and for the total porosity $_t$ in the source terms $S_Y$ and $S_T$, and can also account for the PAOR inside the beads/pellets. 
+
+Agreeing on the above, for the first time, we thus propose a new more rigorous physics-based mathematical formulation of the two volumetric source terms $S_Y$ and $S_T$ as the following:
+
+ 
+ S_Y = - [ (1-_p)_Y] \, _t _p _i=1^n_ 
+ (M_i t)
+
+ 
+ S_T = [ (1-_p)_T] \, _b _p _i=1^n_ ( - H_i t )
+
+ Here, \( _t \) is the total porosity, \( _p \) the particle's porosity, \( _b \) is the bed's bulk porosity (see figure ), \( _p \) the adsorbent particle density, \( M_i \) the molar mass of gas specie \( i \), and \( q_i \) is the amount of specie \( i \) adsorbed per unit mass of adsorbent.
+
+ One can see that in the new form of $S_Y$ (equation ) and $S_T$ (equation ), whenever $_p=1$ or $_t=1$ then both $S_Y=0$ and $S_T=0$ which still holds true, because at either $_p=1$ or $_t=1$ then there should not exist any adsorbing bead/pellet material inside the bed. Moreover, with the new two terms $(1-_p)_Y$ and $(1-_p)_T$ one can now account for the impact of the PAOR inside the beads/pellets, which indeed depends on the initial CO feed-in concentration (see figure ). 
+
+ 
+ 
+Due to the direct impact of the gas feed-in percentage on the gas loading equilibrium, the values of $_Y$ and $_T$ can be thus correlated as function of the gas mixture feed-in concentrations, i.e. here is CO. In the present work, this is done through comparisons with the experimental breakthrough curves and bed temperature profiles from the experiment by Wilkins et al. 2019 . Figure shows an example of $_Y$ and $_T$ as function of the initial feed-in CO percentage. The increase in $_Y$ values (figure -a) after a critical CO feed-in threshold value of about 0.25 can be explained as the following: for values of feed-in of CO $ 0.25$, $_Y$ is constant and equals to about 0.2 meaning that 20\
+
+It is also worth noting that many previous CFD models, implicitly assumed like $_T= _Y = 1$ for all CO feed-in concentrations, which is not always necessarily true. This is because the feed-in concentration value usually has an impact in some way or another on the PAOR inside the beads/pellets.
+
+ 
+ [width=0.9]Figure2.pdf
+ feed-in percentage. (a) $_Y$; (b) $_T$.
+ 
+
+ 
+
+Adsorption kinetics and equilibrium
+
+The modeling of CO adsorption relies on both equilibrium and kinetic considerations. For the equilibrium aspect, the dual-site Langmuir (DSL) isotherm model is employed , due to its capability to represent adsorption on heterogeneous surfaces through two distinct adsorption mechanisms. This model has been shown to effectively describe single-component adsorption on materials with energetically diverse sites . The DSL model is represented by the following equation:
+
+ q_i^* = b_i c_i 1 + _i=1^n_comp b_i c_i + d_i c_i 1 + _i=1^n_comp d_i c_i
+
+The different isotherm parameters are determined experimentally by Wilkins et al. 2019 and are used here for adsorption equilibrium modelling (see Table ).
+
+The coefficients $b_i$ and $d_i$, representing the Langmuir affinity constants of component $i$ for the first and second adsorption site types, respectively, are determined using the following Arrhenius-type expressions, as reported by Haghpanah et al. (2013) :
+
+ b_i = b_0 (RT )
+
+ d_i = d_0 ( RT )
+
+The molar concentration $c_i$ is determined from the mass fractions $Y_i$ using the following relationship:
+
+ c_i = RT M_i_i=1^nM_j
+
+From a kinetic standpoint, the linear driving force (LDF) model is adopted to characterize the rate of mass transfer. The LDF model is widely used for its simplicity and computational efficiency, enabling robust and streamlined predictions of adsorption dynamics without compromising the accuracy of the overall simulation.
+
+ dt = k_i(q^*_i - q_i)
+
+where $k_i$ is the LDF mass transfer coefficient for the i$^th$ gas component, $q^*_i$ is the equilibrium adsorbed amount and $q_i$ is the actual adsorbed amount i$^th$ gas component. The LDF mass transfer coefficient $k_i$ is usually obtained by simple experimental data fitting to the model equations . However, a generalized model of $k_i$ is usually employed which depends on the molecular diffusion of the i$^th$ gas component in the gaseous mixture, and that is inversely proportional to the diameter $d_p$ of the adsorbing particles such that:
+
+ k_i = f(D_m) / d^2_p
+
+For different macropore models of $k_i$ depending on the type and form of adsorbing particles, the reader may refer to table 1 in Rezaei et al. 2009 . In the present work, we adopt the $k_i$ model intended for spherical beads/pellets (see ).
+
+Initial and Boundary Conditions
+ 
+
+To investigate the influence of gas composition on the adsorption and heat transfer behavior in the fixed packed-bed column, 3D CFD transient simulations were carried out to predict the breakthrough curves in a cylindrical fixed-bed adsorber experiment by Wilkins et al. 2019 . Three feed-in gas mixture scenarios are computationally investigated: 100\
+
+The 3D CFD simulation is initialized with uniform fields for the velocity, pressure, and temperature. At the bed's inlet a constant volumetric flow rate of the CO-N mixture is imposed, while the outlet is modeled using a total outlet pressure condition. For the bed's wall boundaries, a convective heat transfer model is applied to appropriately account for the natural convection heat transfer. Table~ summarizes the boundary conditions used in the present 3D CFD transient simulations.
+
+The external wall heat transfer is modeled through a natural convection correlation implemented as a coded boundary condition in OpenFOAM. This approach allows the convective heat transfer coefficient to adapt dynamically based on the height/position of the cylindrical bed and the maximum temperature at each time step. This heat transfer model is based on empirical correlations for natural convection, (see Perry’s Chemical Engineers’ Handbook (2008) ). For high Rayleigh number flows ($ > 10^9$), the local heat transfer coefficient, can be expressed as:
+
+ h(z,t) = 1.24 [ T(z,t) - T_ref ]^1/3
+
+where $Gr$ is the Grashof number, $Pr$ the Prandtl number, $h(z,t)$ the convective heat transfer coefficient in $W m^-2 K^-1$, $T(z,t)$ the temperature of the wall at each time step and position z, and $T_ref$ is the reference ambient temperature, typically taken as $294~K$. This formulation is thus appropriate to account for natural convection heat transfer that is both local-position and temperature-dependent. This allows for a more physically accurate representation of thermal exchange between the bed's cylindrical wall and the surrounding environment (air). This boundary treatment enhances the accuracy of wall heat transfer modeling, especially in systems dominated by natural convection, such as in fixed-bed adsorption columns with no exterior thermal insulation treatment.
+
+Numerical Methodology
+
+The 3D CFD transient simulations are conducted within the open-source CFD platform OpenFOAM, version 2306. An in-house transient solver is developed to resolve the coupled transport equations for mass, momentum, energy, and species in a porous medium undergoing gas adsorption. The finite volume method (FVM) is employed for spatial discretization, and time integration is carried out using a first-order implicit scheme to ensure stability and allow large time steps during transient simulations. 
+
+The fixed column cylindrical packed bed is treated as a continuum porous medium, with its impact on fluid flow incorporated through porous-based volume-averaged momentum source term. These include both viscous and inertial resistances, implemented using a model formulation available via an term. The solid structure is defined over a designated cell zone denoted , where the porosity model is activated.
+
+To characterize the resistance imposed by the porous matrix in the packed bed, the CFD model applies volume-averaged properties based on a defined constant initial bed porosity and particle's or pellet's diameter. A summary of the cylindrical fixed-bed properties and adsorbent Zeolite-13X material properties are provided in Table~.
+
+The thermophysical properties of the different involved gaseous species, such as density, specific heat capacity, thermal conductivity, and viscosity, are all calculated an updated iteratively in the solver using the thermodynamics gas library data modules available in OpenFOAM (e.g. NIST thermodynamics tables: Thermophysical Properties of Fluid Systems). The viscous and inertial coefficients in the Darcy-Forchheimer model are determined based on the Ergun correlation, as expressed in equation (). The flow resistance is thereby introduced explicitly in the momentum equation, which ensures a proper pressure drop and velocity attenuation due to the presence of the packed adsorbent material zeolite-13X beads. This approach preserves computational efficiency while capturing the essential characteristics of flow through an isotropic porous media.
+
+Geometry and Mesh Generation
+
+The computational domain is made of a cylindrical packed bed adsorber with a diameter of 28.2 $mm$ and a height of 64 $mm$ as shown in figure . The mesh is generated in two stages: a structured background mesh is created using , followed by geometry snapping and cells refinement using the mesher tool in OpenFOAM. Boundary mesh layers are then added close to the bed wall surfaces to improve the resolution of the thermal and velocity boundary layers, as shown in Figure . 
+
+A grid convergence study is performed to ensure that the CFD numerical results are insensitive to the mesh-cell size being adopted. Table~ shows the mesh configurations used in the grid convergence study, adopting the corresponding Grid Convergence Index (GCI) approach . Three levels of mesh resolution were tested, coarse (100,000 cells), medium (337500 cells), and fine (800000 cells), to assess the numerical sensitivity of the temperature field at t=120 s. The GCI, which quantifies the relative error between successive mesh refinements, was calculated between the coarse-to-medium and medium-to-fine mesh pairs . The resulting Medium-Coarse mesh-size GCI \
+
+Numerical Validation with Experiments
+
+To assess the accuracy and predictive capability of the newly developed 3D CFD model, the numerical results are compared to the experimental measurements data reported by Wilkins et al. 2019 and to the 2D CFD results of Ramos et al. (2024)~. The validation process is structured into two distinct stages. The first focuses on pure CO adsorption conditions, allowing evaluation of the model's ability to capture single-species transport, thermal dynamics, and adsorption behavior. The second stage extends the analysis to multi-component inlet conditions, specifically mixtures containing 15\
+
+In the validation phase, particular attention is given to several critical indicators that characterize the dynamic behavior of the adsorption process. One of the primary quantities of interest is the temperature peak-value observed locally inside the packed bed, which arises due to the exothermic nature of adsorption in Zeolite-13X beads. Accurately capturing the location and magnitude of this temperature maximum is essential for validating the thermal coupling with adsorption kinetics implemented in the present 3D CFD model.
+
+To ensure consistency and relevance in the comparisons, the temperature values are extracted at a probe located at the same position defined in the experimental study by Wilkins et al. 2019 at the centerline of the cylindrical bed center-line ($r=0$) and at a height of $z = 52~mm$ away form the feed-in inlet. The temperature profiles along this probe serve as the primary metric for validation with the experimental data Wilkins et al. 2019 , and with the 2D CFD data of Ramos et al. (2024)~.
+
+Additionally, the breakthrough time, defined as the point at which the adsorbent becomes saturated and the adsorbed species begins to appear at the outlet, is used as a key metric to assess the model's capacity to predict adsorption front propagation. This time marks the end of the effective adsorption cycle and is determined from both simulation results and experimental data. To facilitate quantitative comparisons, the outlet concentration of CO is integrated over the outlet surface and compared against the experimentally observed breakthrough curves. This approach enables direct evaluation of the model’s accuracy in capturing the adsorption dynamics under different operating conditions, including pure CO and binary mixtures with He at 15\
+
+3D CFD Model Validation
+
+ stream (100\
+
+Overall, the use of a pure CO inlet stream not only maximizes the adsorption depth into the porous matrix but also provides the clearest correlation between the model’s outputs and experimental observables—namely, adsorption capacity and thermal response. This approach serves as the most effective basis for model validation, ensuring accurate representation of both mass and energy transport phenomena in subsequent simulations involving gas mixtures or cyclic adsorption processes. Under 100\
+
+Furthermore, the adsorption capacity attained under pure CO flow aligns closely with equilibrium data derived from experimentally measured adsorption isotherms conducted under similar conditions. These isotherms, typically obtained via volumetric or gravimetric methods, represent the maximum uptake achievable at specific temperatures and pressures. When applied to the CFD model, the isotherm data serve as boundary conditions or validation checkpoints, reinforcing the model's ability to predict adsorption behavior under saturation-limited scenarios.
+
+Figure a presents the temporal evolution of the outlet CO mass fraction. The present 3D CFD model accurately reproduces the initial delay in outlet concentration associated with the breakthrough curve, demonstrating its ability to correctly capture the mass transfer resistance and bed saturation behavior. The predicted breakthrough time closely matches the experimental value, indicating proper implementation of adsorption kinetics and transport limitations.
+
+Simultaneously, thermal validation is achieved by comparing the axial centerline temperature rise predicted by the simulation to the experimentally measured temperature profile, as shown in Figure b. The model captures both the timing and magnitude of the temperature peak resulting from the exothermic nature of CO adsorption. This agreement confirms the robustness of the energy conservation formulation, including the coupling between adsorption heat generation and thermal diffusion within the packed bed.
+
+Overall, the pure CO validation case demonstrates that the 3D CFD model reliably predicts both mass transport and heat release phenomena. It forms a foundational validation step prior to extending the analysis to more complex multicomponent feed conditions and cyclic adsorption scenarios.
+
+ presents the validation of the 3D CFD model against experimental data for a 50\
+
+The corresponding thermal response, illustrated in Figure b, confirms the model's ability to capture the temperature rise resulting from exothermic adsorption. The predicted peak temperature closely matches the experimental profile, with a deviation of $0.8$~K only. 
+
+ shows the model validation for a more dilute feed containing 15\
+
+Figure b displays the thermal response along the axial centerline (r=0) for 15\
+
+Overall, the present 3D CFD results confirm the reliability of the present 3D CFD model under different feed-in conditions. The consistent application of calibrated isotherms, combined with gas-specific thermal corrections, enables accurate prediction of both mass and energy transport phenomena inside the fix-bed column.
+
+3D CFD Results and Discussions
+
+To provide a spatially resolved visualization of the adsorption front dynamics inside the bed, Figure shows the 3D contours of CO mass fraction and local temperature distribution within the porous bed at $t = 500$~s for the 50\
+
+Figure shows an example of cross-sectional slices perpendicular to the x-axis of the cylinder bed that illustrate the local spatial distributions of CO mass fraction, temperature, and the adsorbed CO quantity $q_0$ inside the bed. As time progresses, the CO breakthrough front advances along the column from inlet to outlet, accompanied by a sharp rise in the local temperature due to the exothermic nature of adsorption on Zeolite-13X spherical beads. The thermal maximum peak value displaces locally following the adsorption front with some phase-shift. The $q_0$ profile highlights the progressive saturation of the adsorbent material. For example, at t=1000 s, the adsorption front is near the bed's outlet, and the thermal front begins to dissipate, illustrating the onset of saturation and heat redistribution within the bed. These results emphasize the strong spatial and temporal coupling between mass and heat transport phenomena that underline the necessity of using a fully resolved 3D model to accurately capture such dynamics especially in future complex designs of adsorbing fixed-beds.
+
+CO2 Capture: A New Design of Fixed-bed Adsorber
+
+While the preceding CFD results are obtained employing a single-cylinder adsorption bed, the full 3D capabilities of our solver enable computations within more intricate geometries or bed designs of complex geometries. To demonstrate this versatility, we extended our analysis to investigate a new design of adsorbing bed configuration presented in figure . This new bed design in figure have the same material and equal volume, thus the same quantity of Zeolite-13X solid adsorbent material as used in the initial cylindrical fix-bed design of figure a.
+
+The new design in figure significantly increases the external surface area, which enhances heat exchange with the surroundings. Note that such a configuration cannot be resolved using conventional 1D models or axisymmetric 2D CFD solver. The ability of our 3D solver to fully resolve these interactions allows for the exploration of novel bed designs aimed at improving thermal management and adsorption efficiency. This demonstrates a key advantage of the present 3D CFD model in evaluating realistic and optimized adsorption system layouts for practical innovative future gas separation and $CO2$ capture applications.
+
+Figure shows that in this new bed design configuration, the reference bed design of figure a is now replaced by seven smaller cylindrical tubes or channels. They are all vertically aligned and connected between the inlet and outlet, $28.2~mm$ each, as same inlet/outlet of the reference bed design shown in figure a. The total internal volume is preserved to ensure the same quantity of adsorbent material as the reference case (figure ), allowing thus for a direct comparison of performance metrics. The small seven cylinders, each has a diameter of 10.2 $mm$, are grouped within a diameter 35 $mm$ and a length 64 $mm$ of cylindrical column (see figure a).
+
+A key design feature of this new geometry is the inter-cylinder spacing, which enhances thermal exchange with the surrounding environment while minimizing lateral thermal interference between adjacent cylinders. This layout promotes localized heat dissipation and reduces the risk of thermal accumulation often seen in monolithic designs. The computational mesh is carefully refined, ensuring that at least four cells span the interstitial gap between neighboring cylinders, allowing the CFD solver to accurately resolve thermal and mass transport phenomena at the interface regions. This new design geometry demonstrates the potential for geometrical optimization in adsorption bed design to improve process efficiency and local temperature regulation inside the bed.
+
+To further evaluate the robustness and adaptability of the 3D CFD framework, the validated simulation setup was extended to a more complex geometry composed of seven interconnected cylinders. This new configuration maintains the same total solid volume and adsorbent mass as the original cylindrical bed, thus preserving the adsorption capacity and breakthrough behavior. As seen in figure a, the outlet CO mass fraction curve remains essentially unchanged, indicating that the new bed design does not compromise the saturation time or the amount of CO captured.
+
+However, the thermal response reveals a noteworthy improvement. While the peak temperature associated with the exothermic adsorption remains nearly identical (within 2 K) as shown in figure b, the post-adsorption cooling phase is significantly accelerated in the new bed design configuration. This enhanced thermal dissipation is attributed to the increased external surface area and spatial separation between individual cylinders, which reduces thermal coupling and promotes faster heat exchange with the surroundings.
+
+This improvement in passive cooling implies that the bed can return to its initial thermal state more quickly, thereby reducing the required regeneration downtime. Consequently, the system can potentially support a higher number of adsorption-desorption cycles within a given operational period, effectively doubling the productivity in some use cases. These findings emphasize the critical role of geometry not only in adsorption efficiency but also in thermal management, an aspect that is often inaccessible to 1D or symmetry-constrained solvers.
+
+Figure~ presents the 3D simulation results for the new bed design made of seven identical vertical tubes that are inter-spaced between the bed's inlet and outlet. Each tube is individually packed with the adsorbent material. Despite the complex shape, the internal configuration was designed to preserve the same total adsorbent volume and material quantity as the reference monolithic cylindrical bed, ensuring a meaningful basis for comparison.
+
+At $t = 450~s$, the CO mass fraction field, figure a shows a consistent and well-developed adsorption front progressing axially, uniformly distributed among the cylinders. This symmetry in concentration profiles confirms the validity of the inlet configuration and the physical homogeneity of the adsorption process across the entire bed.
+
+In figure b, the temperature distribution highlights the impact of the exothermic adsorption reaction. The localized temperature rise is clearly visible within the central zones of each sub-cylinder, while the outer walls exhibit cooler regions due to enhanced radial heat dissipation. This behavior illustrates one of the key advantages of the multi-cylinder design: increased surface area in contact with the ambient environment significantly accelerates heat removal.
+
+Overall, the geometry enables an efficient decoupling of thermal zones, thereby reducing inter-cylinder thermal interaction and promoting faster cooling dynamics. The observed behavior confirms that this design maintains the adsorption performance of the original geometry, matching breakthrough times and adsorption capacity, while offering superior thermal management. This makes the system particularly attractive for high-frequency cyclic operation, as it allows quicker thermal regeneration between adsorption cycles.
+
+ 
+ [width=0.9]Figure12.pdf
+ . (a) CO mass fraction (Y), (b) temperature $T$, (c) velocity magnitude $||$, and (d) adsorbed CO quantity $q_0$ (mol/kg). Results from left to right correspond to the time instances of 150 s, 300 s, 450 s and 1000 s.
+ 
+
+Figure present cross-sectional slices perpendicular to the x-axis of new bed design (multi inter-spaced tubes of figure ). They show the spatial distribution of key transport variables within the system at different time steps. This provides a detailed visualization of internal field variations across the interconnected channels at a given axial position. The scalar fields, such as velocity, CO mass fraction $Y(CO_2)$, and the temperature can be observed inside the bed, highlighting the importance of full 3D CFD modeling. This helps to analyze new bed designs of complex geometry, and evaluate the effectiveness of local heat and mass transfer throughout the bed. Such 3D analysis is impossible using lower scale models like 1D models and/or 2D CFD models.
+
+ 
+ [width=0.9]Figure13.pdf
+ . Showing at different z positions from inlet to outlet (xy-plane cross sections) of the new bed design. (a) the temperature $T$, (b) the adsorbed CO quantity $q_0$ (mol/kg) and (c) the CO mass fraction (Y). Results at the time instance of t=300 s.
+ 
+
+Figure present xy-plane cross-sections at different z positions inside the new bed design of figure . The temperature distribution ($T$), the adsorbed CO$_2$ quantity $q_0$, and the CO$_2$ mass fraction are shown at the time instance of t=300 s. These cross-sectional reveal the spatial evolution of thermal and mass transport phenomena within the new bed design, highlighting the complex interplay between fluid flow, heat transfer, and adsorption dynamics. Notably, temperature profiles indicate separation of the hot spots in adsorption front due to the multi-tube nature of the design. The adsorbed CO$_2$ quantity distribution elucidates the effectiveness of the adsorption kinematics across the bed length. These results, in addition to the CO$_2$ and $T$ local profiles in figure , provide valuable insight into the performance of the new bed design. Figures b and clearly indicate the following: compared to a conventional bed made of single 3D cylinder (figure ), the present design of seven parallel cylinders (figure figure ) significantly reduces the cooling duration of the adsorption period. This is extremely important in future PSA process to increase gas separation overall productivity, and thus enhance the overall PSA process efficiency.
+
+Conclusion and Perspectives
+
+This research presented the mathematical formulation, implementation, and validation of a new robust 3D CFD model for simulating gas adsorption phenomena in fixed-bed adsorbers, utilizing the open-source software platform OpenFOAM. The developed model couples the conservation equations for mass, momentum, and energy with adsorption kinetics, thus enabling both three-dimensional and temporally resolved representation of adsorption kinetics in fixed-bed adsorbers or reactors.
+
+A central contribution of this work lies in taking into account the impact of pores adsorption occupation rate (PAOR) in the 3D CFD model. This is through a new volumetric source terms $_Y$ in the gas species transport equation () and $_T$ in the energy conservation equation ().
+
+The 3D transient CFD model was validated using experimental data for three different CO feed-in concentrations (100\
+
+Moreover, the new CFD model was applied to investigate the performance of a newly proposed fixed-bed adsorber design (a multi inter-spaced tubes configuration, i.e. see figure ), maintaining equivalent adsorbent volume as in the reference single-tube cylindrical bed design (figure ), but with increased external surface area to enhance thermal dissipation. The 3D CFD simulation results revealed that while the breakthrough time and adsorption maximum local peak temperature remained effectively unchanged, the cooling duration of the adsorption cycle was substantially reduced. This reduces the duration of cyclic periods of CO$_2$ capture; i.e. within PSA and/or TSA processes. This confirms that 3D geometric optimization of fixed-bed reactors is very dependent on 3D CFD modeling in order to propose new generations of enhanced bed adsorbers; i.e. essential in toxic gas components removal technologies.
+
+Despite the high fidelity of the current macroscopic CFD model, certain limitations persist. Chief among them is the assumption of a homogeneous porous adsorbing medium where the local distribution of adsorption quantity inside the particles is assumed to be uniform. As perspectives, further CFD models can be developed but at a lower scale, such as the scale of the adsorbing pellets/beads. In a coming future research, we will be for example focusing on the development of a meso-scale modeling framework in CFD, in which adsorption at a the scale of each individual particle is explicitly resolved within the 3D simulation domain. This will enable the assignment of non-uniform local physical properties to each adsorbing particle, thus allowing one to investigate anisotropy, particles shape and their orientation inside the bed. This will allow for a more detailed and mechanistic treatment of adsorption physics in fixed-bed adsorbers. Coupling such meso-scale particle-resolved modeling with the gas dynamics inside the bed will take the physics-background of the CFD model to a new scale/level.
+
+Declaration of interest
+
+All the authors have no declaration of interest to address.
+
+Data availability
+
+The data supporting this study's findings are available on request from the authors. 
+
+Authors Contribution
+ 
+M.N. Conceptualization, Literature Review, Methodology, Software, Visualization, Original Draft; 
+ M.S. Conceptualization, Literature Review, Methodology, Supervision, Review Draft; 
+ T.D. Conceptualization, Literature Review, Methodology, Software, Supervision, Review Draft, Project Administration;
+
+Funding
+
+The authors thank the University and the Region of Rouen Normandy for funding this research under Project OMAC (Optimization of Multicomponent Adsorption Columns for enhanced carbon capture and hydrogen production).
+
+References

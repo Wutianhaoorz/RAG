@@ -1,0 +1,101 @@
+[aps,prf,preprint,superscriptaddress]revtex4-2
+
+Pressure-driven flow of a dilute polymer solution has been numerically observed to possess a form of elastic turbulence which is organised around the interactions of localised versions of 2-dimensional `arrowhead' travelling waves (Page et al. Phys. Rev. Lett. 125, 154501, 2020).
+
+As a step to confirming this theoretically, we identify spanwise-localised arrowhead travelling waves by tracking a symmetry-breaking bifurcation of the known spanwise-invariant (2D) arrowhead to a spanwise-periodic state and then discovering a secondary modulational instability to a spanwise-localised travelling wave. Spanwise-symmetric and asymmetric localised arrowheads exist with the latter having a phase speed slightly inclined to the streamwise direction. Computations capture the flow randomly switching between spanwise local and global arrowhead states in a streamwise-restricted domain, suggesting they form the building blocks of the chaos. Splitting events are also seen, in which a single localised state spawns multiple arrowheads. However, both cross-shear and spanwise velocities are small suggesting that this elastic turbulence will not be a good mixer.
+
+*Introduction.
+
+Efficient mixing of fluids allows for enhanced heat transfer and fast chemical reaction rates, both of which have key industrial applications. Elastic instabilities in polymer solutions can promote mixing even at small scales in contrast to inertial instabilities in Newtonian fluids, and consequently elastic turbulence (ET), is touted as a promising way to increase mixing.
+
+Elastic turbulence was first identified in systems with curved streamlines , where transition is caused by linear hoop stress instabilities but was also later found in rectilinear geometries (e.g. experimentally by and in channel flow, and in pipe flow, and numerically by and in Kolmogorov flow, in channel flow, and in plane-Couette flow) where linear hoop stress instabilities are absent. This suggests that other mechanisms can trigger ET and that possibly multiple types of ET exist.
+
+The centre-mode instability is one such mechanism. This linear instability is 2D, elastic in origin , subcritical and is dynamically connected to exact coherent structures known as `arrowheads' corresponding to the upper branch of solutions . Significantly, these exist even with vanishing inertia . Both recently-observed ET in 3D channel and in 2D Kolmogorov flow appears organised around localised versions of these arrowhead structures which act like quasi-particles that can collide with each other as well as merge and split .
+There is therefore much interest in understanding how these 2D arrowheads sustain themselves and localise [e.g][]Morozov2025,Goffin2025. Very recently, streamwise-localised versions have been computed : here the focus here is on spanwise localisation.
+
+In this Letter, we isolate both spanwise-periodic and spanwise-localised travelling arrowhead waves in body-forced, rectilinear polymer flow, and demonstrate that spanwise-asymmetric arrowheads can drift in the spanwise direction explaining the collisional dynamics seen in ET. All this is achieved within a spanwise-extended body-forced flow which proves computationally accessible using just a standard workstation when coupled to periodic boundary conditions in all 3 directions. 
+This set-up then facilitates an examination of the likely mixing capability of this form of ET with a preliminary assessment made here.\\
+
+*Formulation.
+
+We consider 3D viscoelastic Kolmogorov flow in which an Oldroyd-B fluid is driven by a body force in the `streamwise' $$ direction that varies periodically in the `shear' $$ direction, leaving $$ as the `spanwise' direction. The non-dimensional momentum equation is
+
+ Re( t + ) = - p + ^2 + W + (1+ W) y \, ,
+ 
+ 
+
+with incompressibility $ = 0$, and the polymer equation is
+
+ t + u - u^T - u + W( - ) = ^2 
+
+where $ u + v + w$ is the velocity, 
+$$ is the 2nd rank polymer conformation tensor and $p$ is the pressure. 
+ All variables are scaled using the laminar peak velocity $U_0$ (which sets the coefficient of the forcing term in ()\,), the total viscosity $ = _s + _p$, which is the sum of the solvent and polymer viscosities, respectively, and the length scale $L_0 / 2$ , where $L_0$ is the forcing wavelength. Flow is simulated in a domain of size $[0,L_x][-, ] [- L_z, L_z]$ with periodic boundary conditions in all directions.
+Non-dimensional parameters are the Reynolds number $Re:= U_0 L_0 / 2 $, the Weissenberg number $W:=2 U_0 / L_0$, the viscosity ratio $:=_s/$ and the polymer stress diffusion coefficient $ := 2 /U_0 L_0$, where $$ is the density, $$ is the relaxation time and $$ is the dimensional polymer stress diffusion coefficient. Throughout this work we set $Re=0.5$, $=0.9$, $=10^-3$ but vary $W$, $L_x$ and $L_z$. At the default choice of $L_x=3$, the unidirectional steady base state is linearly stable at all parameters considered.
+
+The system is timestepped using a 3rd order, semi-implicit, backward differentiation scheme within the spectral Dedalus software which uses Fourier expansions in all directions. The resolution used is at least $N_x=64 L_x / 3$, $N_y=64$ and $N_z = 16 L_z/$. 
+
+We work with the reflect symmetries
+
+_y:(u,v,w,p, C_xx,& C_yy, C_zz, C_xy,C_yz,C_xz)(x,y,z,t) \\
+& (u,-v,w,p,C_xx,C_yy,C_zz,-C_xy,-C_yz,C_xz)(x,-y,z,t),\\
+\& _z:(u,v,w,p, C_xx,& C_yy, C_zz, C_xy,C_yz,C_xz)(x,y,z,t) \\
+& (u,v,-w,p,C_xx,C_yy,C_zz,C_xy,-C_yz,-C_xz)(x,y,-z,t)
+
+which, unless otherwise stated, are both enforced throughout by zeroing either even or odd modes of each field as appropriate. 
+
+Newton methods coupled with GMRES used standardly in polymer-free fluid dynamics [e.g.][]Chantry2014 unfortunately proved intractable here for reasons not completely clear and so we had to resort to simple time-stepping to identify coherent structures. This meant only attractors could be approached and necessitated a more careful sweep of parameter space to find supercritical bifurcations. These allowed a continuous path of attracting states to be tracked across bifurcations. Luckily that proved sufficient to at least discover spanwise-localised travelling waves: stable spanwise- and streamwise-localised waves were not found.\\
+
+ Results. A spanwise-periodic 3D arrowhead was first found by embedding a 2D arrowhead into the 3D system with $L_z=$. While the arrowhead is stable within the 2D system, it is linearly unstable in the 3D system, as is the case in channel flow . White-noise was added to the $u, C_xx$ and $C_xy$ components of the embedded 2D arrowhead, with amplitude $10^-2$ of the maximum base state at $W=20$. Upon simulating to finite amplitude, a stable spanwise-periodic travelling-wave solution was reached: Fig.~ shows four spanwise wavelengths. 
+
+The amplitude of the solution across the span is measured in terms of the $L_2$ norm over $x$ and $y$ of the deviation away from the base state, i.e. $_L2(z) [\,( - _0)^2 dxdy /( 2 L_x)\,]^1/2$ for a field $$ where $_0$ is its value for the base state, which is then normalised to give $ _L2(z) _L2(z) / (_L2(z)) [0,1]$. Small values of $ _L2(z)$ identify regions of the flow that are close to the base state. 
+
+*Spanwise-localisation. To obtain a spanwise-localised arrowhead, a `windowing' technique was used in which each variable of the spanwise-periodic arrowhead is multiplied by the windowing function $W_f(z;a,b) := f(z)f(-z)$ where $f(z):=2(1+[6(a-z)/b + 3]$ and then time-stepped forward. This windowing function satisfies $0.995<W_f<1$ for $|z|<a$ and $0<W_f<0.005$ for $|z|>a+b$, with $W_f 0$ as $|z|$. This was applied to 4 periods of the spanwise-periodic arrowhead with wavelength $$ in a domain of $L_z=4$, translated in $z$ so that $ _L2$ (where $:= tr( C)$) is at a global minima at $z=0$ (see red line on the back panel of Fig.~a). Setting $a=/2$ and $b=/4$ keeps a whole wavelength of the periodic solution within the window. 
+
+This initial condition evolves under time evolution to a spanwise-localised arrowhead shown in Fig.~b, with both $ _L2$ and $ v_L2$ approaching zero far from the plane $z=0$ (see the back panel of Fig.~b). This state is a travelling wave, as in the spanwise-periodic case. Continuing the solution to higher values of $L_z$ in Fig.~a confirms spanwise localisation, showing that in fact $_L2(z) (-0.632|z|)$ for $|z|>2$ , while the core region of the solution is independent of $L_z$ for $|z|<2$.
+
+When the spanwise-localised arrowhead in a domain with $L_z=8$ is stretched 50\
+
+[width=0.99]images/bif_plot.jpg
+, =0.9, L_x=3$. Solid (dashed) lines show stable (unstable) solutions. Green curves denotes solutions where $W=14$, blue when $W=20$, and intermediate $W$ are shown in orange. Solution branches are annotated, with `2D arrowhead' denoting spanwise-invariant arrowheads, `$m=()$' denoting spanwise-periodic arrowheads with $m$ wavelengths in the domain, and `localised' denoting the branch that localises at large $L_z$ (as in Fig.~a). The red (blue) diamond at $L_z=4$ correspond to the solutions plotted in Fig.~a (Fig.~b). Open circles show where branches could not be continued by time-stepping, implying a bifurcation. We zoom-in on (b) the bifurcation of the spanwise-invariant arrowhead ($BP_1$), and (c) the modulational pitchfork of the $m=2$ branch ($BP_2$). (d) $_L2(z)$ of solutions $(i)$-$(vi)$ and the localised state of Fig.~b, showing only $z>0$ as $_L2$ is even in $z$.
+
+*Bifurcations.
+
+To uncover the bifurcation scenario that generates the spanwise-localised arrowhead (discussed above at $W=20$) by only time-stepping, we had to start from a stable 2D arrowhead in a narrow domain $L_z < 0.14$ at $W=14$. Increasing $L_z$, reveals a symmetry-breaking pitchfork bifurcation at $L_z 0.14$ where a spanwise-periodic travelling wave is born: see BP1 in Fig.~a where the $_y$- and $_z$-symmetric solution branch corresponding to one spanwise wavelength (and labelled $m=1$) can be tracked to a saddle-node bifurcation at $L_z 1.44$. Doubling the width so $L_z=0.28$, however, allows two spanwise wavelengths to be included which are arranged to again be $_y$- and $_z$-symmetric: this is branch $m=2$ in Fig.~a. Trivially, because there are two identical waves of wavelength $ L_z$ across the width and spanwise periodicity, there is also an additional spanwise-shift symmetry: 
+
+_z( L_z): (x, y, z) (x, y, z + L_z).
+ 
+It is the breaking of this shift symmetry in a modulational pitchfork bifurcation at $L_z2.2$ ($BP_2$ in Fig.~c) that gives rise ultimately to a spanwise-localised arrowhead. However at $W=14$, this new branch extends up to only $L_z 2.9$ before it is lost, presumably due to a subcritical bifurcation. To avoid the need to navigate through the unstable branch, the stable solution branch at $(W,L_z)=(14,2.8)$ was instead continued across to $(W,L_z)=(20,4)$ where the spanwise-localised arrowhead had been found by windowing (Fig.~b) using a simple linear interpolation in both parameters. This is shown as 
+the orange curve in Fig.~a. The spanwise-localised arrowhead can be straightforwardly extended by time-stepping to $L_z=16 1/0.02$: see the inset of Fig.~a. 
+
+The quantity $_L2(z)$ of the solutions labelled $(i)$-$(vii)$ in Fig.~a is plotted in Fig.~d. States $(i)$ and $(ii)$ are periodic over the $z>0$ half width, while $(iii)$-$(vii)$ no longer possess this property due to the modulational bifurcation which breaks the shift symmetry. This modulational bifurcation scenario is exactly how, for example, streamwise-periodic travelling waves in pipe flow can become streamwise-localised . 
+
+*Spanwise-drifting arrowheads.
+All arrowheads considered so far are $_z$-symmetric and so their phase velocity is in the streamwise direction. We now lift this symmetry to find spanwise-asymmetric arrowhead travelling waves which have a non-zero spanwise component of the phase velocity. This scenario is similar to that of the helical travelling wave solutions of Newtonian pipe flow , in which structures can slowly rotate while propagating axially downstream.
+
+A simulation was initiated with a spanwise-symmetric, spanwise-localised arrowhead perturbed in the $C_xx$ field by the odd function $AC_xx(2 z/L_z)$, where $A$ is the amplitude of the kick, and converged via time-stepping. The final state was the same for $A=0.05,0.1$ and $0.15$, producing the spanwise-asymmetric arrowhead shown in Fig.~. This has phase speeds $c_x=0.886, c_z=0.0060$ in the frame of reference with no net volume flux in any direction. The spanwise drift $c_z$ is orders of magnitude smaller than $c_x$, similar to the slow helical drift of solutions in Newtonian pipe flow . Runs with larger perturbations ($A=0.2$) converged to non-localised states. The presence of drifting solutions helps to explain how spanwise-separated arrowheads can collide with each other.
+
+*Connection to ET.
+
+The localised structures identified above can be identified within ET initiated
+using the localised arrowhead of Fig.~b (found at $W=20$, $=0.9$) with the addition of white-noise at $W=30$ and $=0.95$. 
+In Fig.~ we show how the ET state changes in time. When $(-_0)/_0$ is sufficiently small, the flow is spanwise-localised (see Fig.~$(i), (ii)$ and $(v)$), with states with larger values showing a spanwise-global flow (c.f. $(iii)$ and $(vi)$). Over time, ET continually transitions between containing local and global structures. 
+
+Both the symmetric and asymmetric arrowheads are visible in the $y=0$ midplane slices shown. In Fig.~$(v)$ a symmetric arrowhead is visible and also discernable in $(iv)$ for $z<0$. The asymmetric arrowhead is prominent in $(ii)$ (with two in the domain) and $(vi)$ (at $z=0$). These look similar to the bottom panel of the asymmetric arrowhead in Fig.~. Due to the presence of these localised structures in this subcritical turbulence, it seems that ET is organised around them consistent with prior large-scale simulations of wall-bounded body-forced flow .
+
+A transition from one symmetric arrowhead into multiple is also observed. In Fig.~$a$ we show how state Fig.~$(v)$ evolves over $200\, L_0/2 U_0$. The initially symmetric arrowhead $(i)$ grows weak arrowheads on its sides $(ii)$ before pinching in the middle $(iii)$. At this point the structure loses its $ R_z$ symmetry $(iv)$. The pinched region then grows to form a separate arrowhead $(v)$, $(vi)$. Up to 5 separate arrowheads can be seen in state $(vi)$, and the spanwise extent of the state has increased from the original symmetric state $(i)$. This splitting event provides a pathway to delocalise a given state in ET.
+
+*Mixing.
+
+The size of the fluctuations in ET is a good first indicator of the mixing potential of the flow. Fig.~(top) shows time series of the root mean square velocity components, $u_rms$, $v_rms$ and $w_rms$ for ET (with $_rms(t) := $). This indicates that the streamwise velocity is over an order of magnitude larger than the other velocity components (time-averaged means are $ u_rms_T=0.6708$, $ v_rms_T=0.0156$ and $ w_rms_T=0.0127$ in the frame with vanishing volume flux in all directions). Turning now to a specific snapshot
+- the global state Fig.~$(iii)$ - the mean and standard deviation of the velocity over each plane of constant $y$ are shown on the left-hand side of Fig.~b. The cross-shear and spanwise velocities have very small mean, and their standard deviations are generally much smaller than the mean streamwise velocity throughout the flow. The value of $v_rms$ and $w_rms$ are less than $2\
+
+*Discussion.
+
+We have identified spanwise-periodic arrowheads, as well as symmetric and asymmetric spanwise-localised arrowheads which underpin the dynamics of ET in a body-forced, 3-dimensional, rectilinear, polymer flow with periodic boundary conditions (viscolastic 3D Kolmogorov flow). The asymmetric spanwise-localised arrowheads drift in the spanwise direction and can therefore initiate the collisional dynamics seen in spanwise-extended domains.
+
+These spanwise-localised arrowhead waves are clearly visible for (subcritical) Weissenberg numbers where the base state is linearly stable and are seen to split into multiple, possibly drifting arrowheads, causing delocalisation of ET. This global state then at some point collapses back to the localised form to repeat the cycle. Both the global states and the localised states have small velocities perpendicular to the forcing, suggesting that ET will be a poor mixer. That even the global state is poor gives little hope that this conclusion would change for higher (supercritical) Weissenberg numbers where the base state is unstable ensuring that ET is persistently global. 
+
+The stable symmetric spanwise-localised arrowhead found here appears unique for a given streamwise wavelength and has one spanwise wavelength of the associated spanwise periodic arrowhead at its core. Surely many more unstable versions exist with more wavelengths included in their heart borne from similar modulational pitchfork bifurcations. Similarly both streamwise- and spanwise-localised arrowheads must exist but presumably are unstable and so beyond our admittedly weak time-stepping grasp here. And finally, a fully-localised arrowhead is entirely conceivable in this triply-periodic set-up. Just like in our spanwise-focussed study here, this could arise through a modulational instability in the cross-shear direction but with the added complication that the underlying state is cross-shear-periodic and so a more involved modulational Floquet analysis is required to capture this.
+
+In terms of future work, the triply-periodic system studied here with only one forcing wavelength included is a particularly accessible flow to study arrowhead-centric ET as wall processes are of secondary importance. For example, it would be well within reach using a single workstation to add a passive scalar or even an active field to study the mixing characteristics of this flow. From a methodology perspective, this 3D viscoelastic flow is also an excellent test bed to improve or even fix the sophisticated dynamical systems tools (e.g. GMRES) for capturing unstable exact solutions which have proved so effective in Newtonian flows. We hope to report on at least one of these in the near future.

@@ -1,0 +1,275 @@
+[utf8]inputenc
+
+ 
+
+ 
+ 
+ 
+
+ 
+[dvipsnames]xcolor 
+ 
+
+[ruled,vlined,linesnumbered]algorithm2e
+
+Theorem 
+
+~~
+Xavier Cadet ~~
+Miloud Bessafi ~~
+Cédric Damour ~~
+Yu Li ~~
+\ Miranville ~~
+Peter Chin ~~
+Rong Yang ~~
+Xinguang Yang ~~
+Frederic Cadet
+
+ 
+University Paris City \& University of Reunion, France. 
+Dartmouth College, Hanover, USA. 
+ENERGY-Lab, University of Reunion, France. 
+ School of Information Science and Technology \& Beijing Institute of Artificial Intelligence, Beijing, China.
+Laboratoire de Mathématiques Appliquées du Havre (LMAH), University Le Havre Normandie, France.
+School of Mathematics, Statistics and Mechanics, Beijing University of Technology, Beijing, China.
+Department of Mathematics and Information Science, Henan Normal University, China.
+PEACCEL, AI for Biologics, Paris, France.
+ Equal contribution. \ author: frederic.cadet.run@gmail.com
+
+The 3D incompressible Navier-Stokes equations model essential fluid phenomena, including turbulence and aerodynamics, but are challenging to solve due to nonlinearity and limited solution regularity. Despite extensive research, the full mathematical understanding of the 3D incompressible Navier-Stokes equations continues to elude scientists, highlighting the depth and difficulty of the problem. Classical solvers are costly, and neural network-based methods typically assume strong solutions, limiting their use in underresolved regimes.
+We introduce WAN3DNS, a weak-form neural solver that recasts the equations as a minimax optimization problem, allowing learning directly from weak solutions.
+Using the weak formulation, WAN3DNS circumvents the stringent differentiability requirements of classical physics-informed neural networks (PINNs) and accommodates scenarios where weak solutions exist, but strong solutions may not. 
+We evaluated WAN3DNS's accuracy and effectiveness in three benchmark cases: the 2D Kovasznay, 3D Beltrami, and 3D lid-driven cavity flows. Furthermore, using Galerkin's theory, we conduct a rigorous error analysis and show that the $L^2$ training error is controllably bounded by the architectural parameters of the network and the norm of residues. This implies that for neural networks with small loss, the corresponding $L^2$ error will also be small.
+This work bridges the gap between weak solution theory and deep learning, offering a robust alternative for complex fluid flow simulations with reduced regularity constraints. Code: .
+
+Introduction
+
+Despite extensive research, a full mathematical understanding of the 3D incompressible Navier-Stokes equations continues to elude scientists, highlighting the depth and difficulty of the problem. The application of classical numerical methods such as finite elements and finite differences to solve high-dimensional partial differential equations (PDEs) has been challenging due to the notorious curse of dimensionality . Integrating neural networks into the solution of PDEs has revolutionized traditional numerical methodologies, offering data-driven flexibility and scalability . The existing neural network-based approaches for PDE can be broadly categorized into three paradigms, each with different theoretical foundations and application scopes : PINNs-based models; DeepONet-based models and WAN-based models. 
+
+The first category, exemplified by PINNs , neural networks that are trained to solve supervised learning tasks while respecting any given laws of physics described by general
+non-linear partial differential equations. The original PINNs paper focused on 2D NS cases. Subsequent models, such as Hidden Fluid Mechanics (HFM) and Navier-Stokes flow nets (NSFnets) extended this line of work to 3D NS simulations. However, they are based on the classical solution; the uniqueness of inferred velocity and pressure fields is not guaranteed without sufficient scalar gradients at the boundaries. Tools such as DeepXDE have incorporated specific NS problems, such as the Beltrami flow, as benchmarks for neural network-based solvers. The applications of neural network-driven NS simulations span multiple domains, such as oil reservoir modeling and medical simulation of blood flow . $$-PINNs proposes a novel positional encoding mechanism for PINNs based on the eigenfunctions of the Laplace–Beltrami operator. 
+
+The second paradigm, typified by DeepONet , takes advantage of learning operators accurately and efficiently from a relatively small dataset. Fourier neural operator (FNO) parameterizes the integral kernel directly and learns the resolution-invariant solution operator for the Navier-Stokes equation in the turbulent regime. Dynamic kernel Fourier Neural Operators (DSFNOs) equip FNOs with operators to learn dynamic kernels. The Latent Neural Operator (LNO) solves PDEs in the latent space. Geometry-Informed Operator (GINO) uses a signed distance function (SDF) and a point cloud representation of the input shape and a neural operator based on graph and Fourier architectures to learn the solution operator. The co-domain attention neural operator (CoDA-NO) tokenizes functions along the co-domain or channel space, allowing self-supervised learning or pre-training of multiple PDE systems. The derivative-enhanced deep operator network (DE-DeepONet) leverages derivative information to enhance the precision of solution prediction and provides a more accurate approximation of solution-to-parameter derivatives. 
+
+Emerging as a third avenue, weak formulation-based methods, such as weak adversarial networks (WAN) , transform PDEs into integral weak forms, transforming the solving process into a minimax optimization problem akin to generative adversarial networks. Li et al. applied WAN to solve two-dimensional Navier-Stokes equations. Still, it required a stream function and makes error analysis challenging; hereinafter is referred to as WAN-Biharmonic.
+
+However, its potential in fluid mechanics remains underexplored, particularly for incompressible three-dimensional NS equations. The stream function is a scalar function to describe the 2D incompressible flow; utilizing the stream function can directly satisfy the incompressible condition. Employing the stream function approach for weak solution computation increases the number of differentiation operations during training. Most industrial problems manifest in three-dimensional forms, rendering the 2D NS equations insufficient for real-world applications. However, the 3D NS equations continue to challenge researchers due to unresolved questions about the existence of global solutions and the complexity of their physical phenomena .
+
+Crucially, whereas the original WAN and WAN-Biharmonic are limited to scalar equations, our proposed WAN3DNS method successfully handles vector-valued ones. This advancement is not a trivial matter of increasing network depth; instead, it requires a sophisticated reformulation of the loss function within the weak adversarial framework to inherently enforce the divergence-free constraint and manage the complexities of three-dimensional vector fields. The contributions lie in providing an algorithm to simulate complex flows governed by the 3D NS equations. Specifically:
+
+[(I)] Min-max reformulation of the Navier–Stokes equations: We transfer the 3D incompressible NS equations into a min-max problem and propose WAN3DNS a neural algorithm that effectively solves 2D and 3D NS problems within a single framework.
+
+[(II)] Theoretical error analysis via Galerkin theory: We provide a theoretical analysis of the algorithm's approximation error using Galerkin theory, showing that the $L^2$ error of the solution can be bounded by the proposed loss function under certain regularity assumptions. This result directly connects optimization performance to physical accuracy, offering a theoretical foundation for model training.
+
+[(III)] Empirical validation on benchmark fluid dynamics problems: We evaluate the proposed algorithm on three numerical experiments: 2D Kovasznay flow, 3D Beltrami flow, and 3D lid-driven cavity flow, showing that WAN3DNS achieves higher accuracy than DeepXDE, NSFnets and WAN-Biharmonic.
+
+The above method can be summarized as a workflow . The remainder of this paper is organized as follows. Section introduces the work related to the application of WAN to the NS equation; Section introduces the proposed WAN3DNS algorithm and convergence analysis.
+Section covers the three experimental settings considered.
+
+Finally, Section analyzes the errors and provides a discussion.
+
+Background and Related Work
+
+We begin by reviewing the 3D incompressible Navier-Stokes (NS) equations, then describe the distinction between strong and weak PDE formulations. Finally, we introduce Weak Adversarial Networks (WANs), upon which our method is built.
+
+3D Navier-Stokes equations
+
+Consider the spatial-temporal domain $ [0, T]$, where $ ^3$ is a bounded, simply connected open set. The spatial variable is denoted by $ = (x,y,z)$, and the velocity $(, t)$ can be regarded as a solution to the following Navier-Stokes equations:
+
+ t + ( ) = - p + , & (, t) [0, T], \\
+ = 0, & (, t) [0, T], \\
+ = _(t, ), & , t [0, T], \\
+ = _0(), & , t = 0.
+
+Here, $p(, t)$ is a scalar representing pressure, and $ > 0$ denotes the viscosity of the fluid. The boundary velocity $_$ satisfies the global condition
+
+_ _ \, dS = 0, t 0,
+
+where $$ represents the outward normal vector of the boundary $ [0, T]$, and $$ denotes the second-type surface integral over a closed loop. The initial velocity field $_0$ is divergence-free, i.e., $ _0 = 0$.
+
+Although some theoretical work has been done on error estimation in deep learning for fluid dynamics , it remains largely confined to 2D settings.
+In contrast, the convergence behavior of neural networks for solving 3D NS equations is still an open and underexplored challenge in CFD.
+ 
+
+Strong Formulation vs Weak Formulation
+
+Two types of solutions are commonly defined for PDEs .
+The first, known as a classical solution, requires that all derivatives appearing in the equation exist and are continuous, and that the solution satisfies the boundary and initial conditions in the classical sense.
+These solutions were the primary focus of study during the 18th and 19th centuries.
+The second type, referred to as a weak or generalized solution, allows for derivatives in a broader sense, accommodating functions that may lack classical differentiability.
+
+The importance of weak solutions arises from two key factors:
+1) Certain nonlinear equations do not admit classical solutions, and 2) for some problems, classical solutions cannot be directly obtained.
+In such cases, one typically constructs a weaker form first and then uses tools from functional analysis to establish sufficient regularity, potentially recovering classical solutions.
+
+Weak Adversarial Networks (WAN)
+
+The WAN algorithm is a neural network-based method for solving PDEs according to their weak form. There are 3 steps in the original WAN algorithm: 
+
+Step 1: (Reformulate PDEs to optimization problem) Transform PDEs into weak integral forms. Consider a PDE with initial and boundary conditions, we write in the form 
+
+ L(u)=f, B(u)=g, I(u)=q
+ 
+
+, where $L$ is a partial differential operator, and $B$ is the boundary operator, and $I$ is the initial operator. WAN rewrite Eq. as a minimization in a suitable dual space.
+
+ u^*=*argmin_w W(\|L(u-w)\|_H^-1(),op+ \|g-w\|_L^2( )+\|q-w\|_L^2())
+ 
+
+where $$, $$ are the penalty coefficients, and 
+
+\|L(v)\|_H^-1(),op=*sup_ H_0^1(), 0\|\|_W.
+
+Here, $a:H^1() H_0^1() , a(v,)=(L(v),)_$ is the bilinear form that corresponds to the operator $L$. 
+
+Step 2: (Minimax reformulation of the optimization problem) Use neural networks to discretize the objective function , transforming the solving process into a minimax optimization problem. WANs build a primary network to approximate $w$, the loss function they build is according to the "$argmin$" in the equation. . Then build an adversary network to approximate $$, its objective is to make "$sup$" in Eq. come true.
+
+Step 3: (Adversarial Network Training) Train the network. Choose appropriate parameters for the primary network and the adversary network, arrange them as generative adversarial networks (GAN) , and train the network to obtain the solution. 
+
+While the WAN framework is good for equations that have no smooth solution, it is limited to a single governing equation, making it unsuitable for a group of equations. We address this limitation by using WAN3DNS (see Algorithm in Appendix), allowing us to tackle the complex system: the 3D NS equations and enabling simulations of realistic fluid flows.
+
+WAN3DNS
+
+WAN only solve the scalar equation; they just consider the weak form of one equation. it is difficult to reveal real-world physics in just one dimension. This issue can be addressed by incorporating the number of terms of the loss function. To achieve this, we develop a weak formula for 3D NS equations and adapt it to WAN for simulating flow velocity.
+
+Weak formulation
+
+The weak solutions of the NS equations, which allow for low regularity and thus better align with physical reality, have garnered considerable attention from researchers. With regard $u$ as the map from $t$ to $$, this is a map of the function space $H_0^1()$, i.e.
+\[
+:[0,T] H_0^1( ), [(x)](t) (x,t), ,0 t T.
+\]
+For fixed vector function $ H_0^1()$, and scalar function $S L^2()$, according to Eq. we get
+
+( t, ) + b(, , )+ ( , )-(p, )=0, 
+_i=1^3 ( x_i, u_i )=0
+
+here $(,)$ represents the dual product between $H^-1()$ and $H_0^1()$,
+$b(, , ) = _i,j=1^d (_i _j_i, _i)$ is a trilinear formula. Based on the weak form of the governing equations and the incompressible condition, we define the operators.
+
+_t[,p] := t - + ( ) + p, 
+_t[] := ,
+
+where $ H^2(0, T; H^1()) L^(0, T; (H^2())^d)$ and $p D'()$. By integration by parts, the dual product $ _t[], $ and $(_t[], )$ can be computed as
+
+ _t[,p], &= ( t, ) + ( , ) + b(, , )+(p, ),
+\\
+(_t[], S) &= _i=1^d ( x_i,u).
+
+The norm of the operator $_t[,p]$ and $_t[]$ is defined as
+
+\|_t[,p]\|_H^-1 := _ (H^1_0())^d _t[,p], |\|\|_H^1_0, 
+\|_t[]\|_H^-1 :=_S L^2() _t[], |\|S\|_L^2(), 
+
+Loss function and Network Architecture
+
+Since $\|_t[]\|_H^-1 0$ and $\|_t[]\|_H^-1 0$, solving the energy equation and the incompressibility condition is equivalent to finding the solution of the following problems:
+
+_ \|_t[]\|^2_H^-1 = _ _ _t[], |^2\|\|^2_H^1_0,
+
+_ \|_t[]\|^2_H^-1 = _ _S _t[], S |^2\|S\|^2_L^2().
+
+We parameterize $u$ as a neural network $u_$, and parameterize $v,S$ as the outputs of an adversarial network, denoted as $v_,S_$, here $$ and $$ are the hyperparameters of neural networks. In order to minimize the operator norms of $_t[u_]$, $_t[u_]$, we design a GAN.
+
+According to the interior equation, the incompressible condition, the initial condition, and the boundary condition. We define the objective function of $u_$ as follows.
+
+L_e(, ) 
+ & N_e_j=1^N_e_t[u_],v_ |^2\|v_\|^2(x_j,y_j,z_j), 
+ &
+L_d(, ) 
+ & N_d_j=1^N_d_t[u_],S_ |^2\|S_\|^2(x_j,y_j,z_j), \\ 
+
+L_i() 
+ & N_I_j=1^N_I \|u_-u_0\|^2(x_j,y_j,z_j), 
+ &
+L_b() 
+ & N_b_j=1^N_b \|u_-u_b\|^2(x_j,y_j,z_j), \\ 
+
+L_u(, ) 
+ & L_e(, ) + L_d(, ) + L_i() + L_b(). 
+
+where $L_e$ is the loss function for the governing equation, $L_d$ is for divergence free, $L_i$ initial condition and $L_b$ boundary condition. $N_e$, $N_d$, $N_I$, $N_b$ denote the numbers of training data for different terms; the weighting coefficients $,,>0$ are hyperparameters as penalty terms. 
+The test function $v,S$ is only related to spatial variables, and not to time as a variable. We just define the loss function on the adversarial network as:
+\[
+L_T( ,) = -L_e( ,)-L_d(, )+L_B(),
+\]
+where $L_e(,)$ are the same as the above definition, $L_B()=N_b_j=1^N_b\|_-0\|^2+\|_-0\|^2$ is the boundary condition for the test function because the trace of $$ and $S$ are 0.
+Choosing appropriate hyperparameters, we train the two networks in rotation to find the saddle point of as the approximation to $u$. 
+
+Error analysis
+
+We provide the approximation error analysis to reveal the relation between the residual value the $L^2$ error. The proof of the following Theorem can be seen in Appendix .
+
+Let \( H^1 \), \( H^2(0, A; H^1_0()) L^(0, A; H^2()) \) be a weak solution of the Navier-Stokes equations. Let \( _ \), \( _ \), \( q_ \) be functions constructed by the set of network parameters \( , \), which are the output of the WAN3DNS algorithm. Then, the \( L^2 \) error of the result can be controlled by the following inequality:
+
+_D\|u(x,t)-u_(x,t)\|_2^2dxdt C_2(1+C_3Te^C_3T),
+
+where:
+
+C_1=&C(\|u\|_C^1, \|\|^C^1), \\
+C_2=&\|R_t\|^2_L^2(D)+C_1\|R_div\|_L^2(D) \\
+&+C_1(1+)\|R_s\|_L^2( D [0,T])+\|R_PDE\|^2_L^2, \\
+C_3=&2d^2\| u\|_L^(D)+1.
+
+Numerical Validation
+
+We evaluate the performance of WAN3DNS on 3 benchmark problems of increasing complexity: 1) a classical analytical solution to the incompressible Navier-Stokes equations used to validate accuracy in the 2D setting (Kovasznay flow), 2) A smooth unsteady 3D flow with an exact solution (Beltrami flow). 3) A 3D recirculating flow of a Newtonian fluid inside a cube generated by the shear from a moving lid (Lid-driven cavity flow). We compare the accuracy and training time of the WAN3DNS to DeepXDE, NSFnest, WAN-Biharmonic and PINN, which are the current state-of-the-art models.
+ 
+
+Baselines
+
+DeepXDE demonstrates notable robustness and versatility, supporting forward problems, inverse problems, operator learning, and multi-fidelity learning. Its strength lies in the implementation of residual-based adaptive refinement (RAR), which enhances training efficiency, and its capability to handle multiphysics problems and complex geometry domains through constructive solid geometry (CSG), thereby reducing the need for extensive computational geometry preprocessing. However, a key weakness is the empirical selection of neural network architectures, which currently relies heavily on user experience rather than systematic optimization. Additionally, unlike traditional numerical methods, PINNs lack a priori error bounds, which limits their reliability in certain applications.
+
+NSFNets offers a comparative analysis of two mathematical formulations—Velocity-Pressure (VP) and Vorticity-Velocity (VV)—within the PINN framework. A significant strength is its ability to sustain turbulent flow in subdomains using only DNS data at the boundaries, addressing a major challenge for data-free PINNs in modeling complex flows. Nevertheless, this approach incurs higher computational costs and exhibits less robustness compared to traditional numerical methods for standard cases.
+
+WAN-Biharmonic introduces a weak adversarial network (WAN) approach for the biharmonic formulation of the 2D Navier-Stokes equations, achieving high accuracy even for flows lacking strong solutions. Its strength lies in effectively handling such challenging scenarios using a stream function derived from the velocity field. However, a primary limitation is its restriction to 2D problems, as the method cannot be directly extended to 3D due to the absence of a scalar function that fully describes the velocity field while satisfying the incompressibility condition.
+
+DeepXDE has been validated on various benchmarks, including the Kovasznay flow, as documented on its official website (https://deepxde.readthedocs.io/en/latest/). Similarly, NSFnets have been tested on several canonical flows, such as Kovasznay and Beltrami flows. WAN-Biharmonic has been evaluated in Kovasznay flow and 2D lid-driven cavity flow, demonstrating its efficacy in these settings.
+
+Given that WAN-Biharmonic is specifically designed for 2D problems, it is used solely as a benchmark for the Kovasznay flow in the first example. For the Beltrami flow analysis in the second example, which may involve 3D characteristics, DeepXDE and NSFnets are selected as baseline models due to their support for both 2D and 3D simulations and their established robustness in handling a wider range of flow conditions. For 3D Lid-driven cavity flow, traditional PINNs fail at singular points due to strong form derivation, so there are not many models for this flow. In contrast, WAN3DNS's weak form naturally avoids this problem.
+
+Experiments
+
+ Kovasznay flow is a fundamental benchmark case because it provides a rare, non-trivial analytical solution to the steady-state Navier-Stokes equations, making it ideal for validating the accuracy of new computational fluid dynamics solvers.
+we use Kovasznay flow on $[-0.5, 1.5][-0.5, 1.5]$ as the first example to evaluate WAN3DNS and other 3 baseline model. Kavasznay is a steady flow, so there is no initial condition. The boundary condition of Kovasznay:
+
+	
+		u_1(-0.5,y)=1-e^-0.5(2 y), \\
+		u_2(-0.5,y)=2 e^-0.5(2 y), \\
+		u_1(1.5,y)=1-e^1.5(2 y), \\
+		u_2(1.5,y)=2 e^1.5(2 y), \\
+		u_1(x,-0.5)=u_1(x,1.5)=1+e^ x, \\
+		u_2(x,-0.5)=u_2(x,1.5)=0.
+	
+
+where 
+\[
+=2-4^2+4^2, =Re=40.
+\]
+
+The experimental setup can be seen in Table of the appendix. By eliminating the pressure term $P$ through weak enforcement of incompressibility constraints, our method focuses on the prediction of velocity. We compare WAN3DNS to the other 3 baseline models in terms of relative $L^2$-errors (Table ) and provide a visual comparison (Figure ) of $u$; the comparison of $v$ and $p$ can be seen in Figure. and of the Appendix.
+
+Both pointwise errors and $L^2$ norms demonstrate our superior accuracy over the other 3 models, and DeepXDE is slightly less accurate but more efficient (Table ). 
+
+We use the Beltrami flow to demonstrate the performance of WAN3DNS on a smooth unsteady problem.
+We consider the 3D unsteady NS equations defined over the cubic domain $[-1,1]^3$, with the temporal domain spanning $t[0,1]$.
+The kinematic viscosity coefficient is set to $=10$, and the initial and boundary conditions are given , and of the Appendix. This 3D unsteady Navier-Stokes flow has the analytical solution as shown in in the appendix.
+
+After training, we compare the final outputs $u_1$, $u_2$, $u_3$ with the exact solutions.
+We further compare WAN3DNS to NSFnets and DeepXDE using the same hyperparameters (see Table at Appendix).
+We provide a visual comparison for $t=1, z=0$, showing that WAN3DNS achieves a lower error (see Figure ). The comparison of $u, v$ and $p$ can be seen in Appendix Fig. , and . These results show that WAN3DNS can be applied to smooth unsteady problems.
+
+Lid-driven cavity flow is a classical fluid dynamics problem where the flow is induced by the motion of the top wall (lid). Because this is a steady flow, $ t= t= t=0$ in this case. We do not need to consider the initial condition here. Slip boundary: Consider the domain $[0,1]^3$, the velocity boundary conditions are defined as follows: on the bottom and four lateral boundaries (in total five surfaces), all velocity components (u, v, w) are set to zero. Only the top lid exhibits a unidirectional translational motion in the x-direction, specifically with a prescribed nonzero u-velocity (x-component velocity) while maintaining $v=0$ and $w=0$. We provide visual representations for the 3D Lid-driven cavity flow in Figure . 
+
+Although this case has a strong solution due to the low Reynold number ($Re=400$), there exist singular points when $z=1,x=0$ and $z=0,x=1$. 
+We take the solutions from the classical multigrid method and projection as the ground truth. Then we calculate the $L^2$ distance between each method 
+and the ground truth.
+We report the $L^2$-error of these two algorithms in the Table. . We take $y=0.5$ as the slice face and visualize $u$, $v$, $w$ and their absolute errors for both algorithms; see the result figure in the Supplementary information. We observe that the velocity profiles predicted by PINNs deviate substantially from classical benchmarks, particularly near boundary layers (see the result figure in appendix).
+While PINNs have shown promise in forward modeling, their efficacy diminishes in complex flow regimes, as shown in the result figure in the Supplementary information.
+This discrepancy suggests that current PINN architectures struggle to enforce no-slip constraints effectively.
+The results of this experiment show that WAN3DNS performs better than PINNs when the solution is not smooth.
+
+Discussion
+
+In this work, we propose WAN3DNS, a weak-form adversarial neural network algorithm for solving 2D and 3D incompressible Navier-Stokes equations within a single framework. The framework makes three key contributions: First, unlike traditional PINNs, which require high solution regularity and often struggle in under-resolved or non-smooth regimes; WAN3DNS operates directly on the weak formulation, thereby accommodating lower regularity assumptions and offering enhanced robustness in challenging flow regimes. Second, a theoretical error analysis via Galerkin theory has been performed, showing that the $L^2$ error of the solution can be rigorously bounded, providing theoretical grounding and stability guarantees for the model training process. Third, extensive empirical validation on benchmark fluid dynamics problems demonstrates that WAN3DNS consistently achieves higher accuracy than current state-of-the-art models.
+
+Future directions include improving training stability through regularization techniques and exploring hybrid solvers that combine neural networks with traditional numerical methods to improve accuracy and efficiency.

@@ -1,0 +1,331 @@
+[numbers,sort&compress]natbib
+
+[T1]fontenc
+
+[colorlinks,allcolors=blue]hyperref
+
+Theorem[section]
+[theorem]Lemma
+
+[theorem]Remark
+[theorem]Example
+section
+
+, 
+ breakatwhitespace=false,
+ breaklines=true, 
+ captionpos=b, 
+ keepspaces=true, 
+ 
+ numbersep=5pt, 
+ showspaces=false, 
+ showstringspaces=false,
+ showtabs=false, 
+
+#1#1
+
+#1#1-.5em
+
+#1
+#1
+*arg\,min
+#1(#1)
+
+#1
+
+[Article Title]Reconstruction of three-dimensional turbulent flows from sparse and noisy planar measurements:\\ A weight-sharing neural network approach
+
+[1]Yaxin Mo
+[1,2]Luca Magri
+
+[1]
+ , 
+ , 
+ , , 
+ 
+
+[2]
+ , 
+ , , 
+
+Impact Statement
+
+The weight-sharing network enables efficient and robust reconstruction of three-dimensional turbulent flows from sparse measurements, without requiring ground truth data during training. This capability expands the potential for practical 3D flow reconstruction in experimental settings and advances the design of data-driven models for fluid mechanics systems.
+
+Introduction
+
+In many practical applications concerning turbulent flows, the data is often sparse. Various strategies have been developed to reconstruct flow fields from sparse measurements. Modal decomposition-based methods, such as gappy proper orthogonal decomposition (POD), have been used to estimate the flow in areas without measurements but may not work well when these areas are large . Sequential methods, such as the ensemble Kalman filter , can reconstruct flows from sensor measurements, but their accuracy depends on the quality of the incorporated reduced-order model . Adjoint-based variational methods can be used to accurately reconstruct flows from sensor measurements. Although variational methods constrain physical constraints, they may become unstable over a long reconstruction window in chaotic flows . Ensemble-variational methods have been used to reconstruct 3D unsteady channel flows from instantaneous sparse measurements and statistical observations , and to reconstruct mean flows from particle image velocimetry measurements . These methods, however, require a large number of 3D simulations, which makes them computationally expensive.
+
+Neural networks have also been increasingly applied to reconstruct velocity and pressure fields. From sparse measurements, network architectures such as autoencoders , generative adversarial networks , and transformers have been used to reconstruct two-dimensional (2D) flows including bluff body wakes, isotropic turbulence, and rotating turbulence. From 2D low-resolution data, convolutional neural networks (CNNs) are commonly used to recover high-resolution 2D flow fields . Reconstructing three-dimensional (3D) turbulent flows poses a greater challenge because of the high dimensionality of the problem. controlled 3D flows with a learning algorithm pre-trained on 2D flows. Physics-informed neural networks (PINNs) have been used to reconstruct 3D flows in different sensor setups, such as turbulent channel flow from tracked particles , and wakes from sparse, point measurements . Convolutional neural networks (CNNs) and generative models have been employed to infer missing information from limited measurements in 3D domains. Instantaneous velocities within wall-bound flows have been reconstructed from wall quantities only using CNNs and generative adversarial networks . However, these methods require the full flow field to be known during training, which limits their applicability when the full flow field is not available.
+
+When ground truth data is unavailable, physics-informed neural networks have been used to infer the flow field at unknown locations from known point measurements, but the training of PINNs requires knowing the time coordinates . Without initial conditions and with data organised on regular grids, computer vision approaches have been used to reconstruct 3D flows. CNNs have been used to reconstruct flows such as 2D steady biological flows and 2D turbulent Kolmogorov flows . In particular, and tested their methods in 2D flows. reconstructed flows without the full flow field in the training, using sensor setups that may be difficult to implement in experiments. When the data comes from experiments, the types of data and the locations of measurement points are limited by the experimental techniques. Non-intrusive methods, such as particle tracking, are often preferred over intrusive methods, as they do not disturb the flow.
+
+Currently, there are no non-intrusive methods to measure static pressure directly , which appears in the incompressible Navier-Stokes equations. Instead, pressure is often obtained at walls via pressure taps , or solved for from well-resolved velocity fields using the incompressible Navier-Stokes equations . Among non-intrusive methods for measuring velocities, particle image velocimetry (PIV) is a robust method when spatially-resolved velocity is required. PIV provides in-flow velocity measurements on a regular grid and is capable of measuring time-resolved velocities up to three dimensions in a plane . Volumetric velocity can be obtained by measuring multiple planes in the same experiment. For example, by scanning the measurement planes across the domain , measuring simultaneously multiple planes arranged either in parallel or perpendicular to each other , or using tomographic PIV . The regular grid and spatial resolution of PIV measurements make them a good starting point for 3D flow reconstruction.
+
+Using POD, reconstructed the mean in-cylinder flow from multiple PIV planes; reconstructed an impinging jet from multiple parallel planes; and reconstructed a 3D turbulent flow from two planes perpendicular to each other, using both experimental and synthetic data. A 3D stratified flow has also been reconstructed from multiple experimental PIV planes using PINN . Synthetic data on a regular grid have also been used to develop methods for reconstructing 3D flows. reconstructed a cylinder wake from multiple parallel planes of velocities. CNN-based methods have been used to reconstruct 3D free surface flow from surface measurements , and other turbulent flows from a cross-plane setup (two planes perpendicular to each other) . reconstructed the 3D wake of a cylinder from both a cross-plane and multiple parallel planes taken from simulations.
+
+Many physical systems such as flows have symmetries and obey conservation laws, which have been exploited in multiple works on flow reconstruction. One of these symmetries is homogeneity, i.e., the flow is statistically invariant under translation . When reconstructing 3D flows from multiple planes, used the homogeneous assumption to design their reconstruction method so that the method does not require the full 3D flow field. Neural networks can also be designed to enforce certain properties on their output, such as conservation of energy , conservation of mass , and periodicity .
+
+The overarching goal of this paper is to develop a neural network to reconstruct three-dimensional turbulent flows from sparse and noisy data, inspired by experimental configurations, without using the full flow field in the training. The method is tested on the flow reconstruction of 3D turbulent flows from a small number of planes of velocity measurements and a plane of pressure measurements at the boundary of the flow. We design a CNN-based weight-sharing network to both reduce the number of parameters needed for the reconstruction of the 3D flow and to exploit the homogeneous directions in the flow. The paper is structured as follows. We describe the sensor setup and the network in Section~. We present the reconstructed flow from non-noisy measurements in Section~, and from noisy measurements in Section~. We present our conclusion in Section~.
+
+Methodology
+
+In this section, we first describe the dataset to be reconstructed and how the measurements are taken (Section~).
+Then, we introduce the network designed for 3D reconstruction (Section~).
+
+Dataset and measurements
+
+The 3D turbulent Kolmogorov flow dataset is generated with a pseudo-spectral solver KolSol by solving the incompressible Navier-Stokes equations
+
+ 
+ = _d ()\\
+ t + + p - Re - = _m(,p) ,
+ 
+
+where $(,t) ^N_u$ and $p(, t) $ are the velocity and pressure at location $$ and time $t$, $N_u$ is the number of velocity components, and $_()$ is a residual of the equation, which is zero when the equation is exactly solved. 
+With this non-dimensionalization, the Reynolds number $$ is the inverse of the kinematic viscosity.
+The flow is subjected to sinusoidal forcing $=_1(k)$, where $$ is a standard unit vector.
+The dataset, $$, consists of four time series of 3D Kolmogorov flows, initialised with different initial conditions.
+Each time series is generated with $=32$, with 32 wavenumbers and the time step $ t^* = 0.005$.
+A snapshot is saved every 20 time steps and interpolated onto a grid of $64 64 64$ points in the physical space, resulting in a time step of $ t = 0.1$.
+Each time series contains 500 snapshots, which is longer than the decorrelation time of the Kolmogorov flow. 
+The combined dataset $$ contains $2000$ snapshots.
+The dataset is validated by comparing its time-averaged properties with those found in the literature.
+The mean $u_1$ averaged across three directions is shown in Figure~c, where the average $u_1$ in the forced direction $x_2$ has a sinusoidal profile matching the frequency of the forcing term, and the averaged velocity is $0$ in other directions.
+Given a long enough dataset, the mean of a 3D turbulent Kolmogorov flow is expected to have the same velocity profile as its laminar form, independent of the Reynolds number , which is shown in the 3D plots of velocities and pressure in Figure~a.
+The turbulent kinetic energy spectrum shows the exponential decay of energy, which matches the results obtained by .
+Figure~ shows that the combined dataset has converged and has the expected mean velocity profile and energy spectrum.
+
+All three velocity components are measured at all grid points $_s$ on three planes: an $x_2 - x_3$ plane at $x_1=3.14$, and two $x_1 - x_2$ planes at $x_3=1.57$ and $4.71$. 
+Pressure is measured at all grid points $_in$ on the $x_1 - x_3$ plane at $x_2=0$.
+Velocities and pressure are measured at different planes to reflect that these quantities are typically measured with different instruments in experiments.
+The planes are shown in Figure~
+The collection of all measurements $() = \(_s),(_in)\$ contains both the velocity measured at $_s$ and the pressure measured at $_in$.
+The pressure measurements $(_in)$ are used as inputs to the network.
+The measurements account for approximately 3.8\
+The number of $x_1 - x_2$ planes is determined by testing and reducing the number of planes until the relative errors from both networks exceed 50\
+
+The physics-constrained dual-branch convolutional neural network
+
+In previous work, we designed a physics-constrained dual-branch convolutional neural network (PC-DualConvNet) to reconstruct 2D flows from sparse measurements in . 
+In this paper, we develop a scalable PC-DualConvNet to reconstruct 3D flows (Figure~), which we will now refer to as the PC-DualConvNet.
+Periodic padding is used in convolutions to reflect the periodic boundary conditions of the flow under investigation.
+
+We will refer to the 2D version of the PC-DualConvNet used in , which constitutes part of the weight-sharing network (Section~), as the 2D PC-DualConvNet. 
+
+The weight-sharing network
+
+Part of the difficulty in reconstructing 3D flows is the large demand on computational resources.
+CNNs need fewer parameters than other types of commonly used networks, such as fully-connected networks or transformers, but a large amount of resources is still required for three-dimensional convolutions.
+The Kolmogorov flow is statistically homogeneous in all but the forced direction .
+When homogeneous directions are present, the statistical dimension of the flow is reduced .
+For example, if one direction is homogeneous in a 3D flow, then the flow is statistically 2D.
+We develop a weight-sharing network to both reduce the number of parameters and to fully utilise the homogeneity in the flow. 
+Part of the network parameters are shared across the $x_3$ direction, hence the name weight-sharing network.
+The shared part is based on the Physics-constrained Dual-branch Convolutional Neural Network (PC-DualConvNet) , which is the 2D version of the PC-DualConvNet presented in Section~.
+
+The network, shown in Figure~, can be broken down into three parts:
+
+ Input processing: Pressure input $_in$ at any instance in time, which is a 2D matrix, is passed through a 2D convolutional layer and a fully-connected layer, resulting in a 2D matrix.
+ The 2D inner network: The 2D matrix from the previous step is split along an axis, which will become $x_3$ in the output, into vectors. Each vector is passed through the same PC-DualConvNet (orange block) and becomes an intermediate result on a $x_1-x_2$ plane, to enforce that homogeneous directions are statistically invariant. These intermediate planes are then stacked along the $x_3$ direction.
+ The 3D CNN: The stacked output from the previous step is passed through multiple layers of 3D convolutions and resizing via linear interpolation to produce the final output with the correct dimensions.
+
+If we had an infinite number of snapshots of a single $x_1-x_2$ plane, then every possible realisation of the flow on a plane would be represented in the training data.
+However, when only a finite number of snapshots is available, only parts, and not all, of the weights are shared across the $x_3$ direction to avoid too much restriction on the network.
+Sharing parts of the weights informs the network that the flow is statistically similar along the $x_3$ direction, which is an efficient use of available data.
+
+Mean-enforced loss and snapshot-enforced loss
+
+Neural networks are trained to minimise the value of a loss function $$, which measures the error between the reference data $$ and the reconstructed flow $$.
+The loss function contains information on both the measurements and the physics of the flow.
+We define the sensor loss $_o$ to be 
+
+ _o (, ) = \| () - () \|^2_2,
+ 
+
+which is the $_2$ norm of the difference between the measurements and the reconstructed flow at the measurement planes.
+We also define the physics losses
+
+ _div() = \| _d() \|^2_2, \\
+ _mom() = \| _m() \|^2_2,
+ 
+
+where $_mom$ and $_div$ are the $_2$ norm of the residuals the momentum and continuity equations in~, respectively.
+
+When the measurements are accurate and precise, the snapshot-enforced loss $$ minimises only the physics-related losses while the sensor loss is enforced to be $0$. 
+The harder constraint on the sensor measurements means that the network cannot output trivial solutions.
+We define the snapshot-enforced loss as
+
+ = _div _div() + _mom _mom(),
+ 
+
+where $^T = [_u^T, _p^T]$ is defined as 
+
+0.47 
+ 
+ () =
+ 
+ () & _s, \\
+ () & .
+ 
+ 
+
+0.5 
+ 
+ () =
+ 
+ () & _in, \\
+ () & .
+ 
+ 
+
+Practically, we enforce the measurements by replacing the network output with measurements if measurements are available for the grid points.
+When the measurements are noisy, we use the mean-enforced loss $$ , which are designed to reconstruct flows from measurements with white noise.
+The mean-enforced loss enforces the mean of the measurements while placing a constraint on the instantaneous measurements.
+The mean-enforced loss is defined as 
+
+ = _o _o(, ) + _div _div() + _mom _mom(),
+ 
+
+where $^T = [_u^T, _p^T]$ is 
+
+0.47 
+ 
+ () =
+ 
+ () + ^() \; \; _s, \\
+ \; .
+ 
+ 
+
+0.5 
+ 
+ () =
+ 
+ () + ^() \; \; _in, \\
+ \; .
+ 
+ 
+
+The symbols $$ and $*'$ denote the time-averaged and fluctuating quantities, respectively.
+For a more detailed explanation of the snapshot-enforced and the mean-enforced losses, the reader is referred to .
+
+Flow reconstruction from planes
+
+We show the results on the flow reconstruction of 3D turbulent flows from measurement planes and the snapshot-enforced loss.
+We compare the results obtained using PC-DualConvNet and the weight-sharing network.
+The network parameters for this section are listed in Appendix~.
+
+A summary of the results is shown in Table~.
+The weight-sharing network achieves lower values in both the relative error and the physics loss, and with a smaller standard deviation, compared to the PC-DualConvNet.
+The relative error of a reconstructed flow $$ is defined as
+
+ = - \|^2_2\| \|^2_2\;\;\;\;(\
+
+The physics loss $_p$ is the unweighted sum of all physics-related losses, $_mom$ and $_div$.
+The sensor loss of the weight-sharing network is over twice as large as that of the PC-DualConvNet, despite the weight-sharing network achieving a lower relative error and physics loss.
+As the sensor loss measures only the data points on the measurement planes, we can see that the PC-DualConvNet overfits the measurement planes.
+By partially sharing weights across the $x_3$ direction, the weight-sharing network learns that all $x_1 - x_2$ planes are statistically similar, thereby reducing overfitting to the measurement planes.
+
+The results show good agreement with the reference data for both networks statistically.
+There is little difference between the two networks when comparing the mean flow (Figure~) or the energy spectrum (Figure~).
+The networks correctly infer the correct energy spectrum up to approximately wavenumber 10, which contains the majority of the energy in the flow.
+
+The differences between the networks are more visible when comparing individual planes within the 3D domain. 
+Figure~ shows two instantaneous $x_1-x_2$ planes taken from the reference and reconstructed flow, the top row at $x_3=$1.77, which is close to the measured plane at $x_3=$1.57, and the bottom row at $x_3=3.14$, which is further away from any measured plane.
+Both planes shown in Figure~ are unseen by the network during training. 
+At both $x_3$, the reconstructed velocity $u_1$ (Figure~ left) from the weight-sharing network has retained the flow structures expected of an instantaneous snapshot.
+However, PC-DualConvNet, which needs more parameters than the weight-sharing network, has larger errors at $ x_3=3.14$, and tends to converge toward the mean flow.
+The weight-sharing network infers the pressure field more accurately than the PC-DualConvNet, despite no pressure data has been used in training (Figure~ right). 
+ 
+
+Reconstructing from a single cross-plane
+
+In this section, we test the reconstruction from a single cross-plane.
+Figure~ shows the location of the velocity measurements. 
+The pressure inputs are taken from the same grid points as in Section~.
+Appendix~ provides more details on the tests to determine the minimum number of planes needed for accurate reconstruction.
+When only a single cross-plane is used, the reconstruction relative errors for PC-DualConvNet and the weight-sharing network are 78\
+Both networks achieve a similar reconstructed turbulent kinetic energy (Figure~), which are not significantly different from reconstructing from two $x_1-x_2$ planes in Section~.
+By comparing slices in the reconstructed domain (Figure~), we can see that the reconstructed flow field by the PC-DualConvNet has lost resemblance to the reference data at $x_3=$5.4.
+The difference between the networks is more pronounced in the pressure field, where the PC-DualConvNet fails to reconstruct the low pressure region in the centre of the slices, while the weight-sharing network successfully reconstructs those regions.
+
+Flow reconstruction from noisy measurements
+
+In this section, we reconstruct the flow using the same sensor setup as described in Section~, but with added white noise.
+The noise $e$ at a single instance in time and any grid point is drawn from a Gaussian distribution $e (0,_e)$, where $_e$ is the standard deviation of the noise.
+The signal-to-noise ratio (SNR) is defined as SNR$=10( ^2 / ^2_e )$, where $$ is the standard deviation of a component (such as a velocity or pressure) of the measurements.
+In this section, we reconstruct the flow from measurements with an SNR=15, using the mean-enforced loss.
+We show the process of selecting the hyperparameters in Section~, and the reconstructed flow in Section~.
+
+Selecting the hyperparameters
+
+Before we can use the network to reconstruct the flow, we select a set of hyperparameters for the network that we expect will lead to an accurate reconstruction of the entire 3D flow.
+We use only the noisy data in the hyperparameter selection. 
+During the selection process, we perform multiple tests with the training dataset composed of the measurements taken from the planes shown in Section~ with added white noise at SNR=15.
+The same noisy training dataset will also be used later in Section~.
+Given that we are interested in a spatial reconstruction from sparse measurements, the validation dataset should provide information about a network's ability to generalise to unseen regions of the flow.
+Thus, our validation dataset is the set of measurements from $x_1-x_2$ plane at $x_3=$3.14, which is unseen by the network during training.
+The validation sensor loss is then $\| (x_3=3.14), _n(x_3=3.14) \|^2_2$, where $$ is the reconstructed velocity field and $_n$ is the noisy reference velocity field.
+The training sensor loss is $\|(), (_n) \|^2_2$.
+Since the training sensor loss is computed with pressure measurements, but the validation sensor loss is not, the two losses are not expected to be similar in magnitude.
+Instead, we are interested in their correlation.
+
+Figure~ shows the quantities of interest for tests performed with different sets of hyperparameters.
+The bottom panel of Figure~ shows that the validation sensor loss follows the training sensor loss, showing a linear relationship.
+In contrast, no monotonic relationship between the validation and training sensor loss for the PC-DualConvNet is observed (Figure~ bottom panel).
+By comparing how the validation sensor loss changes with the training sensor loss for the two different network structures, we can see that the weight-sharing network generalises to unseen regions of the flow, which is the purpose of its design.
+The linear relationship also means that we can assess the generalisation error of the weight-sharing network by assessing the reconstructed flow on known grid points.
+This is not possible with the PC-DualConvNet, as a lower training loss does not correspond to a lower validation loss. 
+
+The top panels of Figure~ and~ show how the validation sensor loss changes with the physics loss for PC-DualConvNet and the weight-sharing network, respectively.
+The data points are coloured by the relative error.
+However, we will not use the relative error during the hyperparameter selection process because the computation of the relative loss requires the full flow field, to which we assume we do not have access.
+
+To select the hyperparameters, we consider two losses: the validation sensor loss and the physics loss.
+If the measurements are not noisy, we wish the training process to minimise both losses.
+However, in the case of noisy measurements, the lowest validation loss may not correspond to the most accurate reconstruction because the loss is computed with the noisy data $_n$.
+Without using information from the ground truth, or the SNR, we also cannot estimate the lower bound for the sensor loss.
+Therefore, we also cannot set a threshold for the validation sensor loss.
+On the other hand, we cannot choose the set of hyperparameters which leads to the lowest physics loss because a low physics loss only shows that the reconstructed flow is a solution to the Navier-Stokes equation, but does not show whether this solution corresponds to the measurements.
+Instead, we look for a compromise by identifying a point where a decrease in the physics loss leads to an increase in the validation sensor loss, and choose the set of hyperparameters at the turning point.
+The selected sets of hyperparameters for both networks are marked by a star in Figure~, and the values of the selected hyperparameters are listed in Appendix~.
+
+Results from noisy measurements
+
+Using the hyperparameters selected in Section~, we reconstruct the 3D turbulent flow from measurement planes shown in Section~ with added white noise at SNR=15.
+A summary of the results is shown in Table~, where the means and standard deviations are computed over five tests, each with different random initialisation of white noise and network weights.
+Similar to the results from non-noisy measurements in Section~, the weight-sharing network has a lower relative error with a smaller standard deviation, showing that the network becomes less sensitive to the realisation of random noise and weight initialisation by sharing weights.
+
+Figure~ shows the time-averaged 3D velocity and pressure fields.
+Similar to our observation in Section~, the two networks perform similarly when comparing the time-averaged flow on the boundaries of the periodic box, as only the boundaries are visible in Figure~.
+The reconstructed $u_3$ by the weight-sharing network shows a numerical artefact in the $x_3$ direction, which is the result of the weight sharing.
+However, given that the weight-sharing network achieved a similar level of physics loss compared to the PC-DualConvNet, the effect of this artefact is minimal.
+
+At $x_3=$1.57, which is part of the training data, the reconstructed instantaneous $u_1$ for both networks is less noisy compared to the noisy measurements in the training set (Figure~), and matches well with the reference data.
+At the same $x_3$, the reconstructed pressure has a reduced range (the difference between the largest and smallest values is smaller) in the middle of the domain. 
+Near $x_2=$0 and 2$$ the pressure reconstruction is more accurate because pressure data is available at $x_2=0$ and periodic boundary conditions are imposed via periodic padding in convolution.
+Comparing the slices at $x_3=$2.95, which is unseen in training, we find that the weight-sharing network better captures the main changes in the flow.
+Especially in the reconstructed pressure, where the weight-sharing network captured a rotation in the alignment of the two low-pressure areas in the middle of the domain, but not the PC-DualConvNet.
+These results show that both networks are capable of reconstructing the flow from noisy measurements, producing reasonable instantaneous flow fields and accurate reconstructed mean flow fields.
+The weight-sharing network has proven to be more suitable when the available data is limited to a few planes, as it can generalise to areas of the domain that are away from the measured planes, with fewer parameters. 
+
+Conclusion
+
+ In this paper, we reconstruct 3D turbulent flows with homogeneity from sparse measurements using a weight-sharing network to infer the full flow field, without relying on ground truth data during training. The measurements comprise three planes of in-flow velocity and one additional plane of boundary pressure. The weight-sharing network applies identical network parameters along the homogeneous direction, enabling more efficient data utilization and reducing computational memory requirements. 
+We compare the PC-DualConvNet, adapted from , with the weight-sharing network. First, we reconstruct a 3D Kolmogorov flow from noise-free measurements using the snapshot-enforced loss. Both networks accurately reconstruct time-averaged 3D flow fields and recover the correct energy spectrum up to wavenumber 10, containing most of the flow energy. The weight-sharing network and the PC-DualConvNet achieve relative errors of approximately 49\
+Second, we reconstruct the flow from measurements with added white noise at a signal-to-noise ratio of 15, using the mean-enforced loss. For the weight-sharing network, we show that the validation sensor loss, which is computed on a plane unseen during training, decreases with the training sensor loss. However, for the PC-DualConvNet, the validation sensor loss does not follow the training sensor loss. Therefore, we conclude that the weight-sharing network generalizes better to unseen regions of the flow, and that the training sensor loss reliably estimates the generalization error for this network. By using the training sensor loss as an estimator, more data can be allocated for training instead of validation, which is beneficial when data is limited. 
+The relative errors for flow reconstruction from noisy measurements are approximately 10\
+
+We acknowledge funding from the Engineering and Physical Sciences Research Council, UK and financial support from the ERC Starting Grant PhyCo 949388. L.M. is also grateful for the support from the grant EU-PNRR YoungResearcher TWIN ERC-PI\_0000005. 
+
+The authors declare no conflict of interest. 
+
+The codes to perform all the tests in this paper can be found at .
+All data is available upon request.
+
+The research meets all ethical guidelines, including adherence to the legal requirements of the study country.
+
+All authors have read and approved the final manuscript.
+
+Appendices

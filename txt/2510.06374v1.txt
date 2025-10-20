@@ -1,0 +1,292 @@
+[reprint, amsmath, amssymb, aps, showkeys, nolongbibliography, numerical]revtex4-2
+
+[normalem]ulem
+[usenames,dvipsnames]xcolor
+[mathlines]lineno
+#1 [#1] 
+#1#1 
+#1 
+#1
+#1
+#1
+#1[]
+#1
+
+[colorlinks=true, linkcolor=blue, allcolors=blue]hyperref
+[mathlines]lineno
+
+[1][]\(@th#1\)
+ 
+[1][]\(@th#1\)
+ 
+
+sgn
+
+$
+$
+$
+$
+
+sica Interdisciplinaria y Aplicada (INFINA), Ciudad Universitaria, 1428 Buenos Aires, Argentina,
+
+cole Normale Sup\'erieure, ENS, Universit\'e PSL, CNRS, Sorbonne Universit\'e, Universit\'e de Paris, F-75005 Paris, France.
+
+Vortex lattices---highly ordered arrays of vortices---are known to arise in quantum systems such as type II superconductors and Bose-Einstein condensates. More recently, similar arrangements have been reported in classical rotating fluids. However, the mechanisms governing their formation, stability, and eventual breakdown remain poorly understood. We explore the dynamical stability of vortex lattices in three-dimensional rotating flows. To that end we construct controlled initial conditions consisting of vortex lattices superimposed on turbulent backgrounds. We then characterize their evolution across different 
+Rossby numbers and domain geometries.
+
+By introducing an Ekman drag we are able to reach a steady state where vortex lattices persist with near constant amplitude up until spontaneous breakup of the lattice, or an equivalent of ``melting,'' occurs. We examine an ensemble of runs in order to determine the mean lifetime of the lattice as a function of the system parameters. 
+
+Our results reveal that the stability of the lattices is a memory-less random process whose mean life-time depends sensitively on the system parameters that if finely tuned can lead to very long lived lattice states. These metastable states exhibit statistical properties reminiscent of critical systems and can offer insight into long-lived vortex patterns observed in planetary atmospheres. 
+
+Introduction
+
+The origin of pattern formation is a central question in physics, in which complex spatial or temporal structures can emerge from the interplay of simple physical laws. Such structures often appear as a result of competing forces, instabilities, or when different time scales in a system reach a dynamical balance. A classical example of this process is provided by Turing patterns , where the balance between reaction and diffusion processes spontaneously leads to the emergence of stationary chemical patterns. Pattern formation plays a prominent role in a wide range of phenomena, from convective rolls in Rayleigh–Bénard convection , the ripples seen in sand dunes , the formation of ring-like thunderstorms in volcanic eruptions , the organization of droplets in chiral liquid crystals , to the formation of large-scale coherent structures in turbulence . In each case, the emergence of order reflects the system's tendency to self-organize under constraints imposed by geometry, symmetry, and conservation laws.
+
+In statistical mechanics, one of the most commonly observed forms of order is crystalline, in which atoms or molecules arrange into regular periodic structures that minimize the free energy . Interestingly, analogous forms of spatial organization can arise in the ordering of topological defects such as vortices. As an example, in type II superconductors, an external magnetic field that penetrates the material with quantized flux lines arranges into a triangular Abrikosov lattice . A similar phenomenon takes place in rotating Bose–Einstein condensates, where centrifugal and Coriolis forces and the quantization of circulation lead to the formation of ordered vortex lattices , even in out of equilibrium conditions . In all these systems, interacting vortices give rise to crystalline-like patterns governed by long-range interactions and global symmetry constraints .
+
+Recently, vortex lattices have been also observed in classical fluids, particularly in systems with broken parity or time-reversal symmetries. As an example, in fluids with odd viscosity, either the modification of the balance of forces by the antisymmetric stress tensor, or a cascade induced process, lead to the emergence of vortex arrays and ordered patterns . Vortex lattices have also been observed in rotating convection , and in instability-driven two-dimensional turbulence . In classical rotating flows a similar ordering has been reported . These structures are not just theoretical curiosities: in geophysical and planetary contexts, they can offer insight into the organization of large-scale atmospheric flows. A striking example is the polygonal arrangement of cyclones observed around Jupiter’s poles by the Juno mission , suggesting that the dynamics of rotating fluids can give rise to patterns 
+even under highly turbulent conditions. Finally, rotating fluids display an asymmetry between cyclonic and anti-cyclonic motions which also manifests in these lattices. Vortex latices have also been found in point vortex models when only same sign point vortexes are kept indicating that this asymmetry plays an important role, although it still poorly understood.
+
+These previous studies have shown that vortex crystals can form spontaneously in classical fluids and, in particular, in rotating turbulence. However, the mechanisms controlling their stability, the role of the energy balance and turbulent cascades, and the effect of external noise remain unclear. In this study we prepare controlled initial conditions to explore the configuration space of vortex lattices in rotating flows, with the aim of understanding the dynamical stability of the ordered patterns that arise. 
+
+The parameter space of rotating turbulence
+
+We consider an incompressible flow in a three-dimensional (3D) rectangular prism of size $L_x L_y L_z$, with periodic boundary conditions, in a rotating frame of reference with angular velocity $$ pointing in the $z$ direction. The equation that determines the dynamics of the fluid is the Navier-Stokes equation, 
+
+ t + + 2 = - P + \, u - u_^ + ,
+ 
+
+where $ u$ is the velocity field, $$ is the kinematic viscosity, $$ is an Ekman drag coefficient that may be present or not, $ u_^ = (u_x(x,y), u_y(x,y), 0)$ is the two-dimensional (2D) part of the velocity field, $2 $ is the term that accounts for the Coriolis force, and $P$ is a pressure such that incompressibility is satisfied. The external forcing $ f$ will be assumed to be Gaussian and delta correlated in time, acting only in a narrow Fourier shell with wave vectors $k_f|| k_f+_f$ (where $k_f$ is the forcing wave number), and injecting energy in the system at a rate $$. 
+
+We define the mean energy of this system as
+
+ E = 2V | () |^2 dV= 2_ k | () |^2 
+
+where $()$ is the Fourier transform of $()$, and the equivalence between the expressions on the r.h.s.~is ensured by Parseval's theorem. Note that we can also decompose the velocity field in Fourier space as
+
+ ( k) =
+ 
+ ^( k) & if k_z 0 , \\
+ _^( k_) + _z^( k_) z & k_z = 0 ,
+ 
+
+where $ k_ = (k_x,k_y,0)$. The Fourier modes with $k_z 0$ are often called 3D, wave, or ``fast'' modes (as they evolve in the time scale of inertial waves), and the Fourier modes with $k_z = 0$ are called two-dimensional (2D) or ``slow'' modes (as the frequency of inertial waves for these modes is identically zero) . The energy in the 2D modes is then given by
+
+ E_ = 2 __ [ | _^( k_) |^2 + | _z^( k_) |^2 ] .
+
+All dimensional quantities in this work are written in units of a unit length $L_0$, a unit velocity $U_0$, and a unit time scale $T_0 = L_0/U_0$. Based on the flow dimensional parameters, we can define several dimensionless numbers. We have the Rossby number at the forcing scale,
+
+ = k_f^2/3, 
+
+the Reynolds number at the forcing scale, 
+
+ = k_f^4/3.
+
+and an Ekman-Reynolds number based on the linear drag if drag is present in Eq.~() as will be done in Sec.~,
+
+ _ = k_f^2/3.
+ 
+Using these quantities we can also define the dimensional eddy turnover time at the forcing scale as $_f=( k_f)^-1/3$. Finally, based on the domain geometry, we can also define dimensionless aspect ratios of the simulations using the parallel length, 
+
+ _ = ,
+
+and the perpendicular lengths,
+
+ _ = L_x, 
+
+while the inverse forcing length scale $k_f$ and the domain height allows us to define
+
+ _f = k_f L_z .
+
+These dimensionless numbers fully describe our system, defining a high dimensional parameter space. 
+It is known that in the $ $ limit and large horizontal extend limit $_ 0$, the system can undergo a transition from forward to inverse cascade, depending on the value of $_f$ and $$ .
+For large $$ the system becomes independent of rotation,
+and the transition appears when a critical value of $_f$ is crossed . For small values of $$ the transition occurs when the product $ \, _f$ crosses a critical value . In this parameter space, vortex lattices appear for moderate values of $$ and near the boundary of the transition from forward to inverse cascade . Their properties, however, and their dependence on geometric factors such as $_$ and $_$, have not been fully explored.
+
+$ is the Rossby number, $$ is the number of copies done in the cases in which an ensemble of multiple runs was performed, $_^/_ = /^$ is the ratio of the Ekman drag coefficient to the optimal value, and $N_v$ is the total number of vortices identified in the domain.
+
+cccccccc
+$(L_x,L_y,L_z)/(2 L_0)$ & $(N_x,N_y,N_z)$ & $_$ & $_$ & Ro & $$ & $_^/_$ & $N_v$ \\ 
+$(1/2, /2, 1)$ & $(256, 432, 512)$ & $$ & $1.52$ & $1.15$ & -- & -- & $2$ \\
+$(1/2, /2, 1)$ & $(256, 432, 512)$ & $$ & $1.52$ & $0.87$ & -- & -- & $2$ \\
+$(1/2, /2, 1)$ & $(256, 432, 512)$ & $$ & $1.52$ & $0.70$ & -- & -- & $2$ \\
+$(1/2, /2, 1)$ & $(256, 432, 512)$ & $$ & $1.52$ & $0.58$ & -- & -- & $2$ \\
+$(1/2, /2, 1)$ & $(256, 432, 512)$ & $$ & $1.52$ & $0.50$ & -- & -- & $2$ \\
+$(1/2, /2, 1)$ & $(256, 432, 512)$ & $$ & $1.52$ & $0.44$ & -- & -- & $2$ \\
+$(1/2, /2, 3/4)$ & $(256, 432, 384)$ & $$ & $1.14$ & $1.15$ & -- & -- & $2$ \\
+$(1/2, /2, 3/4)$ & $(256, 432, 384)$ & $$ & $1.14$ & $0.87$ & -- & -- & $2$ \\
+$(1/2, /2, 3/4)$ & $(256, 432, 384)$ & $$ & $1.14$ & $0.70$ & -- & -- & $2$ \\
+$(1/2, /2, 3/4)$ & $(256, 432, 384)$ & $$ & $1.14$ & $0.58$ & -- & -- & $2$ \\
+$(1/2, /2, 1/2)$ & $(256, 432, 256)$ & $$ & $0.76$ & $1.15$ & -- & -- & $2$ \\
+$(1/2, /2, 1/2)$ & $(256, 432, 256)$ & $$ & $0.76$ & $0.87$ & -- & -- & $2$ \\
+$(1/2, /2, 1/2)$ & $(256, 432, 256)$ & $$ & $0.76$ & $0.70$ & -- & -- & $2$ \\
+$(1/2, /2, 1/2)$ & $(256, 432, 256)$ & $$ & $0.76$ & $0.58$ & -- & -- & $2$ \\
+$(1/2, /2, 3/8)$ & $(256, 432, 192)$ & $$ & $0.57$ & $1.15$ & -- & -- & $2$ \\
+$(1/2, /2, 3/8)$ & $(256, 432, 192)$ & $$ & $0.57$ & $0.87$ & -- & -- & $2$ \\
+$(1/2, /2, 3/8)$ & $(256, 432, 192)$ & $$ & $0.57$ & $0.70$ & -- & -- & $2$ \\
+$(1/2, /2, 3/8)$ & $(256, 432, 192)$ & $$ & $0.57$ & $0.58$ & -- & -- & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $1.15$ & -- & -- & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.87$ & -- & -- & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & -- & -- & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.87$ & $5$ & $1.8$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $1.6$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $1.4$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $1.2$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $1.1$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $1.0$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $0.9$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $0.8$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $0.6$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $0.4$ & $2$ \\
+$(1/2, /2, 1/4)$ & $(256, 432, 128)$ & $$ & $0.38$ & $0.70$ & $5$ & $0.2$ & $2$ \\
+$(1, /2, 1/4)$ & $(512, 432, 128)$ & $/2$ & $0.27$ & $0.87$ & $5$ & $1.0$ & $4$ \\
+$(1, /2, 1/4)$ & $(512, 432, 128)$ & $/2$ & $0.27$ & $0.70$ & $5$ & $1.0$ & $4$ \\
+$(1, , 1/4)$ & $(512, 864, 128)$ & $$ & $0.19$ & $0.87$ & $5$ & $1.0$ & $8$ \\
+$(1, , 1/4)$ & $(512, 864, 128)$ & $$ & $0.19$ & $0.70$ & $5$ & $1.0$ & $8$ \\
+$(2, , 1/4)$ & $(1024, 864, 128)$& $/2$ & $0.13$ & $0.87$ & $5$ & $1.0$ & $16$ \\
+$(2, , 1/4)$ & $(1024, 864, 128)$& $/2$ & $0.13$ & $0.70$ & $5$ & $1.0$ & $16$ \\
+
+$(4, 2, 1/4)$ & $(2048, 1728, 128)$ & $/2$& $0.067$& $0.87$ & $5$ & $1.0$ & $64$ \\
+
+Preparation of vortex lattices
+
+The parameter space previously described is a key component of the question that we want to unravel in this work. Here we study coherent vortex structures, similar to those previously seen in . However, in those cases, the vortex lattices were allowed to develop spontaneously from the system dynamics. This results in the generation of imperfect lattices, or, as a result of the aspect ratios chosen for the domains, in lattices that cannot satisfy the boundary conditions and must have defects. As we are interested in identifying conditions and regions of parameter space in which the lattices remain dynamically stable, we need to prepare states that reduce any imperfection.
+
+The possible geometries that vortex lattices can develop were studied in detail in . To study different vortex lattice configurations and their stability, we generate initial conditions in which such structures are already embedded. This is achieved through a two-step procedure. First, we run a simulation solving Eq.~(), with the same physical parameters as the target case, applying a three-dimensional random forcing $ f$. After a sufficiently long evolution---during which large-scale structures may emerge---we extract a velocity field snapshot, and remove all 2D slow modes, thereby retaining only the 3D modes, $^$. Second, we construct a velocity field composed of an ideal lattice of same-sign vortices embedded in 2D slow modes. This is done with a stream-function designed to place vortices at prescribed positions $\(x_1, y_1), (x_2, y_2), , (x_n, y_n)\$, consistent with the geometry and boundary conditions of the simulation domain. The stream-function is given by
+
+ () = _i=1^n A \ ^2 [ (L_x) + . . \\ 
+ . . (L_x)^2 (L_y) -L_x^2 ] \ ,
+
+where $A$ sets the amplitude of the vortices, and $$ controls their width. Note that close to ($x_i,y_i)$ $()$, has a gaussian profile.
+The 2D velocity field associated with this stream-function is defined as $ u_^ = (_y , -_x , 0)$. 
+The total initial velocity field is finally constructed as
+
+ _0( x, t=0) = ^( x) + _^( x),
+
+and it depends explicitly on the number and arrangement of vortices prescribed in the streamfunction.
+
+We consider triangular vortex lattices compatible with periodic domains . A triangular lattice is one of the five 2D Bravais lattices, characterized by primitive vectors forming an angle of $/3$. 
+As the computational domain is rectangular with horizontal dimensions $(L_x,L_y)$, only certain geometric factors $_$ are compatible with triangular lattice without defects, given by $(L_x,L_y)=a (\,n , m)$ where $n,m$ are integers and $a$ is the nearest-neighbour distance between vortices. 
+The smallest rectangular domain compatible with a triangular lattice is therefore given by $a( , 1)$ with $L_y = a$. This rectangular cell contains two vortices; without loss of generality we can place one at the centre of the domain and the other at one of the corners, taking periodicity into account (see Fig.~ for an example). 
+We note that both vortices in Fig.~ have the same sign of vorticity, which makes them different from the classical vortex dipole observed in 2D flows. 
+Larger lattices with the same inter-vortex distance can be constructed by choosing larger values of $(n,m)$, such that $L_x= \,na$ and $L_y= ma$. 
+
+Numerical methodology
+
+As we aim at studying the stability of these vortex lattices, once we have the initial states, we integrate them numerically for long times and study their potential deformation and break up time. This will be done in two steps. 
+In the first step, discussed in Sec.~, we consider forced states without drag, i.e., we integrate numerically the initial states using Eq.~() with $ = 0$ while we keep applying the random forcing $ f$. 
+In the second step, considered in Sec.~, we look for ways to generate steady states that survive for arbitrarily long times, by balancing energy injection with large-scale friction. To this end we integrate Eq.~() with Ekman drag ($ 0$) while keeping the random forcing. The complete set of all simulations performed, with their parameters, is summarized in table .
+
+All simulations are direct numerical simulations (DNSs), i.e., they resolve explicitly all relevant time and length scales. A parallel pseudo-spectral code with the $2/3$ rule for dealiasing is used to integrate Eq.~(); the code, GHOST, is publicly available . In all simulations, $k_f = 20/L_0$, and the spectral forcing width is $_f = 2/L_0$. We use spatial resolutions with $ x y z 1.2 10^-2 L_0$, a condition that is kept fixed for all box sizes and aspect ratios. As a result, the maximum resolved wave number after the $2/3$ dealiasing rule is $k_ 170/L_0$. All simulations have the same viscosity, such that $ 13$ within $<10\
+
+Free large-scale evolution
+
+As already mentioned, we fist consider cases with random forcing but without Ekman drag, in such a way that the large scales can evolve freely. We focus on the smallest lattice allowed in a given domain, with $N_v=2$ vortices as shown in Fig.~, varying the domain height and $$ (see table ). 
+
+Fixed height dynamics
+
+We consider first the simulations with fixed height and with different Rossby numbers. To this end, we focus on the simulations in table with box size $(L_x,L_y,L_z)=(1/2,/2,1)2 L_0$ and with $ [0.44, 1.15]$.
+
+As time evolves the system tends to remain in the ordered configuration shown in Fig.~, without significant changes in the vortex positions. However, the detailed profile of the vortices changes from the initial conditions, developing a sharper structure in the maximum of vorticity as shown in Fig.~. The figure shows the vertically averaged profile of the vertical vorticity, $ _z_z$, as a function of $x$, and for a value of $y$ that goes across the center of a vortex, at the initial time and at a later time. All vortices have similar shapes and amplitudes, with large positive values of $_z$ at their centers, surrounded by a ring of small negative vorticity that decays with the distance from the vortex center (see also Fig.~). We note that the integral of the vorticity over the entire region is zero as in the periodic domain the flow total vorticity must be zero.
+
+After this transient, the vertical vorticity in each vortex can either slowly decrease or remain approximately constant. This can be seen in Fig.~, which shows the maximum of $_z$ for each of the two vortices in all simulations with $N_x=256$, $N_y=432$, and $N_z=512$. 
+Despite the fact that vortices are far apart and somewhat shielded by the ring of opposite sign vorticity, their amplitudes evolve in similar ways, indicating the system remains correlated at large scales.
+This is true for all simulations except for the case with $ > 1$. In this case, $ \_z\$ decreases in time, and for $t 90 _f$ the evolution of the two vortices drifts apart in amplitude with one vortex decaying faster than the other. In this simulation, the time evolution results in the disappearance of the vortices at late times. 
+
+We now look at the time evolution of the total and 2D energy components. 
+The amount of energy in the 2D modes relative to the total energy gives a first quantification of how two-dimensional the flows are. 
+The evolution of these quantities in all simulations with $N_x=256$, $N_y=432$, and $N_z=512$ is shown in Fig.~. 
+In all cases, the difference between $E$ and $E_$ remains approximately constant in time. 
+This indicates that the 3D energy $E_=E - E_$ does not grow in time and any growth or decay in $E$ is due to $E_$ i.e. the vortex latice amplitude. 
+
+The evolution of $E$ in Fig.~ is sensitive to the Rossby number. The simulation with $=1.15$ shows a decay of $E_$ with time, while all other simulations, with smaller values of $$, display a growth of energy with time after a short transient. 
+
+In real space, these differences manifest as contrasting dynamics: 
+At large $$ and as already mentioned, the vortices eventually decay and the lattice disappears (see Fig.~). This suggests that in this case, rotation is insufficient to generate an inverse cascade and stabilize the large-scale 2D structures. 
+At intermediate values of $$ the energy grows in time slowly, and for as long as we integrate the system, we observe a lattice.
+And finally, for smaller values of $$ (i.e., in the simulations with $=0.58$ or smaller), energy grows until a time at which the vortices accumulate too much energy in 2D modes, and the lattice eventually breaks up, due to merging of the two vortices.
+This results in a saturation in the growth of $E$ and $E_$, followed by a decay in some of the runs, and by a new growth in other cases as columnar vortices are recreated. 
+
+It is worth noting that the energy amplitude that this transition happens is approximately the same
+for all $Ro$ that reached this amplitude.
+
+In Fig.~ we indicate only as a reference a value of the energy equal to $2.5 E(0)$, where $E(0)$ is the energy in the initial conditions. 
+Interestingly, the instability of individual columnar vortices as energy grows in rotating flows has been recently studied in . 
+
+ 
+
+Our simulations thus indicate that, even after carefully preparing initial ordered states, the vortex lattice does not settle into a stationary state. It is either gaining energy when $$ is too high and breaking the lattice due to vortex merging when an energy threshold is crossed or it is losing energy when $$ is too low making the 2D vortices disappear into 3D turbulence. This suggests that only a specific, fine-tuned value of $$ can result in a vanishing time derivative of the energy for which a stationary state of the vortex lattice is reached. 
+Thus, the set of stationary cases must have zero measure in parameter space. 
+
+Finite-time stability phase space
+
+Based on the previous discussion we can only explore the presence of the lattices only for a finite observation time. To construct this finite-time phase space, we characterize the possible outcomes of simulations at a given time $T$ while varying two key control parameters: the height of the domain measured by $_$, and the Rossby number. Three types of long-term outcomes are identified: ``vortex lattice states'' (i.e., cases in which the vortices are still present at time $T$, and ordered according to their initial positions or rigidly shifted in space), ``direct-cascade'' cases (i.e., cases in which the vortices dissolve, and the energies $E$ and $E_$ only decay in time, indicating that the injected energy is transferred to smaller scales where it is dissipated), and ``inverse-cascade'' cases (i.e., cases in which $E$ and $E_$ grow in time as a result of energy upscaling, and the lattice breaks up when vortices become too energetic or when vortices merge as the inverse energy cascade proceeds to larger scales). 
+
+The resulting phase space is shown in Fig.~, constructed for an observation time fixed at $T = 273 _f$. This time greatly exceeds the characteristic dynamical timescales of all runs, as it is much larger than the eddy turnover time at the forcing scale, and even larger than the time defined by the inverse of the maximum of vorticity, $1/\_z\ 0.02 _f$. The results show a clearly delineated region of finite-time stability, flanked by zones in which the fate of the lattice is decided by the dominance of either the inverse or the direct energy cascade.
+
+As already mentioned, while this analysis provides a partial picture of the lattice persistence, it is limited by the fixed observation time. To further quantify the intrinsic dynamical stability of the vortex lattice, we need to prepare stationary energy states. This will be considered in the next section.
+
+Controlled energy states 
+
+The procedure to adjust the Ekman drag
+
+In many experimental and natural settings, rotating flows are influenced by boundary layers which alter the energy balance, and can result in statistically stationary states even in the presence of an inverse energy cascade as a result of its balance with a large-scale friction. Considering this as a motivation, in this section we consider situations in which Ekman drag is present, i.e., $ 0$ in Eq.~(). 
+The selection of the drag coefficient $$ is difficult, as it has a complex interaction with the system dynamics, and directly competes with the condensation of energy in low Rossby cases. We then consider it as a Lagrange multiplier that can be used to impose a mean value for the energy in the system steady state. To this end we couple Eq.~() to a control equation for $$ that dynamically adjusts the damping strength in order to maintain a prescribed energy $E_^*$ in the slow modes. Specifically, the evolution of $$ satisfies
+
+ t = (E_ - E_^*),
+ 
+
+where $$ sets a relaxation timescale.
+
+We integrate Eqs.~() and () in the presence of a lattice and for a given set of parameters, until the system reaches a steady state around the target energy, and we denote $^* = < >_t$ as the time-averaged value of $$ in this steady state. The final state of these simulations will be used as the initial condition of subsequent runs. We also use $^*$ as the reference value to perform the subsequent simulations with fixed values of the Ekman drag coefficient, i.e., solving only Eq.~() with constant $$.
+
+The need for ensembles
+
+We first consider simulations in a domain of size $(L_x,L_y,L_z)=(1/2,/2,1/4)2 L_0$
+and with $= 0.87$ and $_ = _^* = 3710$ (i.e., with $ = ^*$). 
+An ensamble of runs is performed where the same initial lattice is used as initial condition and this configuration is perturbed only by different realizations of the small-scale random forcing, all sharing the same properties except for the random phases. Figure shows the time evolution of $E_$ in these runs, illustrating how the outcome varies significantly across the different realizations with the same parameters. Moreover, while some lattices in this ensemble destabilize quickly, others remain coherent and stable over long times. This variability confirms the stochastic nature of the system, even though the forcing acts at scales ten times smaller than the lattice spacing.
+
+To show that this is a memory-less process and does not depend on the exact choice of initial conditions we conducted a series of ensembles of runs with $(L_x,L_y,L_z)=(1/2,/2,1/4)2 L_0$, $= 0.7$, and $_ = 0.83 \, _^*$ 
+The ensemble of runs is started following the same procedure as the one shown in Fig.~: five simulations are started from the same initial condition, with different random sequences of phases for the forcing. Then, we pick a simulation that still shows a lattice at the last time, and pick a prior time (to ensure no breaking process has started) as the initial condition for a new ensemble of five runs. This process is repeated once again (see Fig.~). We found that the statistical distributions of the lattice lifetimes in the three consecutive ensembles are indistinguishable from each other, confirming that the memory of the initial conditions is lost. This is consistent with the notion of metastable states: the lattice represents a local energy minimum from which the system departs only when perturbations are strong enough to overcome a certain energy barrier. This behavior is the same for the different values of $_$ explored.
+
+It is worth mentioning here that this property distinguishes these vortex lattices from those seen, e.g., in superconductors or in superfluids. In those cases, both experimentally and numerically, large resistance of the lattice to fluctuations has been reported .
+
+The lattice lifetime as a random variable
+
+From the previous observations, we must interpret the measured lattice lifetimes as realizations of a random variable and only measurements of means over ensembles of runs are of value.
+
+To study how the mean lattice lifetime is affected by the Ekman drag, we consider the ensembles with $(L_x,L_y,L_z)=(1/2,/2,1/4)2 L_0$, $=0.7$, and with different values of $_$. For $_ _^*$, a non-zero derivative of $E$ and $E_$ develops in time. For each value of $_$ we measured the lifetime of the lattice in each run in the ensemble. Figure shows the result, with the mean value of the lattice lifetime $ T_ $, and its deviation in the ensemble. The lifetime reaches a maximum for $_/_^* = 1$, the case in which the system's energy remains approximately constant. As $_$ deviates from this value---either increasing or decreasing---the lifetime drops sharply and approaches a plateau. Remarkably, the mean lifetime in this plateau appears largely independent of whether the system gains or loses energy, indicating that the instability is not directly tied to the direction of the energy cascade, but rather to the magnitude of the energy imbalance.
+
+This indicates that when the system is energetically out of equilibrium, fluctuations tend to draw energy into or out of the lattice structure, destabilizing it. 
+We thus conclude that, for a given lattice configuration, domain size, and Rossby number, there exists an optimal $_$ that maximizes the lattice lifetime on average. This condition corresponds to a dynamically stable balance between the lattice structure and the energetic flow environment.
+
+The effect of the number of vortices
+
+So far we examined boxes of minimal size. The stability of a lattice however can depend on its size. We thus explore finally, how lattice stability is affected by its size ie by the number of vortices present in the initial condition. To this end, we constructed larger vortex lattices by tessellating space, using periodic replicas of the two-vortex unit cell. An example of such a construction is shown in Fig.~.
+For each of these configuration, we run ensembles of five simulations using $=0.7$ and $_ = _^* = 3184$. In these simulations $L_z=/4$ and $(L_x,L_y)= (n, m )$ with $(m,n) \(1,1), (2,1), (2,2), (4,2) \$ (see table ).
+
+The result of measuring the lifetime of these lattices is shown in Fig.~. The smallest lattice (two vortices) exhibits significantly longer lifetimes than all other configurations with a larger number of vortices. However, variance in the lifetimes decreases with the number of vortices in the lattice, suggesting that larger lattices exhibit more predictable albeit shorter-lived dynamics. The presence of a plateau in the lifetime also signals that the system as it becomes larger its stability is independent of the number of vortices.
+
+The numerical cost of these large vortex lattices prohibited us from further exploring different parameter values. 
+We mention here however that we repeated the same procedure for a different set of parameters ($=0.87$, $_ = _^* = 3710$, closer to the expected stable region). In that case, fluctuations in the lifetime were large in all cases, with some simulations that did not destabilize even after very long integration times $T 100 _f$. 
+ 
+A good example of this regime of very large and long-lived arrays is a case with 64 vortices with $(m,n)=(8,4)$, shown in Fig.~. In this case, the vortex lattice remained coherent for at least $T = 105 _f$, with no signs of destabilization. 
+
+Conclusions
+
+We investigated the stability of vortex lattices in classical rotating turbulence using controlled initial conditions that embed clean triangular arrays into fully three-dimensional flows. This approach avoids the defects that arise in spontaneous self-organization of turbulent flows, and allows a systematic exploration of the stability mechanisms and lifetime statistics of the lattices.
+
+A first scan of Rossby numbers and vertical aspect ratios reveals that lattices only appear within a sharply bounded region of parameter space, located between regimes dominated by direct and inverse energy cascades. 
+
+In the absence of an Ekman drag these lattices are not stationary but for small values of $$ excess inverse transfer leads to energy accumulation and breakup of the lattice by merging, while for large values of $$ excess direct transfer erodes the lattice through dissipation. These results support the view that lattices are not truly stationary but rather transient states, with the window of appearance shrinking as observation times increase (see a sketch of a proposed phase space in Fig.~).
+
+Introducing a dynamically adjusted Ekman drag makes it possible to stabilize the system around prescribed energy levels. This identifies an optimal drag coefficient for which lattice lifetimes are maximized. Deviations from this value---either by overdamping or underdamping---reduce the average lifetime, indicating that the magnitude of the energetic imbalance, rather than its sign, controls the lattice break up.
+
+The use of ensembles further reveals that lattice lifetimes behave as a random variable, with statistics that are approximately memory-less. While two-vortex arrays tend to persist longer than larger lattices, the variance of the lifetime decreases with increasing vortex number, suggesting a thermodynamic-like limit. 
+
+The present results reveal an unexpected richness of dynamics for a very simple system. The computational costs of performing ensembles of 
+runs in a very highly dimensional space allowed us only to scrape tip of the iceberg of this problem leaving many unanswered questions.
+Further investigations are requiered to enlight further this problem.
+Finally, carefully designed experiments where vortex-latices can be observed could be a very attractive alternative for future investigations. 
+
+The authors acknowledge support from UBACyT Grant No.~20020220300122BA, and from proyecto REMATE of Redes Federales de Alto Impacto, Argentina. JAE thanks Bernardo Español for useful discussions during the writing of the manuscript.

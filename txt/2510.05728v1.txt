@@ -1,0 +1,147 @@
+[aps,prl,reprint,twocolumn,superscriptaddress]revtex4-2
+
+E
+Z
+D
+
+Predicting when a three-dimensional turbulent flow reaches its dissipation peak is essential for both theory and adaptive algorithms in simulations and experiments.
+Using direct numerical simulations (DNSs) of the Taylor--Green vortex (TGV) at resolutions of $256^3$--$1024^3$, we introduce and test a small-scale weighted diagnostic: the spectrum of $| |^2$ (with $=$), which, for incompressible flow, is equivalent to a $k^4$-weighted energy spectrum.
+We show that the peak wavenumber of this spectrum, $k_[\,||^2\,]$, advances rapidly to intermediate--small scales and then levels off before the dissipation rate $(t)=_k 2 k^2 (k)$ reaches its maximum.
+Across all resolutions, we observe robust temporal ordering $t_k<t_<t_$, where $t_k$ marks the onset of the rapid rise of $k_[\,||^2\,]$, $t_$ is the time of the maximal $(t)$, and $t_$ is when the cumulative flux $|(K)|$ attains its largest peak scale.
+This early-warning signal correlates with the morphological transition to filament-dominated structures visible in $Q$-criterion isosurfaces and is consistent with integral-scale trends ($L_,,$).
+The diagnostic is simple to compute from standard DNS data and highlights the incipient formation of high-curvature structures, where viscosity acts most strongly.
+
+*Introduction.
+The decay of the three-dimensional (3D) Taylor--Green vortex (TGV) from a symmetric large-scale state into fully developed turbulence has long served as a canonical setting for probing the creation of small scales and the timing of peak dissipation .
+Spectral diagnostics, such as the energy spectrum $E(k)$, enstrophy spectrum $Z(k)\!\!k^2E(k)$, and cumulative flux $(K)$, are the standard for characterizing interscale transfer, whereas real-space visualization often relies on the $Q$-criterion .
+However, reliable predictors of when the dissipation surge will occur remain scarce; commonly tracked observables either evolve too slowly to be actionable (e.g., the development of inertial-range slopes in $E(k)$ ) or exhibit finite propagation/lag across scales (e.g., flux-based indicators ). Here, we report that the spectrum of $||^2$---equivalently, a $k^4$-weighted energy spectrum for incompressible flow ($\!\!=0$) because $=-^2$---exhibits a sharply small-scale-biased and predictive behavior.
+Physically, the $k^4$ weight singles out the rapid growth of high-curvature vortex sheets and tightly wound tubes; as these structures form, the high-$k$ front of $||^2$ advances and its peak wavenumber then levels off before viscous action is maximized.
+Direct numerical simulations of the TGV up to $1024^3$ show that this precursor consistently predicts the time of the maximum $(t)$ and precedes the largest peak scale of $||$, establishing the robust ordering that underpins our main result.
+
+[t]
+ 
+ [width=]fig_snapshot.jpg
+ .
+ 
+
+*Methods.
+We solve the incompressible Navier--Stokes equations in a periodic cube $[0,2]^3$ with viscosity $=10^-3$ and the TGV initial condition $(x,y,z,0)=( x y z,\,- x y z,\,0)$.
+A massively parallel pseudo-spectral solver with FFTW--MPI slabs~ evaluates nonlinear terms in physical space, applies de-aliasing using a two-thirds box cutoff together with the Helmholtz projection in Fourier space, and advances in time using a four-stage Runge--Kutta scheme and an integrating factor for viscosity~.
+Simulations at $N^3=256^3,512^3,1024^3$ are performed with $ t=10^-3$ up to $t=20$, writing velocity, and vorticity snapshots at regular intervals for post-processing.
+The code uses the real-to-complex layout of FFTW with the required $N\!+\!2$ padding on the last dimension; snapshots are stored per rank to enable parallel I/O and exact reconstruction.
+
+From the snapshots, we compute the isotropic shell averages of the energy spectrum $(k)$, enstrophy spectrum $(k)$, dissipation density $(k)=2 k^2(k)$, nonlinear transfer $T(k)$, cumulative flux $(K)=-_m KT(m)$, and spectrum of $||^2$ (for incompressible flow equivalent to $k^4(k)$).
+Shells are defined by integer bins of $k=(||)$ and plane weights $w_z=1$ are used for $k_z\0,N/2\$ and $w_z=2$; otherwise, the FFT normalization is $1/N^3$ such that $_k (k)$ is equal to the volume-averaged kinetic energy.
+For the analysis, we apply a spherical two-thirds mask and record it as a binary column ``mask'' in the CSV; this differs from the box cutoff enforced during time marching. 
+Conservation diagnostics verify $_kT(k)0$ and $(K_)0$; specifically, we confirm $|_kT(k)| 1.510^-8$ and $|(K_)| 1.010^-7$. 
+Using a spherical two-thirds analysis mask, the maximum relative imbalance at the dissipation peak $(t=t_)$ is 
+$|_kT| / _k\!|T|\ 10^-16$ and 
+$|(K_)| / _K\!||\ 10^-16$. 
+In addition, we monitor $ ()$ and the RMS divergence $\|\!\!\|_$ in physical space to ensure numerical consistency~.
+The Q-criterion isosurfaces (colored by $||$) are produced using a scripted ParaView pipeline~.
+
+*Transfer function $T(k)$.
+The shell energy budget can be expressed as follows:
+
+_t E(k,t) \;=\; T(k,t) - 2 k^2 E(k,t).
+
+However, in practice, we compute $T(k,t)$ directly from the modal transfers in Fourier space:
+
+T(k,t)
+ = - __k
+ R\!\
+ ^(,t)
+ _(,t),
+ \,
+
+where the summation runs over all Fourier modes:
+$_k=\\,:\,||=k\$,
+i.e.,\ all wavevectors of magnitude~$k$~.
+Here, $=(\!\!)$ and
+$_()=
+()\,()$
+uses the Leray projector
+$()=
+-^/||^2$
+to enforce incompressibility and remove pressure~.
+In the pseudo-spectral implementation, $$ is assembled in physical space from $u_i$ and the spectral derivatives
+($_j u_i i_j u_i$), and then transformed into Fourier space; the optional spherical two-thirds analysis cutoff and the projection $$
+are applied before forming .
+The isotropic shells $_k$ are defined by rounding $||$ to the nearest integer; the $k_z=0$ and $k_z=N/2$ planes carry a unit weight, and the others carry a weight $2$.
+We accumulate the shell sums using the Kahan summation~ and report the cumulative flux $(K)=-_m KT(m)$.
+With these conventions, the discrete conservation properties hold to numerical precision, i.e., $_k T(k) 0$ and $(K_) 0$, as noted above.
+
+*Scale measures and physical meaning.
+We monitor four complementary scale measures together with the dissipation rate.
+First, the dissipation rate
+\[
+(t) \;=\; _k (k,t) \;=\; 2 _k k^2 (k,t)
+\]
+is the mean kinetic energy loss per unit time, which is equivalent to $2 S_ijS_ij$ in physical space, and sets the instantaneous Kolmogorov scale
+\[
+(t) \;=\; (^3/(t))^1/4, k_(t) (t)^-1,
+\]
+which characterizes the viscous cutoff of the cascade.
+Second, the integral scale
+\[
+L_(t) \;=\; \,2_k (k,t)\,\,
+_k 1 k
+\]
+weights the spectrum towards the energy-containing range and tracks the progressive erosion of large-scale coherence as the energy spreads to a higher $k$.
+Third, the Taylor microscale
+\[
+(t) \;=\; (_k k^2 (k,t))^1/2
+\]
+captures an intermediate characteristic length between $L_$ and $$, and is the basis for the Taylor-scale Reynolds number $R_$~.
+Finally, we define the curvature-biased indicator
+
+k_\![\,||^2\,](t)
+\;&\;
+_k 1\\,||^2(k,t)\,\, \\
+||^2(k,t)\;&=\;(k^4)\,(k,t) 
+
+for incompressible flow (because $ 
+= ( )
+= ( ) - ^2 
+= -^2 $ when $=0$).
+Owing to its $k^4$ weighting, $||^2(k)$ responds earliest to the formation of high-curvature sheets and tightly wound tubes, rapid advance, and subsequent leveling off of $k_[\,||^2\,]$, thus providing a small-scale-biased precursor to the dissipation surge.
+All spectral sums are isotropic shell averages with the usual plane weights for real-to-complex FFTs ($k_z=0$ and $k_z=N/2$ are weighted by $1$ and others by $2$); when shown, the analysis plots are restricted to shells with $=1$ (a spherical two-thirds cutoff).
+
+[t]
+ 
+ [width=]fig_spectra_evolution.png
+ = 1 (spherical two-thirds analysis cut) are shown. The high-$k$ front of $||^2$ advances first and then levels off earlier than that of $D(k)$, thereby anticipating the dissipation peak (cf.\ Fig.~).
+ 
+
+*Results.
+Figure~ (for $512^3$) shows the $Q$-isosurfaces at representative times, illustrating the transition from large-scale structures to a filament-dominated state prior to the dissipation peak.
+For all resolutions, we verify that the runs are well resolved at the time of peak dissipation.
+Using the Nyquist definition $k_=(N/2)\,2/L$, the resolution metric $k_(t)$ remains above unity throughout and reaches $ 4.35$ at $t_$ for the $512^3$ case, with comparable or larger values at $1024^3$ (see Appendix, Fig.~).
+The Taylor-scale Reynolds number $R_(t)$ peaks near $t_$, consistent with the evolution of $(t)$.
+
+The main results are summarized in Fig.~.
+The peak wavenumber of $||^2$ (red) surges to intermediate--small scales with an onset at time $t_k$, and then levels off.
+The dissipation rate $(t)$ (green) reaches its maximum a time $ t\!\!2$--$3$ later.
+The peak scale of the flux (blue) typically occurs even later ($t_$), establishing a robust ordering $t_k<t_<t_$ across $256^3$, $512^3$, and $1024^3$.
+This ordering relates the onset of curvature intensification (Fig.~) to the subsequent dissipation surge and, only thereafter, to the largest-flux scale.
+The integral scales in Fig.~ show that $L_$ and $$ decrease as $t\!\!6.5$, whereas the Kolmogorov scale $=(^3/)^1/4$ reaches its minimum near $t_$~.
+Therefore, the early stabilization of $k_[\,||^2\,]$ signals the imminent action of viscosity on the newly formed high-curvature structures.
+
+To understand why the precursor in Fig.~ emerges, we inspect the full time histories of the spectra at $1024^3$ (Fig.~).
+Panel (a) shows $E(k)$: energy spreads steadily from the initial large scales towards higher $k$, with the spectral front advancing up to the analysis mask near the dissipation peak.
+Panel (b) shows $D(k)=2 k^2E(k)$, a $k^2$-weighted version of $E(k)$ that emphasizes the intermediate wavenumbers earlier than $E(k)$ itself.
+Most strikingly, panel (c) shows $| |^2(k)$, which is effectively a $k^4$-weighted energy spectrum in incompressible flow, whose high-$k$ front surges first and then levels off by $t t_k$ (cf.\ Fig.~).
+After this early leveling off, the spectrum increases primarily in amplitude rather than in extent, and the dissipation rate reaches its maximum only later, at $t_$, followed by the largest-flux peak scale at $t_$.
+Therefore, the ordering $t_k<t_<t_$ is a direct consequence of the progressively stronger small-scale weights ($k^0\!\!k^2\!\!k^4$) that select, in turn, curvature intensification, viscous action, and net intescale transport.
+All curves use standard shell averaging; only shells with $=1$ (a spherical two-thirds analysis cut) are shown (see Methods).
+
+*Conclusion.
+The peak wavenumber of the $||^2$ spectrum provides a simple and robust early-warning signal for the dissipation surge in a 3D TGV.
+Because it is simply a higher-order ($k^4$) weighting of $(k)$, the diagnostic is inexpensive to compute, yet strongly emphasizes the regions in which the curvature intensifies and viscous effects will soon dominate.
+We anticipate applications to adaptive meshing and scheduling, as well as to comparative studies of non-equilibrium transients in different initial conditions or forcing protocols.
+
+*Appendix: Resolution metrics.
+We monitor the resolution using the Nyquist definition $k_ max =(N/2)2/L$ and report the time series of $k_ max(t)$ together with the Taylor-scale Reynolds number $R_(t) =u^(t)(t)/$. Here, $=(^3/)^1/4$, $u^ 2=2_kE(k)$, and $=_k E(k)/_k k^2E(k)$, with $k$ the physical wavenumber $(2/L)$ the integer shell index. All spectra are calibrated such that the total energy at the first snapshot is equal to $K_0=1/8$ (the Taylor--Green initial condition), and $(t)$ is obtained from $D(k)=2 k^2E(k)$. The shell sums use the spherical two-thirds mask, unless stated otherwise. Across all resolutions, $k_ max (t)$ remains comfortably above unity at all times and attains $k_ max(t) 4.35$ at the dissipation peak for $512^3$; therefore, the $1024^3$ run meets the stringent resolution criterion. The concomitant $R_(t)$ increases to a moderate value near $t_$, which is consistent with the growth and subsequent decay of $(t)$.
+
+*Acknowledgments.
+This study was supported by JSPS KAKENHI (Grant Number 22K14177) and JST PRESTO (Grant Number JPMJPR23O7).

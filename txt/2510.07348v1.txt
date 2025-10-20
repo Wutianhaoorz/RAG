@@ -1,0 +1,222 @@
+[journal,twoside,web]ieeecolor
+
+ 
+
+\@IEEEtriggercmd
+
+-.08em
+ T-.1667em.7ex-.125emX
+
+Author : Preparation of Papers for IEEE TRANSACTIONS and JOURNALS (February 2017)
+rgb0.89804,0.94510,0.83137
+0pt
+0pt
+
+abstractbg
+
+[16]r3in
+[width=2.9in]fig/ab.png
+
+This paper presents a bio-inspired underwater whisker sensor for robust hydrodynamic disturbance detection and efficient signal analysis based on Physical Reservoir Computing (PRC). The design uses a tapered nylon spring with embedded accelerometers to achieve spatially distributed vibration sensing and frequency separation along the whisker. Towing-tank experiments and computational fluid dynamics simulations confirmed that the whisker effectively distinguishes vortex regimes across different fin angles and maintains Strouhal scaling with flow velocity, where higher speeds increase vibration intensity without affecting the dominant frequencies. Frequency-domain analysis, Shannon entropy, and machine learning further validated the sensing performance: vortex shedding frequencies were identified with less than 10\
+
+Bio-inspired sensors, whisker sensor, underwater flow sensing, physical reservoir computing.
+
+Introduction
+
+Underwater environments, ranging from shallow coastal zones to the deep ocean floor, remain some of the least explored areas on Earth . These environments are not only ecologically vital, hosting complex marine ecosystems, but also hold significant economic and scientific value due to their potential for resource extraction, infrastructure development, and climate monitoring. However, underwater exploration faces unique challenges such as limited visibility, strong current disturbances, and complex terrain geometries, which constrain the effectiveness of conventional sensing technologies like vision-based systems or sonar. As the demand grows for autonomous underwater vehicles (AUVs) capable of precise and reliable perception in these conditions, there is a pressing need to develop alternative sensing strategies that can operate robustly under turbid, dynamic, and unstructured environments.
+
+To meet the increasing demands of underwater exploration, various types of autonomous underwater vehicles (AUVs) have been developed , ranging from compact observation-class platforms to large intervention-class systems. These robots are widely deployed for applications such as oil and gas exploration , infrastructure inspection, environmental monitoring , pipeline tracking , biological sampling , and target retrieval. In both industrial and scientific contexts, AUVs are expected to operate autonomously for extended durations, navigate through unstructured and dynamic underwater terrains, and perform complex tasks with limited communication and sensing capabilities. Although significant progress has been made in navigation and control, most AUVs still rely heavily on sonar , doppler velocity logs (DVL) , and inertial navigation systems (INS) for environmental perception. However, these conventional sensors often struggle in cluttered, turbid, or highly dynamic environments where visual occlusion , acoustic scattering, and current-induced drift are prevalent. As a result, AUVs frequently fail to detect fine-grained terrain features, deformable or flexible obstacles, and subtle environmental cues. More critically, they remain largely blind to essential hydrodynamic information such as localized flow disturbances, shear layers, vortex streets, and small-scale eddies—features that often contain crucial information about nearby obstacles, terrain boundaries, or biological activity. The inability to capture such near-field flow dynamics severely limits an AUV's ability to adapt and interact effectively with its surroundings in real time. This highlights the urgent need for advanced sensing mechanisms capable of resolving subtle variations in flow direction, velocity, and turbulence—capabilities that lie beyond the reach of traditional sonar- and inertial-based systems.
+
+To overcome these limitations, a shift is needed from traditional passive and remote sensing toward embodied, contact-based strategies that emulate biological systems. In nature, certain aquatic mammals have evolved highly sensitive tactile sensors—whiskers—that enable them to detect minute flow disturbances, track hydrodynamic trails, and interact effectively with their surroundings in complete darkness. Inspired by the extraordinary hydrodynamic sensitivity of harbor seal whiskers, several researchers have investigated bioinspired flow sensors that mimic their morphology and function. Beem et al. developed and validated a seal whisker-inspired sensor capable of detecting low-amplitude water disturbances that are typically undetectable by conventional flow sensors. Kottapalli et al. proposed a MEMS-based flow sensor designed to reduce vortex-induced vibrations by replicating the undulated shape of seal whiskers. Asadnia et al. introduced artificial fish skin embedded with micro-hair cells to sense subtle flow variations, extending the biological principles of whisker sensing to broader underwater contexts. These efforts highlight the potential of whisker-based designs in capturing fine-scale hydrodynamic cues for underwater robotic applications.
+
+Despite significant progress in bioinspired underwater whisker sensors, most existing designs still suffer from high power consumption, limited frequency–spatial decoupling capability, and heavy reliance on computational post-processing for feature extraction. These limitations restrict their applicability in low-power autonomous underwater platforms that require real-time hydrodynamic perception.
+
+To address these gaps, we present a tapered-spring-based whisker integrated with Physical Reservoir Computing (PRC) and three spatially distributed MEMS IMU nodes. This design passively encodes flow-induced oscillations into multi-modal mechanical states, enabling intrinsic frequency–spatial separation along the whisker length. Coupled with lightweight feature extraction and logistic regression classification, our approach achieves sub-4\
+
+Compared to existing underwater whisker sensors, our design offers the following key advantages:
+
+ Ultra-low power consumption – A custom PCB integrating TDK ICM-42670-P 6-axis IMUs operates at , consuming only (accelerometer) and (gyroscope) at , corresponding to a total power draw of approximately , enabling long-term deployment without active power refresh.
+ Intrinsic frequency–spatial decoupling – The tapered-spring geometry and three distributed sensing nodes passively separate modal responses along the whisker length, eliminating the need for heavy digital filtering.
+ Lightweight real-time processing – Logistic regression classification achieves $85.4\
+ Robust underwater performance – The design maintains $<10\
+
+The remainder of this paper is organized as follows. Section details the design of the bio-inspired whisker sensor, including the tapered-spring geometry, mechanical modeling, and embedded accelerometer configuration. Section describes the experimental setup, towing-tank validation, and corresponding computational fluid dynamics simulations, followed by analysis of frequency responses, entropy-based flow characterization, and logistic-regression-based classification.
+
+Sensor Design and Methods
+
+To enable robust perception in fluid environments, we propose a bio-inspired whisker sensor that integrates principles of physical reservoir computing (PRC) with a tapered spring structure. PRC has recently emerged as a promising framework for temporal signal processing, leveraging the intrinsic dynamics of physical substrates to transform input stimuli into high-dimensional representations without requiring complex digital computation. In whisker-based sensing, this principle can be embodied through structural elements that respond to environmental forces with rich, nonlinear dynamics.
+
+Inspired by the conical morphology of mammalian vibrissae, the proposed whisker adopts a tapered helical spring as its core mechanical structure. This geometry, widely observed in terrestrial rodents, enables graded stiffness along the length of the whisker and promotes spatially distributed oscillations when interacting with external stimuli. The gradual tapering facilitates both localized bending near the tip and stable anchoring at the base, offering favorable conditions for encoding dynamic input into spatiotemporal mechanical states.
+
+Design of Bio-Inspired Whisker
+
+In underwater conditions, complex flow phenomena such as Kármán vortex streets introduce nonstationary and nonlinear disturbances with distinct frequency structures. Instead of explicitly extracting these features through computational filtering or spectral analysis, our approach leverages the PRC paradigm to passively encode them into the vibrational dynamics of the whisker itself. The tapered structure naturally transforms flow-induced vortex shedding into spatially and temporally differentiated mechanical states, which are recorded by embedded IMU sensors. This structural computation allows the system to recognize characteristic hydrodynamic signatures—such as vortex shedding frequency and wake asymmetry—without requiring active sensing or external processing, providing a lightweight and efficient solution for real-time underwater perception.
+
+While the tapered spring alone can exhibit nonlinear dynamic responses suitable for physical reservoir computing in air, its underwater deployment requires additional structural considerations as shown in Figure.. The core structure is fabricated using resin-based additive manufacturing, forming a conical spring with a total height of 122mm, a base outer diameter of 22mm, and a tip diameter of 7.2mm. The spring wire has a uniform diameter of 2.6mm, chosen to balance stiffness and compliance along the length of the whisker.
+
+To ensure robust mechanical performance and preserve the rich nonlinear dynamics required for physical reservoir computing (PRC), the whisker is fabricated from high-strength nylon (PA12) using selective laser sintering (SLS). This material offers a flexural strength of approximately 90MPa and provides a favorable balance between structural compliance and environmental durability, making it well-suited for both air and underwater deployment without requiring additional encapsulation.
+
+Rather than emulating the external morphology of biological vibrissae, our design adopts a mechanism-inspired approach that leverages the tapered stiffness gradient of a helical spring to physically amplify subtle environmental disturbances. This structural configuration enables spatially distributed deformation, encoding dynamic inputs into rich mechanical responses—functionally analogous to how mammalian whiskers convert external forces into neural signals via localized bending and tension along the follicle.
+
+In engineered contexts, however, such neural processing is often impractical or costly to replicate. The proposed structure addresses this challenge by embedding signal processing capabilities directly into the mechanics of the system. The conical spring geometry transforms spatially varying forces—such as those from fluid interactions or mechanical contacts—into rich, distributed oscillatory responses. These mechanical states, shaped by the graded stiffness and inertial properties along the whisker, serve as a physical substrate for temporal signal encoding without digital preprocessing. By replacing complex sensor arrays and high-bandwidth computation with a materially-encoded reservoir, this design enables low-cost, robust, and energy-efficient sensing in dynamic environments.
+
+Experimental Setup for Fluid-Stimulated Vibration Acquisition
+
+To validate the persistence of physical reservoir computing (PRC) characteristics under fluid-induced excitation, a series of computational and numerical analyses were conducted in an underwater environment. The bio-inspired whisker sensor, previously described as a tapered spring structure encapsulated by a PVC membrane, was subjected to harmonic response analysis to evaluate its ability to preserve spatially distributed resonance behavior under realistic flow conditions.
+
+To approximate the hydrodynamic loading exerted by environmental fluid flows, the projected frontal area of the whisker was modeled as a trapezoidal profile with a top width of 7.2\,mm, a base width of 22\,mm, and a height of 122\,mm, yielding an effective area of approximately 0.00177\,m. Using the standard drag force equation:
+
+F_D = 2 C_D A v^2,
+
+where $ = 1000\,$ is the density of water, $C_D = 1.2$ is the assumed drag coefficient for a conical or tapered bluff body, and $v$ is the local flow velocity, the expected drag forces were estimated. Depending on flow speed, the drag ranged from approximately 0.0106\,N (at 0.1\,m/s) to 0.266\,N (at 0.5\,m/s). These values represent realistic fluid stimuli that the whisker structure may encounter in underwater environments.
+
+To simulate a conservative excitation condition and ensure the activation of a full set of modal responses, a lateral harmonic force was applied to the tip of the structure in the finite element model. This excitation magnitude exceeds the expected upper bound of natural fluid drag, ensuring the observability of the vibrational characteristics across the entire operational spectrum. As shown in Fig.~, six dominant resonant modes were identified at 39\,Hz, 68\,Hz, 126\,Hz, 184\,Hz, 217\,Hz, and 242\,Hz. Each modal shape exhibits spatially localized deformation patterns along the whisker body, corresponding to distinct vibrational nodes and antinodes.
+
+Notably, three particularly prominent modal concentrations can be observed, suggesting that the system inherently supports distributed encoding of external stimuli across both frequency and spatial domains. This multi-modal behavior, resilient to structural encapsulation, confirms the design's capacity to function as a physical reservoir under submerged conditions, enabling PRC-based signal transformation and flow sensing.
+
+Accelerometer Sensor Design and Installation
+
+To accommodate the unique structure of the whisker-inspired vibration sensing system, ultra-low power consumption was prioritized from the outset. We redesigned the sensor module to achieve accurate motion acquisition under aquatic conditions. We selected the ICM-42670-P from TDK as shown in Figure., an ultra-low-power 6-axis inertial measurement unit (IMU) that integrates a triaxial accelerometer and triaxial gyroscope, enabling the simultaneous detection of linear vibrations and rotational dynamics.
+
+One key advantage of the ICM-42670P lies in its exceptionally low power consumption—only for the accelerometer and for the gyroscope at operation—making it highly suitable for prolonged underwater deployments or passive sensing scenarios without active power refresh. Compared to conventional IMUs such as the MPU6050, the ICM-42670P exhibits significantly lower noise density ( for the accelerometer), enabling the detection of subtle vibrational changes even under hydrodynamic damping conditions, where signal attenuation in water is non-negligible.
+
+To ensure seamless integration into the compact geometry of the whisker base, we custom-designed a miniaturized PCB module, reducing the footprint to 12.5mm×8mm, including all required passive components and connector headers. This compact form factor allowed direct mounting onto the tapered spring, where vibrational energy concentrates due to flow-induced excitation, maximizing signal fidelity.
+
+Experiment and Results
+
+Underwater Test-platform Design
+
+[ht!] 
+
+[width=0.95]./fig/test.png
+
+To evaluate the underwater sensing performance of the whisker structure, a dedicated test platform was constructed (Fig.~(a)). The system consists of a transparent acrylic water tank (150,cm × 20,cm × 30,cm) equipped with a V-shaped linear rail and motorized carriage. A stepper motor with a pulley–belt drive enables programmable translation at 0.2–1.0m/s, ensuring stable and repeatable motion.
+
+The carriage integrates two components: a front-mounted adjustable fin and a rear-mounted whisker sensor. By tilting the fin at different angles, the downstream wake can be systematically altered—from attached laminar flow at 0°, to periodic vortex shedding at moderate angles, and broadband turbulence at higher angles. The whisker sensor, fully immersed and positioned directly behind the fin, records hydrodynamic disturbances across these regimes, enabling analysis of its dynamic deformation and frequency-domain response.
+
+To characterize wake evolution, CFD simulations were performed at four fin inclinations (0°, 30°, 60°, and 90°) Fig.~. At 0° the wake remains narrow and attached, while at 30° a clear Kármán vortex street develops. At 60°, the vortex pattern becomes asymmetric due to stronger separation, and at 90° the wake transitions into turbulence with residual periodic structures. 
+
+Preliminary Validation of Frequency-Decoupled Responses
+
+To evaluate the intrinsic dynamic response capability of the proposed whisker structure in an underwater environment, we conducted a fin-free towing experiment. The structure was fully submerged and towed linearly at a low constant speed through water. No upstream fin or external flow disturbance device was included, allowing us to isolate and observe the mechanical vibration response induced solely by water-structure interaction.
+
+Three IMU sensors were placed along the length of the tapered spring—at the bottom, middle, and top—to record the spatial distribution of vibrational responses. The collected acceleration signals were processed using Fast Fourier Transform (FFT) and normalized to eliminate amplitude bias. The resulting frequency spectra are shown in Fig.~.
+
+The results reveal significant differences in frequency-domain responses across sensor positions, which closely match the modal distribution predicted by finite element analysis (FEA):
+
+ Sensor Bottom: Shows strong responses in the mid-frequency range (85–110Hz) and especially in the high-frequency range (170–210Hz), with the highest normalized amplitude among all sensors. This confirms that the higher stiffness at the base region facilitates strong coupling to high-frequency modes.
+ 
+ Sensor Middle: Exhibits balanced sensitivity to both low and high frequencies but with less pronounced peaks, indicating its role as a broadband intermediate zone.
+ 
+ Sensor Top: Displays a strong response in the low-frequency range ( 50Hz) and significant attenuation in the high-frequency bands, reflecting sensitivity to large-scale slow oscillations at the tip.
+
+These findings demonstrate that the tapered whisker structure enables spatial frequency separation along its length, allowing intrinsic decomposition of input stimuli into frequency-specific mechanical responses. This spatial frequency selectivity is crucial for implementing Physical Reservoir Computing (PRC), where diverse nonlinear dynamics are required for encoding temporal input patterns.
+
+Therefore, even in the absence of external actuated disturbances (e.g., adjustable fins), the structure itself is capable of decomposing underwater flow-induced excitations into separable frequency components. This capability lays the groundwork for future research on PRC-based multi-frequency signal encoding, flow pattern classification, and multi-modal perception in underwater environments.
+
+Frequency-Based Vortex Shedding Quantification
+
+[ht!] 
+
+[width=0.95]./fig/FFT.png
+
+Kármán vortex streets are a well-studied hydrodynamic phenomenon characterized by the alternating shedding of vortices behind bluff bodies. When fluid flows past a body such as a flat fin, the resulting wake can transition from laminar to periodic vortex shedding as the Reynolds number increases. The vortex shedding frequency $f_s$ is primarily determined by the Strouhal relation:
+
+ f_s = St D
+
+where $St$ is the Strouhal number (typically $ 0.2$ for bluff bodies), $U$ is the freestream velocity, and $D$ is the characteristic width of the object. These vortices carry periodic hydrodynamic signatures that can serve as structured flow stimuli.
+
+In this study, CFD simulations confirm the formation of Kármán vortex streets behind an adjustable flat fin, where increasing inclination drives the transition from attached laminar flow to periodic shedding. These results confirm that fin inclination provides a controllable means to modulate wake dynamics and generate structured flow excitations for downstream whisker sensing. Correspondingly, the downstream whisker array exhibits clear frequency-dependent vibration responses. The embedded IMU sensors reveal spatial separation in sensitivity, enabling identification of characteristic shedding frequencies.
+
+As shown in Figure., the whisker is moving under speeds $U=0.5$\,m/s, the bottom sensor displays a shift of dominant energy from high frequencies (150–200 Hz) at $0^$ to mid-frequency bands (70–120 Hz) at larger angles, consistent with Strouhal scaling as wake width increases. This shift reflects a redistribution of energy from small-scale turbulence to larger-scale vortical structures. The middle sensor, initially dominated by low frequencies (20–40 Hz), shows progressive amplification of mid- and high-frequency components with increasing angle, reaching a broad response across all bands by $90^$. The top sensor exhibits a similar evolution but with stronger broadband characteristics, reflecting multi-modal vortex interactions and turbulence-induced fluctuations in the upper wake.
+
+Time–frequency spectrograms further confirm these patterns: at intermediate angles, periodic low-frequency bursts reveal organized vortex shedding, whereas at $90^$ the response becomes chaotic and broadband, indicating wake disorganization. These results demonstrate that the spatially distributed whisker array effectively resolves the primary shedding frequency and its transition into complex spectral structures as the flow evolves with increasing fin angle.
+
+Guided by the Strouhal relation, having established that our whisker resolves different attack angles, we now use K\'arm\'an vortex shedding to verify how flow speed affects the whisker’s vibration response. With the fin fixed at $=60^$, we repeated the towing runs at $U=0.4$ and $0.6$\,m/s, recorded tri-axial IMU vibrations at the base/middle/tip nodes (450\,Hz), and extracted the dominant low-frequency peak $f_p,$ from the PSD to examine whether speed increases shift the shedding peak upward and whether the IMU-only estimate of the Strouhal number remains approximately constant; this verifies that, at fixed geometry, flow speed governs the measured shedding frequency while preserving the array’s frequency–spatial selectivity.
+
+As shown in Figure., at $=30^$, comparing $U=0.7$\,m/s and $U=0.8$\,m/s (relative to the $0.2$\,m/s baseline) shows that the locations of the three characteristic bands remain essentially unchanged (low: 20-40\,Hz; mid: 70-120\,Hz; high: 150-210\,Hz), while their amplitudes increase in a position-specific manner: low-frequency content is markedly strengthened at Sensor Top; Sensor Bottom exhibits clear growth in the mid- and high-frequency bands; and Sensor Middle shows a denser distribution in both low and high bands. In summary, angle changes yield distinct spectral patterns, and—at a fixed angle—increasing speed primarily amplifies the corresponding bands without shifting their centers, indicating that both geometry (angle) and kinematics (speed) shape the whisker’s vibration signatures.
+
+To further quantify the complexity of the whisker vibration signals under different flow conditions, the Shannon entropy of the frequency spectra was calculated for each sensor position and fin angle. The entropy $H$ is defined as
+
+ H = -_i=1^N p_i _2 p_i
+
+where $p_i$ is the normalized spectral energy in the $i$-th frequency bin:
+
+ p_i = _j=1^N P_j
+
+with $P_i$ denoting the power spectral density at the $i$-th frequency component, and $N$ the number of bins within the selected analysis range.
+
+As shown in Fig.~, the entropy values for all three sensors increase monotonically with fin angle. For the bottom sensor, entropy rises from $7.78$ at $0^$ to $8.29$ at $90^$, reflecting the transition from a relatively organized, narrowband spectral signature to a broader distribution caused by more irregular wake dynamics. The middle sensor exhibits a similar upward trend, with a particularly sharp increase between $60^$ and $90^$, consistent with the emergence of strong high-frequency components in the FFT results. The top sensor shows the largest overall increase, with entropy values surpassing $8.3$ at $90^$, indicating the highest degree of spectral disorder among the three positions.
+
+This systematic rise in entropy across all sensors suggests that increasing fin inclination enhances the chaotic nature of the flow, corresponding to the breakdown of coherent Kármán vortex streets into fully developed turbulence. In other words, Shannon entropy here serves as a quantitative indicator of wake disorder, complementing the qualitative trends observed in the FFT and spectrogram analyses.
+
+Logistic Regression Based Flow Identification
+
+To evaluate the whisker sensor’s ability to discriminate hydrodynamic conditions, a supervised learning framework based on Physical Reservoir Computing (PRC) was implemented. Four fin angles (0°, 30°, 60°, 90°) were tested at a constant towing speed in a controlled tank. Vibration signals from three MEMS accelerometers positioned along the whisker were sampled at 450 Hz and directly used as instantaneous spatial states for classification, without any temporal or frequency-domain processing.
+
+At each sampling instant $t$, the reservoir state was defined as
+
+(t) = [&\,a_b,x(t),\, a_b,y(t),\, a_b,z(t),\\
+ &\,a_m,x(t),\, a_m,y(t),\, a_m,z(t),\\
+ &\,a_t,x(t),\, a_t,y(t),\, a_t,z(t)]^
+ ^9.
+
+where subscripts $b$, $m$, and $t$ denote the bottom, middle, and top accelerometers, respectively. 
+These nine instantaneous acceleration components represent the distributed nonlinear response of the tapered whisker structure to flow stimuli and thus serve as the physical reservoir state.
+
+The standardized feature vector $(t)$ was input to a centralized logistic regression readout:
+
+P(y=k) &=
+_k^+b_k)
+_j=1^K(_j^+b_j),\\
+ &= _k P(y=k).
+
+where $K=4$ corresponds to the four fin-angle conditions. The model was trained using 80\
+
+Moderate confusion occurred between the 30° and 60° fin-angle cases, reflecting their closely correlated spatial vibration patterns under similar hydrodynamic interactions. Meanwhile, slight misclassification between 0° and 60° suggests overlapping structural response modes at low excitation amplitudes. Overall, these results confirm that the instantaneous spatial readout captures sufficient nonlinear separability in the physical reservoir to distinguish both geometric (fin-angle) and dynamic (flow-speed) states without any temporal or frequency-domain processing.
+
+The inference time per sample was approximately 0.001 ms, confirming the feasibility of real-time flow state classification. These results validate the proposed whisker sensor’s capability for hydrodynamic condition identification using lightweight machine learning models, forming a solid baseline for subsequent vortex-shedding quantification and Strouhal number estimation.
+
+Vortex Shedding Frequency Quantification
+
+This subsection aims to extract the fundamental Kármán vortex shedding frequency from the whisker vibration signals and to establish its consistency with the Strouhal relation, thereby verifying that the whisker structure captures flow-induced periodicity in a physically meaningful way.
+
+The whisker signals were first mean-removed, band-pass filtered (0.5–20 Hz, 4th-order Butterworth), and analyzed using Welch’s PSD (Hamming, 50
+A prediction–matching strategy based on the Strouhal relation
+
+f_ = St_0 D_,
+
+with $St_0=0.2$ and $D_0.01$ m, ensured robust peak selection by suppressing harmonics and subharmonics.
+
+The effective transverse scale was then estimated as
+
+D_ = f_p,,
+
+and fitted as $D_()=a+b$ to capture angular dependence.
+Using $D_$, the Strouhal number was recalculated as
+
+St_ = D_()U,
+
+and the median $$ was used to predict theoretical frequencies:
+
+f_ = D_().
+
+To evaluate reliability, two complementary metrics were introduced:
+the relative spectral energy ($RE$) within $$1 Hz of $f_p,$, and the temporal coefficient of variation ($Cv$) computed from the STFT.
+High $RE$ and low $Cv$ values indicate that the detected peaks are both spectrally concentrated and temporally stable.
+
+Table~ summarizes the extracted vortex shedding peaks at different attack angles and flow speeds.
+The measured frequencies $f_p,$ show excellent agreement with theoretical predictions $f_$, generally within 10
+The median Strouhal number $=0.198$ aligns closely with canonical bluff-body values, confirming the physical validity of the whisker-based sensing.
+
+In summary, this subsection establishes a clear link between measured whisker vibrations and the canonical Strouhal scaling of vortex shedding.
+Through prediction–matching peak selection and data-driven scale fitting, the extracted frequencies consistently converged to $=0.198$.
+The high $RE$ and low $Cv$ values further confirm the spectral concentration and temporal stability of the detected peaks, validating the robustness of the whisker-based method for vortex frequency quantification.
+
+Conclusion
+
+This work introduces a tapered-spring-based whisker sensor that combines intrinsic frequency–spatial decoupling, lightweight real-time processing, and robust underwater sensing performance. Through systematic towing-tank experiments and CFD validation, we demonstrated that the whisker reliably discriminates vortex-shedding regimes across varying fin angles, while its vibration signatures also scale consistently with flow speed according to Strouhal’s law. At fixed geometry, increased velocity primarily amplifies frequency-specific responses without shifting their centers, confirming the sensor’s ability to preserve frequency–spatial selectivity across flow conditions. Furthermore, quantitative vortex-shedding frequency extraction achieved errors within 4\
+
+=10000
+
+=10000

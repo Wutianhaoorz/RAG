@@ -1,0 +1,293 @@
+[
+ preprint,
+
+ amsmath,amssymb,
+ aps, physrev,
+
+]revtex4-2
+
+ 
+[normalem]ulem 
+
+[1][#1]
+[1][#1]
+
+ 
+
+ 
+
+ 
+
+We investigate the effect of a dispersed bubble phase on forced homogeneous and isotropic turbulence using high-resolution high-performance simulations based on the lattice Boltzmann method. While the classical Kolmogorov energy cascade is largely preserved when considering the system as a whole, a phase-specific analysis reveals striking deviations from the classical turbulence scaling. In particular, the gas phase exhibits significant departures from Kolmogorov’s predictions, whereas the continuous liquid phase retains a turbulence structure consistent with classical expectations up to $24\
+between two finite wavelengths. 
+Our results aim at deepening the understanding of multiphase turbulence, particularly in the context of energy transfer mechanisms and phase interactions in bubble-laden flows. This study provides a framework for future investigations into the fundamental properties of multiphase turbulence and its implications for environmental, atmospheric, and industrial flows.
+
+ 
+
+Introduction
+
+Multiphase turbulent flows are ubiquitous in both natural and industrial settings, playing a crucial role in a broad range of applications, from oceanic and atmospheric processes to chemical reactors and energy systems . Among these, bubble-laden turbulence is particularly relevant, as it governs key phenomena such as wave breaking , gas transfer at the ocean–atmosphere interface , cavitation , and industrial mixing processes . Despite its widespread importance, the fundamental mechanisms underpinning turbulence modulation by dispersed bubbles remain only partially understood. The presence of an additional phase introduces complex interfacial interactions , modifies energy transfer across scales , and alters small-scale dynamics in ways that are challenging to predict using classical turbulence theories.
+
+One of the most prominent challenges in studying bubble-laden turbulence stems from its intrinsic multiscale and multiphysics nature. The interaction between the continuous phase and the dispersed gas phase leads to subtle but fundamental deviations from classical Kolmogorov turbulence , requiring novel approaches to accurately characterize energy transfer mechanisms. Understanding these effects is essential for improving predictive models in climate science, where bubble-induced turbulence affects the dispersion of aerosols and microplastics , as well as in industrial applications, such as the optimization of bubble column reactors and cavitation mitigation strategies , to cite some prominent examples.
+
+Due to the inherent complexity of these flows, direct experimental measurements are often limited, particularly at the small scales where interphase interactions dominate . As a result, numerical simulations play a fundamental role in uncovering the underlying physics. However, accurately resolving turbulence in the presence of bubbles requires high-resolution computations, advanced numerical schemes, and high-performance computing (HPC) frameworks capable of handling large density and viscosity contrasts, as well as the complex interactions between phases in turbulent environments.
+
+In this work, a recently developed HPC implementation of the lattice Boltzmann (LB) method is employed to investigate the effect of dispersed bubbles on homogeneous isotropic turbulence (HIT). By performing numerical experiments across different bubble volume fractions, density ratios, and viscosity ratios, we provide a detailed analysis of energy transfer mechanisms at both global and phase-specific levels. Our results reveal that, while the overall energy spectrum maintains a Kolmogorov-like behavior, the gas and liquid phases exhibit distinct turbulence characteristics, with the gas phase deviating significantly from classical scaling laws. In particular, we observe that bubble-induced momentum transfer redistributes turbulent energy, leading to the emergence of a non-classical cascade within the dispersed phase.
+
+These findings offer new insights into the role of gas–liquid interactions in turbulent energy transfer and highlight the necessity of phase-specific analyses in multiphase turbulence studies, which are also fundamental to improving two-fluid models. The results presented here confirm that a robust computational framework is crucial for future investigations into bubble-laden turbulence and open the way for improved models in environmental and industrial multiphase flow applications.
+
+Methods
+
+Navier-Stokes equations for multiphase flows with interfaces
+
+The multiphase system considered in this study is modeled by solving the continuity and momentum equations using the LB method. These equations are given by:
+
+ t + ( ) = 0
+
+ 
+) t + ( ) = - p + ( [ + ( )^ ] ) + ^s
+
+where \( \) represents the velocity field, \( \) the density, \( p \) the macroscopic pressure, \( \) the kinematic viscosity, and \( \) the surface tension force. Greek indices indicate Cartesian components of vectors and tensors. 
+
+The surface tension force, \( \), can generally be written as the divergence of a capillary stress tensor:
+
+^s = ( ( - ) )
+
+where \( \) is the local normal to the interface and \( \) is the surface tension coefficient, here assumed constant (zero tangential stresses). 
+
+The interface dynamics is captured through the evolution of a phase field, \( \), governed by the conservative Allen-Cahn equation:
+
+ t + = D ^2 - [ (1 - ) ]
+
+where \( D \) is the interface diffusivity, and \( = 4 D/ \), with \( \) denoting the interface width. In this model, \( \) takes values within the range \( \ 0,1 \ \), such that the interface between the two immiscible fluids is located at \( _0=0.5 \). It has been demonstrated that the equilibrium profile for an interface positioned at \( x_0 \) follows:
+
+ (x, y, z)=_0 2( ).
+
+The interface tracking equation is dynamically coupled to the Navier-Stokes equations through the advection term. 
+
+To enhance the accuracy of the model in the presence of strong advection, the advection term in Eq. (4) is discretized using a fifth-order Weighted Essentially Non-Oscillatory (WENO-5) scheme. The WENO-5 scheme provides high-order accuracy while effectively handling sharp interface transitions and minimizing numerical dissipation. This approach ensures stable and accurate advection of the phase field variable $$, particularly in turbulent multiphase flows where sharp interfaces need to be captured with minimal spurious oscillations. See for validations of the present two-phase flow solver at high density ratio. 
+
+Thread-safe lattice Boltzmann model
+
+The Navier-Stokes equations for single-phase flows can be efficiently solved using the LB method. This section provides a brief overview of a thread-safe LB framework, which integrates an efficient LB strategy with a regularized LB approach . 
+
+The Boltzmann equation, discretized over a velocity space of $q$ discrete vectors, is given by:
+ 
+ f_i( + _i t, t + t) = f_i(, t) + (f_i^ - f_i) + (1-2) S_i
+
+where $f_i$ are the distribution functions, $f_i^eq$ their equilibrium counterpart, and $S_i$ represents an external forcing term. The relaxation rate is controlled by $$, which is linked to the kinematic viscosity of the fluid via the relation $=c_s^2(1/ - 0.5)$ ( see for details on the LB method).
+By decomposing $f_i=f_i^eq + f_i^neq$, the post-collision distribution can be rewritten as:
+
+ f_i( + _i t, t + t) = f_i^ + (1 - ) f_i^ + (1-2)S_i
+
+In the thread-safe approach, both the equilibrium and non-equilibrium parts are reconstructed from the macroscopic hydrodynamic fields, eliminating the need to read the full set of lattice populations. This prevents race conditions arising from non-local memory access . The equilibrium distributions take the form:
+
+ f_i^ = w_i ( p^* + _i c_s^2 + _i _i - c_s^2 ) : 2 c_s^4 )
+
+where $p^*=p/( c_s^2)$ is a dimensionless pressure. The non-equilibrium part is reconstructed up to second order as:
+ 
+ f_i^ = _i _i : _2 c_s^4
+
+$_$ the non-equilibrium stress tensor.
+
+After the collision step, the macroscopic pressure and velocity fields are retrieved using:
+ 
+ p^* (,t)=_i f_i(,t),
+
+ 
+ u(,t)=_i f_i(,t)_i + 2_i S_i.
+
+The forcing term $S_i$ follows the Guo forcing scheme :
+ 
+ S_i = w_i ( _i - c_s^2 + _i c_s^4 \, _i ) 
+
+where $$ represents the external force field. 
+
+Extension for high-density and viscosity contrasts
+
+Additional forces are introduced to capture surface tension effects and inhomogeneous density contributions to model multiphase flows. The total force is given by:
+
+ =^s + ^p +^,
+
+where the surface tension force is computed as follows :
+
+^s=-||
+
+.
+
+The pressure force is :
+
+^p = -p^* c_s^2 
+
+where $=_l +(1-)_g$. Since the local pressure is $p=p^* c_s^2$, its gradient includes both embedded and additional terms, requiring the explicit inclusion of $^p$.
+
+The viscous force is given by :
+
+^ = -c_s^2 t [ _i (f_i - f_i^) \, _i _i ] 
+
+This framework enables stable and efficient simulation of multiphase flows with high-density and viscosity contrasts while maintaining thread safety through regularization .
+
+Results
+
+Single-phase homogeneous isotropic turbulence: spectra and single point statistics
+
+We first proceed to analyze single-phase HIT energy and pressure spectra and selected single-point statistics so to assess the accuracy of accLB to perform fully-developed turbulence simulations. 
+
+For both single-phase and bubble-laden simulations the homogeneous isotropic turbulent state is maintained through large-scale energy injection via the ABC (Arnold–Beltrami–Childress) forcing. This deterministic, divergence-free forcing scheme introduces a time-independent velocity field that acts as a steady source of energy at the largest scales. Specifically, the forcing takes the form:
+\[
+() = A
+
+(k_f z) + (k_f y) \\
+(k_f x) + (k_f z) \\
+(k_f y) + (k_f x)
+,
+\]
+where \(A\) is the forcing amplitude and \(k_f\) the forcing wavenumber. In this work, the forcing amplitude and the forcing wavenumber have been set to $210^-7$(expressed in units of lattice) and $2$, respectively. The ABC forcing guarantees a sustained turbulent regime by balancing viscous dissipation with energy input, without introducing significant anisotropy, thereby providing an efficient and widely adopted method to achieve statistically stationary HIT in periodic domains .
+
+To note here that, the forcing is applied only in the bulk liquid phase, as in .
+
+Two cases with increasing Taylor-scale Reynolds number ($Re_=u_rms/$, $=u_rms$), \(Re_\)= 150 and 230, have been considered. The simulations were conducted on a \(512^3\) Cartesian uniform grid.
+The \(Re_ = 150\) case qualifies as a Direct Numerical Simulation (DNS), with the Kolmogorov length scale approximately \( x\), ensuring that the smallest turbulent scales are resolved. On the other hand, the \(Re_ = 230\) case operates slightly outside the strict DNS regime, with a Kolmogorov length scale of \(0.4 x\). 
+
+All the simulations have been run on Leonardo supercomputer at CINECA, Italy. The details of the implementation of accLB and the related performances on both single and multiGPU can be found in . 
+
+Figure~(a) compares the energy spectra for both cases with the classical \(-5/3\) slope expected in the inertial sub-range . The agreement is evident and this stands as a first fundamental proof of the ability of accLB to capture energy transfer across scales in single-phase turbulent flows accurately.
+
+Moreover, the pressure fluctuations spectra are displayed and compared against the expected \(-7/3\) power-law in figure~(b). For both the pressure and energy spectra, the simulation at the highest Reynolds number exhibits the theoretical scaling over a broader range than the $Re_=150$ case, reflecting the extended inertial range and increased scale separation. 
+As expected, the spectra start to deviate from the $-5/3$ and $-7/3$ power-laws at the larger scales, in proximity of the Taylor length scale, which is denoted by the vertical dashed lines in the figure.
+
+Single-point statistics of the two HIT flows in scrutiny are shown in Figure . In particular, panel(a) reports the probability density function (PDF) of the longitudinal velocity gradients for the flow at $Re_=150$. 
+As expected, the PDF is far from Gaussian and slightly skewed, with a skewness factor, $S=0.42$ ($S=-<( u/ x)^3>/<( u/ x)^2>^3/2$), and a flatness factor $F=5.25$ ($F=<( u/ x)^4>/<( u/ x)^2>^2$), closely aligning with previous findings (see as a reference) at similar values of the Taylor Reynolds number. The first index is a typical hallmark of the emergence of anisotropic effects at small scales, even in globally isotropic turbulence, driven by the presence of persistent vortex stretching. In contrast, the non-Gaussian value of the flatness (larger than $3$) indicates the presence of intermittency, i.e., rare but intense fluctuations of the velocity gradients .
+
+In panel (b) the second-order structure function, $S_2(r)=<[u(x_i+r_i)-u(x_i)]^2>$, is reported and compared with two theoretical scaling laws : the $r^2$ scaling in the dissipation range (small values of r, fine-scale pseudo-laminar regime) and the Kolmogorov scaling, $r^2/3$, in the inertial range (larger values of $r$ corresponding to larger-scale structures). 
+The same agreement with the existing literature is seen for the results of the simulation at higher Taylor Reynolds number case (i.e., $Re_=230$). For the sake of conciseness, results have only been shown for the case $Re_=150$. 
+
+Bubble-induced turbulence modulation in homogeneous isotropic turbulence
+
+In the following, we examine the modulation of HIT due to the presence of a dispersed gas phase. To this aim, we performed simulations across a range of bubble volume fractions (\(_B\)), viscosity ratios, and density ratios. In particular, the focus is on the impact of gas-liquid interfaces on higher-order turbulence statistics and their connection to the modified turbulent energy spectra.
+
+The simulations were performed on a \(512^3\) domain, consistent with the single-phase reference case. The baseline physical parameters consist of a viscosity ratio \(_G / _L = 1\) and a density ratio of \(_L / _G = 100\). The void fraction was varied from \(0\
+
+For the present set of physical parameters, the Hinze length scale has been inferred a posteriori by employing the formula proposed by Deane and Stokes , $l_H = 2^-8/5 \, ^-2/5 ( )^3/5$ assuming a critical Weber number of \( We_c 4 \). This choice is in agreement with the findings of Mart\'nez-Baz\'an et al.~, who reported similar critical conditions for bubble fragmentation in fully developed turbulence. The resulting estimate is \( l_H 24 \), expressed in lattice units. 
+
+The analysis of energy spectra from HIT simulations, with and without bubbles, reveals that the presence of bubbles leads, in the first place, to a redistribution of energy across scales. As shown in Figure~, the dispersed phase causes a certain decrease in the energy content at low wavenumbers ($k$), which is almost independent of the gas volume fraction (i.e., $_B$), and an increase in the energy content at the highest $k$, corresponding to small-scale structures, which is more pronounced when increasing $_B$.
+
+As observed in earlier works for emulsions with unitary density ratio , such redistribution is to be attributed to the role of the surface tension force, which removes energy at the largest scale by deforming and breaking the larger bubbles and introduces additional energy at small scales during bubble merging and interface relaxation. As demonstrated below, the energy increase at high $k$ points to the presence of positive time-averaged work of the surface tension force at high wavenumbers, which is effectively injecting energy into small-scale turbulence. In , it is shown that surface tension effects enhance energy content at small scales by modifying the energy transfer pathways of the two-phase, emulsion system.
+
+Note that, as pointed out above, the spectral modifications weakly depend on the bubble volume fraction for the parameters of our simulations, except for the smallest active scales. As demonstrated by the spectra in Figure~, simulations with increasing bubble volume fractions ($_B = 0.06$, $0.12$, and $0.24$) at Taylor Reynolds numbers of $Re_ = 150$ and $230$ exhibit similar trends of the energy cascade. This consistency suggests that, at least for the range of volume fractions under scrutiny, the presence of bubbles, rather than their concentration, plays the dominant role in altering the energy transfer dynamics and that the mass fraction of the dispersed phase, rather than the volume fraction, plays an important role for the turbulence modulation. Indeed, in the case of emulsions (i.e. unitary density ratio) in the increase of the turbulence modulation with the volume fraction of the dispersed phase is more pronounced, especially at the larger scales.
+
+Further insights on the energy redistribution across scales can be obtained by examining the statistical distribution of bubble sizes in our simulations. We define the bubble size as the diameter of a sphere of the same volume of the bubble under consideration. The probability density functions (PDFs) of the equivalent bubble diameters, normalized by the Hinze scale \( d/l_H \), are reported in Figure~(a) for various values of the bubble volume fraction \(_B\), density ratio \(R = _l/_g\), and viscosity ratio.
+
+Despite variations in these control parameters, all cases exhibit a two-regime scaling: a \(-3/2\) power law for \(d/l_H 1\), and a steeper \(-10/3\) decay for \(d/l_H 1\). The latter behavior reflects a universal fragmentation mechanism driven by turbulent stresses, which dominate over surface tension beyond the Hinze scale. The transition near \(d l_H\) signals the scale at which turbulence becomes strong enough to overcome capillary resistance and break up bubbles, in agreement with previous studies~. Notably, the persistence of this scaling across different \(_B\) and \(R\) values highlights the self-similar character of bubble size distributions in statistically steady bubble-laden turbulence.
+The presence of two distinct regimes for bubble dynamics-- coalescence-dominated for \(d < l_H\) and breakup-dominated for \(d > l_H\), is further corroborated by the spectral distribution of the interfacial energy transfer shown in Fig.~(b).
+ The figure shows the scale-dependent surface tension work \(_(k)=< ^s>\) as a function of the wavenumber \(k\) for the baseline case at different bubble volume fractions. In line with the analysis reported in , we observe that \(_(k)\) changes sign near \(k 1/l_H\):
+ surface tension drains energy at larger scales, (\(k < 1/l_H\)), associated with bubble deformation and breakup while it
+ injects energy into the carrier flow at small scales (\(k > 1/l_H\)), indicative of coalescence and interface relaxation.
+ 
+ As shown in , this crossing point defines the Hinze scale dynamically and matches the scale identified in the PDFs of the droplets size. Indeed, the sign inversion in $_(k)$ close to the Hinze scale implies a physical mechanism whereby surface tension competes with inertial forces: breaking large bubbles while smoothing small interfacial disturbances. This dual role reflects how surface tension extracts energy from large-scale bubble deformation and releases it at smaller scales through rapid interface relaxation events, such as coalescence-driven recoil, which contribute to localized bursts of kinetic energy and enhanced intermittency in the gas phase.
+The alignment between the energy-sign inversion in $_(k)$ and the slope transition in \(P(d)\) supports the interpretation of the Hinze scale as the boundary between non-local coalescence-driven dynamics and local fragmentation cascades with the energy increase at high $k$ observed in figure .
+
+Useful information on the energy transfer mechanisms occurring in bubble-laden HIT, beyond spectral analysis, can be obtained by examining the global energy budget in statistically steady conditions for different bubble volume fractions \(_B\) and for the baseline values of viscosity and density ratios, as reported in Figure~. 
+The global energy budget equation reads as follows:
+
+ dt=F-+ T_p + _ ,
+
+where $E$ is the turbulent kinetic energy, 
+$F= \, / $ is the power related to the external forcing used to sustain the turbulence in the flow, 
+$= 2 S_ij S_ij / $ is the rate of turbulent kinetic energy dissipation, 
+$T_p=- p / $ is the work of pressure forces per unit time, 
+and $_= _ / $ is the mean surface–tension power, already defined above. 
+All terms in the present budget are computed using Favre averages, i.e.\ density–weighted quantities normalized by the domain-average density 
+
+As evident in the figure, at the global level, the energy balance largely follows the classical single-phase turbulence picture, with the mean energy input by external forcing \(F\) balanced by the mean viscous dissipation \(\). 
+The surface–tension power \(_\) is found to be very small compared to both forcing and dissipation (more than one order of magnitude smaller). 
+
+As shown in , the global average of $_$ in bubble- or droplet-laden turbulence is zero at steady state, when the surface area is statistically constant. However, in our configuration, \(_\) takes a slightly positive value, which can be attributed to the fact that we are using a diffuse interface approach for which the net dissipation is not zero .
+
+On the other hand, the pressure work, present when the density contrast is not one, computed here as the difference between $F$ and $$, represents a small fraction (roughly $10\
+This is consistent with the fact that, from Gauss' theorem, the term $ p \, dV = - p\,()\,dV$ vanishes in an incompressible fluid, where $=0$ (the velocity field is solenoidal within the bulk). Thus, we expect this term to be non-vanishing only near gas-liquid interfaces in the presence of strong density contrasts.
+
+The above observations suggest that in bubble-laden turbulence, energy is redistributed across scales and phases via interfacial stresses, with the dispersed gas phase acting as a site of localized energy injection and the liquid phase serving as the primary reservoir of dissipation. 
+Surface–tension contributions, while playing a role in local intermittency and spectral energy redistribution, do not lead to significant net energy production or loss when integrated over the domain, although they are responsible for phase-specific modifications in the energy transfer process.
+
+To gain a deeper understanding on the mechanisms shaping small-scale turbulence, it is instructive to analyze the third-order turbulent invariant :
+
+S_3(r) = ( u_r)^3 ,
+
+where $ u_r = u(x+r) - u(x)$ is, the longitudinal velocity increment at distance $r$.
+In classical Kolmogorov theory, $S_3(r)$ follows a linear scaling in the inertial range (i.e. $S_3(r)=-5 r$ being $$ the energy dissipation rate), which implies that the energy transfer rate is scale invariant within the inertial range or, in other words, that the turbulence exhibits a form of self-similarity across scales. Deviations from the linearity may stand as a clear signature of a non-classical cascade, providing important insights into energy transfer mechanisms in bubble-laden flows.
+
+As shown in Figure~, single-phase turbulence closely follows the Kolmogorov prediction for the larger separations $r$ (i.e., the small-wavenumber regime). However, in the presence of a dispersed gas phase, the shape and magnitude of $S_3(r)$ appear significantly altered, now with significant differences for the different values of $_B$.
+
+At $_B = 6\
+
+As the bubble volume fraction increases ($_B = 12\
+As noted in previous studies, interfacial stresses provide the alternative path for energy transfer to the smallest scales.
+
+Note that, in figure we report the modulus of the third-order structure function and, consequently, $S_3(r)$ at $_B = 0.24$ exhibits an oscillatory behavior with the presence of cusps at $r 40$ and $90$ (grid units).
+
+The third-order structure function has been chosen in place of $S_2$ since the second-order function, being an even-order moment, is primarily sensitive to the energy distribution across scales, but not to the direction of the energy transfer. As such, it masks non-Kolmogorov dynamics such as non-local energy injection, backscatter, or anisotropy introduced by bubbles . This can be readily observed in figure reporting the $S_2(r)$ for the baseline case as a function of the bubble volume fraction.
+The third-order structure function directly reflects the energy flux through scales and is therefore more sensitive to deviations from classical turbulence assumptions (e.g., scale locality, isotropy, and homogeneity). The observed departure in $S_3(r)$ therefore reveals the presence of altered cascade dynamics in bubble-laden flows that remain hidden in the second-order statistics.
+
+The observations above show that the dispersed gas phase significantly modifies the turbulent energy transfer across scales, apparently suppressing a classical forward cascade at high volume fractions. In particular, the deviation from the theoretical $-4/5r$ behavior highlights the fundamental impact of gas-phase inclusions on the energy transfer in homogeneous and isotropic turbulence. However, the latter observation seems to contradict, at least partially, the results stemming from the inspection of the energy spectra, which still suggest the presence of a net forward cascade over a broad range of wave numbers. To reconcile this apparent discrepancy, we resort to the analysis of the energy transfer mechanisms within each phase separately. 
+
+To understand the modifications of the energy transfer mechanisms in bubble-laden HIT, we examine the scale-by-scale energy dynamics within each phase. 
+
+As shown in Figure~, the energy spectrum in the liquid phase still follows the classical scaling at small-to-intermediate wavenumbers and transitions to a steeper regime (the dash reference line denote $k^-3$ scaling) before reaching the dissipation range. In contrast, the gas phase exhibits a nearly flat spectrum at low wavenumbers, followed by a $k^-3$ scaling and an even faster decay at smaller scales.
+It should be noted that the spectra in the gas phase agree with those observed in and, interestingly, they closely overlap the analytical expression proposed by Risso of a \( k^-3 \) behavior in dispersed multiphase flows. In , the author noted that the spectrum of a signal composed of a sum of localized random bursts can, under certain conditions, exhibit an intermediate sub-range that follows a power-law decay of \( k^-3 \). For this behavior to emerge, the bursts should be characterized by a smooth and regular pattern, their strength and size should be statistically independent, and their size should be uniformly distributed between two finite wavelengths. 
+
+The above results suggest that, despite the turbulence within each phase deviates from the Kolmogorov cascade, the global energy spectrum, as observed in the previous subsection, still recovers the universal $k^-5/3$ across a wide range of wavenumbers.
+
+Remarkably, the emergence of a $k^-3$ scaling in both the gas and liquid energy spectra occurs close to the Hinze scale, where the third-order structure function $S_3(r)$ also undergoes a sign inversion. This spatial and spectral coincidence indicates that the Hinze scale marks a transition point at which classical, scale-local energy transfer breaks down, and interfacial mechanisms, such as coalescence-driven recoil and bubble deformation, dominate the dynamics. These processes at the Hinze scale may be associated to the localized random bursts producing the \( k^-3 \) spectra .
+The sign change in $S_3(r)$ further suggests the presence of non-local or even reversed energy flux, highlighting the critical role of surface tension effects at this scale.
+
+Further insights into phase-specific energy transfer mechanisms can be gained by analyzing the phase-specific $S_3(r)$ structure functions. As shown in Figure~, in the liquid phase, $S_3(r)$ largely follows the expected Kolmogorov scaling at large separations, confirming the fractal nature of turbulence in the continuous phase.
+In contrast, the gas phase exhibits a distinctly different behavior. At small separations, $S_3(r)$ follows the expected dissipative-range scaling. However, at intermediate scales, it decreases abruptly, eventually becoming negative as $r$ increases. 
+
+This anomalous behavior is to be attributed to the presence of the gas-liquid interface, which introduces an additional mechanism for energy redistribution. 
+
+Furthermore, as the bubble volume fraction increases, the magnitude of $S_3(r)$ in the gas phase becomes progressively smaller, indicating a reduced net energy flux at intermediate scales. Such a suppression of energy transfer aligns with the spectral analysis, where the gas phase does not develop a well-defined inertial cascade, but rather follows a $k^-3$ scaling at intermediate wavenumbers. This confirms the more intuitive interpretation that turbulence in the dispersed phase remains constrained by interfacial effects, which limits the development of the classical turbulence features.
+
+Taken together, the results from both the energy spectra and the third-order structure function analysis indicate that bubbles significantly modify turbulence by redistributing energy in a non-classical manner. While the liquid phase still supports a forward cascade, albeit weakened at intermediate scales, the gas phase experiences a fundamentally different energy transfer process, dominated by events at the intermediate scale, that we conjecture related to droplet breakup and coalescence. 
+
+Summarising, the breakdown of Kolmogorov scaling may be attributed to a combination of factors intrinsic to the gas phase: confinement of turbulent eddies within finite-sized bubbles, low inertia, and surface tension-dominated dynamics. These effects likely suppress a scale-local energy cascade and instead promote non-local, intermittent transfer, associated with interface deformation, coalescence, or recoil. The presence of pronounced oscillations in $S_3(r)$, but not in the second-order structure function $S_2(r)$, further supports this view. While $S_2(r)$ captures the statistical energy content across scales, $S_3(r)$ encodes directional energy flux and reveals the underlying disruption or modification of the cascade mechanism specific to the gas phase.
+All of the above highlights the critical role of inter-phase interactions in shaping turbulent energy dynamics in bubble-laden flows.
+
+In this subsection we report on the separate effect of density and viscosity ratio on the modulation of the energy spectrum for $_B=0.24$. The energy spectra, at $Re_=150$, are reported in Figure . Both variations mainly affect the large and small wavenumber region of the spectrum, leaving almost unaltered the inertial cascade.
+
+In particular, the increase of the density ratio, $_L/_G$ (the viscosity ratio is 1 in these cases), further reduces the slope of the energy spectra in the dissipative range, i.e. smaller and smaller scales are excited in the flow when increasing the density ratio. The opposite effect is instead observed when increasing the viscosity ratio (the density ratio is fixed at $_L/_G=100$). In any case, the observations made before still hold even in these cases, proving the robustness of the physical mechanisms described above. Indeed, by inspecting the third order structure function $S_3(r)$ for the case $_L/_G=500$, $_G/_L=1$ at $_B=0.24$ (see fig. ), we observe that the Kolmogorov law is still clearly visible in the inertial range in the liquid phase while it is completely suppressed within the gas phase. Summarizing, the following conclusions may be drawn: 
+
+i) Universality holds in the Homogenized system 
+
+When considering the flow as a whole—i.e., analyzing the energy spectrum \(E(k)\) of the mixture without distinguishing between phases—the behavior closely follows the classical Kolmogorov prediction, at least for the configurations of this study. At large scales, within the inertial range, the presence of dispersed gas does not significantly alter the overall energy cascade in a way that is easily discernible from a homogenized perspective. 
+
+ii)Phase-Specific Statistics Reveal Non-Kolmogorov Behavior 
+
+By decomposing the flow into liquid and gas phases and examining phase-specific energy spectra or third-order structure functions, deviations from classical turbulence emerge. In particular, the energy transfer within the gas phase diverges substantially from the Kolmogorov scaling, with pronounced departures in small-scale statistics, precisely where multiphase effects become dominant (e.g., bubble interfaces, local slip velocities). In contrast, the liquid phase largely adheres to a near-classical scaling. This distinction implies that when recombining the two phases into a single energy spectrum, the non-Kolmogorov features primarily originating from the gas phase are partially masked.
+
+Thus, while turbulence to the inertial-range scales remains close to classical phenomenology, the anomalous \(k^-3\) scaling emerges as a distinctive feature of the presence of the gas phase at smaller scales.
+
+In the previous sections, we highlighted the presence of localized bursts of velocity within the gas phase, which point to strong intermittent events that alter the small-scale dynamics of bubble-laden turbulence. The statistical analysis of velocity derivatives provides further insights into this behavior. Figure~(a) reports the skewness \( S \) of longitudinal velocity gradients as a function of the bubble volume fraction \( _B \), while Figure~(b) shows the corresponding flatness \( F \). 
+
+In the liquid phase, both skewness and flatness remain close to the single-phase reference, confirming that the carrier fluid retains near-classical HIT statistics even in the presence of bubbles. In contrast, the gas phase shows pronounced deviations, especially at low void fractions. At \( _B = 6\
+
+Interestingly, these extreme values decrease with increasing gas volume fraction, suggesting that intermittency is most intense when bubbles are sparse and interfaces are more isolated. At higher \(_B\), a more connected gas network appears to reduce the impact of rare events, although sampling limitations due to the reduced gas volume may also contribute to this trend. 
+
+When the phases are combined into a homogenized system, the skewness stabilizes around \( S 0.5 \) and flatness around \( F 20 \). These aggregate values do not imply that the liquid mediates the gas-phase intermittency, but rather reflect the volume-weighted averaging of the two phases: the nearly Gaussian liquid statistics moderate the extreme gas-phase tails. As a result, the global system displays enhanced intermittency compared to single-phase HIT, but weaker than the raw gas-phase signal. 
+
+Overall, these results complement the spectral and structure-function analysis: the gas phase sustains strong non-Gaussian fluctuations at small scales, while the liquid phase remains close to Kolmogorov statistics. The intermittency diagnostics thus reinforce the view that gas–liquid interfaces act as sites of localized, intermittent energy transfers, but that their net contribution is partly obscured when examining homogenized turbulence statistics.
+
+Conclusions
+
+In this work, we investigated the dynamics of bubble-laden HIT through high-resolution simulations using a thread-safe, high-performance LB framework. The main focus is to shed light onto the modified energy transfer mechanisms and phase-specific deviations from Kolmogorov scaling in bubble-laden HIT.
+We find that, at the level of the homogenized system, the energy spectra preserve a Kolmogorov-like behavior across a wide range of wavenumbers, confirming the apparent universality of turbulent energy transfer when phase distinctions are neglected. However, a phase-resolved analysis reveals that this global scaling masks important anomalies: the liquid phase largely maintains a classical turbulent cascade, while the gas phase exhibits non-Kolmogorov behavior, including a steeper $k^-3$ spectral decay and altered third-order structure functions.
+These deviations stem from strong interfacial interactions and localized velocity bursts within the gas phase, indicative of pseudo-turbulent dynamics. The interface acts as both a source and sink of energy, disrupting the cascade and introducing intermittency, as evidenced by elevated flatness and skewness in the gas-phase velocity gradients. In contrast, the liquid phase shows only modest variations in intermittency, preserving the statistical features typical of HIT.
+
+Our phase-specific energy flux analysis further highlights the fundamentally different roles played by the two phases. While the liquid supports a classical forward cascade, the gas phase lacks a clear inertial range and instead features localized, scale-selective energy injection and dissipation. Interestingly, the combination of these distinct behaviors still results in an aggregate energy spectrum that mimics Kolmogorov scaling.
+Finally, we assessed the effect of varying density and viscosity ratios, confirming the robustness of our conclusions. Even under extreme contrasts, the qualitative features of energy redistribution and phase-specific cascade dynamics remain consistent.
+
+In summary, our findings demonstrate that phase-specific interactions in bubble-laden turbulence not only disrupt classical scaling laws at small scales but also unveil fundamentally new turbulence dynamics that are obscured in global flow statistics. The distinct cascade dynamics in the gas and liquid phases --governed by localized interfacial bursts and non-classical energy transfers-- challenge the conventional universality of turbulent flows and call for a paradigm shift in the modeling of multiphase turbulence. In future studies, we will extend our investigation to regimes involving buoyancy, near-contact interactions among fluid interfaces, and higher Reynolds numbers, aiming to bridge the gap between idealized turbulence and real-world multiphase phenomena.
+
+Acknowledgements
+
+A.M. acknowledges funding from the Italian Government through the PRIN (Progetti di Rilevante Interesse Nazionale) Grant (MOBIOS) ID: 2022N4ZNH3 -CUP: F53C24001000006 and computational support of CINECA through the ISCRA B project DODECA (HP10BUBFIL). M.L. acknowledges the support of the Italian National Group for Mathematical Physics (GNFM-INdAM).

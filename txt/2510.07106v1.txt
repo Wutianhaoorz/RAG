@@ -1,0 +1,509 @@
+[conf]new-aiaa
+
+[utf8]inputenc
+
+[1]#1
+[1]#1
+[dvipsnames]xcolor
+
+ 
+ #1#2 #1 #2
+ #1#2 #2
+[1]^ #1
+[1]^ #1
+[1]
+[1]
+[1]_
+[1]_
+[1]
+[1]\ #1 \
+[1] #1 
+
+PyFlowCL
+
+ 
+
+ 
+
+[1] #1
+[1] #1 
+
+ 
+ _
+ 
+ _=0.5
+ _
+ 
+ 
+ 
+ 
+ _2
+
+ D
+
+ g
+
+^\,*
+
+*
+ 
+ 
+ $$
+ $$
+ $$
+
+[1][i]_#1
+[1][t]_#1
+[1][] _#1
+[1][i]_#1
+[1][]_#1
+[1][i]_#1
+ g
+
+0.0in
+6.5in
+-0.3in
+0.15in
+9.0in
+0.2in
+0.1in
+
+ 0.9
+ 0.8
+ 2
+ 2
+ 4 
+ 2 
+ 0.9	
+ 0.07	
+ 0.7	
+ 0.7	
+
+*argmax
+
+et al.
+
+*\!
+
+[1]XL: #1
+
+C_l/C_d
+(C_l/C_d)_c
+
+ 
+
+We train active neural-network flow controllers using a deep learning PDE augmentation method to optimize lift-to-drag ratios in turbulent airfoil flows at Reynolds number $510^4$ and Mach number 0.4. Direct numerical simulation and large eddy simulation are employed to model compressible, unconfined flow over two- and three-dimensional semi-infinite NACA 0012 airfoils at angles of attack $ = 5^$, $10^$, and $15^$. 
+Control actions, implemented through a blowing/suction jet at a fixed location and geometry on the upper surface, are adaptively determined by a neural network that maps local pressure measurements to optimal jet total pressure, enabling a sensor-informed control policy that responds spatially and temporally to unsteady flow conditions.
+The sensitivities of the flow to the neural network parameters are computed using the adjoint Navier–Stokes equations, which we construct using automatic differentiation applied to the flow solver.
+The trained flow controllers significantly improve the lift-to-drag ratios and reduce flow separation for both two- and three-dimensional airfoil flows, especially at $ = 5^$ and $10^$. The 2D-trained models remain effective when applied out-of-sample to 3D flows, which demonstrates the robustness of the adjoint-trained control approach. The 3D-trained models capture the flow dynamics even more effectively, which leads to better energy efficiency and comparable performance for both adaptive (neural network) and offline (simplified, constant-pressure) controllers. These results underscore the effectiveness of this learning-based approach in improving aerodynamic performance.
+
+Introduction
+
+The need to increase the efficiency of air transport has become a paramount priority as demand continues to increase. Recent developments in active flow control have shown a potential to reduce fuel consumption and emissions by 20--25\,\
+Since drag is the primary source of energy loss in flight~, the ability to optimize airfoil flows---crucial for lift generation and aerodynamic efficiency---is essential. 
+This need has led to an increased focus on improving the lift-to-drag ratio in airfoil flows through various flow control techniques~. 
+Flow control techniques can be broadly categorized into passive and active control. 
+Passive flow control (PFC) harnesses inherent flow dynamics to achieve control without requiring external energy input. In contrast, active flow control (AFC) involves active manipulation through energy addition and/or removal. Both PFC and AFC aim to significantly improve aerodynamic efficiency and thus achieve increased sustainability of air transportation.
+
+Common PFC methods include geometric adjustments, such as the addition of trailing-edge flaps on airfoils to mitigate dynamic-stall pitching moments~, and the application of riblets designed to alter boundary layer characteristics for reduced skin-friction drag~. These approaches stem from direct analysis of the fluid dynamics around particular geometric shapes~. 
+In contrast, airfoil shape optimization addresses the inverse problem by finding specific airfoil geometries to achieve desired fluid behavior~.
+Continuous advancements in high-performance computing and computational modeling have increased the feasibility of shape optimization using computational fluid dynamics (CFD) simulations, and numerous shape-optimization methods have been designed to improve aerodynamic performance~. Among these, gradient descent-based methods---including discrete and continuous adjoint methods~---are attractive for their low computational costs in large design spaces. Gradient-free methods excel in finding the global optimum and are well suited for complex optimization tasks involving nonlinear and nonconvex optimization functions~. Examples with applications to airfoil shape design include genetic algorithms (GA)~ and the particle swarm optimization algorithm~. 
+
+While more complex and often more expensive than passive techniques, active flow control offers significant advantages in achieving higher levels of flow manipulation and is applicable to a broader range of flows. 
+One classical technique is the addition of blowing/suction jets, which inject and/or remove air at the airfoil surface to energize the flow and delay separation.
+Types include continuous jet actuators (CJAs), synthetic jet actuators (SJAs), and coflow jets (CFJs).
+CJAs supply steady, unbroken air streams to/from the boundary layer; many applications may be found in the literature for the National Advisory Committee for Aeronautics (NACA) 0012 airfoil~ and NACA 0015 airfoil~. These primarily focus on drag reduction for angles of attack $=5^$ to $=18^$.
+SJAs are zero-mass-flux control devices that alternately inject and remove air through a small slot, with the jet pressure driven by the oscillatory motion of a diaphragm~. This
+virtually eliminates the need for plumbing and produces unique effects on base flows that are not possible with steady or pulsed jets~. Numerical experiments have explored the efficacy of SJAs for NACA 0012~, NACA 0015~ and SD 7003 airfoils~. 
+Unlike CJAs that are typically positioned at the leading or trailing edge, CFJs are implemented over the majority area of the suction (upper) surface of the airfoil~. This is achieved by translating a significant area of the suction surface downward, which substantially enhances lift and reduces drag. Applications on NACA 2415~, NACA 0025~, and NACA 0018 airfoils~ have shown significant aerodynamic improvements.
+In this study, we adopt a geometrically fixed CJA configuration informed by prior design studies~, which allows us to isolate and evaluate the effect of pressure-based control optimization.
+
+Beyond blowing and suction jets, other AFC techniques include plasma actuators and fluidic oscillators.
+Plasma actuators utilize ionized gas (plasma) to impart momentum to the surrounding air, thus modifying the boundary layer characteristics and controlling flow separation~. For instance, surface dielectric barrier discharge plasma actuators have been shown to mitigate dynamic stall over periodically pitching NACA 0015 airfoils. This is capable of reducing the degree of flow separation, increasing turbulent transition, and achieving earlier flow reattachment~.
+Fluidic oscillators are simple to design and can control separation more effectively than other AFC techniques~. They can improve lift, reduce drag~, and diminish downstream flow separation as validated by wind tunnel experiments~.
+
+Although AFC techniques are highly effective, most current approaches rely on iterative evaluation of aerodynamic performance using experimental or numerical testing. Identifying efficient AFC actuators remains a challenge due to two primary factors~.
+First, turbulent flows exhibit intricate, nonlinear dynamics and high dimensionality that pose significant challenges for prediction and control.
+Second, physical and numerical disturbances, and sensor and actuator noise, challenge the ability of control algorithms to measure and optimize flow conditions~.
+Evolutionary algorithms like GA are adept at solving complex problems and finding global optima~, but these algorithms are often limited by their increasing cost with increasing number of design variables, and they suffer from slow convergence when coupled to CFD simulations~.
+
+Recently, machine learning (ML) approaches to flow control have emerged as promising alternatives~. One approach involves constructing surrogate models for the flow dynamics. For example, Lee ~ used a neural network to approximate a mapping between wall shear stress and control jet, then approximated the optimal actuation to achieve 20\,\
+Another prominent ML approach for AFC is deep reinforcement learning (DRL), which is widely used for complex decision-making problems (originally associated with games) and is increasingly used in physical systems~. For instance, Wang ~ applied DRL to synthetic jet control over a NACA 0012 airfoil under weak turbulent conditions. 
+Sonoda ~ and Lee ~ reduced turbulent drag in channel flows by varying jet blowing/suction using velocity and shear-stress measurements. Portal-Porras ~ trained a DRL agent to control flap rotation on a NACA 0012 airfoil. Despite these advancements, DRL faces challenges related to sample inefficiency, difficulty in designing reward functions, and the lack of stability and convergence theories~.
+
+Another recent advancement in ML for fluid dynamics is the use of solver-embedded optimization---i.e., optimizing over the governing partial differential equations (PDEs)---to achieve model-consistent learning~. One version, the deep learning PDE model (DPM) approach~, embeds untrained neural networks in the governing PDEs and trains them using adjoint-based, PDE-constrained optimization. DPM has been successful for turbulence modeling in large-eddy simulation (LES)~ and Reynolds-averaged Navier--Stokes (RANS) simulations~ as well as subcontinuum modeling in hypersonic flows~.
+In the context of AFC, DPM has been shown to optimize more-effective controllers than DRL and supervised ML for two-dimensional (2D) laminar flows~. 
+DPM's optimization efficiency arises due to its use of adjoint fields to compute the end-to-end sensitivities needed for neural network optimization. The PDE constraint ensures that learned models work alongside the system's dynamics as modeled by the full-order PDEs. The global optimality convergence of DPM has been established for elliptic PDEs~, and current research focuses on its effectiveness for nonlinear parabolic and hyperbolic PDEs.
+This study presents the first application of adjoint-based active flow control to three-dimensional (3D) turbulent airfoil flow problems. Our approach optimizes a neural network flow controller, with the objective of maximizing the time-averaged lift-to-drag ratio for minimal additional energy, while solving the flow PDEs. 
+
+We first assess the active control framework by optimizing over DNS of two-dimensional (2D) airfoil flows. This provides a controlled, computationally efficient environment for validating the DPM framework. For the Reynolds numbers we consider, the key flow structures---including the laminar separation bubble, shear-layer instabilities, and vortex-shedding dynamics---remain predominantly two-dimensional; hence, these initial 2D simulations provide critical insight into our subsequent extension of the methodology to LES predictions of fully three-dimensional, turbulent flows.
+
+This paper is organized as follows. Section~ presents the numerical schemes and implementation of the jet controller. Section~ presents solver validation for 2D and 3D airfoil flows. Section~ introduces the DPM flow-control framework and the objective function used for optimization. 
+In Section~, we train DPM controllers for 2D airfoil flows at angles of attack $ = \5^, 10^, 15^\$ with multiple training windows in order to assess the influence of the time horizon used for controller optimization.
+Section~ assesses control performance for 3D airfoil flows including a comparison of 3D-trained controllers and 2D-trained controllers applied to 3D flows. Section~ summarizes the findings and offers avenues for future research.
+
+Numerical methods
+ 
+
+Governing equations
+
+We solve the compressible Navier--Stokes equations in dimensionless, conservative form. The nondimensionalization process is the same as that provided by Liu \& MacArt~ with units of length nondimensionalized by the airfoil chord length, such that the dimensionless $c=1$. All subsequent quantities presented here are dimensionless. Let $=[,, E]^$ be the vector of conserved quantities, where $$ is the mass density, $^d$ is the velocity vector of spatial dimension $d$, 
+and $E=e+^/2$ is the total energy, where $e = T/(^2)$ is the internal energy of the calorically
+perfect gas, $T$ is the temperature, $=1.4$ is the ratio of specific heats, and $=0.4$ is the scaling Mach number. The dimensionless ideal gas equation of state is $p = (-1) T/$, where $p$ is the pressure.
+
+The evolution of the conserved quantities is governed by
+
+ t = () = [ - _i() + _v() ],
+ 
+
+where $$ is the instantaneous PDE residual, and $_i$ and $_v$ are the inviscid and viscous flux vectors
+
+ _i() = [c 
+ ^ \\
+ ^ + ^2 \\
+ ^ ( E + ^2 )
+ ] 
+ _v() = [c 
+ 0 \\
+ \\
+ ^ - ^2 
+], 
+
+where $^d d$ is the identity matrix, $= ( +^ - 3( ))$ is the viscous stress tensor, $$ is the dynamic viscosity, $= T$ is the heat flux vector, and $=5 10^4$ and $=0.7$ are the scaling Reynolds and Prandtl numbers, respectively.
+
+Numerical discretization
+
+The governing equations are solved on generalized curvilinear meshes. The PDEs are semidiscretized in the computational plane using five-point, fourth-order central-difference schemes~ that reduce to first-order, one-sided schemes near domain boundaries. Sixth-order, implicit, low-pass spatial filters are applied every time step to remove spurious oscillations. 
+Time is advanced using the fourth-order Runge--Kutta method. No-slip boundary conditions are imposed on the airfoil wall, and far-field boundaries are imposed using absorbing layers~. The flow solver, , is Python-native, MPI-parallelized, and fully GPU-accelerated. Further details may be found in Liu \& MacArt~. \ is fully differentiable using algorithmic differentiation (AD), which enables efficient construction of the adjoint equations needed for AFC optimization. For LES, we employ the wall adapting local eddy viscosity (WALE) model~ with model constant $C_w=0.325$. 
+
+Jet boundary conditions
+ 
+
+The blowing/suction jet actuator is modeled using boundary conditions that regulate the total pressure $p_0J$ on the airfoil surface.
+The air density is obtained using $_0J = (-1) T_0J $, with a prescribed temperature $T_0J=1.083 T_$, where $T_$ is the freestream flow temperature. 
+Assuming isentropic expansion, the jet sets Dirichlet boundary conditions for velocity, density, and temperature by matching the pressure between the jet and the flow, $p_J = p$.
+
+When $p_0J p_J = p$,
+air is injected into the flow at matching static pressure. 
+We solve for the jet Mach number from the isentropic relation
+
+ _J = p )^ -1 ] -1 , 
+
+where $_J = ( _J, 1.0 )$ is bounded to ensure maximally sonic flow.
+Based on the pressure ratio $p_0J / p$, the density $_J$ and static temperature $T_J$ of the jet are obtained by 
+
+ _J &= _0J [ 1 + 2 _J^2 ] ^--1 = (-1) T_0J ( p ) ^ , \\
+ T_J &= T_0J ( 1+ 2_J^2 )^-1 
+ = T_0J ( p ) ^-. 
+
+These quantities are obtained in a pointwise manner along the airfoil span for 3D simulations.
+
+We assume that the boundary-normal jet velocity magnitude $U_J$ is maximum at the center of the jet, $U_J^=U_J(x_c)$, and vanishes at the jet boundary, $U_J(x_c 0.5L) = 0$, where $L$ is the jet width. $U_J(x)$ is assumed to have a parabolic, laminar profile 
+ 
+ U_J (x) = 4 U_J^ [ x - (x_c-0.5L) ] [ -x + (x_c+0.5L) ] / L^2.
+ 
+Substituting Eq.~ and the sonic velocity $c_s = / $ into the definition $U_J = c_s _J $, we obtain the jet velocity magnitude 
+
+ U_J
+ = ( p ) ^- . 
+
+The jet velocity vector is then $_J = U_J$, where $$ is the unit outward normal vector from the airfoil surface.
+Dirichlet conditions $_J$ are then applied on the jet wall $^J $,
+
+ _J = [c 
+ _J \\
+ _J _J \\
+ _J ( e_J+ 2^_J_J )
+ ],
+
+where $e_J = T_J/( ^2)$ is the dimensionless jet internal energy.
+Following a similar procedure, jet suction is specified when $p_0J < p$. Dirichlet conditions for suction are computed by replacing $p_0J/p$ by $p/p_0J$ in Eqs.~-- and reversing the sign of the normal vector.
+
+Validation of airfoil simulations
+ 
+
+We first construct a database of 2D NACA 0012 airfoil flows at $ = 5 10^4$ and $ = 0.4$ for $ = [5^, 10^, 15^]$. 
+This airfoil geometry is chosen due to its extensive use in DNS calculations in the existing literature~, especially from ~ which was conducted on C-type grids. Our calculations mirror those outlined in~, which were conducted on two O-type grids with maximum radius $R=20$ and nonuniform, elliptic mesh generation to resolve the airfoil boundary layer.
+
+Two-dimensional calculations are performed on two grids. The first grid, G1, has $N_=1920$ nonuniform mesh lines along the wall-tangential direction and $N_=540$ nonuniform mesh lines in the wall-normal direction. The second grid, G2, is obtained by downsampling by factors of $2$ in both directions. These mesh sizes, as well as domain extents and maximum resolutions along the airfoil surface, are listed in Table~. Snapshots of the instantaneous 2D velocity magnitude on G1 at three angles of attack are shown in . 
+
+Three-dimensional calculations are likewise performed on two grids. DNS calculations use the G1 mesh with $N_z=180$ points in the spanwise direction. For consistency with existing DNS data~, all 3D calculations use spanwise domain extent $L_z=0.2$. LES calculations are performed on a lower-resolution grid, G3, formed by downsampling G1 by factors of 8, 4, and 9 in the tangential, wall-normal, and spanwise directions, respectively, leading to $N_=240$, $N_=130$, and $N_z=20$. The maximum spacings of these meshes along the airfoil surface are listed in Table~.
+
+ compares the time-averaged pressure and friction coefficients of the present 2D calculations,
+
+ C_p&=2_ U_^2 & & &
+ C_f&=2_ U_^2,
+
+ to those of Jones ~, where $p_$, $_$, and $U_$ are the freestream static pressure, static density, and velocity of the flow, and $_w$ is the wall shear stress.
+The G1 coefficients are well aligned with Jones ~ for $=5^$, and G2 shows acceptable agreement. Table~ lists separation points $x_$, reattachment points $x_$, lift and drag coefficients
+
+ C_l&=2_ U_^2 A_p & & &
+ C_d&=2_ U_^2 A_p,
+
+where $F_L$ and $F_D$ are lift and drag forces, and $A_p= c L_z$ is the planform area of the airfoil, 
+as well as the time-averaged lift-to-drag ratio $C_l/C_d$ for the three simulations.
+Most of these values fall within $ 5\,\
+
+The G3 LES is validated by comparing its time-averaged $C_p$ and $C_f$ to those of the G1 DNS and the DNS of Jones ~ in . 
+Due to its coarse resolution, the G3 LES underpredicts the separation and reattachment points; however, it nonetheless reproduces the lift and drag coefficients, as well as the dominant vortical structures, with acceptable accuracy, within 10\,\
+Considering the computational cost required by flow controller optimization, we judge the G3 LES to be satisfactory for the purpose of demonstrating the capability of the DPM-based active control strategy. Of course, one could optimize over the G1 DNS at concomitantly higher computational cost.
+Additional details of the G1 DNS are available in Hickling ~, which demonstrates excellent agreement of the present \ results with the reference data.
+
+Mean aerodynamic performance coefficients of uncontrolled baseline flows at $ = 5^, 10^, 15^$ are listed in Table~ as references for control performance analysis.
+In the 2D flows, the boundary layer on the upper surface gradually separates from the surface, leading to increased lift and drag, and a decrease of flow pressure in the upper surface. In contrast, for 3D flows, the spanwise component of the flow generates vorticity and spanwise pressure gradients, which impact the pressure distribution and boundary layer behavior. This increases the flow's susceptibility to separation and stall. Consequently, both lift and drag increase at relatively low angles of attack (e.g., $ = 5^$ and $10^$) before reaching stall conditions. However, the flow separation of a higher $$ becomes excessive, resulting in a sudden decrease in lift and a sharp increase in drag, signaling stall. For $=15^$, the 3D flow is in a post-stall state in which the flow may partially reattach, resulting in a decrease in lift, increase in drag, and an increase in pressure.
+
+All of the above-averaged data are computed over a simulation interval of 20 chord flow times with 100 and 125 data snapshots per chord flow time for 2D and 3D airfoils, respectively.
+
+Adjoint-based control framework
+ 
+
+We aim to solve the optimization problem
+
+ (; ) R(, , t; ) = 0,
+
+where $(,)=_ J(,t;)dt$ is a time-integrated objective function, $$ is the optimization window duration, $R(, , t; )$ is the instantaneous residual of the governing PDEs,
+$ = / t$, and $^N_$ are
+.
+
+The gradient $_ $ is needed to minimize Eq.~ using stochastic gradient descent; in the DPM approach these gradients are computed using adjoint variables $ (t)$,
+ 
+ _ = 
+ _ ( ^ + ) dt,
+ 
+in which $ (t)$ satisfies the linear ordinary differential equation
+ 
+ ^dt 
+ = ^ 
+ + .
+ 
+This adjoint equation is solved backward in time from $t=$ to $t=0$ with initial condition $ ()=0$, after which the neural network weights may be optimized using the gradients calculated using Eq.~. This process is then performed over the next optimization window, $t [, 2]$, and is repeated for subsequent time windows until $ J$ converges.
+
+In general, the Jacobian $ R/ $ in Eq.~ is cumbersome to derive analytically and must be rederived upon changes to the governing PDEs and/or physical models (e.g., equations of state). \ addresses these potential sources of error using automatic differentiation over $R(, , t; )$ via the PyTorch library~. This leverages computational graph representations to compute the discrete-exact chain-rule derivatives of function outputs with respect to inputs.
+
+Furthermore, the adjoint method is particularly useful in that it enables optimization over arbitrary time horizons $$ without requiring the construction of the computational graph over the entire $$. Since the time horizon to observe meaningful flow changes (as is needed to optimize flow controllers) could span many hundreds or thousands of simulation time steps, constructing the computational graph over the entire $$ could require prohibitively large amounts of computer memory. Instead, the adjoint-based optimization approach only requires the construction of the computational graph over single time steps to advance Eq.~. The memory requirement of adjoint-based optimization therefore does not depend on the choice of $$. Further discussion of the computational efficiency of the method may be found in Liu \& MacArt~. We assess the influence of $$ for 2D airfoil flow controller training in Section~.
+; the novel contribution of this work is its application to turbulent 3D flows.
+
+Airfoil flow control framework
+ 
+
+The control objective is to minimize the time-averaged drag-to-lift ratio (equivalently, to maximize the lift-to-drag ratio) by applying boundary-layer injection/suction at the upper airfoil surface. 
+We construct a continuous objective (loss) function
+
+ (;) = _ J(; ) dt = _ _1 (C_d/C_l)^2 + _2^2(/a) dt, 
+
+in which $J$ is the instantaneous loss, $=100 t = 0.002$ is the optimization time horizon with $ t=210^-5$ the simulation time step size, and the hyperparameters are $_1=2.010^8$, $_2=200$, and $a=0.17$. These are chosen to give $J t = O(1)$. The last term in Eq.~ is a penalty to minimize large control energy expenditures by confining the jet Mach number with a hyperbolic sine function $(x)$.
+
+We implement the control by manipulating the total pressure $p_0J$ of an assumed gas reservoir. Depending on the magnitude of the controlled pressure and the boundary-layer static pressure, air is injected into the domain for $p_0J p$ or removed from the domain for $p_0J < p$. 
+The isentropic jet model is provided in Sec.~.
+The controlled jet total pressure pressure is obtained as the sum of the time-averaged uncontrolled dynamic pressure $p_$ (reported in Table~) and a neural network pressure modification $F_(p_s,)$ with a single, scalar input $p_s$:
+
+ p_0J = p_ + F_(p_s,). 
+
+The feed-forward neural network, shown in , comprises a four-layer, fully connected, dense network with $H=200$ hidden units per layer. Activation functions are specified as rectified linear units (ReLU) for hidden layers and hyperbolic-tangent ($$) functions with a factor $C_=0.5$ for the output layer.
+For 2D airfoils, $p_$ decreases gradually due to gradual flow separation from $5^$ to $15^$.
+For 3D airfoils, $p_$ increases for post-stall conditions ($ 15^$) at which the flow may partially reattach.
+
+The input to the neural network is the sensed static flow pressure $p_s$ at $x_s=0.0975$ on the suction (upper) surface. 
+The control jet ($p_0J$) has width $ L = 0.02$ and is located at $x_c=0.1$, which is close to the natural separation point for 3D flows. These geometry parameters are selected following studies of jet location and size~ to achieve effective control performance. For 2D flows, the jet is a slot along the semi-infinite upper surface. For 3D flows, the jet expands to fill the spanwise direction (``line controller''). 
+Details of these are given in Section~.
+
+ with a learning rate $_k$ at the $k^$ step:
+
+ _k+1 = _k - _k ,
+
+in which $E_k = E_k-1 + (1-) (_ )^2$ is the exponentially weighted average of the squared gradients with the initial $E_0=0$, $=0.99$ is the exponential decay rate, and $=1 10^-8$ is added to the denominator to improve numerical stability.
+The learning rate is initialized at $_0=510^-5$ and decays by $_$ every $s$ iterations utilizing the scheduler $_k = _0 _^ k/s$.
+
+Training is parallelized using message passing interface (MPI) domain decomposition in the wall-normal direction. The 2D cases (G2) require approximately 13 wall-clock hours per chord-flow time on 16 MPI ranks (AMD EPYC 7532), and the 3D cases (G3) require approximately 14 wall-clock hours per chord-flow time on 32 MPI ranks.
+
+Power coefficient and corrected aerodynamic efficiency
+ 
+In the AFC system, energy consumption is considered through a dimensional jet power consumption coefficient $_J$, which has the dimensionless form $P_J$ by normalizing with the freestream flow power
+
+ P_J = _J2_ u_^3 A_p.
+
+The dimensionless jet power consumption coefficient $P_J$ is obtained through the mass flow rate of the jet $_J$ and the specific enthalpy change $ H$
+
+ P_J= _J H = _J |_J| A_J H,
+ 
+
+where $A_J = L z_J $ is the jet area with $z_J=1.0$ for 2D airfoils,
+and $z_J=L_z=0.2$ for 3D line controllers.
+For a calorically perfect gas,
+
+ H = h + (2 |_J|^2 ) = c_p T + (2 |_J|^2 ),
+
+where $ h$ is the internal energy change and $c_p$ is the heat capacity.
+Typically, electric fans supply this power with an efficiency $_p = 40\,\
+
+ P_c = P_J/_p .
+
+For a conventional airfoil, the wing aerodynamic efficiency is defined as $C_l/C_d$. However, the efficiency is modified for AFC to consider the energy consumption. Following Barrios ~, the corrected aerodynamic efficiency is
+
+ ( C_d )_c = (C_d)_c = C_d + P_c,
+
+where $(C_d)_c$ is the equivalent drag coefficient that includes the drag of the aircraft system and the power required by the control jet.
+
+Control performance for 2D airfoils
+ 
+
+We now develop DPM-based flow controllers to improve the lift-to-drag performance of 2D airfoils at $=5^$, $10^$, and $15^$. 
+These 2D cases are physically meaningful at the Reynolds numbers considered, for which the laminar separation dynamics remain predominantly two-dimensional even for fully three-dimensional flows. The 2D setting enables high-fidelity DNS-based training and provides a well-controlled environment for exploring the behavior of the DPM approach before extending to 3D turbulent flows in Section~.
+We first investigate the control effectiveness of the learned controllers in Section~ by comparing lift, drag, and lift-to-drag coefficients with the uncontrolled baseline flows for in-sample $$ but for out-of-sample test time windows.
+We then assess the influence of optimization window size in Section~ for $=5^$. We find that optimizing over short training intervals (25 to 200 time steps) is able to train effective adaptive controllers, but going to longer time windows results in slower-converging controller parameters and progressively less effective controllers.
+
+Control effectiveness
+ 
+
+The DPM controller is trained for one chord-flow time ($t_=1$) with simulation time step size $ t = 2 10^-5$, optimization window size $ = 100 t$, and $N_=500$ total optimization iterations. 
+After training separate controllers for the three values of $_$, we perform a posteriori tests for in-sample angles of attack ($_=_$).
+=16$), that is, they have much longer duration than any individual optimization window.
+In general, the learned controller creates a suction jet which increases lift, decreases drag, and causes significant qualitative flow changes.
+
+ 
+
+ illustrates the qualitative changes to the averaged velocity magnitude along with streamlines in uncontrolled and in-sample controlled flows. The streamlines of the controlled flows illustrate smaller and delayed separation bubbles compared to the baseline cases. 
+For $=5^$, the controlled separation bubble moves aft to $0.5<x<0.8$. For $=10^$, the leading-edge separation bubble is diminished and is pushed to an aftward, elongated shape. For $=15^$, the large laminar separation bubble breaks into several smaller bubbles.
+In this latter case, the suction jet reduces the normal momentum and weakens the trailing-edge vortex strength, which accelerates the leading-edge flow and causes it to remain better attached to the upper surface. Similar results can be found in suction control of an airfoil at $=16^$~, $=18^$~, and in wind turbine blades at low angles of attack~.
+
+As shown in , the controlled $C_p$ exhibits a spike around the jet, which mitigates the peak negative pressure zone on the upper front edge and amplifies the pressure difference between the upper and lower surfaces. This leads to an increase in lift. Notably, the peak negative pressure is reduced from -1.5 to -2.2 at $=5^$, -2.5 to -5.5 at $=10^$, and -2.6 to -4.0 at $=15^$, respectively. The $=10^$ flow exhibits the largest change, corresponding to the most significant aerodynamic performance improvement.
+The $C_p$ distribution undergoes considerable changes near the leading-edge area, with an adjustable downstream flow. A higher spike in the jet area results in lower downstream pressure compared to the uncontrolled flows, which is particularly evident for $=5^$ and $=10^$. However, the influence of the enlarged negative pressure zone at $=15^$ is relatively localized, with minimal changes in downstream flow. We hypothesize that a higher suction power would be more effective at this high angle of attack~. 
+These findings align well with the results of Huang ~, who demonstrated that a suction jet placed near the leading edge at $x_c=0.1c$ is most effective in manipulating the boundary layer to increase lift.
+
+ 
+
+ shows the time history of the instantaneous uncontrolled and adaptively controlled (DPM) lift and drag coefficients and the instantaneous lift-to-drag ratio. The time-averaged values, $$, $$, and $$, are tabulated in Table~. The effectiveness of the DPM online controller is demonstrated by its significant lift increase and drag reduction for all angles of attack. Notably, the DPM-trained controllers significantly reduce instantaneous drag and improve instantaneous lift within a span of $0.5$ time units. After an initial transition period ($t 5$), the controlled wake stabilizes, which for $ = 5^$ and $10^$ is periodic. While the controlled velocity fluctuations decrease for $ = 15^$ compared to the uncontrolled flow, the controlled flow remains chaotic.
+
+In comparison to the uncontrolled baseline, the controlled flow exhibits lift-coefficient increases of approximately 40\,\
+
+Assessment of constant-pressure controllers
+
+For the present 2D cases, the minimal time variation of the adaptive controller suggests the use of a constant-pressure controller. We consider two types of constant controllers. 
+[label=(*)]
+ ``Constant-Avg'': this controller, denoted subsequently simply as ``Constant,'' is obtained by time-averaging the adaptive, neural network-controlled total pressure over $5 < t 16$: $p_0J^ = p_0J(p_s, p_;) _t=5 16$.
+ 
+ ``Constant-Opt'': this controller is a DPM-optimized, constant-parameter controller, trained for one chord-flow time ($t_ = 1$) at $ = 5^$ with the same objective function, optimizer, and learning rate as the adaptive neural network model described in Section~. 
+
+The performance of the two simplified controllers, which do not rely on the sensed pressure, is included in Table~. The performance of the Constant-Avg controllers is comparable to that of the controllers for these 2D flows, which suggests that the flow at the leading edge remains relatively stable. The Constant-Opt controller has similar influence on drag and lift to the Constant-Avg and adaptive controllers; however, the energy consumption of this optimized single-parameter controller is relatively high, resulting in a $19\,\
+
+Influence of optimization window size
+ 
+
+The choice of the DPM training window $$ can significantly affect training convergence and control performance. We assess its influence by training DPM controllers for the $=5^$ flow over $ / t [ 25, 6400]$ time steps ($ [ 510^-4, 1.2810^-1]$ chord flow times).
+
+ displays the time-averaged lift-to-drag percentage increment $_$ versus $$ in a posteriori tests; two randomly initialized neural network models were optimized and averaged to obtain the mean values. Each line represents the same training duration $t_= N_$, where larger $$ corresponds to fewer optimization iterations $N_$. Thus, the active-control models converge faster for the smaller values $/ t [50, 200]$ ($ [ 110^-3, 410^-3 ]$), resulting in the best control performance. In these cases, stopping training early can yield excellent results with reasonable computational cost. 
+However, when $/ t=25$ ( $ = 5 10^-4$), the optimization window is too short to fully observe the system’s dynamics. 
+
+Although control performance improves with more iterations for intermediate windows $ 200 < / t 1600$ ($410^-3 < 3.210^-2 $), achieving convergence is challenging for these windows, 
+as the adjoint method struggles to provide accurate gradients for long-time-averaged objective functions in chaotic systems~.
+This is becomes more apparent for cases the longest windows $/ t=3200$ and $/ t=640$ ($=2.56 10^-1$ and $1.28 10^-1$), for which the learned controllers are the least effective. 
+When retraining a $/ t=200$-optimized controller for $/ t=6400$, the controller efficacy decreases by 2\,\
+These findings are consistent with those of Liu \& MacArt~, who found small optimization windows to be effective for nonlinear dynamics and the attendant adjoint calculations.
+
+Control performance for 3D airfoils
+ 
+
+We now evaluate the performance of sensor-based controllers across a range of angles of attack in 3D turbulent flows. We introduce a line controller with spanwise-local actuation and compare the performance of controllers trained on 2D flows (Section~) with that of adaptive and constant-pressure controllers trained directly on 3D flows. The 3D-trained adaptive controller is the only controller tested that consistently improve on $$ and $$ (compared to the uncontrolled flow) across the full range of angles of attack tested. In particular, for the fully separated flow at $ = 15^$, it provides 50\,\
+
+Line controller configuration
+ 
+
+The line controller imposes spanwise-local jet control along the spanwise direction $-0.1c z_j 0.1c$ at streamwise location $x_j=0.1c$. This design mimics the distributed suction and blowing techniques commonly used in aerodynamic flow control. Neural network inputs for the DPM controller are spanwise-local pressures at $x_c = 0.0975$, i.e., upstream of the control jet, with the DPM controller learning an optimum control distribution along the spanwise direction.
+
+Actuator settings used in a posteriori 3D airfoil tests are listed in Table~. The controller type (``LC'') suffixed by a ``2'' indicates a controller trained for 2D flows, while a suffix ``3'' indicates a controller trained for 3D flows. Tests of 2D-trained controllers are out-of-sample for flow dimensionality. The 2D- and 3D-trained models are each evaluated pointwise along the spanwise direction, with full spanwise variation in their controlled jet total pressures permitted.
+
+The time-averaged, constant controller $p_0J^ = p_0J(p_s, p_;) _$ is constructed by averaging the online, DPM-controlled total pressure $p_0J$ over $t=10 30$, skipping the initial transition stage $t<10$. These simplified, constant actuators do not rely on any neural network inputs and are denoted by an additional suffix ``c.''
+All of the controllers are tested for 3D flows for test duration $t_=30$.
+
+Extended performance of 2D-trained controllers
+ 
+In general, a controller trained for a 2D flow should not be expected to perform well for a 3D flow. However, given the efficacy of DPM-trained controllers for 2D flows (Section~), it is natural to investigate their potential for 3D flow control, particularly given their relatively low training cost and the largely two-dimensional nature of the flow in the vicinity of the controller, particularly for pre-stall angles of attack. We therefore investigate the effectiveness of 2D-trained controllers for 3D flow control, where both the flow regime (3D) and test time ($t_=30$) are out-of-sample.
+
+ shows the instantaneous Q-criterion for 3D uncontrolled and controlled flows for $=5^$, $10^$, and $15^$, where the controlled flows use LC2 controllers.
+At $=5^$, the controller creates a pronounced, line-shaped suction slot that significantly delays the transition to turbulence, with similar overall effectiveness to the controlled 2D flows (Section~ and~).
+At $=10^$, the controller substantially depresses separation, with the controlled flow accelerating at the leading edge and remaining attached downstream. 
+At $15^$, the controller is less effective, with its influence limited to a slight reduction in leading-edge vortex breakdown.
+ 
+
+Flow separation can be inferred from the Reynolds-averaged velocity magnitude and streamlines shown in and the $C_f$ distributions shown in . A sudden drop of $C_f$ or the beginning of a flat region identifies the separation point. For example, the separation point of uncontrolled $=5^$ flow is at $x_=0.16$, with nearly constant $C_f=0$ for $0.16<x<0.71$ indicating flow separation. In the uncontrolled flows in , an elbow-shaped negative region of $C_f$ indicates the transition to turbulence.
+
+For the $=5^$ flow, the line controller delays the separation visible in the uncontrolled flow (), particularly near the trailing edge. Since the 3D $=5^$ leading-edge flow closely resembles that of the 2D flow, with no spanwise vortex present, the line controller's inputs are similar to its 2D counterpart flow, which results in effective control.
+
+For the $=10^$ flow, the controller significantly depresses separation, yielding a much thinner separation bubble.
+However, as for the $=15^$ cases, the LC2 controllers have a negligible impact on the 3D stalled flow except for minor perturbations on $C_f$ and $C_p$ near the jet. This is understandable, as the 3D post-stall flow is fully separated and turbulent, which leads to rapid dissipation of control energy. Consequently, the control efforts learned for 2D flows are ineffective for the stalled flow, which highlights the challenge applying 2D-trained models to control fully separated turbulent flows.
+
+As shown in the $C_p$ plots (Figure~), all controllers generate a pressure spike near the jet and partially or fully mitigate the adverse pressure region on the upper surface of the airfoil. The influence of line controllers is primarily global and pronounced, resulting in significant changes to both the minimum $C_p$ and the pressure differential between the upper and lower surfaces. These changes substantially affect drag and lift performance (discussed subsequently in Section~). Notably, the $ = 5^$ flow remains largely two-dimensional at the leading edge, leading to $C_p$ distributions from the line controllers that closely resemble those in 2D flows. Similarly, the 3D $ = 10^$ flow exhibits $C_p$ patterns comparable to the 2D flow, except farther downstream.
+
+Control performance of 3D-trained controllers
+ 
+
+We now train DPM flow controllers to minimize the objective function () over two chord-flow-time intervals ($t_ = $) with simulation time step $ t = 4 10^-5$, DPM optimization interval $ = 100 t$, and $N_ = 500$ optimization iterations. We then test the trained controllers over 30 chord-flow times ($t_ = 30$) at three different angles of attack, . The optimization window timescale is 1.4 times the sonic timescale, based on the distance from the controller to the sensor, thus control-jet pressure waves are able to to propagate to the sensor within one optimization window.
+
+For all angles of attack, line controllers significantly alter $C_p$, as shown in , especially for pre-stall flows. Notably, the peak negative pressure coefficient is reduced from -1.8 to -3.0 at $=5^$ and from -2.5 to -3.2 at $=10^$. For flows at $=5^$, which are primarily two-dimensional in the vicinity of the controller, the negative pressure zone is globally affected in similarity to the controlled 2D flows (Section~). 
+In contrast, for flows at $=10^$, the negative pressure zone around the leading edge expands, eventually recovering to the uncontrolled flow state downstream of the jet.
+The post-stall case at $=15^$ presents more complexity due to strong nonlinear effects and large-scale flow separation, both of which limit the effectiveness of control in reducing drag.
+
+Flow separation is illustrated by the Reynolds-averaged $C_f$ distributions in . For flows at $=5^$, the controller effectively delays separation, with the separation point shifting downstream to approximately $x = 0.5$, and promotes attached flow toward the trailing edge. At $ = 10^$, the controller suppresses the separation bubble and improves flow attachment compared to the baseline case. At $=15^$, the controller exhibits minimal influence on the flow separations due to the limited control authority over the highly separated flow.
+
+To further investigate the effect of the learned controller, displays instantaneous vorticity magnitude ($ = ||$) in cross-stream ($y$--$z$) slices at six streamwise positions $x\0.10,0.14,0.18,0.23,0.28,0.33\$ for the challenging, partially separated $=10^$ uncontrolled and controlled flows.
+In the uncontrolled case, flow separation occurs before $x=0.18$ and is followed by downstream reattachment. At this angle of attack, strong mixing and enhanced vorticity magnitude are observed between the freestream layer and the boundary layers after the separation point.
+
+In contrast, the line controller generates a significant amount of vorticity and substantially alters the freestream flow near the jet. This vortex is attributed to the adaptive suction that maintains attached flow along much of the airfoil's upper surface. The boundary layer thickness increases compared to the baseline, which demonstrates the actuator's effectiveness. Downstream, the vorticity evolves and diffuses gradually.
+
+Lift and drag for 2D- and 3D-trained controllers
+ 
+
+We now analyze the lift and drag characteristics of the adaptive and constant-pressure controllers across the range of angles of attack assessed previously, from attached flow ($=5^$) to partially separated ($=10^$) and fully separated ($=15^$) flow. As we show, the adaptive controller trained for 3D airfoil flows (LC3) is the only controller that consistently improves the $$ and $$ targets, while its constant-pressure counterpart (LC3c) and the 2D-trained controllers exhibit inferior performance and/or undesirable controlled-flow characteristics.
+
+ presents the instantaneous $C_l$, $C_d$, and $C_l/C_d$ for uncontrolled (UC) flows and controlled flows using 2D- and 3D-trained adaptive controllers (LC2 and LC3) and their time-averaged, constant-control counterparts (LC2c and LC3c). As could be expected by their marked effect on the pressure and friction coefficients shown previously, all controllers quickly modify both lift and drag at the onset of control. Figure~ summarizes the time-averaged lift-to-drag ratio ($C_l/C_d$) and the energy-corrected lift-to-drag ratio $(C_l/C_d)_c$, as well as the percent change in each (relative to the uncontrolled flow) for the present 3D turbulent flows.
+
+At $ = 5^$, LC3 achieves a 30\,\
+
+Since the $=5^$ flow is entirely laminar in the vicinity of the slot-jet controller, the 2D-trained LC2 and LC2c controllers are also effective at improving $$, giving 65.6\,\
+
+At $ = 10^$, the flow structure's marginal stability causes the uncontrolled flow to oscillate between partial and full separation---we note that even DNS calculations disagree on whether the time-averaged flow structure is fully separated~ or reattaching~ around this angle of attack. 
+The LC3 controller, trained for these 3D flow dynamics, is able to fully stabilize this process and achieve 147\,\
+
+At $=10^$, the 2D-trained LC2 controller (and its constant-control counterpart LC2c) actuate the flow dramatically, increasing $$ by a factor of six over the baseline flow, with a concomitant increase of $$ by a factor of four. The spread between $$ and $$ for the 2D-based controllers is much greater than that of the 3D-based controllers for this angle of attack, which indicates dimishing returns (i.e., increasing energy penalty) due to overactuation. Additionally, unlike the LC3-controlled flow, the LC2-controlled flow exhibits strong lift and drag oscillations (see Figure~) that would likely be disadvantageous in flight. LC2 was not trained for the 3D boundary-layer separation and reattachment dynamics that the $=10^$ case exhibits and therefore cannot suppress these large transients as LC3 can.
+
+Despite the flow being fully separated at $=15^$, LC3 achieves a significant 29\,\
+
+Across the range of angles of attack tested, LC3 is the only controller that consistently improves both $$ and the energy-penalized $$. This is consistent with the training of LC3 to minimize the energy-penalized objective function over the present 3D turbulent flow dynamics. LC3's constant-pressure counterpart (LC3c) does not adaptively force the flow and so underperforms LC3 in all cases.
+The 2D-trained controllers (LC2 and LC2c) are not optimized over the fully 3D turbulent flow and so either overactuate the flow ($=5^$), incurring excessive energy penalties, lead to the formation of large-amplitude, transient disturbances ($=10^$), or underactuate the fully separated turbulent flow ($=15^$). These overall trends underscore the advantages of the adaptive, 3D-trained LC3 controller.
+We next analyze the control maps of the learned adaptive controllers to further understand the reasons for LC3's overall leading performance.
+
+Further analysis of adaptive and constant-pressure actuators
+
+To further analyze the reasons for the various controllers' relative performance, Figure~ plots control maps of the commanded jet total pressure ($p_0J$) versus the sensed airfoil surface pressure ($p_s$), evaluated in situ during a posteriori simulations of controlled turbulent airfoil flows, and example $p_s$ and $p_0J$ time traces for $t_[10,15]$. In these plots, lower $p_0J$ corresponds to stronger actuation (stronger suction) and higher control power $P_J$ .
+
+At $ = 5^$ and $10^$,
+LC2 commands stronger suction than LC3, which leads to the former's overall stronger actuation and larger $C_l/C_d$ changes---and concomitantly larger energy penalties (larger gap between $$ and $$)---as shown in Figure~. In contrast, for the post-stall $=15^$ case, LC3 learns stronger suction than LC2, which is necessary for this fully separated flow and leads to LC3's overall more consistent control performance. 
+
+The attached, laminar boundary layer of the $=5^$ flow is apparent in Figure~, in which both $p_s$ and $p_0J$ are virtually constant in time.
+At $=10^$, rapid fluctuations in the sensed pressure cause LC3 to command micro-adjustments about the mean $p_0J$, which results in its greater improvement of $$ and $$ than LC3c, while LC2 (not trained for the 3D flow dynamics) does not exhibit the same fine-scale adjustments as its larger applied suction suppresses $p_s$ fluctuations. 
+LC3 also exhibits these micro-adjustments at $=15^$, for which it more effectively reduces the upper-surface pressure than the other controllers and hence best improves $$. Importantly, even at this post-stall angle of attack, LC3's dynamical actuation of the turbulent boundary layer improves the target $$ and $$ metrics more effectively than its constant-pressure counterpart (LC3c), which further highlights the advantage of adaptive control over constant-pressure control.
+
+Conclusion
+ 
+
+We develop deep learning active flow controllers for NACA 0012 airfoil flows using a blowing/suction slot jet along the airfoil's upper surface. The control actuation is optimized to increase the lift-to-drag ratio with a penalty on excessive control power. The optimization is performed simultaneously with the solution of the controlled PDEs using adjoints of the flow variables to provide the necessary end-to-end sensitivities. This in situ optimization enables accurate, dynamical response of the deep learning controllers to pressure transients, which leads to greater control effectiveness than the corresponding constant-total pressure jets. Previous work has compared the performance of adjoint-trained deep learning flow controllers to deep reinforcement learning-based controllers for laminar flows; this work extends the adjoint-based approach to control of unsteady and turbulent airfoil flows.
+
+For 2D flows, the adjoint-based controllers successfully modify the vortex shedding to delay flow separation at pre-stall angles of attack, leading to 95\,\
+
+In general, a controller trained for a 2D flow can not be expected to perform well for a 3D flow. When applying 2D-trained active controllers to out-of-sample 3D flows, the spanwise locally actuated line controller creates a pronounced suction slot that significantly delays the transition to turbulence, increasing $$ for all angles of attack, though for pre-stall 3D flows, these controllers' overactuation leads to significant actuation-power penalties, and for the post-stall $=15^$ flow, their underactuation leads to lower effectiveness than the 3D-trained controllers.
+
+When trained directly for 3D turbulent flows, the deep learning adaptive flow controllers further enhance aerodynamic performance by suppressing flow separation, increasing $C_l/C_d$, and improving the power-weighted $()_c$.
+Significantly, the 3D-trained adaptive controller (LC3) is the only controller that consistently improves these performance metrics across all angles of attack tested, with constant-control-pressure analogs (LC3c) having reduced control effectiveness and efficiency at all angles of attack.
+These trends underscore the advantages of the adaptive, DPM-based control strategy in identifying and implementing effective and efficient control of turbulent airfoil flows.
+
+The success of the learned active controllers highlights the importance of adaptive control policies compared to fixed control outputs. By optimally mapping local pressure measurements to real-time actuation, the DPM-based control framework enables sensor-based policies to respond to changing flow conditions across different flow regimes. While constant-pressure control may be effective in narrowly defined cases, the DPM-based control strategy offer a robust, efficient, and transferable solution for high-dimensional, dynamically evolving flow environments.
+
+The effectiveness of adjoint-based deep learning for unsteady and turbulent airfoil flows is promising and offers valuable insights into control methodologies for increasingly complex flows. It shows significant potential for advancing dynamic separation and stall control, especially for gusting conditions and pitching airfoils.
+In compressible regimes, the adjoint-based control approach is expected to address challenges related to shock-wave interactions and high-speed flow instabilities, potentially enabling more precise control of shock-boundary layer interactions at high Mach numbers.
+For highly nonlinear flows, such as reacting flows, adjoint-based deep learning could provide an efficient means to accurately model and control complex chemical reactions and turbulence--chemistry interactions, paving the way for improved control and optimization in demanding combustion systems.
+
+Acknowledgments
+
+The authors are grateful to Justin Sirignano for many helpful comments and suggestions. This material is based in part upon work supported by the U.S.\ National Science Foundation under Award CBET-22-15472. 
+This work is supported by the U.K.\ Engineering and Physical Sciences Research Council grant EP/X031640/1.
+This research used resources supported by the University of Notre Dame Center for Research Computing and resources of the Oak Ridge Leadership Computing Facility, which is a DOE Office of Science User Facility supported under Contract DE-AC05-00OR22725.

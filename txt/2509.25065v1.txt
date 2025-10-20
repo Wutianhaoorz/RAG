@@ -1,0 +1,1148 @@
+[english]babel
+
+[a4paper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]geometry
+
+url
+
+[utf8]inputenc
+
+ 
+
+HTML003049
+HTMLd62828
+HTMLf77f00
+HTML6ca13b
+
+HTML1f77b4
+HTMLff7f0e
+HTML2ca02c
+
+HTML6ca13b
+HTML6ca13b
+HTML6ca13b
+
+[normalem]ulem
+
+ 
+ 1em 
+
+[english]babel
+[style=authoryear,backend=biber,natbib=true,maxcitenames=2,uniquelist=false,dashed=false]biblatex
+ 
+
+family-given
+family-given
+
+[article]title
+[book]title
+[bookinbook]title
+[inbook]title
+[incollection]title
+[inproceedings]title
+[manual]title
+[misc]title
+[thesis]title
+[unpublished]title
+[patent]title
+[report]title
+[online]title
+[software]title
+[booklet]title
+[periodical]title
+[standard]title
+
+[article]journaltitle
+~#1
+~#1
+
+ volume = Vol.,
+ number = No.
+
+*volume+number+eid
+ 
+ *
+ 
+ 
+ 
+
+*journal+issuetitle
+ 
+ *
+ 
+ 
+ 
+
+*publisher+location+date
+ 
+ 
+ *
+ *
+ 
+ *
+ 
+
+*
+
+[]
+ 
+ 
+ 
+ 
+ 
+
+*cite:labelyear+extrayear
+ 
+ 
+ [bibhyperref]
+ 
+ 
+
+*cite:labeldate+extradate
+ 
+ 
+ [bibhyperref]
+ 
+ 
+
+ 
+ 
+ 
+ 
+
+ andothers = et al.,
+
+[article]volume #1
+[article]number #1
+[article]volumeVol. #1
+[article]numberNo. #1
+
+ 
+ 
+ 
+
+#2Figure~#1#3
+#2Figure~#1#3
+#2Table~#1#3
+#2Table~#1#3
+#2Section~#1#3
+#2Section~#1#3
+
+[1]Álvaro Martínez-Sánchez
+[1,2]Adrián Lozano-Durán
+
+[1]Massachusetts Institute of Technology, Department of Aeronautics and Astronautics, Cambridge, USA
+alvaroms@mit.edu (corr. author)
+[2]California Institute of Technology, Graduate Aerospace Laboratories, Pasadena, USA
+
+ Purpose – Traditional modeling techniques for forecasting
+ turbulence often rely on correlation-based criteria, which may
+ select variables that correlate with the target without truly
+ driving its dynamics. This limits model interpretability,
+ generalization, and efficiency. The purpose of this study is to
+ overcome these limitations by introducing an observational
+ causality-based approach to input selection that identifies the
+ variables responsible for the future evolution of a target quantity
+ while disregarding non-causal factors.
+
+ Design/Methodology/Approach – Our approach is grounded in
+ the Synergistic--Unique--Redundant Decomposition (SURD) of
+ causality, which dissects the information that candidate inputs
+ provide about a target variable into unique, redundant, and
+ synergistic causal components. These components are directly linked
+ to the theoretical limits of predictive performance, quantified
+ through the information-theoretic notion of irreducible error. To
+ estimate these causal contributions in practice, we leverage neural
+ mutual information estimators. We demonstrate the methodology by
+ forecasting wall-shear stress using direct numerical simulation
+ (DNS) data of turbulent channel flow.
+
+ Findings – The analysis reveals that variables with high
+ unique or synergistic causal contributions enable compact
+ forecasting models with strong predictive performance, whereas
+ redundant variables can be excluded without compromising
+ accuracy. Specifically, when predicting future wall-shear stress
+ using two wall-parallel planes separated in the wall-normal
+ direction, the streamwise velocity near the wall provides unique
+ information about the target. In contrast, when both planes are
+ located close to the wall, their information is largely redundant,
+ and either can serve as input without degrading predictive
+ accuracy. Finally, synergistic interactions emerge between different
+ velocity components, which, when combined, enhance the prediction of
+ future wall-shear stress beyond what each component achieves
+ individually.
+
+ Originality/Value – This work presents a causality-based
+ approach for input selection in turbulence forecasting. The method
+ quantifies the causal contributions of candidate variables to the
+ prediction of a future quantity of interest and connects them to the
+ fundamental limits of predictive accuracy achievable by any
+ model. This enables more interpretable and compact models by
+ reducing input dimensionality without sacrificing
+ performance. Beyond turbulence, the approach provides a
+ general-purpose tool for variable selection in scientific machine
+ learning, flow control, and data-driven modeling of complex systems.
+ \\ \\ Keywords: causality; turbulence; forecasting; mutual
+ information; neural estimators; information theory
+
+Introduction
+
+Among the physical sciences, fluid mechanics is distinguished by the
+fact that its fundamental equations of motion---the Navier--Stokes
+equations---are known and reproduce flow physics with remarkable
+precision. Yet, despite this advantage, predicting turbulent flows
+remains one of the most challenging problems in engineering and
+scientific applications. The difficulty arises from the nonlinear and
+multiscale nature of turbulence, which gives rise to a vast number of
+interacting degrees of freedom. Capturing these dynamics directly from
+the governing equations is computationally prohibitive for most
+practical applications, motivating the development of reduced-order
+models (ROMs) that retain the essential physics while reducing
+dimensionality.
+
+Over the past decades, many techniques have been developed to
+construct such models. Classical approaches include Proper Orthogonal
+Decomposition (POD) with Galerkin
+projection~, balanced
+truncation~, and Dynamic Mode Decomposition
+(DMD)~, as well as extensions based on Koopman
+theory~. More recently, machine-learning methods have
+entered the field, offering data-driven frameworks for model
+construction~. Applications of these techniques in
+turbulence modeling are found in Reynolds-Averaged Navier--Stokes
+(RANS) models (e.g., , ) and
+Large-Eddy Simulation (LES) models (e.g., ,
+). These approaches reduce dimensionality by
+not resolving all turbulent scales and introduce closure models to
+represent the influence of unresolved motions on the resolved flow
+variables. The development of such models is typically guided by
+theoretical considerations, invariance principles, or empirical
+fits~. However, despite steady progress and the
+promise of emerging data-driven techniques, the current generation of
+models remains unable to meet the stringent accuracy and efficiency
+demands of many scientific and industrial applications.
+
+A fundamental challenge underlying these approaches is the selection
+of input variables on which the models should be built. Effective
+forecasting depends on identifying a minimal set of features that
+offers a parsimonious yet sufficiently informative representation of
+the system~. In practice, this is rarely
+straightforward: turbulent flows involve many interacting features
+across scales, blurring the distinction between variables that truly
+drive the dynamics and those that merely correlate with
+them~. For example, in aeronautics, one may wish to forecast
+aerodynamic forces using limited measurements, such as velocity or
+pressure at accessible locations. Using the entire flow field would
+result in models of prohibitive complexity, while discarding too many
+variables risks omitting the actual drivers. The central challenge,
+therefore, is to identify the minimal and most informative set of
+inputs that preserves the predictive content of the full system.
+
+Traditionally, the selection of input variables has relied heavily on
+heuristics and domain knowledge rather than rigorous principles, yet
+it remains a critical step in building predictive models of
+turbulence. Early efforts focused on filter
+methods---see~ for a review---which assess the
+statistical dependence between individual features or groups of
+features and the target variable~. Examples include
+correlation measures~, fractal dimension~,
+and distance measures~. Information theory has also
+provided a rich foundation for these techniques, ranging from early
+model selection criteria such as Akaike’s Information
+Criterion~ to modern information-theoretic methods
+for coarse-graining and dynamical reduction~, as well as mutual information-based
+approaches~, which aim to identify features that
+maximize predictive association.
+
+These methods are typically applied to individual variables and
+therefore fail to capture the diverse types of interactions among
+features. As a result, they cannot distinguish between variables that
+are only informative when considered jointly (synergy) and those that
+provide overlapping information about the target (redundancy). To
+address this limitation, wrapper methods perform an iterative search
+in which subsets of features are evaluated based on predictive
+performance~. Approaches such as
+Sequential Forward Selection (SFS)~ and Sequential
+Backward Elimination (SBE)~ progressively add or
+remove variables to identify combinations that yield the most accurate
+predictions. While these methods can account for feature interactions,
+their main drawback is computational cost: a new model must be trained
+for each candidate subset. This makes wrapper methods impractical for
+high-dimensional turbulence datasets~.
+
+Another family of methods, known as embedded methods, alleviate this
+computational cost by integrating feature selection into the training
+process. A well-known example is the Least Absolute Shrinkage and
+Selection Operator (LASSO)~, which introduces
+regularization to enforce sparsity in regression coefficients. Related
+approaches, such as the Elastic Net proposed by~,
+extend LASSO by combining $_1$ and $_2$ penalties, offering
+greater flexibility when dealing with correlated variables. In this
+way, the optimization simultaneously minimizes prediction error while
+pruning irrelevant features.
+
+Despite their usefulness, the strategies above share a fundamental
+limitation: they identify variables associated with the target, but
+not necessarily those that drive its future
+evolution~. As a result, their predictions may fail to
+generalize beyond the conditions observed during training. This
+limitation has motivated the adoption of causality-based
+approaches~[e.g.][]spirtes2001, lozano2022, which aim to
+recover the minimal set of causal parents of a target variable. By
+identifying causal mechanisms rather than mere associations, this
+family of methods promises more interpretable and robust
+models. However, most existing algorithms still treat variables
+individually and fail to capture the synergistic and redundant
+interactions that characterize turbulence.
+
+In this work, we introduce a method that directly addresses this gap
+by grounding model input selection in causality while explicitly
+accounting for multivariate interactions. Specifically, we employ the
+Synergistic–Unique–Redundant Decomposition (SURD) of
+causality~, which disentangles the contribution of
+each input feature into redundant, unique, and synergistic components
+with respect to forecasting a target quantity. This cause-and-effect
+perspective offers a principled approach for identifying the most
+informative inputs and establishes fundamental limits on the
+predictive capability of any forecasting model constructed from them.
+
+The main contributions of the paper are:
+
+ Introducing a causality-driven approach for input selection in
+ forecasting modeling of turbulence based on the SURD decomposition.
+ Demonstrating how unique, redundant, and synergistic causalities
+ inform the construction of interpretable and parsimonious
+ forecasting models.
+ Applying the methodology to turbulent channel-flow data to show
+ that causal analysis identifies the set of input flow variables with
+ superior predictive value.
+
+The remainder of the paper is organized as
+follows. Section~ presents the methodology, including
+the use of variational mutual information estimators. In
+Section~, the approach is validated on a set of
+illustrative examples. Section~ applies the approach
+to turbulent channel flow and analyzes the causal structure of various
+flow components. Finally, Section~ discusses the
+broader implications for turbulence modeling, summarizes the main
+findings, and outlines directions for future research.
+
+Methodology
+
+Consider the collection of $N$ input variables evolving in space and
+time given by the vector $ = [Q_1(, t),Q_2(, t),$
+ $,Q_N(, t)]$. For example, $Q_i$ may represent the time
+evolution of the streamwise velocity at a given distance from the
+wall. The components of $$ are the input variables and are treated
+as random variables. Our objective is to construct a forecasting model of the future of an output variable $Q_O^+$,
+denoted by $Q_O^+ = Q_O(, t+ T)$, where $ T>0$ is an arbitrary time increment. To that end, we quantify the causal influence of input variables on the output and leverage this information to characterize the fundamental limits of predictability in forecasting models.
+
+Our approach is structured in three main steps. First, we adopt the principle of forward-in-time propagation of information---i.e., information flows only toward the future~---and quantify causality among variables in terms of information increments. We then decompose these causal influences into distinct interaction types: synergistic, unique, and redundant contributions. Second, we link these causal components to the information-theoretic irreducible error theorem~, which enables us to quantify the minimum forecasting error achievable by any model, regardless of its form. Finally, we employ a mutual information neural estimator to compute causal relationships among high-dimensional variables, allowing the method to scale efficiently in complex systems.
+
+Observational causality with SURD
+
+For the first step, we adopt the definition of causality proposed in , implemented through SURD. In this framework, causality is quantified as the increase in information about the future output $Q_O^+$ that is gained by observing individual or groups of past inputs $$. The information content in $Q_O^+$ is measured using Shannon entropy~, denoted as $H(Q_O^+)$, which reflects the average level of unpredictability---or expected surprise---associated with the outcomes of the random variable $Q_O^+$.
+
+Next, we decompose the information in $H(Q_O^+)$ into a
+sum of information increments contributed by distinct types of
+interactions from $$---namely, redundant, unique, and synergistic
+components---using the principle of forward-in-time propagation of information~:
+
+ H(Q_O^+) = _ I ^ R _ O + _i=1^N I ^ U _ i O + _ I ^ S _ O + I_ O,
+
+where the terms $ I^R_
+ O$, $ I^U_i O$, and $
+I^S_ O$ denote redundant, unique, and synergistic
+causalities, respectively, from $$ to $Q_O^+$, and $ I_ O$ is the causality from unobserved variables, referred to as the causality leak. Unique causalities
+are associated with individual components of $$, while redundant
+and synergistic causalities emerge from interactions among groups of
+variables. The set $$ includes all subsets of indices with
+cardinality greater than one, i.e., $ = \ 
+\1, , N\ || > 1 \$. For instance, for $N=2$, Eq. reduces to $H(Q_O^+) = I ^ R _ 12 O + I ^ U _ 1 O + I ^ U _ 2 O + I ^ S _ 12 O + I_ O$. Figure shows the diagram of the redundant, unique, and synergistic causalities for $N = 2$.
+
+To quantify the causal components in Eq. , we rely on the concept of mutual
+information between the target variable $Q_O^+$ and combinations of the input variables $_$. This quantity can be
+mathematically described as:
+
+ 
+I(Q_O^+; _) = _q_O^+ Q_O ___ p(q_O^+, _) _2 ( p(q_O^+) p(_) ) _\,q_O^+,
+
+where $p(q_O^+, _)$, $p(q_O^+)$, and $p(_)$ denote the joint and
+marginal probability density functions of the output and input
+variables, respectively, and $q_O^+$ and $_$ represent particular
+values of the output and input variables. Mutual information measures
+how different the joint probability density function $p(q_O^+, _)$
+is from the hypothetical distribution $p(q_O^+)p(_)$, where $q_O^+$
+and $_$ are assumed to be independent. For instance, if $Q_O^+$ and
+$_$ are not independent, then $p(q_O^+, _)$ will differ
+significantly from $p(q_O^+)p(_)$. Hence, we assess causality by
+examining how the probability of $Q_O^+$ changes when accounting for
+$_$.
+
+Then, we quantify the information increments $ I$ about $Q_O^+$ obtained by observing individual components or groups of components from $$. This procedure enables the decomposition of the mutual information $I(Q_O^+;)$ into redundant, unique, and synergistic contributions. For the case $N=2$, Figure~ illustrates the decomposition: $I(Q_O^+;) = I^R_12 O + I^U_1 O + I^U_2 O + I^S_12 O$.
+The mathematical definitions of these terms are provided in ; here, we focus on their interpretation:
+
+ Redundant causality from a subset $_ = \
+ Q_i_1, Q_i_2, \ $ to $Q_O^+$, denoted by
+ $ I^R_ O$, is the information about the
+ output that is identically present in all variables within the
+ group $_$. Redundant causality arises when each variable
+ in the group individually contains the same information about
+ the target. 
+ 
+ 
+ 
+ 
+ Unique causality from an individual variable $Q_i$
+ to $Q_O^+$, denoted by $ I^U_i O$, is the
+ information about the output that is available exclusively
+ through $Q_i$ and cannot be recovered from any other single
+ variable. Unique causality indicates that $Q_i$ provides
+ critical information not found elsewhere in the set of
+ individual variables. 
+ 
+ 
+ 
+ 
+ Synergistic causality from a subset $_ = \
+ Q_i_1, Q_i_2, \ $ to $Q_O^+$, denoted by
+ $ I^S_ O$, corresponds to the information
+ that can only be accessed when all variables in the group are
+ considered jointly. Synergy captures higher-order interactions,
+ where the collective observation of variables reveals
+ information that is absent when they are observed
+ individually. 
+ 
+ 
+ 
+
+Causality-driven irreducible model error
+
+In the second step, we relate the redundant, unique, and synergistic causalities to the forecasting error of a model. To this end, we build upon the information-theoretic irreducible error theorem introduced by . The theorem establishes that the minimum forecasting error achievable by any model, denoted by $_ LB$, corresponds to the uncertainty that remains in the output $Q_O^+$ after observing the inputs $$. This residual uncertainty, quantified by the conditional entropy $H(Q_O^+ )$, matches the concept of causality leak as defined in Eq.~. This connection allows us to attribute the contributions of each causal component---redundant, unique, and synergistic---to the lower bound $_ LB$.
+
+In particular, let $$ denote the space of all possible forecasting models of $Q_O^+$ that take $$ as input. For any model $f $, producing the prediction $_O = f()$, the expected error under an $L_p$-norm is bounded as:
+
+ _f \| Q_O^+ - _O^+ \|_p 
+ _ e^- I^R_ O 
+ _i=1^N e^- I^U_i O 
+ _ e^- I^S_ O
+ c[p, H(Q_O^+)] _,
+
+where the function $c[p, H(Q_O^+)]$ depends only on the choice
+of norm $p$ and the differential entropy of the output variable
+$H(Q_O^+)$. The general proof for this bound and the explicit form of
+the constant $c[p, H(Q_O^+)]$ for the Rényi entropy of order
+$$ is given in . 
+
+The terms $e^- I^R_ O$, $e^- I^U_i O$, and $e^- I^S_ O$ denote the contributions of the redundant, unique, and synergistic causal components to the minimum forecasting error, respectively. Here, we focus on the connection between each of the causal components $ I$ and the construction of forecasting models:
+
+ Redundant error contributions from a subset $_ = \
+ Q_i_1, Q_i_2, \ $ to $Q_O^+$, denoted by
+ $e^- I^R_ O$, represent the contributions to the error bound of the redundant causality from the group $_$ about $Q_O^+$. 
+ In this case, forecasting models for $Q_O^+$ can be
+ simplified by selecting the most convenient variable from the
+ redundant set and disregarding the rest.
+ 
+ Unique error contributions from an individual variable $Q_i$
+ to $Q_O^+$, denoted by $e^- I^U_i O$, represent the contributions to the error bound of the unique causality from $Q_i$ about $Q_O^+$. 
+ Therefore, forecasting models for $Q_O^+$
+ should always retain $Q_i$ as input, since its information
+ cannot be found in any other variable alone.
+ 
+ Synergistic error contributions from a subset $_ = \
+ Q_i_1, Q_i_2, \ $ to $Q_O^+$, denoted by
+ $e^- I^S_ O$, correspond to the contributions to the error bound of the synergistic causality from the group $_$ about $Q_O^+$.
+ Therefore, it is crucial for models to incorporate
+ all variables in $_$ as inputs to ensure accurate
+ forecasts.
+
+Figure shows the relationship between the redundant, unique, and
+synergistic causalities with the
+output information $H(Q_O^+)$ and the minimum forecast error
+$_$. In this case, the expected error in Eq.
+ is bounded as:
+
+ _ = 
+ e^- I^R_12 O e^- I^U_1 O
+ e^- I^U_2 O
+ e^- I^S_12 O 
+ c[p, H(Q_O^+)].
+
+The diagram in Figure implies that a perfect
+prediction is achievable only when the inputs $$ fully determine
+the output $Q_O^+$, i.e., $Q_O^+ = _O^+$. In the continuous
+case, this condition corresponds to any of the causal terms $ I$ diverging to infinity, leading the irreducible error bound in
+Eq.~ to vanish asymptotically as $e^-
+0$. Conversely, when some of the information required to predict
+$Q_O^+$ is absent from $$, the causal terms $ I$ remain finite,
+and the irreducible error remains strictly positive. This lower bound
+cannot be reduced by increasing model complexity, as it reflects a
+fundamental information-theoretic limit imposed by the incompleteness
+of the input.
+
+ 
+
+ 
+
+Mutual information estimation in high-dimensional spaces
+
+Evaluating the causal contributions discussed above requires computing the mutual
+information between the set of input variables $_$ and the
+output variable $Q_O^+$. However, this task becomes particularly
+challenging in high-dimensional settings, such as those encountered in
+turbulent flows. The main difficulty arises from the intractability of
+accurately estimating the joint and marginal probability distributions
+$p(q_O^+, _)$, $p(q_O^+)$, and $p(_)$ when both
+$q_O^+$ and $_$ lie in high-dimensional spaces.
+
+To illustrate this, consider a case where $Q_O^+$ represents a
+two-dimensional field of wall-shear stress in a turbulent channel
+flow, and $_$ corresponds to the streamwise velocity field at
+a given wall-normal location. Suppose a naive binning approach is used
+to estimate probabilities, where both fields are discretized over a $5
+ 5$ grid and their joint distribution is computed using a
+histogram-based method with 10 bins per variable. The resulting joint
+space would contain approximately $10^50$ bins, requiring at least
+an order of magnitude more independent samples to obtain statistically
+meaningful estimates---a clearly infeasible demand.
+
+To overcome this challenge, we employ a variational formulation of
+mutual information known as the Donsker–Varadhan (DV)
+ representation. This representation expresses the mutual
+information as a functional optimization problem over a class of
+real-valued functions $g $, which can be parametrized
+and optimized directly from data:
+
+ 
+I(Q_O^+; _) _g ( _p(q_O^+, _) [ g(q_O^+, _) ] - \, _p(q_O^+)p(_) [ e^g(q_O^+, _) ] ),
+
+where $_p(_)[ ]$ denotes the
+expectation operator under the distribution $p(_)$ and
+similarly for other terms. This bound consists of two expectations:
+
+ The first term $_p(q_O^+, _) [ g(q_O^+, _)
+ ]$ depends on samples drawn from the joint distribution
+ $p(q_O^+, _)$. It rewards the function for assigning high
+ importance to true input–output pairs.
+ The second term $ \, _p(q_O^+)p(_)
+ [ e^g(q_O^+, _) ]$ is computed over the
+ product of marginals and penalizes functions that also assign
+ high importance to independent input–output combinations.
+
+The optimal function $g^*$ that achieves equality in this bound is the
+log-density ratio $ p(q_O^+)p()$, which
+directly characterizes the mutual dependence between $q_O^+$ and
+$_$, as shown in Eq. . In practice, the closer the
+learned function $g$ approximates this optimal log-ratio, the tighter
+the bound becomes, which enables the estimation of the mutual
+information without the need for explicit density modeling.
+
+Several practical estimators have been developed based on the
+variational representation in Eq.~, including
+MINE~, InfoNCE~, and
+TUBA~. These methods differ primarily in how the
+variational function is parametrized and how the expectations over the
+joint and marginal distributions are estimated in practice. In this
+work, we adopt the MINE (Mutual Information Neural Estimation)
+method~, which directly implements the
+Donsker--Varadhan bound using a neural network to approximate the
+function $g$. Specifically, the function $g$ is parametrized by a
+neural network $g_$ with learnable parameters $$, and the
+mutual information is estimated as:
+
+ 
+_(Q_O^+; _) = m _k=1^m g_(q_O^(k), _^(k)) - ( m _k=1^m e^g_(_O^(k), ^(k)_) ),
+
+where $\(q_O^(k), ^(k)_)\_k=1^m$ are mini-batch
+samples drawn from the joint distribution $p(q_O^+, _)$, and
+$\(_O^(k), ^(k)_)\_k=1^m$ are surrogate
+samples used to approximate the product of marginals
+$p(q_O^+)p(_)$. The marginal samples are constructed by
+independently shuffling the output values $\q_O^(k)\$ across the
+batch while keeping the inputs $\^(k)_\$ fixed. This
+permutation breaks any statistical dependence between $q_O^+$ and
+$_$, thus providing samples that approximate the assumption of
+independence under the marginal product distribution. The contrast
+between the importance assigned to true (joint) and shuffled
+(independent) pairs allows the estimator to learn a function
+$g_$ that approximates the log-density ratio.
+
+The network $g_$ is trained by maximizing $_$ using
+stochastic gradient ascent over minibatches.
+Figure~ illustrates the architecture of the mutual
+information estimator used in this work. The input layer receives the
+spatial fields of the target variable $Q_O^+$ and the set of candidate
+inputs $_$, stacked along the channel dimension ($N_c$). These
+inputs are processed through a sequence of convolutional layers, each
+reducing the spatial resolution while increasing the number of feature
+channels to progressively extract higher-level representations. The
+final layers map these features to a scalar estimate of
+$_$.
+
+Validation
+
+We consider two benchmark cases to illustrate how SURD causalities can
+guide the selection of input variables in forecasting models. Each
+case is designed to exhibit a different type of collider effect, in
+which two input variables, $Q_2$ and $Q_3$, collectively influence the
+future state of the output variable $Q_1$. For simplicity, the
+variables $Q_i$ are considered time-dependent only, although the
+formulation introduced above is applicable to variables that are
+functions of space and time.
+
+Collider with synergistic variables
+
+The first case investigated corresponds to a collider where the pair
+$[Q_2,Q_3]$ influences $Q_1^+$ synergistically, i.e., the predictive
+information about $Q_1^+$ arises when the two inputs are considered
+together rather than individually. This implies that $Q_2$ and $Q_3$
+behave as a single random variable that drives $Q_1$. The system is
+defined by the following stochastic recurrence relations:
+
+Q_1(n+1) &= [Q_2(n)Q_3(n)] + 0.001W_1(n)\\
+Q_2(n+1) &= 0.5Q_2(n) + 0.1W_2(n)\\
+Q_3(n+1) &= 0.5Q_3(n) + 0.1W_3(n),
+
+where $W_i$ represents unobserved, stochastic forcing on the variable
+$Q_i$ and $n$ indicates the discrete time step. Figure
+ shows a diagram with the relationships among the
+variables, along with the results derived from SURD for the output
+variable $Q_1^+ Q_1(n+1)$. The notation employed for SURD
+causalities is such that R23 denotes $ I _ 23 1 ^ R$, and
+so on. The results reveal that the dominant causal contribution is the
+synergistic causality from $Q_2$ and $Q_3$ to $Q_1^+$, quantified by
+$ I^S_23 1$. This term accounts for approximately 80\
+of the total SURD causalities to $Q_1^+$. This indicates that the
+minimum forecasting error, $$, is achieved only when both
+variables are considered jointly, while the reduction in error
+attainable using $Q_2$ or $Q_3$ alone is negligible. Consequently, an
+effective forecasting model for $Q_1^+$ must incorporate both $Q_2$
+and $Q_3$ simultaneously in order to reach the theoretical limit of
+predictive accuracy.
+
+To test these insights in practice, we construct a set of forecasting
+models based on long-short-term memory (LSTM) artificial neural
+networks trained to predict $Q_1(n+1)$, using the exact values of
+$Q_1(n)$, $Q_2(n)$, and $Q_3(n)$. Several models are trained using
+different sets of input variables. The network architecture includes a
+sequence input layer with the corresponding number of input features,
+an LSTM layer with 200 hidden units to capture temporal dependencies
+between the signals, and a fully connected layer to map the previous
+layer to the output variable. The network is trained using an Adam
+optimizer with a maximum of 200 epochs and an initial learning rate of
+0.01, which is reduced by a factor of 0.3 with a period of 125
+iterations.
+
+The results for the predictions of the forecasting models are shown in
+Figure , where we can clearly observe that the
+forecasting performance of the models using $[Q_2, Q_3]$ significantly
+surpasses those that include either variable alone. This outcome is
+consistent with the synergistic causality detected by SURD, where
+$Q_2$ and $Q_3$ collectively drive the future of $Q_1$. Generally,
+this confirms that accurate forecasting of variables affected by
+synergistic causalities is achievable only when all synergistically
+interacting variables are incorporated into the model.
+
+Collider with redundant variables
+
+The second case explores the fundamental interaction $Q_2 Q_3 Q_1$, where 
+$Q_3$ is identical to $Q_2$. In this scenario, $Q_2$ and $Q_3$ equally influence the 
+future outcomes of $Q_1$. The governing equations of the system are:
+
+Q_1(n+1) &= 0.1Q(n) + [Q_2(n)Q_3(n)] + 0.001W_1(n)\\
+Q_2(n+1) &= 0.5Q_2(n) + 0.1W_2(n)\\
+Q_3(n+1) & Q_2(n+1).
+
+The results shown in Figure~ indicate that SURD
+identifies $ I^R_23 1$ as the dominant causal
+contribution to $Q_1^+$. This redundant term accounts for 87\
+total causality, highlighting the duplicated influence of $Q_2$ and
+$Q_3$ on the future state of $Q_1^+$. The fact that redundancy
+dominates the causal structure implies that either $Q_2$ or $Q_3$ is
+equally useful for predicting the target. Consequently, an accurate
+forecasting model need only include one of them, as each alone
+provides access to the redundant information critical for predicting
+$Q_1^+$.
+
+Figure~ also shows the predictions of forecasting
+models trained with different input variables, obtained using an LSTM
+network analogous to that employed in the previous system. We can
+observe that the predictive accuracy of the forecasting model is not
+compromised by using either $Q_2$ or $Q_3$. Furthermore, when both
+variables are used simultaneously, the forecasting accuracy is neither
+compromised nor improved. Hence, in scenarios characterized by high
+redundancy, compact predictive models can be optimized by selecting
+the most convenient variable from the redundant set. This
+interchangeability provides a strategic advantage in model
+construction, allowing for the selection of variables based on
+practical considerations, such as measurement ease or data
+availability.
+
+Results
+
+In this section, we investigate the causal relationship between the
+wall-shear stress (output) and velocity fluctuations (input) in a
+turbulent channel flow, using data from a direct numerical simulation
+(DNS) at a friction Reynolds number $Re_ = u_ h / 
+180$, where $u_$ is the friction velocity, $h$ is the channel
+half-height, and $$ is the kinematic viscosity. The computational
+domain spans $L_x L_y L_z = h 2h 
+2 h$, with periodic boundary conditions in the streamwise
+($x$) and spanwise ($z$) directions, and no-slip conditions at the
+walls ($y = 0$ and $y = 2h$). The simulation is driven by a constant
+streamwise mass flux and fully resolves all spatial and temporal
+turbulence scales. Details of the numerical solver and simulation
+setup can be found in .
+
+The resulting database contains approximately $710^5$
+time-resolved snapshots of the three velocity fluctuation components:
+streamwise $u(, t)$, wall-normal $v(, t)$, and spanwise
+$w(, t)$. The time step between snapshots is $ t_s = 0.5
+ / u_^2$, which is sufficient to resolve the characteristic
+time scales in near-wall turbulence .
+
+Depending on the case under consideration, the input to our analysis
+consists of one or more velocity fluctuation components extracted at
+selected wall-normal locations. The output is the streamwise or
+spanwise wall-shear stress at a future time. For instance, for the
+streamwise component:
+
+_x^+ _x(x, z, t + T) = . , t + T) y |_y=0,
+
+where $$ is the fluid density, $u$ is the instantaneous streamwise
+velocity, and $ T$ is the prediction
+horizon. Figure~ shows representative examples of the
+input and output fields used in the analysis. The input corresponds to
+a slice of the streamwise velocity fluctuations at a given wall-normal
+location $y_$ and time $t_0$, while the output is the
+wall-shear stress field at the wall at time $t_0 + T$.
+
+Our objective is to investigate the predictive capability of
+forecasting models for the future wall-shear stress, while analyzing
+the redundancies and synergies arising from different combinations of
+wall-normal locations and velocity components. To this end, we apply
+SURD to decompose the mutual information between candidate inputs and
+the output into unique, redundant, and synergistic contributions. This
+causal decomposition reveals combinations of input planes and
+components that provide non-redundant predictive value, which guides
+the optimal selection of variables in our forecasting models of the
+wall-shear stress.
+
+For comparison, we also evaluate the results obtained from SURD
+against a standard space–time correlation analysis. The correlation
+between the streamwise velocity $u_i$ at a given wall-normal distance
+$y_i$ and the wall-shear stress $_x^+$ is defined as:
+
+ C_u_i,_x^+ =
+ [(_x^+-_) (u_i-_u)]| [(_x^+ - _)^2]
+ [(u_i - _u)^2],
+
+where $_=[_x^+]$ and $_u=[u_i]$ denote the average of $_x^+$ and $u_i$, respectively, and 
+$[]$ denotes the average over all spatial locations $(x,z)$ and time snapshots $t$. By construction,
+the values in Eq. are bounded between $[0,1]$.
+
+Unique causality
+
+The first case analyzed consists of the analysis of the predictive
+value of the streamwise velocity fluctuations $u(, t)$ at two
+distinct wall-normal locations for predicting the future streamwise
+wall-shear stress $_x(, t + T)$, where $ = [x,z]$
+denotes the spatial coordinates parallel to the wall. Specifically, we
+consider two input planes: one located near the wall at $y_1^* = 5$,
+within the viscous sublayer, and another located farther away, in the
+center of the channel ($y_2/h=1$). Here, the superscript $()^*$
+denotes normalization in viscous units, defined as $y^* = y u_ /
+$, and should not be confused with the superscript $()^+$,
+which indicates a variable at a future time. An instantaneous
+visualization of these two inputs planes is shown in Figure
+, where we refer to the streamwise velocity as as
+$u_i=u(x,y_i,z,t)$.
+
+The prediction time horizon for the future wall-shear stress is set to
+$ T^* = 20$, which corresponds to the moment at which it becomes
+approximately independent from its own past . This
+ensures that the predictive signal must come from external sources
+rather than from the past history of the target.
+
+Given these flow variables, we quantify the individual and joint
+causal contributions from the two input planes to the future
+wall-shear stress using our high-dimensional mutual information
+estimation approach in combination with SURD. The results are shown in
+Figure~, where the redundant, unique, and
+synergistic causal components to $_x(, t+ T)$ are shown
+in blue, red, and yellow, respectively. 
+
+We observe that $u_1$ contain significant unique information $ I
+^U_1 _x^+$ about the output, while $u_2$ does not provide any
+new information beyond what is already captured by the near-wall
+input. This is evidenced by the nonzero redundant contribution $
+I^R _12 _x^+$, the negligible unique term for the far-wall
+plane $ I^U _2 _x^+$, and the zero synergistic
+contribution $ I^S _12 _x^+$. This implies that the
+unique causal contribution from $u_1$ provides the most relevant
+information for forecasting model of $_x$ constructed from $u_1$
+and $u_2$.
+
+The conclusions obtained using the correlation-based approach are
+similar. However, correlations do not reveal that the information in
+$u_2$ about $_x^+$ is redundant with that of $u_1$. Therefore,
+from the perspective of feature selection, this limitation can be
+misleading: correlation analysis alone might suggest that $u_2$
+contributes additional information beyond $u_1$, when in fact SURD
+identifies this information as redundant.
+
+To explore the practical implications of these interactions, we train
+three additional convolutional neural network (CNN) models to predict
+the future wall-shear stress $_x(, t + T)$ using the
+past streamwise velocity fluctuations as input. A schematic of the CNN
+architecture used in these new predictive models is shown in
+Figure~. The network consists of a sequence of
+convolutional layers with progressively increasing channel depth and
+decreasing spatial resolution, followed by an upsampling decoder that
+reconstructs the output at the original resolution from different
+combinations of inputs. The number of input channels $N_c$ depends on
+the number of velocity planes used as input. For example, $N_c = 1$
+when using only $u_1$ or $u_2$, and $N_c = 2$ when using both.
+
+The prediction results are shown in Figure . The
+leftmost panel presents the ground-truth wall-shear stress from the
+DNS data, followed by CNN predictions obtained with different
+combinations of the input fields $u_1$ and $u_2$. Model performance is
+quantified using the relative mean-squared error (RMSE), defined as:
+
+ = _x - _x^ ]^2_x,z,t [_x^]^2_x,z,t,
+
+where $_x$ and $_x^$ represent the
+predicted and reference wall-shear stress fields, respectively, and $_x,z,t$ denotes the average over all spatial locations $(x,z)$ and time snapshots $t$.
+
+The remaining panels in Figure~ show the
+predictions from three models: $[u_1(,t)]$,
+$[u_2(,t)]$, and $[u_1(,t),
+ u_2(,t)]$, which achieve RMSE values of 0.21, 0.83, and
+0.21, respectively. The best performance is obtained using only the
+near-wall input $u_1$, consistent with its strong unique causal
+contribution identified in the SURD analysis. In contrast, the model
+based solely on the far-wall input $u_2$ exhibits a much higher error,
+indicating that $u_2$ carries little predictive information about the
+future wall-shear stress. Finally, simultaneously using $u_1$ and
+$u_2$ yields no improvement over using $u_1$ alone, which confirms
+that the information from the far-wall input is redundant with respect
+to the near-wall information.
+
+Redundant causality
+
+We now consider a case where both input planes of the streamwise
+velocity fluctuations are positioned close to the wall and in close
+proximity to each other, at $y_1^* = 5$ and $y_2^* =
+6$. Figure~ shows an instantaneous snapshot of
+the fields at these two wall-normal locations. The prediction target
+remains the same as in the previous section: the future streamwise
+wall-shear stress, $_x(, t + T)$, evaluated at a time
+horizon of $ T^* = 20$.
+
+The SURD causal contributions from the two input planes are shown in
+Figure~. Here, the dominant contribution is
+the redundant term $ I ^ R _ 12 _x^+$, while the unique $ I ^ U _ 1 _x^+$, $ I ^ U _ 2 _x^+$ and synergistic
+$ I ^ S _ 12 _x^+$ components remain comparatively small. This indicates that, as
+expected, both planes contain mostly the same information about the
+future wall-shear stress, and there is no additional value in using
+them concurrently.
+
+The correlation analysis in this case assigns nearly identical values
+to $C_u_1,_x^+$ and $C_u_2,_x^+$. While this outcome is
+consistent with the fact that both planes carry similar information
+about $_x^+$, it does not indicate that this information is
+redundant. In other words, correlation analysis cannot distinguish
+whether the two inputs provide overlapping content or genuinely
+independent contributions.
+
+To illustrate how redundancy affects prediction, we train the same CNN
+architectures from Figure~ with different
+combinations of inputs. The results, shown in
+Figure~, correspond to the models
+$[u_1(,t)]$,
+$[u_2(,t)]$, and $[u_1(,t),
+ u_2(,t)]$, which achieve RMSE values of 0.21, 0.22, and
+0.22, respectively. In this case, the three models yield very similar
+RMSE values, which indicates that both inputs provide essentially the
+same predictive information about the output, and no benefit is gained
+from combining them.
+
+This outcome is consistent with the SURD decomposition: each input is
+individually predictive of $_x^+$, but their combination yields no
+synergistic gain. Thus, the information carried by $u_2$ is redundant
+with respect to that in $u_1$, and vice versa.
+
+Synergistic causality
+
+In the last case considered, we illustrate the synergistic predictive
+value of the streamwise $u_1(,t)$ and spanwise $w_1(,t)$
+components of the velocity at the wall-normal location $y_1^*=1$ for
+predicting the future magnitude of the wall-shear stress vector,
+$||^+ = ||(,t + T) =
+^2+_z^+^2$. The wall-normal planes are
+intentionally positioned near the wall to better highlight the
+synergistic interactions between the input fields.
+
+The SURD causal decomposition is shown in
+Figure~. The left and center panels illustrate an
+instantaneous visualization of the input fields $u_1$ and $w_1$, while
+the right panel reports their causal contributions to the future
+wall-shear stress magnitude $||^+$. In this setup,
+the streamwise component $u_1$ is treated as the first input and the
+spanwise component $w_2$ as the second. Therefore, $ I ^ U _ 1||^+$ here represents
+the unique causal contribution of $u_1$ to the future of
+$||$, while $ I ^ U _ 2||^+$ corresponds to that of $w_1$.
+
+Unlike the previous cases, the dominant terms here are the synergistic
+$ I ^ S _ 12||^+$ and redundant $ I ^ R _ 12||^+$ contributions, while the unique components
+remain comparatively small. This outcome indicates that $u_1$ and
+$w_1$ share some redundant information, but neither alone provides
+sufficient knowledge about the future magnitude
+$||^+$. Instead, their combination yields additional
+information that becomes predictive only when both are considered
+together.
+
+The correlation analysis for this configuration shows a dominant value
+for $u_1$, significantly larger than that of $w_1$. While this
+reflects the higher amplitude of the streamwise velocity component, it
+also reveals a key limitation: correlation-based measures are strongly
+influenced by the relative signal intensities rather than the true
+causal contributions of the variables. As a result, one might
+incorrectly infer that $u_1$ alone contains most of the predictive
+information about $||$. In contrast, the SURD
+decomposition shows that both $u_1$ and $w_1$ are essential to capture
+the underlying predictive structure of the future wall-shear
+magnitude.
+
+To assess how this synergy affects prediction in an actual model, we
+apply the same procedure as in the previous sections and train three
+CNNs using different combinations of $u_1$ and $w_1$. The predictive
+results are shown in Figure~. The leftmost panel
+illustrates an instantaneous visualization of the ground-truth target
+from DNS, corresponding to the future wall-shear stress magnitude
+$||^+$. The subsequent panels show a visualization of
+the prediction at the same time instant from the models
+$[u_1(,t)]$,
+$[w_1(,t)]$, and $[u_1(,t),
+ w_1(,t)]$, which yield RMSE values of 0.32, 0.26, and 0.19,
+respectively. These results highlight that the joint use of $u_1$ and
+$w_1$ significantly improves prediction accuracy compared to either
+component alone, which is consistent with the strong synergistic
+contribution revealed by SURD. Thus, in this case, constructing the
+most accurate predictive model of the output requires incorporating
+both variables into the analysis.
+
+Discussion and conclusions
+
+In this work, we have introduced a causality-driven approach to
+analyze how synergistic, unique, and redundant interactions among
+inputs constrain the fundamental limits of forecasting in chaotic
+systems, independent of the specific modeling approach. This causal
+characterization is achieved through the use of SURD causalities,
+which enables the systematic design of minimal forecasting models that
+retain only the most informative inputs while discarding those that
+are irrelevant or redundant. In particular, the analysis identifies
+three distinct types of contributions: inputs that offer unique
+information about the output, inputs whose causal influence is
+redundant with others, and inputs that contribute predictive value
+only when considered jointly.
+
+We have also shown that the combined effect of redundant, unique, and
+synergistic interactions determines the minimum admissible error for
+any forecasting model. This capability stems from the connection
+between SURD causalities and the information-theoretic notion of
+irreducible error in predictive performance. For any forecasting model
+of $Q_O^+$ based on $$, the best achievable accuracy is
+fundamentally constrained by the mutual information between the inputs
+and the output, $I(Q_O^+; )$. The SURD decomposition exactly
+recovers this quantity through its additivity property: the redundant,
+unique, and synergistic components collectively sum to the total
+mutual information. This information-theoretic perspective renders the
+approach model-free, as the bound holds independently of the specific
+algorithm or the complexity of the forecasting function class.
+
+The results of this analysis were made possible by the use of mutual
+information estimators, which allow us to approximate mutual
+information in high-dimensional spaces where traditional methods are
+ineffective due to the curse of dimensionality. In particular, our
+approach relies on estimators based on the Donsker–Varadhan
+representation, a variational method that reformulates mutual
+information estimation as an optimization problem. This representation
+forms the foundation of Mutual Information Neural Estimation (MINE),
+which uses neural networks to learn flexible functions that
+distinguish between dependent and independent variable pairs. Unlike
+classical estimators that rely on discretization or density
+estimation---both of which scale poorly with dimensionality---MINE
+leverages the scalability of neural networks, making it well suited
+for analyzing complex, high-dimensional systems such as those
+encountered in turbulent flows.
+
+The implications of this approach for designing minimal forecasting
+models were demonstrated using data from a turbulent channel flow. We
+first showed that isolating inputs with strong unique causal
+contributions enables the construction of predictive models that
+retain maximal predictive power while minimizing complexity, by
+discarding variables that contribute redundant information. For
+instance, when forecasting the future wall-shear stress $_x(, t
++ T)$, we found that the near-wall streamwise velocity field,
+$u(, t; y^* = 5)$, alone provides unique and sufficient predictive
+information. In contrast, inputs farther from the wall (e.g., at $y/h
+= 1$) offered no improvement in prediction accuracy, as their
+contribution was largely redundant with that of the near-wall field.
+
+When redundancy among input variables dominates, minimal predictive
+models can be optimized by selecting a single representative variable
+from the redundant set. This interchangeability offers flexibility in
+model construction, enabling variables to be chosen based on practical
+factors such as ease of measurement or data availability. In our case
+study, two closely spaced near-wall fields contained duplicated
+information about the future wall-shear stress, and using either field
+yielded equivalent predictive performance.
+
+In the third case analyzed, the identification of synergistic causal
+contributions reveals scenarios in which no individual input variable
+is sufficient on its own, but meaningful predictive information arises
+from their joint interaction. In such cases, accurate forecasting
+requires the inclusion of all variables participating in the
+synergy. This was illustrated through the analysis of the streamwise
+and spanwise velocity components, $u_1$ and $w_1$, located very close
+to the wall: while neither component alone could predict the future
+magnitude of the wall-shear stress, $||$, their
+combination led to a significant improvement in prediction accuracy.
+
+Limitations and future work
+
+We conclude this work by discussing some limitations of the proposed methodology.
+First, the method is based on an observational definition of causality. It infers causal relationships from statistical dependencies in time-resolved data without requiring interventions. While this broadens applicability to real-world systems where interventions are infeasible or unethical, it also introduces limitations: observational causality may not coincide with interventional or counterfactual definitions of causality and can be confounded by hidden variables or latent dynamics.
+
+Second, SURD is inherently data-intensive: accurate estimation of information-theoretic quantities in high-dimensional spaces requires large datasets, and the results can be sensitive to the choice of estimator. While the methodology itself is estimator-agnostic---valid regardless of the algorithm used---the accuracy and robustness of the results in the turbulent-flow applications may still depend on the specific mutual information estimator adopted, with potential variability across alternative estimators.
+
+Third, SURD does not resolve the spatial or state-dependent origin of causal contributions. In the formulation used in this work, redundant, unique, and synergistic causalities are computed globally and cannot be attributed to specific flow regions or to the particular dynamical states that generate them.
+
+Overall, we have shown that causality-driven forecasting provides an
+interpretable approach for linking the underlying causal structure of
+a system to its predictive performance. Future work will be devoted to
+the development of methods capable of identifying the specific regions
+of the flow responsible for redundant, unique, or synergistic
+causalities. This follows recent works such as the Informative and
+Non-informative Decomposition (IND) method proposed by
+. Region-focused analyses of this kind would enable
+a more localized understanding of causal interactions and support the
+design of spatially adaptive forecasting models. In particular, when
+synergy is present, it becomes especially valuable to pinpoint the
+precise portions of the input fields responsible for the synergistic
+effect---allowing models to retain only the informative regions while
+discarding input data that do not contribute meaningfully to
+prediction.
+
+Computation of global SURD causalities
+
+The definitions of redundant, unique, and synergistic causality adopted in this work follow the conceptual intuition outlined in . Their computation proceeds through the following steps:
+
+ The mutual information is computed for all possible combinations
+ of variables in $$ using the methodology described in
+ . This includes mutual information of order one
+ ($I_1, I_2, $), order two ($_12, _13, $),
+ order three ($_123, _124, $), and so on. An
+ illustrative example for a system with $N=4$ is shown in
+ Figure~(a).
+ The tuples containing the mutual information of order $M$,
+ denoted by $^M$, are constructed for $M=1,,N$. The
+ components of each $^M$ are organized in ascending order as
+ shown in Figure~(b).
+
+ 
+ 
+ 
+ 
+ 
+ The redundant causality is the increment in information gained about
+ $Q_O^+$ that is common to all the components of $__k$ (blue
+ contributions in Figure~c):
+ 
+ 
+ ^R__k =
+ 
+ _i_k-_i_k-1,& \ _i_k,_i_k-1 ^1 \ \ k n_1\\
+ 0, & ,
+ 
+ 
+ 
+ where we take $_i_0=0$, $_k = [j_k1, j_k2, ]$ is
+ the vector of indices satisfying $_j_kl _i_k$ for
+ $_j_kl, _i_k ^1$, and $n_1$ is the number of
+ elements in $^1$.
+ 
+
+ 
+ 
+ 
+ 
+ 
+ The unique causality is the increment in information gained by
+ $Q_i_k$ about $Q_O^+$ that cannot be obtained by any other
+ individual variable (red contribution in
+ Figure~c):
+ 
+ 
+ ^U_i_k =
+ 
+ _i_k-_i_k-1, & \ i_k=n_1, \ _i_k,_i_k-1 ^1\\
+ 0, & .
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ The synergistic causality is the increment in information gained by
+ the combined effect of all the variables in $__k$ that
+ cannot be gained by other combination of variables $__k$
+ (yellow contributions in Figure~c) such that
+ $__k __k$ for $__k ^M$ and
+ $__k \^1,,^M\$ with $M>1$ (dotted line
+ in Figure~c):
+ 
+ 
+ ^S__k =
+ 
+ __k - __k-1, & \ __k-1 \^M-1\, \ \ __k, __k-1 ^M \\
+ __k - \^M-1\, & \ __k>\^M-1\>__k-1, \ \ __k, __k-1 ^M\\
+ 0, & .
+ 
+ 
+ 
+ 
+ The redundant, unique and synergistic causalities that do not
+ appear in the steps above are set to zero.
+ 
+ 
+ Finally, we define the average order of causalities with respect to
+ $Q_O^+$ as $N^_ j$ where $$ denotes
+ R, U, or S. The values of $N^_ j$ are used
+ to plot $ I^_ j$ following the order
+ of appearance of $ ^_ j$. All the
+ causalities from SURD presented in this work are plotted in order
+ from left to right, following $N^_ j$.
+ 
+
+The approach presented here differs from the original SURD formulation in that it directly uses mutual information instead of specific mutual information. The latter accounts for variations in informational contribution depending on the specific value of the output variable, $q_O^+ Q_O^+$. This modification enables the use of neural mutual information estimators, which efficiently approximate mutual information averaged over all states, rather than providing state-specific estimates. Nonetheless, the approach could be extended to follow the original SURD formulation by discretizing the output space and adopting a variational representation of specific mutual information---although this extension is left for future work.
+
+ Acknowledgments \ authors would like to thank Gonzalo Arranz for his
+contributions to this work. This work was supported by the National
+Science Foundation under Grant No. 2140775 and MISTI Global Seed Funds
+and UPM. Á.~M.-S. received the support of a fellowship from the "la
+Caixa" Foundation (ID 100010434). The fellowship code is
+LCF/BQ/EU22/11930094. The authors acknowledge the MIT SuperCloud and
+Lincoln Laboratory Supercomputing Center for providing HPC resources
+that have contributed to the research results reported within this
+paper.\\
+
+ Disclosure statement: \ authors do not report potential conflicts of interest.
